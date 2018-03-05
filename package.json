@@ -1,0 +1,23 @@
+{
+  "name": "simulato",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive test/unit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GannettDigital/simulato.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GannettDigital/simulato/issues"
+  },
+  "homepage": "https://github.com/GannettDigital/simulato#readme",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.0.1"
+  }
+}
