@@ -1,0 +1,9 @@
+environment:
+  nodejs_version: "8.9"
+cache:
+  - node_modules
+install:
+  - npm install
+test_script:
+  - npm test
+build: off
