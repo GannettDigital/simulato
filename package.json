@@ -7,11 +7,11 @@
     "sim": "./index.js"
   },
   "scripts": {
-    "test": "npm run unit-test && npm run acceptance-tests",
+    "test": "npm run unit-test",
     "unit-test": "mocha --recursive test/unit",
     "coverage": "istanbul cover --include-all-sources ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
     "generate-acceptance-tests": "node index.js generate test/acceptance/components -o test/acceptance/tests -t actionFocused",
-    "acceptance-tests": "node index.js run test/acceptance/tests -c test/acceptance/components -p 2",
+    "acceptance-tests": "node index.js run test/acceptance/tests -c test/acceptance/components",
     "lint": "eslint lib test index.js --fix",
     "lint-ci": "eslint lib test index.js"
   },
