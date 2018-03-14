@@ -5,10 +5,9 @@ node_js:
 addons:
   chrome: stable
 before_script:
-  - ls /home/travis/virtualenv/
+  - env
   - wget https://chromedriver.storage.googleapis.com/2.36/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip -d /home/travis/virtualenv/python2.7.12/bin
-  - export CHROME_BIN=chromium-browser
+  - unzip chromedriver_linux64.zip -d /usr/local/bin
   - npm explore simulato-test-site -- nohup npm start &
 script: 
   - npm run lint-ci
