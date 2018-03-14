@@ -21,9 +21,9 @@ module.exports = {
         },
         effects(expectedState) {
           expectedState.clear();
-          // expectedState.createAndAddComponent('MainSiteLayout', 'mainSiteLayout', {
-          //   displayed: true,
-          // });
+          expectedState.createAndAddComponent('MainSiteLayout', 'mainSiteLayout', {
+            displayed: true,
+          });
         },
       },
     };
