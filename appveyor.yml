@@ -1,11 +1,19 @@
 environment:
   nodejs_version: "8.9.4"
+  SAUCE_USERNAME:
+    secure: r6ysENaYaFvWoayTLHMkVQ==
+  SAUCE_ACCESS_KEY:
+    secure: vo4sQfCaiFhq7eXDa/vWaECeCE+LWcohfhZXJuPcbuOcB5pdwKyIdXSwjgz1yTuG
 cache:
   - node_modules
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
+before_test:
+  - Start-Process -FilePath .\node_modules\simulato-test-site\node_modules\.bin\react-scripts.cmd -ArgumentList "start" -WorkingDirectory ".\node_modules\simulato-test-site"
 test_script:
   - npm run lint-ci
   - npm test
+  - npm run generate-acceptance-tests
+  - npm run acceptance-tests -- -s
 build: off
