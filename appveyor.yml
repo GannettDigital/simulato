@@ -19,4 +19,6 @@ test_script:
   - npm test
   - npm run generate-acceptance-tests
   - npm run acceptance-tests -- -s
+after_test:
+  - type process-output.txt
 build: off
