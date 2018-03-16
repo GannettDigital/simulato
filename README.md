@@ -1,5 +1,5 @@
-# simulato
-simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
+# Model Based Test Tool
+The model based test tool is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
 ## Components
 This section details the different sections of a component
 ### elements
@@ -324,6 +324,9 @@ This section details the different sections of a component
 * Example usage
     * `model-based-test-tool run ./tests -c ./components -o ./tests`
 * Options
+    * `-T`, `--testPath` **required**
+        * Path to tests
+        * Example: `-T ./my-test-folder`
     * `-c`, `--components` **required**
         * Path to components
         * Example: `-c ./my-components-folder`
@@ -339,19 +342,25 @@ This section details the different sections of a component
         *  Amount of tests to run in parallel
         *  Default is `20`
         *  Example; `-p 5`
-    * `-o`, `--outputPath`
+    * `-R`, `--reportPath`
         * The parth wherein to write the test report
         * Example: `-o ./my-reports`
     * `-b`, `--before`
         * The path to a before script run before the test suite
         * Must be a valid JavaScript file that exports a single function
         * Example: `-b my-before-script.js`
+    * `-f`, `--configFile`
+        * Path to configFile
+        * Example: `-f ./config.js`
 #### generate <pathToComponents>
 * Description
     * Generates tests using the supplied components
 * Example Usage
     * `model-based-test-tool generate ./components -o ./tests -t actionFocused`
 * Options
+    * `-c`, `--components` **required**
+        * Path to components
+        * Example: `-c ./my-components-folder`
     * `-o`, `--outputPath`
         * The path wherein to write the generated test cases
         * Default is the current working directory
@@ -363,6 +372,55 @@ This section details the different sections of a component
     * `-a`, `--actionToCover`
         *  The single action to generate a test to cover
         *  Example: `-a myComponent.MY_ACTION`
+    * `-f`, `--configFile`
+        * Path to configFile
+        * Example: `-f ./config.js`
+
+## Configuration File
+This section documents utilization of the configuration file in place of CLI options
+
+* Any of the cli options can be referenced from the configuration file by the following
+    * testPath
+    * components
+    * reporter
+    * saucelabs
+    * paralellism
+    * reportPath
+    * before
+    * configFile
+    * outputPath
+    * technique
+    * actionToCover
+
+* Example File
+    ```
+    'use strict'
+
+    module.exports = {
+        testPath: './test/acceptance/tests',
+        components: './test/acceptance/components',
+        reportPath: './test/acceptance/tests',
+        saucelabs: {
+            'name': process.env.TEST_NAME,
+            'browserName': 'chrome',
+            'platform': 'Windows 10',
+            'version': '63.0',
+            'username': process.env.SAUCE_USERNAME,
+            'accessKey': process.env.SAUCE_ACCESS_KEY,
+            'tunnel-identifier': process.env.TUNNEL_IDENTIFIER,
+            'customData': {
+                        'build': process.env.BUILD_NUMBER,
+                        'release': process.env.RELEASE_VERSION,
+                        'commithash': process.env.COMMIT_HASH,
+                        'environment': process.env.NODE_ENV,
+                        },
+                    },
+        outputPath: './test/acceptance/tests',
+        technique: 'actionFocused',
+    }
+    ```
+* If modifying saucelabs options, please include all above options, otherwise you can leave it blank
+
 ## Expected State
 This section documents functions for the expected state used throughout the tool
 * `createAndAddComponent(componentName, instanceName, state, options)`

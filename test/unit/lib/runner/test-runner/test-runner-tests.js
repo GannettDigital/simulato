@@ -574,6 +574,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           [
             'curDir/../../../index.js',
             'run',
+            '-T',
             './path/to/test',
             '-c',
             './path/to/components',
@@ -594,6 +595,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             [
               'curDir/../../../index.js',
               'run',
+              '-T',
               './path/to/test',
               '-c',
               './path/to/components',
@@ -617,10 +619,11 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             [
               'curDir/../../../index.js',
               'run',
+              '-T',
               './path/to/test',
               '-c',
               './path/to/components',
-              '-o',
+              '-R',
               './output/path',
             ],
           ],
@@ -640,6 +643,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             [
               'curDir/../../../index.js',
               'run',
+              '-T',
               './path/to/test',
               '-c',
               './path/to/components',
