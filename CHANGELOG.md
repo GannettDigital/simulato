@@ -3,6 +3,7 @@
 ## 0.2.0
 
 Scott Gunther - Prepare code for open sourcing
+Tom Dale - Fixed a bug where dataStore was not being cloned inside expected state
 
 ## 0.1.63
 
