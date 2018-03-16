@@ -6,9 +6,6 @@ environment:
     secure: vo4sQfCaiFhq7eXDa/vWaECeCE+LWcohfhZXJuPcbuOcB5pdwKyIdXSwjgz1yTuG
 cache:
   - node_modules
-artifacts:
-  - path: process-output.txt
-    name: ProcessOutput
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
@@ -18,7 +15,7 @@ test_script:
   - npm run lint-ci
   - npm test
   - npm run generate-acceptance-tests
-  - npm run acceptance-tests -- -s
+  - npm run acceptance-tests
 after_test:
   - type process-output.txt
 build: off
