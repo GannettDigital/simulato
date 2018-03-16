@@ -1,23 +1,48 @@
 {
   "name": "simulato",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.2.0",
+  "description": "A model based testing tool",
   "main": "index.js",
+  "bin": {
+    "sim": "./index.js"
+  },
   "scripts": {
-    "test": "mocha --recursive test/unit"
+    "test": "npm run unit-test",
+    "unit-test": "mocha --recursive test/unit",
+    "coverage": "istanbul cover --include-all-sources ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
+    "generate-acceptance-tests": "node index.js generate test/acceptance/components -o test/acceptance/tests -t actionFocused",
+    "acceptance-tests": "node index.js run test/acceptance/tests -c test/acceptance/components",
+    "lint": "eslint lib test index.js --fix",
+    "lint-ci": "eslint lib test index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GannettDigital/simulato.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/GannettDigital/simulato/issues"
   },
   "homepage": "https://github.com/GannettDigital/simulato#readme",
   "dependencies": {
     "chai": "^4.1.2",
-    "mocha": "^5.0.1"
+    "commander": "^2.15.0",
+    "lodash": "^4.17.5",
+    "palinode": "0.0.7",
+    "sauce-connect-launcher": "^1.2.3",
+    "saucelabs": "^1.4.0",
+    "selenium-webdriver": "^3.6.0",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-google": "^0.9.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.0.4",
+    "mocha-junit-reporter": "^1.17.0",
+    "mockery": "^2.1.0",
+    "sinon": "^4.4.4",
+    "simulato-test-site": "^1.0.1"
   }
 }
