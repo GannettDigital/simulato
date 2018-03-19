@@ -4,6 +4,7 @@
 
 Scott Gunther - Prepare code for open sourcing
 Tom Dale - Fixed a bug where dataStore was not being cloned inside expected state
+Brian Fitzpatrick - Updated article text for more generic use
 Brian Fitzpatrick - Updated CLI configuration to be exportable to file format, as well as saucelab configuration
 
 ## 0.1.63
