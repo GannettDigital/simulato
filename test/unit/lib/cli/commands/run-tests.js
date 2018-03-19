@@ -254,7 +254,7 @@ describe('lib/cli/run.js', function() {
             });
         });
         describe('if saucelabs is passed in by options', function() {
-            describe('if saucelabs is true', function(){
+            describe('if saucelabs is true', function() {
                 it('should set SAUCE_LABS to true', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {saucelabs: sauceConfig};
@@ -293,7 +293,7 @@ describe('lib/cli/run.js', function() {
                     expect(process.env.SAUCE_CONFIG).to.equal(undefined);
                 });
             });
-            describe('if saucelabs is false', function(){
+            describe('if saucelabs is false', function() {
                 it('should not set SAUCE_LABS', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {};
@@ -304,10 +304,10 @@ describe('lib/cli/run.js', function() {
 
                     expect(process.env.SAUCE_LABS).to.equal(undefined);
                 });
-            })
+            });
         });
         describe('if saucelabs is passed in by configFile', function() {
-            describe('if saucelabs is true', function(){
+            describe('if saucelabs is true', function() {
                 it('should set SAUCE_LABS to true', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {};

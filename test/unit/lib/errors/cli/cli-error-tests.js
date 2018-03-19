@@ -6,7 +6,7 @@ const expect = require('chai').expect;
 
 describe('lib/errors/cli/cli-error.js', function() {
   let CustomError;
-  let CLIError;
+  let cliError;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -16,7 +16,7 @@ describe('lib/errors/cli/cli-error.js', function() {
 
     mockery.registerMock('../custom-error.js', CustomError);
 
-    CLIError = require('../../../../../lib/errors/cli/cli-error.js');
+    cliError = require('../../../../../lib/errors/cli/cli-error.js');
   });
 
   afterEach(function() {
@@ -25,9 +25,9 @@ describe('lib/errors/cli/cli-error.js', function() {
     mockery.disable();
   });
 
-  describe('on execution of the required file', function() {
+  describe.only('on execution of the required file', function() {
     it('should call new CustomError with \'CLIError\', and passed in code and message', function() {
-      CLIError('ERROR_CODE', 'ERROR_MESSAGE');
+      cliError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(CustomError.args).to.deep.equal([
         ['CLIError', 'ERROR_CODE', 'ERROR_MESSAGE'],
@@ -37,7 +37,7 @@ describe('lib/errors/cli/cli-error.js', function() {
     it('should return new CustomError', function() {
       let result;
 
-      result = CLIError('ERROR_CODE', 'ERROR_MESSAGE');
+      result = cliError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });
