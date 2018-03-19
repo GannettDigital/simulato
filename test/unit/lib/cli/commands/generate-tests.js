@@ -97,6 +97,13 @@ describe('lib/cli/generate.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
+        it('should call path.normalize once with result of process.cwd and the string \'/config.js\'', function() {
+            generate = require('../../../../../lib/cli/commands/generate.js');
+
+            expect(path.normalize.args).to.deep.equal([
+                [`${process.cwd()}/config.js`],
+            ]);
+        });
         describe('Config file is loaded from passed location', function() {
             it('should emit the components', function() {
                 let pathLoc = '../../../../config.js';
@@ -238,6 +245,17 @@ describe('lib/cli/generate.js', function() {
 
                 expect(generate.emit.args[1]).to.deep.equal(
                     ['generate.configured', {'actionToCover': 'testAction', 'technique': 'actionFocused'}]);
+            });
+            it('should not assign an action to cover', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {};
+                mockery.registerMock(pathLoc, configFile);
+                configFile.actionToCover = false;
+
+                generate.configure(options);
+
+                expect(generate.emit.args[1]).to.deep.equal(
+                    ['generate.configured', {'technique': 'actionFocused'}]);
             });
         });
         describe('Technique is passed by options.technique', function() {

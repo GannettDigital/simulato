@@ -254,61 +254,87 @@ describe('lib/cli/run.js', function() {
             });
         });
         describe('if saucelabs is passed in by options', function() {
-            it('should set SAUCE_LABS to true', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {saucelabs: sauceConfig};
-                mockery.registerMock(pathLoc, configFile);
+            describe('if saucelabs is true', function(){
+                it('should set SAUCE_LABS to true', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {saucelabs: sauceConfig};
+                    mockery.registerMock(pathLoc, configFile);
 
-                run.configure(options);
+                    run.configure(options);
 
-                expect(process.env.SAUCE_LABS).to.equal('true');
+                    expect(process.env.SAUCE_LABS).to.equal('true');
+                });
+                it('should set the SAUCE_CONFIG env variable', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {saucelabs: sauceConfig};
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+
+                    expect(JSON.parse(process.env.SAUCE_CONFIG)).to.deep.equal(sauceConfig);
+                });
+                it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {saucelabs: sauceConfig};
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+
+                    expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
+                });
+                it('should not set the SAUCE_CONFIG', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {saucelabs: sauceConfig};
+                    mockery.registerMock(pathLoc, configFile);
+                    configFile.saucelabs = undefined;
+
+                    run.configure(options);
+
+                    expect(process.env.SAUCE_CONFIG).to.equal(undefined);
+                });
             });
-            it('should set the SAUCE_CONFIG env variable', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {saucelabs: sauceConfig};
-                mockery.registerMock(pathLoc, configFile);
+            describe('if saucelabs is false', function(){
+                it('should not set SAUCE_LABS', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    configFile.saucelabs = undefined;
+                    mockery.registerMock(pathLoc, configFile);
 
-                run.configure(options);
+                    run.configure(options);
 
-                expect(JSON.parse(process.env.SAUCE_CONFIG)).to.deep.equal(sauceConfig);
-            });
-            it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {saucelabs: sauceConfig};
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
-            });
+                    expect(process.env.SAUCE_LABS).to.equal(undefined);
+                });
+            })
         });
         describe('if saucelabs is passed in by configFile', function() {
-            it('should set SAUCE_LABS to true', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
+            describe('if saucelabs is true', function(){
+                it('should set SAUCE_LABS to true', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    mockery.registerMock(pathLoc, configFile);
 
-                run.configure(options);
+                    run.configure(options);
 
-                expect(process.env.SAUCE_LABS).to.equal('true');
-            });
-            it('should set the SAUCE_CONFIG env variable', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
+                    expect(process.env.SAUCE_LABS).to.equal('true');
+                });
+                it('should set the SAUCE_CONFIG env variable', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    mockery.registerMock(pathLoc, configFile);
 
-                run.configure(options);
+                    run.configure(options);
 
-                expect(JSON.parse(process.env.SAUCE_CONFIG)).to.deep.equal(sauceConfig);
-            });
-            it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
+                    expect(JSON.parse(process.env.SAUCE_CONFIG)).to.deep.equal(sauceConfig);
+                });
+                it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    mockery.registerMock(pathLoc, configFile);
 
-                run.configure(options);
+                    run.configure(options);
 
-                expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
+                    expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
+                });
             });
         });
         describe('if before is passed in from the options', function() {
