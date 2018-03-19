@@ -1,9 +1,9 @@
 [
   {
-    "heading": "Tom Dale Voted World's Coolest Person",
-    "text": "On February 21st, 2018 Tom Dale was voted unanimously as the world's coolest person. This award came as no surprise to Tom as he already knew he was pretty dang cool. He is expected to move on from this award and continue doing really cool stuff."
+    "heading": "Test Article One",
+    "text": "This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal."
   },{
-    "heading": "A Tree Actually Grew in Brooklyn",
-    "text": "In shocking news, it was found that inside the New York City borough of Brooklyn a tree actually grew. An eye witness on the scene was reported as saying \"Wow! I thought it was just a book, but there are actually trees growing here.\"."
+    "heading": "Test Article Two",
+    "text": "This is the body text of a second test article that is long enough to pass by the preview and still show more in the pop up modal."
   }
 ]
