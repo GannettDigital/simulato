@@ -5,16 +5,16 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/errors/cli/invalid-component-path.js', function() {
-  let CustomError;
+  let CLIError;
   let invalidComponentPath;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../../lib/errors/cli/invalid-component-path.js');
 
-    CustomError = sinon.stub();
+    CLIError = sinon.stub();
 
-    mockery.registerMock('../custom-error.js', CustomError);
+    mockery.registerMock('./cli-error.js', CLIError);
 
     invalidComponentPath = require('../../../../../lib/errors/cli/invalid-component-path.js');
   });
@@ -26,20 +26,20 @@ describe('lib/errors/cli/invalid-component-path.js', function() {
   });
 
   describe('on execution of the required file', function() {
-    it('should call new CustomError with \'INVALID_COMPONENT_PATH\', and passed in code and message', function() {
+    it('should call new CLIError with \'INVALID_COMPONENT_PATH\', and passed in code and message', function() {
       invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
 
-      expect(CustomError.args).to.deep.equal([
+      expect(CLIError.args).to.deep.equal([
         ['INVALID_COMPONENT_PATH', 'ERROR_CODE', 'ERROR_MESSAGE'],
       ]);
     });
 
-    it('should return new CustomError', function() {
+    it('should return new CLIError', function() {
       let result;
 
       result = invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
 
-      expect(result).to.be.an.instanceof(CustomError);
+      expect(result).to.be.an.instanceof(CLIError);
     });
   });
 });

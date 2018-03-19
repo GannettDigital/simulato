@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/cli/run.js', function() {
-    describe('On file being required', function() {
+    describe('on file being required', function() {
         let run;
         let EventEmitter;
         let EventEmitterInstance;
@@ -22,6 +22,7 @@ describe('lib/cli/run.js', function() {
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(process, 'cwd');
 
             path = {
                 resolve: sinon.stub(),
@@ -36,14 +37,32 @@ describe('lib/cli/run.js', function() {
         });
 
         afterEach(function() {
+            process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
+
         it('should set the object prototype of run to a new EventEmitter', function() {
             run = require('../../../../../lib/cli/commands/run.js');
 
             expect(Object.getPrototypeOf(run)).to.deep.equal(EventEmitterInstance);
+        });
+
+        it('should call path.normalize once with result of process.cwd and the string \'/config.js\'', function() {
+            run = require('../../../../../lib/cli/commands/run.js');
+
+            expect(path.normalize.args).to.deep.equal([
+                [`${process.cwd()}/config.js`],
+            ]);
+        });
+
+        it('should call process.cwd once with no parameters', function() {
+            run = require('../../../../../lib/cli/commands/run.js');
+
+            expect(process.cwd.args).to.deep.equal([
+                [],
+            ]);
         });
     });
     describe('configure', function() {
@@ -114,6 +133,7 @@ describe('lib/cli/run.js', function() {
         });
 
         afterEach(function() {
+            delete process.env.SAUCE_CONFIG;
             delete process.env.COMPONENTS_PATH;
             delete process.env.SAUCE_LABS;
             delete process.env.REPORTER;
@@ -127,8 +147,8 @@ describe('lib/cli/run.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        describe('if the ConfigFile is set in options.configFile', function() {
-            it('should use the passed config file', function() {
+        describe('if options.configFile is set', function() {
+            it('should use the passed in config file', function() {
                 let pathLoc = '../../../../config.js';
                 let options = {
                     configFile: pathLoc,
@@ -141,7 +161,7 @@ describe('lib/cli/run.js', function() {
                 expect(run.emit.args[0][1][0]).to.equal('passedFile');
             });
         });
-        describe('if the ConfigFile is not set in the options', function() {
+        describe('if the options.configFile is not set', function() {
             it('should use the default configFile', function() {
                 let pathLoc = '../../../../config.js';
                 let options = {};
