@@ -25,7 +25,7 @@ describe('lib/errors/cli/cli-error.js', function() {
     mockery.disable();
   });
 
-  describe.only('on execution of the required file', function() {
+  describe('on execution of the required file', function() {
     it('should call new CustomError with \'CLIError\', and passed in code and message', function() {
       cliError('ERROR_CODE', 'ERROR_MESSAGE');
 
