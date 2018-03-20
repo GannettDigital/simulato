@@ -10,7 +10,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
 before_test:
-  - ps: Start-Process -FilePath .\node_modules\simulato-test-site\node_modules\.bin\react-scripts.cmd -ArgumentList "start" -WorkingDirectory ".\node_modules\simulato-test-site" -RedirectStandardOutput "process-output.txt"
+  - ps: Start-Process -FilePath .\node_modules\.bin\react-scripts.cmd -ArgumentList "start" -WorkingDirectory ".\node_modules\simulato-test-site" -RedirectStandardOutput "process-output.txt"
 test_script:
   - npm run lint-ci
   - npm test
