@@ -1,5 +1,9 @@
 # model-based-test-tool
 
+## 0.2.1
+
+* Tom Dale - Fixed a typo in acceptance tests where the action preconditions were checking for the wrong elements
+
 ## 0.2.0
 
 * Scott Gunther - Prepare code for open sourcing
