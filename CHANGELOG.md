@@ -4,6 +4,7 @@
 
 Scott Gunther - Prepare code for open sourcing
 Tom Dale - Fixed a bug where dataStore was not being cloned inside expected state
+Tom Dale - Added component names in error messages when validating elements
 
 ## 0.1.63
 
