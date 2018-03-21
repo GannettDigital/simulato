@@ -68,7 +68,7 @@ module.exports = {
       CLICK_CLOSE_BUTTON: {
         preconditions() {
           return [
-            ['isTrue', `${instanceName}.xCloseButton.displayed`],
+            ['isTrue', `${instanceName}.closeButton.displayed`],
           ];
         },
         perform(callback) {
@@ -83,7 +83,7 @@ module.exports = {
       CLICK_X_CLOSE_BUTTON: {
         preconditions() {
           return [
-            ['isTrue', `${instanceName}.closeButton.displayed`],
+            ['isTrue', `${instanceName}.xCloseButton.displayed`],
           ];
         },
         perform(callback) {
