@@ -97,13 +97,6 @@ describe('lib/cli/generate.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should call path.normalize once with result of process.cwd and the string \'/config.js\'', function() {
-            generate = require('../../../../../lib/cli/commands/generate.js');
-
-            expect(path.normalize.args).to.deep.equal([
-                [`${process.cwd()}/config.js`],
-            ]);
-        });
         describe('Config file is loaded from passed location', function() {
             it('should emit the components', function() {
                 let pathLoc = '../../../../config.js';
@@ -127,6 +120,18 @@ describe('lib/cli/generate.js', function() {
                 MbttError.CLI.INVALID_COMPONENT_PATH.throws({message});
 
                 expect(generate.configure.bind(null, options)).to.throw(message);
+            });
+            it('should call path.normalize once with result of process.cwd and the path location', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {configFile: pathLoc};
+                configFile.components = 'PassedComponents';
+                mockery.registerMock(pathLoc, configFile);
+
+                generate.configure(options);
+    
+                expect(path.normalize.args).to.deep.equal([
+                    [`${process.cwd()}/${pathLoc}`],
+                ]);
             });
         });
         describe('Config file is loaded from default location', function() {

@@ -10,8 +10,8 @@
     "test": "npm run unit-test",
     "unit-test": "mocha --recursive test/unit",
     "coverage": "istanbul cover --include-all-sources ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
-    "generate-acceptance-tests": "node index.js generate test/acceptance/components -o test/acceptance/tests -t actionFocused -f test/acceptance/config.js",
-    "acceptance-tests": "node index.js run test/acceptance/tests -c test/acceptance/components -f test/acceptance/config.js",
+    "generate-acceptance-tests": "node index.js generate -c test/acceptance/components -o test/acceptance/tests -t actionFocused -f test/acceptance/config.js",
+    "acceptance-tests": "node index.js run -T test/acceptance/tests -c test/acceptance/components -f test/acceptance/config.js",
     "lint": "eslint lib test index.js --fix",
     "lint-ci": "eslint lib test index.js"
   },

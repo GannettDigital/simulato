@@ -48,22 +48,6 @@ describe('lib/cli/run.js', function() {
 
             expect(Object.getPrototypeOf(run)).to.deep.equal(EventEmitterInstance);
         });
-
-        it('should call path.normalize once with result of process.cwd and the string \'/config.js\'', function() {
-            run = require('../../../../../lib/cli/commands/run.js');
-
-            expect(path.normalize.args).to.deep.equal([
-                [`${process.cwd()}/config.js`],
-            ]);
-        });
-
-        it('should call process.cwd once with no parameters', function() {
-            run = require('../../../../../lib/cli/commands/run.js');
-
-            expect(process.cwd.args).to.deep.equal([
-                [],
-            ]);
-        });
     });
     describe('configure', function() {
         let run;
@@ -141,13 +125,46 @@ describe('lib/cli/run.js', function() {
             delete process.env.SAUCE_LABS;
             delete process.env.TUNNEL_IDENTIFIER;
             delete process.env.BEFORE_SCRIPT;
+            delete process.env.USING_PARENT_TEST_RUNNER;
             delete global.MbttError;
+            delete process.env.CONFIG_FILE;
             process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
         describe('if options.configFile is set', function() {
+            describe('if the process is not using the parent test runner', function(){
+                it('should call path.normalize once with result of process.cwd and the path loc', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {
+                        configFile: pathLoc,
+                        testPath: 'passedFile',
+                    };
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+                    
+                    expect(path.normalize.args).to.deep.equal([
+                        [`${process.cwd()}/${pathLoc}`],
+                    ]);
+                });
+            });
+            describe('if the process is using the parent test runner', function(){
+                it('should call path.normalize once with result of process.cwd and the pathloc', function() {
+                    process.env.CONFIG_FILE = '../../../../config.js';
+                    process.env.USING_PARENT_TEST_RUNNER = 'true';
+                    let options = {
+                        configFile: process.env.CONFIG_FILE,
+                    };
+                    
+                    mockery.registerMock(process.env.CONFIG_FILE, configFile);
+
+                    run.configure(options);
+                    
+                    expect(run.emit.args[0][1][0]).to.equal('sanity_tests');
+                });
+            });
             it('should use the passed in config file', function() {
                 let pathLoc = '../../../../config.js';
                 let options = {
@@ -162,6 +179,19 @@ describe('lib/cli/run.js', function() {
             });
         });
         describe('if the options.configFile is not set', function() {
+            describe('if the process is not using the parent test runner', function(){
+                it('should call path.normalize once with result of process.cwd and the path loc', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+                    
+                    expect(path.normalize.args).to.deep.equal([
+                        [`${process.cwd()}/config.js`],
+                    ]);
+                });
+            });
             it('should use the default configFile', function() {
                 let pathLoc = '../../../../config.js';
                 let options = {};
@@ -460,6 +490,7 @@ describe('lib/cli/run.js', function() {
                                 let pathLoc = '../../../../config.js';
                                 let options = {};
                                 process.env.USING_PARENT_TEST_RUNNER = 'true';
+                                process.env.CONFIG_FILE = `${pathLoc}`;
                                 configFile.reportPath = false;
                                 mockery.registerMock(pathLoc, configFile);
                                 run.emit.onCall(0).callsArgWith(2, files);

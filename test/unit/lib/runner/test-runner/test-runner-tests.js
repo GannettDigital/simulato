@@ -563,6 +563,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       delete process.env.REPORTER;
       delete process.env.OUTPUT_PATH;
       delete process.env.SAUCE_LABS;
+      delete process.env.CONFIG_FILE;
     });
 
     it('should call testRunner.emit with the correct event with default spawnArgs', function() {
@@ -648,6 +649,29 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               '-c',
               './path/to/components',
               '-s',
+            ],
+          ],
+        ]);
+      });
+    });
+    describe('if process.env.CONFIG_FILE is set', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args', function() {
+        process.env.CONFIG_FILE = 'pathToConfig';
+
+        testRunner._createSpawnArgs(testPath);
+
+        expect(testRunner.emit.args).to.deep.equal([
+          [
+            'testRunner.spawnArgsCreated',
+            [
+              'curDir/../../../index.js',
+              'run',
+              '-T',
+              './path/to/test',
+              '-c',
+              './path/to/components',
+              '-f',
+              'pathToConfig',
             ],
           ],
         ]);
