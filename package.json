@@ -1,6 +1,6 @@
 {
   "name": "simulato",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
@@ -43,6 +43,6 @@
     "mocha-junit-reporter": "^1.17.0",
     "mockery": "^2.1.0",
     "sinon": "^4.4.4",
-    "simulato-test-site": "^1.0.1"
+    "simulato-test-site": "^1.0.2"
   }
 }
