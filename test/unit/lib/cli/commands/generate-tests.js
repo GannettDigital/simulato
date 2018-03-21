@@ -128,7 +128,7 @@ describe('lib/cli/generate.js', function() {
                 mockery.registerMock(pathLoc, configFile);
 
                 generate.configure(options);
-    
+
                 expect(path.normalize.args).to.deep.equal([
                     [`${process.cwd()}/${pathLoc}`],
                 ]);

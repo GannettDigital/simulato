@@ -134,7 +134,7 @@ describe('lib/cli/run.js', function() {
             mockery.disable();
         });
         describe('if options.configFile is set', function() {
-            describe('if the process is not using the parent test runner', function(){
+            describe('if the process is not using the parent test runner', function() {
                 it('should call path.normalize once with result of process.cwd and the path loc', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {
@@ -144,24 +144,24 @@ describe('lib/cli/run.js', function() {
                     mockery.registerMock(pathLoc, configFile);
 
                     run.configure(options);
-                    
+
                     expect(path.normalize.args).to.deep.equal([
                         [`${process.cwd()}/${pathLoc}`],
                     ]);
                 });
             });
-            describe('if the process is using the parent test runner', function(){
+            describe('if the process is using the parent test runner', function() {
                 it('should call path.normalize once with result of process.cwd and the pathloc', function() {
                     process.env.CONFIG_FILE = '../../../../config.js';
                     process.env.USING_PARENT_TEST_RUNNER = 'true';
                     let options = {
                         configFile: process.env.CONFIG_FILE,
                     };
-                    
+
                     mockery.registerMock(process.env.CONFIG_FILE, configFile);
 
                     run.configure(options);
-                    
+
                     expect(run.emit.args[0][1][0]).to.equal('sanity_tests');
                 });
             });
@@ -179,14 +179,14 @@ describe('lib/cli/run.js', function() {
             });
         });
         describe('if the options.configFile is not set', function() {
-            describe('if the process is not using the parent test runner', function(){
+            describe('if the process is not using the parent test runner', function() {
                 it('should call path.normalize once with result of process.cwd and the path loc', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {};
                     mockery.registerMock(pathLoc, configFile);
 
                     run.configure(options);
-                    
+
                     expect(path.normalize.args).to.deep.equal([
                         [`${process.cwd()}/config.js`],
                     ]);
