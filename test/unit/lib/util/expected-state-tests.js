@@ -31,7 +31,7 @@ describe('lib/util/expected-state.js', function() {
           mockery.disable();
         });
 
-        it('should set the object prototype of printOutput to a new EventEmitter', function() {
+        it('should set the object prototype of expectedState to a new EventEmitter', function() {
           expectedState = require('../../../../lib/util/expected-state.js');
 
           expect(Object.getPrototypeOf(expectedState)).to.deep.equal(EventEmitterInstance);

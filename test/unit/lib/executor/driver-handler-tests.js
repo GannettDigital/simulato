@@ -145,39 +145,60 @@ describe('lib/executor/driver-handler.js', function() {
             delete process.env.COMMIT_HASH;
             delete process.env.NODE_ENV;
             delete process.env.TUNNEL_IDENTIFIER;
+            delete process.env.SAUCE_CONFIG;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
+        });
+
+        describe('if process.env.SAUCE_CONFIG is set', function() {
+            it('should call webdriver.withCapabailities once with the' +
+                'capabilities as the JSON.parsed process.env.SAUCE_CONFIG', function() {
+                process.env.SAUCE_CONFIG =`{"mySauceConfig": "myConfig"}`;
+
+                driverHandler.inSaucelabs();
+
+                expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                    [
+                        {
+                            mySauceConfig: 'myConfig',
+                        },
+                    ],
+                ]);
+            });
+        });
+
+        describe('if process.env.SAUCE_CONFIG is not set', function() {
+            it('should call webdriver.withCapabailities once with the capabilities' +
+                'as the predefined object', function() {
+                driverHandler.inSaucelabs();
+
+                expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                    [
+                        {
+                            'name': 'my-test.json',
+                            'browserName': 'chrome',
+                            'platform': 'Windows 10',
+                            'version': '63.0',
+                            'username': 'sauceUsername',
+                            'accessKey': 'sauceAccessKey',
+                            'tunnel-identifier': 'mbtt-tunnel',
+                            'customData': {
+                                build: 'buildNumber',
+                                release: 'releaseVersion',
+                                commithash: 'commitHash',
+                                environment: 'test',
+                            },
+                        },
+                    ],
+                ]);
+            });
         });
 
         it('should call webdriver.Builder once with the no parameters', function() {
             driverHandler.inSaucelabs();
 
             expect(webdriver.Builder.args).to.deep.equal([[]]);
-        });
-
-        it('should call webdriverBuilder.withCapabilities once with the config object', function() {
-            driverHandler.inSaucelabs();
-
-            expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
-                [
-                    {
-                        'name': 'my-test.json',
-                        'browserName': 'chrome',
-                        'platform': 'Windows 10',
-                        'version': '63.0',
-                        'username': 'sauceUsername',
-                        'accessKey': 'sauceAccessKey',
-                        'tunnel-identifier': 'mbtt-tunnel',
-                        'customData': {
-                            build: 'buildNumber',
-                            release: 'releaseVersion',
-                            commithash: 'commitHash',
-                            environment: 'test',
-                        },
-                    },
-                ],
-            ]);
         });
 
         it('should call webdriverBuilder.usingServer once with the url', function() {

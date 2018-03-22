@@ -1,6 +1,6 @@
 {
   "name": "simulato",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
@@ -10,8 +10,8 @@
     "test": "npm run unit-test",
     "unit-test": "mocha --recursive test/unit",
     "coverage": "istanbul cover --include-all-sources ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
-    "generate-acceptance-tests": "node index.js generate test/acceptance/components -o test/acceptance/tests -t actionFocused",
-    "acceptance-tests": "node index.js run test/acceptance/tests -c test/acceptance/components",
+    "generate-acceptance-tests": "node index.js generate -c test/acceptance/components -o test/acceptance/tests -t actionFocused -f test/acceptance/config.js",
+    "acceptance-tests": "node index.js run -T test/acceptance/tests -c test/acceptance/components -f test/acceptance/config.js",
     "lint": "eslint lib test index.js --fix",
     "lint-ci": "eslint lib test index.js"
   },
@@ -43,6 +43,6 @@
     "mocha-junit-reporter": "^1.17.0",
     "mockery": "^2.1.0",
     "sinon": "^4.4.4",
-    "simulato-test-site": "^1.0.1"
+    "simulato-test-site": "^1.0.2"
   }
 }
