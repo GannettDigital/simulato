@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/util/expected-state.js', function() {
+describe.only('lib/util/expected-state.js', function() {
     describe('on file being required', function() {
         let expectedState;
         let EventEmitter;
@@ -66,7 +66,7 @@ describe('lib/util/expected-state.js', function() {
         });
 
         it('should call the callback with an object which has the prototype of expected state', function() {
-            expectedState.create(callback);
+            expectedState.create({}, callback);
 
             expect(Object.getPrototypeOf(callback.args[0][0])).to.deep.equal(expectedState);
         });
@@ -78,18 +78,18 @@ describe('lib/util/expected-state.js', function() {
                 _components: new Map(),
                 _dynamicAreas: new Map(),
                 _stashedComponents: [],
-                _dataStore: {},
                 eventEmitter: EventEmitterInstance,
+                _dataStore: {},
             };
 
-            expectedState.create(callback);
+            expectedState.create({}, callback);
 
             expect(Object.getOwnPropertyNames(callback.args[0][0]))
             .to.deep.equal(Object.getOwnPropertyNames(comparableObject));
         });
     });
 
-    describe('clone', function() {
+    describe.only('clone', function() {
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -117,10 +117,11 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('lodash', _);
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
+                expectedState.create = sinon.stub();
             });
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 newExpectedState = value;
             });
             callback = sinon.spy();
@@ -134,123 +135,123 @@ describe('lib/util/expected-state.js', function() {
         });
 
         it('should create the expectedState in the cloned state', function() {
-            _.cloneDeep.onCall(1).returns([]);
+            expectedState.create.callsArgOnWith(1, {}, newExpectedState);
 
-            expectedState.clone(callback);
+            expectedState.clone({}, callback);
 
-            expect(callback.args[0][0]).to.deep.equal(expectedState);
+            expect(callback.args[0][0]).to.deep.equal('newExpectedState');
         });
-        describe('when the expectedState.create callback is called', function() {
-            describe('for each component in the expectedState being cloned', function() {
-                it('should call _.deepClone with that components state', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    expectedState._components.set('key', {instanceName: 'test'});
-                    expectedState._state = {'key': {instanceName: 'test'}};
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        // describe('when the expectedState.create callback is called', function() {
+        //     describe('for each component in the expectedState being cloned', function() {
+        //         it('should call _.deepClone with that components state', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             expectedState._components.set('key', {instanceName: 'test'});
+        //             expectedState._state = {'key': {instanceName: 'test'}};
+        //             expectedState.create.callsArgOnWith(0, expectedState, {}, newExpectedState);
 
-                    expectedState.clone(callback);
+        //             expectedState.clone({}, callback);
 
-                    expect(_.cloneDeep.args[1]).to.deep.equal([{instanceName: 'test'}]);
-                });
-                it('should call _.deepClone with that components options', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    expectedState._components.set('key', {instanceName: 'test', options: {option1: 'option1'}});
-                    expectedState._state = {'key': {instanceName: 'test'}};
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //             expect(_.cloneDeep.args[1]).to.deep.equal([{instanceName: 'test'}]);
+        //         });
+        //         it('should call _.deepClone with that components options', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             expectedState._components.set('key', {instanceName: 'test', options: {option1: 'option1'}});
+        //             expectedState._state = {'key': {instanceName: 'test'}};
+        //             expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
 
-                    expectedState.clone(callback);
+        //             expectedState.clone(callback);
 
-                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
-                });
-                it('should call createAndAddComponent with the arguments "undefined, test, [], []"', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    expectedState._components.set('key', {name: 'componentName', instanceName: 'instanceName'});
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
-                    _.cloneDeep.onCall(1).returns({});
-                    _.cloneDeep.onCall(2).returns({});
+        //             expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
+        //         });
+        //         it('should call createAndAddComponent with the arguments "undefined, test, [], []"', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             expectedState._components.set('key', {name: 'componentName', instanceName: 'instanceName'});
+        //             expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //             _.cloneDeep.onCall(1).returns({});
+        //             _.cloneDeep.onCall(2).returns({});
 
-                    expectedState.clone(callback);
+        //             expectedState.clone(callback);
 
-                    expect(newExpectedState.createAndAddComponent.args).to.deep.equal(
-                        [
-                            ['componentName', 'instanceName', {}, {}],
-                        ]
-                    );
-                });
-            });
+        //             expect(newExpectedState.createAndAddComponent.args).to.deep.equal(
+        //                 [
+        //                     ['componentName', 'instanceName', {}, {}],
+        //                 ]
+        //             );
+        //         });
+        //     });
 
-            it('should call _.cloneDeep with the stashedComponents of the expectedState being cloned', function() {
-                newExpectedState.createAndAddComponent = sinon.stub();
-                expectedState.create = sinon.stub();
-                expectedState._stashedStates = ['stashed', 'states'];
-                expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //     it('should call _.cloneDeep with the stashedComponents of the expectedState being cloned', function() {
+        //         newExpectedState.createAndAddComponent = sinon.stub();
+        //         expectedState.create = sinon.stub();
+        //         expectedState._stashedStates = ['stashed', 'states'];
+        //         expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
 
-                expectedState.clone(callback);
+        //         expectedState.clone(callback);
 
-                expect(_.cloneDeep.args[1]).to.deep.equal([['stashed', 'states']]);
-            });
+        //         expect(_.cloneDeep.args[1]).to.deep.equal([['stashed', 'states']]);
+        //     });
 
-            describe('for each stashed component in the expectedState.stashedComponents being cloned', function() {
-                it('should call _.cloneDeep with the stashed components options', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    let stashedComponents = new Map();
-                    stashedComponents.set('key', {instanceName: 'stashed1', options: {option1: 'option1'}});
-                    expectedState._stashedComponents = [stashedComponents];
-                    newExpectedState.createComponent.onCall(0).returns(new Map());
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
-                    _.cloneDeep.onCall(1).returns([]);
+        //     describe('for each stashed component in the expectedState.stashedComponents being cloned', function() {
+        //         it('should call _.cloneDeep with the stashed components options', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             let stashedComponents = new Map();
+        //             stashedComponents.set('key', {instanceName: 'stashed1', options: {option1: 'option1'}});
+        //             expectedState._stashedComponents = [stashedComponents];
+        //             newExpectedState.createComponent.onCall(0).returns(new Map());
+        //             expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //             _.cloneDeep.onCall(1).returns([]);
 
-                    expectedState.clone(callback);
+        //             expectedState.clone(callback);
 
-                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
-                });
+        //             expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
+        //         });
 
-                it('should call clonedState.createComponent with'
-                    + 'component name, instanceName, and component options', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    let stashedComponents = new Map();
-                    stashedComponents.set(
-                        'stashed1',
-                        {name: 'componentName', instanceName: 'stashed1', options: {option1: 'option1'}}
-                    );
-                    expectedState._stashedComponents = [stashedComponents];
-                    newExpectedState.createComponent.onCall(0).returns(new Map());
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
-                    _.cloneDeep.onCall(1).returns([]);
-                    _.cloneDeep.onCall(2).returns({});
+        //         it('should call clonedState.createComponent with'
+        //             + 'component name, instanceName, and component options', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             let stashedComponents = new Map();
+        //             stashedComponents.set(
+        //                 'stashed1',
+        //                 {name: 'componentName', instanceName: 'stashed1', options: {option1: 'option1'}}
+        //             );
+        //             expectedState._stashedComponents = [stashedComponents];
+        //             newExpectedState.createComponent.onCall(0).returns(new Map());
+        //             expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //             _.cloneDeep.onCall(1).returns([]);
+        //             _.cloneDeep.onCall(2).returns({});
 
-                    expectedState.clone(callback);
+        //             expectedState.clone(callback);
 
-                    expect(newExpectedState.createComponent.args).to.deep.equal([['componentName', 'stashed1', {}]]);
-                });
-                it('should call clonedState._stashedComponents.push with the new map of components', function() {
-                    newExpectedState.createAndAddComponent = sinon.stub();
-                    expectedState.create = sinon.stub();
-                    let stashedComponents = new Map();
-                    stashedComponents.set(
-                        'stashed1',
-                        {name: 'componentName', instanceName: 'stashed1', options: {option1: 'option1'}}
-                    );
-                    expectedState._stashedComponents = [stashedComponents];
-                    newExpectedState.createComponent.onCall(0).returns({instanceName: 'createdComponent'});
-                    expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
-                    _.cloneDeep.onCall(1).returns([]);
-                    _.cloneDeep.onCall(2).returns({});
-                    let expectedMap = new Map();
-                    expectedMap.set('createdComponent', {instanceName: 'createdComponent'});
-                    sinon.spy(newExpectedState._stashedComponents, 'push');
+        //             expect(newExpectedState.createComponent.args).to.deep.equal([['componentName', 'stashed1', {}]]);
+        //         });
+        //         it('should call clonedState._stashedComponents.push with the new map of components', function() {
+        //             newExpectedState.createAndAddComponent = sinon.stub();
+        //             expectedState.create = sinon.stub();
+        //             let stashedComponents = new Map();
+        //             stashedComponents.set(
+        //                 'stashed1',
+        //                 {name: 'componentName', instanceName: 'stashed1', options: {option1: 'option1'}}
+        //             );
+        //             expectedState._stashedComponents = [stashedComponents];
+        //             newExpectedState.createComponent.onCall(0).returns({instanceName: 'createdComponent'});
+        //             expectedState.create.callsArgOnWith(0, expectedState, newExpectedState);
+        //             _.cloneDeep.onCall(1).returns([]);
+        //             _.cloneDeep.onCall(2).returns({});
+        //             let expectedMap = new Map();
+        //             expectedMap.set('createdComponent', {instanceName: 'createdComponent'});
+        //             sinon.spy(newExpectedState._stashedComponents, 'push');
 
-                    expectedState.clone(callback);
+        //             expectedState.clone(callback);
 
-                    expect(newExpectedState._stashedComponents.push.args).to.deep.equal([[expectedMap]]);
-                });
-            });
-        });
+        //             expect(newExpectedState._stashedComponents.push.args).to.deep.equal([[expectedMap]]);
+        //         });
+        //     });
+        // });
     });
 
 
@@ -373,13 +374,14 @@ describe('lib/util/expected-state.js', function() {
             });
 
             it('should assign the return value of newComponent.elements() to newComponent.elements', function() {
-                error = undefined;
+                component.elements.returns('myElements');
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
-                expectedState.elements = sinon.stub();
 
-                expectedState.createComponent('compName', component.instanceName);
+                let newComponent = expectedState.createComponent('compName', component.instanceName, {
+                    property: 'value',
+                });
 
-                expect(expectedState.elements.args).to.deep.equal([]);
+                expect(newComponent.elements).to.equal('myElements');
             });
 
             it('should call emit with args: [expectedState.elementsReceived,[],string,compName]', function() {
@@ -393,13 +395,25 @@ describe('lib/util/expected-state.js', function() {
             });
 
             it('should assign the return value of newComponent.model() to newComponent.model', function() {
-                error = undefined;
-                expectedState.model = sinon.stub();
+                component.model.returns('myModel');
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
 
-                expectedState.createComponent('compName', component.instanceName);
+                let newComponent = expectedState.createComponent('compName', component.instanceName, {
+                    property: 'value',
+                });
 
-                expect(expectedState.model.args).to.deep.equal([]);
+                expect(newComponent.model).to.equal('myModel');
+            });
+
+            it('should call newComponent.model once with no arguments', function() {
+                let model = sinon.stub();
+                component.model = model;
+                expectedState._dataStore = {myKey: 'myValue'};
+                expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
+
+                expectedState.createComponent('compName', component.instanceName, {property: 'value'});
+
+                expect(model.args).to.deep.equal([[]]);
             });
 
             it('should call emit with args: [expectedState.modelReceived, [undefined], string, compName]', function() {
@@ -412,14 +426,29 @@ describe('lib/util/expected-state.js', function() {
                 undefined, 'string', 'compName']);
             });
 
-            it('should assign the return value of newComponent.actions() to newComponent.actions', function() {
-                error = undefined;
-                expectedState.actions = sinon.stub();
+            it('should call newComponent.actions with the passed in instanceName, options,' +
+                ' and this._dataStore', function() {
+                let actions = sinon.stub();
+                component.actions = actions;
+                expectedState._dataStore = {myKey: 'myValue'};
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
 
-                expectedState.createComponent('compName', component.instanceName);
+                expectedState.createComponent('compName', component.instanceName, {property: 'value'});
 
-                expect(expectedState.actions.args).to.deep.equal([]);
+                expect(actions.args).to.deep.equal([
+                    ['string', {property: 'value'}, {myKey: 'myValue'}],
+                ]);
+            });
+
+            it('should assign the return value of newComponent.actions() to newComponent.actions', function() {
+                component.actions.returns('myActions');
+                expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
+
+                let newComponent = expectedState.createComponent('compName', component.instanceName, {
+                    property: 'value',
+                });
+
+                expect(newComponent.actions).to.equal('myActions');
             });
 
             it('should call emit with args:'
@@ -445,15 +474,16 @@ describe('lib/util/expected-state.js', function() {
                 });
 
                 it('should call newComponent.events once with instanceName, newComponent.options, ' +
-                    'and the this context', function() {
+                    ', the this context, and this._dataStore', function() {
                     let events = sinon.stub();
                     component.events = events;
+                    expectedState._dataStore = {myKey: 'myValue'};
                     expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
 
                     expectedState.createComponent('compName', component.instanceName, {property: 'value'});
 
                     expect(events.args).to.deep.equal([
-                        ['string', {property: 'value'}, expectedState],
+                        ['string', {property: 'value'}, expectedState, {myKey: 'myValue'}],
                     ]);
                 });
 
@@ -508,9 +538,10 @@ describe('lib/util/expected-state.js', function() {
                 });
 
                 it('should call newComponent.children once with the passed in instanceName, ' +
-                    'options, and this context', function() {
+                    'options, this context, and this._dataStore', function() {
                     let children = sinon.stub();
                     component.children = children;
+                    expectedState._dataStore = {myKey: 'myValue'};
                     expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, error, component);
 
                     expectedState.createComponent('compName', component.instanceName, {property: 'value'});
@@ -520,6 +551,7 @@ describe('lib/util/expected-state.js', function() {
                             'string',
                             {property: 'value'},
                             expectedState,
+                            {myKey: 'myValue'},
                         ],
                     ]);
                 });
@@ -1370,7 +1402,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('lodash', {});
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             dynamicArea = 'key';
@@ -1460,7 +1492,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('lodash', {});
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             expectedState._components.set('key', 'value');
@@ -1497,7 +1529,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('lodash', {});
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             expectedState._components.set('key', 'value');
@@ -1534,7 +1566,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('lodash', {});
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
-            expectedStateConstructor.create(function(value) {
+            expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             expectedState._components.set('key', 'value');
@@ -1842,166 +1874,6 @@ describe('lib/util/expected-state.js', function() {
             expect(fakeExpectedState._registerEvents.thisValues).to.deep.equal([
                 fakeExpectedState,
             ]);
-        });
-    });
-    describe('storeData', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let expectedState;
-        let key;
-        let value;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/util/expected-state.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {
-                cloneDeep: sinon.stub().returns('value'),
-            });
-
-            expectedState = require('../../../../lib/util/expected-state.js');
-            expectedState._dataStore = {};
-            key = 'key';
-            value = 'value';
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-        it('should store key value data in the data store', function() {
-            expectedState.storeData(key, value);
-
-            expect(expectedState._dataStore[key]).to.equal(value);
-        });
-    });
-    describe('retrieveData', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let key;
-        let expectedState;
-        let callback;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/util/expected-state.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {});
-            callback = sinon.spy();
-            expectedState = require('../../../../lib/util/expected-state.js');
-            expectedState._dataStore = {
-                key: 'value',
-            };
-            key = 'key';
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-        it('should retrieve data from the datastore corresponding to the passed key', function() {
-            expectedState.retrieveData(key, callback);
-
-            expect(callback.args).to.deep.equal([['value']]);
-        });
-    });
-    describe('deleteData', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let expectedState;
-        let key;
-        let value;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/util/expected-state.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {
-                cloneDeep: sinon.stub().returns('value'),
-            });
-
-            expectedState = require('../../../../lib/util/expected-state.js');
-            expectedState._dataStore = {};
-            key = 'key';
-            value = 'value';
-            expectedState._dataStore[key] = value;
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-        it('should delete the value for a  given key', function() {
-            expectedState.deleteData(key);
-
-            expect(expectedState._dataStore[key]).to.deep.equal(undefined);
-        });
-    });
-    describe('retrieveAndDeleteData', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let key;
-        let expectedState;
-        let callback;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/util/expected-state.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {});
-            callback = sinon.spy();
-            expectedState = require('../../../../lib/util/expected-state.js');
-            expectedState._dataStore = {
-                key: 'value',
-            };
-            key = 'key';
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-        it('should delete the value for a given key', function() {
-            expectedState.retrieveAndDeleteData(key, callback);
-
-            expect(expectedState._dataStore[key]).to.deep.equal(undefined);
-        });
-        it('should retrieve data of the passed in key from the datastore', function() {
-            expectedState.retrieveAndDeleteData(key, callback);
-
-            expect(callback.args).to.deep.equal([['value']]);
         });
     });
 });

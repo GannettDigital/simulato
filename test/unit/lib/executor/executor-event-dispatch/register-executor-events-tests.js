@@ -197,12 +197,12 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
 
     describe('when the callback is called for executeTestCase.on with the event ' +
         'executeTestCase.reporterSetToTeamcity', function() {
-        it('should call executionEngine.on 13 times', function() {
+        it('should call executionEngine.on 14 times', function() {
             executeTestCase.on.onCall(6).callsArg(1);
 
             registerExecutorEvents(executorEventDispatch);
 
-            expect(executionEngine.on.callCount).to.equal(13);
+            expect(executionEngine.on.callCount).to.equal(14);
         });
 
         it('should call executionEngine.on with the event \'executionEngine.actionStarted\'' +
@@ -250,12 +250,12 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
 
     describe('when the callback is called for executeTestCase.on with the event ' +
         'executeTestCase.reporterSetToBasic', function() {
-        it('should call executionEngine.on 12 times', function() {
+        it('should call executionEngine.on 13 times', function() {
             executeTestCase.on.onCall(7).callsArg(1);
 
             registerExecutorEvents(executorEventDispatch);
 
-            expect(executionEngine.on.callCount).to.equal(12);
+            expect(executionEngine.on.callCount).to.equal(13);
         });
 
         it('should call executionEngine.on with the event \'executionEngine.actionStarted\'' +
@@ -305,10 +305,10 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         });
     });
 
-    it('should call executionEngine.on 10 times', function() {
+    it('should call executionEngine.on 11 times', function() {
         registerExecutorEvents(executorEventDispatch);
 
-        expect(executionEngine.on.callCount).to.equal(10);
+        expect(executionEngine.on.callCount).to.equal(11);
     });
 
     it('should call executionEngine.on with the event \'executionEngine.configured\' ' +
@@ -400,15 +400,40 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
     describe('when the callback is called for executionEngine.on with the event ' +
         'executionEngine.createExpectedState', function() {
         it('should call executeEventDispatch.emit with the event \'executor.createExpectedState\'' +
-            'and the passed in callback', function() {
+            ', the dataStore, and the passed in callback', function() {
             let callback = sinon.spy();
-            executionEngine.on.onCall(8).callsArgWith(1, callback);
+            executionEngine.on.onCall(8).callsArgWith(1, 'myDataStore', callback);
 
             registerExecutorEvents(executorEventDispatch);
 
             expect(executorEventDispatch.emit.args).to.deep.equal([
                 [
                     'executor.createExpectedState',
+                    'myDataStore',
+                    callback,
+                ],
+            ]);
+        });
+    });
+
+    it('should call executionEngine.on with the event \'executionEngine.createDataStore\'', function() {
+        registerExecutorEvents(executorEventDispatch);
+
+        expect(executionEngine.on.args[9][0]).to.deep.equal('executionEngine.createDataStore');
+    });
+
+    describe('when the callback is called for executionEngine.on with the event ' +
+        'executionEngine.createDataStore', function() {
+        it('should call executeEventDispatch.emit with the event \'executor.createDataStore\'' +
+            'and the passed in callback', function() {
+            let callback = sinon.spy();
+            executionEngine.on.onCall(9).callsArgWith(1, callback);
+
+            registerExecutorEvents(executorEventDispatch);
+
+            expect(executorEventDispatch.emit.args).to.deep.equal([
+                [
+                    'executor.createDataStore',
                     callback,
                 ],
             ]);
@@ -418,7 +443,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
     it('should call executionEngine.on with the event \'executionEngine.getComponents\'', function() {
         registerExecutorEvents(executorEventDispatch);
 
-        expect(executionEngine.on.args[9][0]).to.deep.equal('executionEngine.getComponents');
+        expect(executionEngine.on.args[10][0]).to.deep.equal('executionEngine.getComponents');
     });
 
     describe('when the callback is called for executionEngine.on with the event ' +
@@ -426,7 +451,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         it('should call executeEventDispatch.emit with the event \'executor.getComponents\'' +
             'and the passed in callback', function() {
             let callback = sinon.spy();
-            executionEngine.on.onCall(9).callsArgWith(1, callback);
+            executionEngine.on.onCall(10).callsArgWith(1, callback);
 
             registerExecutorEvents(executorEventDispatch);
 
