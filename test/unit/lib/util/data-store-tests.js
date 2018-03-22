@@ -102,7 +102,7 @@ describe('lib/util/data-store', function() {
 
                 let result = DataStore.clone.call(myThis);
 
-                expect(result._data).to.equal('someClonedDat');
+                expect(result._data).to.equal('someClonedData');
             });
         });
     });
