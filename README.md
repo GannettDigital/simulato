@@ -159,6 +159,8 @@ This section details the different sections of a component
         * The unique name of the component which was given upon creation
     * `options`
         * The options for the component
+    * `dataStore`
+        * The utility used to store data during test execution and planning
 * Action properties
     * `<SOME_ACION>`
         * The name of the first level property is the name of the action
@@ -238,6 +240,8 @@ This section details the different sections of a component
         * The options object for the component which was given upon creation
     * `expectedState`
         * The utility used to modify the desired state of the program
+    * `dataStore`
+        * The utility used to store data during test execution and planning
 * Child properties
     * `componentName`
         * The name of the component to be created and is **required**
@@ -249,7 +253,7 @@ This section details the different sections of a component
         * The options to be passed to the component upon creation
 * Example
     ```
-    children(instanceName, options, expectedState) {
+    children(instanceName, options, expectedState, dataStore) {
         return [
             {
                 componentName: 'Button',
@@ -291,6 +295,8 @@ This section details the different sections of a component
         * The options object for the component which was given upon creation
     * `expectedState`
         * The utility used to modify the desired state of the program
+    * `dataStore`
+        * The utility used to store data during test execution and planning
 * Event properties
     * `name`
         * A string or array of strings which are events to attach the `listener` to and is **required**
@@ -298,7 +304,7 @@ This section details the different sections of a component
         * A function to runs when the event(s) in the `name` property is/are run and is **required**
 * Example
     ```
-    events(instanceName, options, expectedState) {
+    events(instanceName, options, expectedState, dataStore) {
         return [
             {
                 name: 'myTextBoxTextEntered',
@@ -475,33 +481,31 @@ This section documents functions for the expected state used throughout the tool
     * Stash the current state (can be popped later)
 * `pop()`
     * Pops the most recent stashed state
-* `storeData(key, value)`
-    * Stores data in the expected state data store
-    * Can be accessed from any other expected state
+* `eventEmitter`
+    * An event emitter instance wherein the events returned from the `events` function are registered
+    * Use this emitter to emit events to other components
+## Data Store
+* `store(key, value)`
+    * Stores data
     * Parameters
         * `key`
             * Any value valid as a key in a JS object that is used to identify the value
         * `value`
-            * Anything that is stored as the value of the key
-* `retrieveData(key, callback)`
-    * Retrieves data from the data store
+            * The data to store. This value is deep cloned
+* `retrieve(key)`
+    * Returns data from the data store
     * Parameters
         * `key`
             * The key associated with value to be returned from the data store
-        * `callback`
-            * The callback that is called with the data as the first parameter
-* `deleteData(key)`
+* `delete(key)`
     * Deletes data from the data store
     * Parameters
         * `key`
             * The key of the value to delete from the data store
-* `retrieveAndDeleteData(key, callback)`
-    * Retrieves and then deletes the data from the data store
+* `retrieveAndDelete(key)`
+    * Deletes and then returns the data from the data store
     * Parameters
         * `key`
             * The key to be retrieved and deleted from the data store
-        * `callback`
-            * The callback that is called with the data as the first parameter
-* `eventEmitter`
-    * An event emitter instance wherein the events returned from the `events` function are registered
-    * Use this emitter to emit events to other components
+* `getData`
+    * Returns the entire data store object
