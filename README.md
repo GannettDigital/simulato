@@ -507,5 +507,5 @@ This section documents functions for the expected state used throughout the tool
     * Parameters
         * `key`
             * The key to be retrieved and deleted from the data store
-* `getData`
+* `retrieveAll`
     * Returns the entire data store object

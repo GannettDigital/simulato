@@ -262,7 +262,7 @@ describe('lib/util/data-store', function() {
         });
     });
 
-    describe('getData', function() {
+    describe('retrieveAll', function() {
         let DataStore;
 
         beforeEach(function() {
@@ -281,7 +281,7 @@ describe('lib/util/data-store', function() {
         });
 
         it('should return this._data', function() {
-            let result = DataStore.getData.call({_data: {myKey: 'myValue'}}, 'myKey');
+            let result = DataStore.retrieveAll.call({_data: {myKey: 'myValue'}}, 'myKey');
 
             expect(result).to.deep.equal({myKey: 'myValue'});
         });
