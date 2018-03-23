@@ -171,56 +171,91 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             ]);
         });
 
-        it('should call emit once with the event \'executionEngine.createExpectedState\'', function() {
+        it('should call exeuctionEngine.emit once with the event \'executionEngine.createDataStore\'', function() {
             executionEngine.configure();
 
-            expect(executionEngine.emit.args[0][0]).to.equal('executionEngine.createExpectedState');
+            expect(executionEngine.emit.args[0][0]).to.equal('executionEngine.createDataStore');
         });
 
-        describe('when the callback for the event \'executionEngine.createExpectedState\' is called', function() {
-            it('should call executionEngine._actionList.shift once', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, expectedState);
+        describe('when the callback for the event \'executionEngine.createDataStore\' is called', function() {
+            it('should set executionEngine._dataStore to the passed in dataStore', function() {
+                executionEngine.emit.onCall(0).callsArgWith(1, 'myDataStore');
 
-                executionEngine.configure(testCaseActions);
+                executionEngine.configure();
 
-                expect(executionEngine._actionList.shift.callCount).to.equal(1);
+                expect(executionEngine._dataStore).to.equal('myDataStore');
             });
 
-            it('should set executionEngine.expectedState to the passed in expectedState', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, expectedState);
+            it('should call emit with the event \'executionEngine.createExpectedState\'' +
+                'and the passed in dataStore', function() {
+                executionEngine.emit.onCall(0).callsArgWith(1, 'myDataStore');
 
-                executionEngine.configure(testCaseActions);
+                executionEngine.configure();
 
-                expect(executionEngine._expectedState).to.deep.equal({
-                    createAndAddComponent: expectedState.createAndAddComponent,
+                expect(executionEngine.emit.args[1].slice(0, 2)).to.deep.equal([
+                    'executionEngine.createExpectedState',
+                    'myDataStore',
+                ]);
+            });
+
+            describe('when the callback for the event \'executionEngine.createExpectedState\' is called', function() {
+                it('should call executionEngine._actionList.shift once', function() {
+                    executionEngine.emit.onCall(0).callsArgWith(1, '');
+                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+
+                    executionEngine.configure(testCaseActions);
+
+                    expect(executionEngine._actionList.shift.callCount).to.equal(1);
                 });
-            });
 
-            it('should call executionEngine._expectedState.createAndAddComponent with parameters componentName, ' +
-                'instanceName, state, and options from the first' +
-                'action on executionEngine._actionList', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, expectedState);
+                it('should set executionEngine.expectedState to the passed in expectedState', function() {
+                    executionEngine.emit.onCall(0).callsArgWith(1, '');
+                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
 
-                executionEngine.configure(testCaseActions);
+                    executionEngine.configure(testCaseActions);
 
-                expect(expectedState.createAndAddComponent.args).to.deep.equal([
-                    [
-                        'myComponent',
-                        'myInstance',
-                        {_state: {property: 'value'}},
-                        {opt: 'myOption'},
-                    ],
-                ]);
-            });
+                    expect(executionEngine._expectedState).to.deep.equal({
+                        createAndAddComponent: expectedState.createAndAddComponent,
+                    });
+                });
 
-            it('should call emit once with the event \'executionEngine.configured\'', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, expectedState);
+                it('should call executionEngine._expectedState.createAndAddComponent with parameters componentName, ' +
+                    'instanceName, state, and options from the first' +
+                    'action on executionEngine._actionList', function() {
+                    executionEngine.emit.onCall(0).callsArgWith(1, '');
+                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
 
-                executionEngine.configure(testCaseActions);
+                    executionEngine.configure(testCaseActions);
 
-                expect(executionEngine.emit.args[1]).to.deep.equal([
-                    'executionEngine.configured',
-                ]);
+                    expect(expectedState.createAndAddComponent.args).to.deep.equal([
+                        [
+                            'myComponent',
+                            'myInstance',
+                            {_state: {property: 'value'}},
+                            {opt: 'myOption'},
+                        ],
+                    ]);
+                });
+
+                it('should call emit once with the event \'executionEngine.configured\'', function() {
+                    executionEngine.emit.onCall(0).callsArgWith(1, '');
+                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+
+                    executionEngine.configure(testCaseActions);
+
+                    expect(executionEngine.emit.args[2]).to.deep.equal([
+                        'executionEngine.configured',
+                    ]);
+                });
+
+                it('should call emit thrice', function() {
+                    executionEngine.emit.onCall(0).callsArgWith(1, '');
+                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+
+                    executionEngine.configure(testCaseActions);
+
+                    expect(executionEngine.emit.callCount).to.equal(3);
+                });
             });
         });
     });

@@ -4,6 +4,9 @@
 
 * Brian Fitzpatrick - Updated CLI configuration to be exportable to file format, as well as saucelab configuration
 * Scott Gunther
+  * Data store is broken out of the expected state
+  * Data store is now passed in to actions, children, and events
+  * Renamed data store methods
   * Update travis to report coverage to codecov
 
 ## 0.2.1
