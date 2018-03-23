@@ -3,6 +3,8 @@
 ## 0.3.0
 
 * Brian Fitzpatrick - Updated CLI configuration to be exportable to file format, as well as saucelab configuration
+* Scott Gunther
+  * Update travis to report coverage to codecov
 
 ## 0.2.1
 
