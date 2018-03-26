@@ -8,6 +8,9 @@
   * Data store is now passed in to actions, children, and events
   * Renamed data store methods
   * Update travis to report coverage to codecov
+* Tom Dale
+  * Refactored create & createAndAddComponent to only take an object as param to follow pattern of children
+  * This context is now passed into elements, model, actions (params, preconditions, perform, effects), children, and events to access instanceName and options
 
 ## 0.2.1
 

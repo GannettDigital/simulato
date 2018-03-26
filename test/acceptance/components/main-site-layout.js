@@ -24,7 +24,7 @@ module.exports = {
   actions() {
     return {};
   },
-  children(instancename, options, expectedState) {
+  children(expectedState, dataStore) {
     return [
       {
         componentName: 'NewsArticle',

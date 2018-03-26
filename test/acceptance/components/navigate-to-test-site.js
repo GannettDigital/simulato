@@ -12,17 +12,21 @@ module.exports = {
   model() {
     return {};
   },
-  actions(instanceName, options) {
+  actions() {
     return {
       NAVIGATE_TO_TEST_SITE: {
         perform(callback) {
           driver.get(`http://localhost:3000`)
-          .then(callback, callback);
+            .then(callback, callback);
         },
-        effects(expectedState) {
+        effects(expectedState, dataStore) {
           expectedState.clear();
-          expectedState.createAndAddComponent('MainSiteLayout', 'mainSiteLayout', {
-            displayed: true,
+          expectedState.createAndAddComponent({
+            componentName: 'MainSiteLayout',
+            instanceName: 'mainSiteLayout',
+            state: {
+              displayed: true,
+            },
           });
         },
       },
