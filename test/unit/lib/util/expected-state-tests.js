@@ -377,9 +377,8 @@ describe('lib/util/expected-state.js', function() {
                 let error = new Error('TEST_ERROR');
                 expectedState.emit.callsArgOnWith(2, expectedState, error, component);
 
-
                 try {
-                    expectedState.createComponent('compName', component.instanceName);
+                    expectedState.createComponent(componentConfig);
                 } catch (error) {
                     errorCalled = true;
                 }
@@ -625,6 +624,25 @@ describe('lib/util/expected-state.js', function() {
                     ]);
                 });
             });
+
+            describe('if dynamicArea is defined', function() {
+                it('should assign newComponent.dynamicArea to the passed in dynamicArea', function() {
+                    expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+                    componentConfig.dynamicArea = 'aDynamicArea';
+
+                    let newComponent = expectedState.createComponent(componentConfig);
+
+                    expect(newComponent).to.deep.equal({
+                        name: 'instanceName',
+                        type: 'componentType',
+                        elements: ['myElements'],
+                        model: {model: 'modelValue'},
+                        actions: {ACTION_1: 'someAction'},
+                        options: {option1: 'someOption'},
+                        dynamicArea: 'aDynamicArea',
+                    });
+                });
+            });
         });
     });
 
@@ -778,9 +796,9 @@ describe('lib/util/expected-state.js', function() {
             });
         });
 
-        describe('if component.options.dynamicArea is defined', function() {
+        describe('if component.dynamicArea is defined', function() {
             it('should call this._addToDynamicArea once with the passed in component', function() {
-                component.options.dynamicArea = 'myDynamicArea';
+                component.dynamicArea = 'myDynamicArea';
 
                 expectedState.addComponent.call(myThis, component, state);
 
@@ -788,9 +806,8 @@ describe('lib/util/expected-state.js', function() {
                     [
                         {
                             name: 'instanceName',
-                            options: {
-                                dynamicArea: 'myDynamicArea',
-                            },
+                            options: {},
+                            dynamicArea: 'myDynamicArea',
                         },
                     ],
                 ]);
@@ -834,9 +851,8 @@ describe('lib/util/expected-state.js', function() {
                 'area and the value a set with the component\'s instanceName', function() {
                 let component = {
                     name: 'myInstance',
-                    options: {
-                        dynamicArea: 'myDynamicArea',
-                    },
+                    options: {},
+                    dynamicArea: 'myDynamicArea',
                 };
 
                 expectedState._addToDynamicArea.call(myThis, component);
@@ -855,9 +871,8 @@ describe('lib/util/expected-state.js', function() {
                 myThis._dynamicAreas.set('myDynamicArea', new Set(['myFirstInstance']));
                 let component = {
                     name: 'mySecondInstance',
-                    options: {
-                        dynamicArea: 'myDynamicArea',
-                    },
+                    options: {},
+                    dynamicArea: 'myDynamicArea',
                 };
 
                 expectedState._addToDynamicArea.call(myThis, component);
@@ -942,11 +957,11 @@ describe('lib/util/expected-state.js', function() {
                 component.children.push(
                     {}
                 );
-                component.options.dynamicArea = 'myComponentDynamicArea';
+                component.dynamicArea = 'myComponentDynamicArea';
 
                 expectedState._addChildren.call(myThis, component);
 
-                expect(component.children[0].options.dynamicArea).to.equal('myComponentDynamicArea');
+                expect(component.children[0].dynamicArea).to.equal('myComponentDynamicArea');
             });
         });
 

@@ -438,6 +438,8 @@ This section documents functions for the expected state used throughout the tool
                     * A string that denotes the unique name of component when created
                 * `options`
                     * An object used for any data the user wants the component to have
+                * `dyanamicArea`
+                    * A string that denotes the dynamicArea this component should be a part of
 * `addComponent(component, state)`
     * Adds a created component with the given state
     * Parameters
@@ -445,8 +447,6 @@ This section documents functions for the expected state used throughout the tool
             * The created componend to be added to the state
         * `state`
             * An object representing the state of the component to be added
-        * `dyanmicArea`
-            * A string that denotes the dynamicArea this component should be a part of
 * `delete(name)`
     * Deletes a single component from the expected state
     * Parameters

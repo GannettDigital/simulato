@@ -214,7 +214,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
         describe('if the action is the first action', function() {
           it('should throw an error if the action.type is not string', function() {
-            testCase3[0].name = ['i', 'am', 'not', 'a', 'string'];
+            testCase3[0].type = ['i', 'am', 'not', 'a', 'string'];
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
             MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
