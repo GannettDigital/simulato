@@ -86,7 +86,7 @@ module.exports = {
                 displayed: true,
               },
               xCloseButton: {
-                displayed: false,
+                displayed: true,
               },
             },
             options: {
