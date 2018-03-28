@@ -144,11 +144,11 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
         });
 
         it('should set eeReportHandler._currentAction to the passed in actionConfig', function() {
-            let actionConfig = {instanceName: 'My Instance', action: 'My Action'};
+            let actionConfig = {name: 'My Instance', action: 'My Action'};
 
             eeReportHandler.recordNewAction('', actionConfig);
 
-            expect(eeReportHandler._currentAction).to.deep.equal({instanceName: 'My Instance', action: 'My Action'});
+            expect(eeReportHandler._currentAction).to.deep.equal({name: 'My Instance', action: 'My Action'});
         });
     });
 
@@ -238,14 +238,14 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             expect(eeReportHandler._report.error).to.deep.equal(error);
         });
 
-        it('should set eeReportHandler._report.error.instanceName to ' +
-            'eeReportHandler._currentAction.instanceName', function() {
-            eeReportHandler._currentAction = {instanceName: 'myInstance'};
+        it('should set eeReportHandler._report.error.nameOfComponent to ' +
+            'eeReportHandler._currentAction.name', function() {
+            eeReportHandler._currentAction = {name: 'myInstance'};
             let error = new Error('An error occurred');
 
             eeReportHandler.appendReportError(error);
 
-            expect(eeReportHandler._report.error.instanceName).to.equal('myInstance');
+            expect(eeReportHandler._report.error.nameOfComponent).to.equal('myInstance');
         });
 
         it('should set eeReportHandler._report.error.actionName to ' +

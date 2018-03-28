@@ -33,8 +33,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should should not throw', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -43,8 +43,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: 'myInstance2',
+                    type: 'myComponent2',
+                    name: 'myInstance2',
                     state: {
                         property: 'value2',
                     },
@@ -78,8 +78,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should throw an error', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -98,8 +98,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should call MbttError.CHILD.CHILD_NOT_OBJECT once with an error message', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -124,8 +124,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should throw an error', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -134,8 +134,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: undefined,
-                    instanceName: 'myInstance2',
+                    type: undefined,
+                    name: 'myInstance2',
                     state: {
                         property: 'value2',
                     },
@@ -153,8 +153,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -163,8 +163,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: undefined,
-                    instanceName: 'myInstance2',
+                    type: undefined,
+                    name: 'myInstance2',
                     state: {
                         property: 'value2',
                     },
@@ -179,7 +179,7 @@ describe('lib/util/validators/validate-children.js', function() {
             } catch (error) {}
 
             expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
-                [`The 'componentName' property of child at index '1' for component 'myComponent' ` +
+                [`The 'type' property of child at index '1' for component 'myComponent' ` +
                     `must be a string. Found 'undefined'`,
                 ],
             ]);
@@ -190,8 +190,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should throw an error', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -200,8 +200,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: undefined,
+                    type: 'myComponent2',
+                    name: undefined,
                     state: {
                         property: 'value2',
                     },
@@ -219,8 +219,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -229,8 +229,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent',
-                    instanceName: undefined,
+                    type: 'myComponent',
+                    name: undefined,
                     state: {
                         property: 'value2',
                     },
@@ -245,7 +245,7 @@ describe('lib/util/validators/validate-children.js', function() {
             } catch (error) {}
 
             expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
-                [`The 'instanceName' property of child at index '1' for component 'myComponent' ` +
+                [`The 'name' property of child at index '1' for component 'myComponent' ` +
                     `must be a string. Found 'undefined'`,
                 ],
             ]);
@@ -256,8 +256,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should throw an error', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -266,8 +266,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: 'myInstance2',
+                    type: 'myComponent2',
+                    name: 'myInstance2',
                     state: '',
                     options: {
                         dynamicArea: 'myDynamicArea',
@@ -283,8 +283,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -293,8 +293,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: 'myInstance2',
+                    type: 'myComponent2',
+                    name: 'myInstance2',
                     state: '',
                     options: {
                         dynamicArea: 'myDynamicArea',
@@ -318,8 +318,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should throw an error', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -328,8 +328,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: 'myInstance2',
+                    type: 'myComponent2',
+                    name: 'myInstance2',
                     state: {
                         property: 'value2',
                     },
@@ -345,8 +345,8 @@ describe('lib/util/validators/validate-children.js', function() {
         it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myInstance',
                     state: {
                         property: 'value',
                     },
@@ -355,8 +355,8 @@ describe('lib/util/validators/validate-children.js', function() {
                     },
                 },
                 {
-                    componentName: 'myComponent2',
-                    instanceName: 'myInstance2',
+                    type: 'myComponent2',
+                    name: 'myInstance2',
                     state: {
                         property: 'value2',
                     },

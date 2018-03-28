@@ -140,8 +140,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 createAndAddComponent: sinon.stub(),
             };
             testCaseActions = [{
-                componentName: 'myComponent',
-                instanceName: 'myInstance',
+                type: 'myComponent',
+                name: 'myName',
                 state: {_state: {property: 'value'}},
                 options: {opt: 'myOption'},
             }];
@@ -163,8 +163,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
             expect(executionEngine._actionList).to.deep.equal([
                 {
-                    componentName: 'myComponent',
-                    instanceName: 'myInstance',
+                    type: 'myComponent',
+                    name: 'myName',
                     state: {_state: {property: 'value'}},
                     options: {opt: 'myOption'},
                 },
@@ -219,8 +219,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                     });
                 });
 
-                it('should call executionEngine._expectedState.createAndAddComponent with parameters componentName, ' +
-                    'instanceName, state, and options from the first' +
+                it('should call executionEngine._expectedState.createAndAddComponent with an object containing type, ' +
+                    'name, state, and options from the first' +
                     'action on executionEngine._actionList', function() {
                     executionEngine.emit.onCall(0).callsArgWith(1, '');
                     executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
@@ -229,10 +229,16 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                     expect(expectedState.createAndAddComponent.args).to.deep.equal([
                         [
-                            'myComponent',
-                            'myInstance',
-                            {_state: {property: 'value'}},
-                            {opt: 'myOption'},
+                            {
+                                type: 'myComponent',
+                                name: 'myName',
+                                state: {
+                                    _state: {property: 'value'},
+                                },
+                                options: {
+                                    opt: 'myOption',
+                                },
+                            },
                         ],
                     ]);
                 });
@@ -326,13 +332,12 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
         describe('if executionEngine._actionList.length is not 0', function() {
-            it('should set exectutionEngine._actionConfig to the first item in ' +
-                'executionEngine._actionslist along with instanceName and actionName from the name', function() {
+            it('should set exectutionEngine._actionConfig.name to the actions component name and ' +
+                'exectutionEngine.actionName to the actions actionName', function() {
                 executionEngine._executeNextAction();
 
                 expect(executionEngine._actionConfig).to.deep.equal({
-                    name: 'myInstance.MY_ACTION',
-                    instanceName: 'myInstance',
+                    name: 'myInstance',
                     actionName: 'MY_ACTION',
                 });
             });
@@ -411,8 +416,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         'executionEngine.actionStarted',
                         components.get('myInstance').actions.MY_ACTION,
                         {
-                            name: 'myInstance.MY_ACTION',
-                            instanceName: 'myInstance',
+                            name: 'myInstance',
                             actionName: 'MY_ACTION',
                         },
                         ['preconditions', 'perform', 'effects'],
@@ -426,6 +430,9 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         let EventEmitter;
         let EventEmitterInstance;
         let executionEngine;
+        let componentMap;
+        let getComponentsAsMap;
+        let myComponent;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -438,6 +445,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             EventEmitter.returns(EventEmitterInstance);
 
+            componentMap = new Map();
+            myComponent = {name: 'testName'};
+            componentMap.set('testName', myComponent);
+            getComponentsAsMap = sinon.stub();
+
             mockery.registerMock('events', {EventEmitter});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
@@ -445,7 +457,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             executionEngine._steps = ['preconditions', 'perform', 'effects'];
             sinon.spy(executionEngine._steps, 'shift');
             executionEngine._actionConfig = {
-                instanceName: 'testName',
+                name: 'testName',
                 actionName: 'testAction',
             };
             executionEngine._action = {
@@ -453,6 +465,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 perform: sinon.stub(),
                 effects: sinon.stub(),
             };
+            executionEngine._expectedState = {
+                getComponentsAsMap: getComponentsAsMap.returns(componentMap),
+                _state: 'myState',
+            };
+            executionEngine._dataStore = {storedData: 'someData'};
         });
 
         afterEach(function() {
@@ -504,27 +521,49 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             describe('when the executionEngine._step is equal to the string \'preconditions\'', function() {
                 describe('if executionEngine._actionConfig.options.parameters is defined', function() {
                     it('should call the executionEngine._action.preconditions with the spread ' +
-                        'actionParameters', function() {
+                        'actionParameters and the executionEngine._dataStore', function() {
                         executionEngine._actionConfig.options = {
                             parameters: ['param1', 'param2'],
                         };
-
                         executionEngine._executeStep();
 
                         expect(executionEngine._action.preconditions.args).to.deep.equal([
                             [
                                 'param1',
                                 'param2',
+                                {storedData: 'someData'},
                             ],
+                        ]);
+                    });
+
+                    it('should call the executionEngine._action.preconditions with ' +
+                        'the this context as the component', function() {
+                        executionEngine._actionConfig.options = {
+                            parameters: ['param1', 'param2'],
+                        };
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
+                            myComponent,
                         ]);
                     });
                 });
 
                 describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
-                    it('should call the executionEngine._action.preconditions with no parameters', function() {
+                    it('should call the executionEngine._action.preconditions with the dataStore', function() {
                         executionEngine._executeStep();
 
-                        expect(executionEngine._action.preconditions.args).to.deep.equal([[]]);
+                        expect(executionEngine._action.preconditions.args).to.deep.equal([[
+                            {storedData: 'someData'},
+                        ]]);
+                    });
+                    it('should call the executionEngine._action.preconditions with ' +
+                        'the this context as the component', function() {
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
+                            myComponent,
+                        ]);
                     });
                 });
 
@@ -543,11 +582,9 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                 it('should call executionEngine.emit with executionEngine._expectedState as the second ' +
                     'parameter', function() {
-                    executionEngine._expectedState = {_state: 'myState'};
-
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.args[1][1]).to.deep.equal({_state: 'myState'});
+                    expect(executionEngine.emit.args[1][1]).to.deep.equal({_state: 'myState', getComponentsAsMap});
                 });
 
                 it('should call executionEngine.emit with the preconditions as the third parameter', function() {
@@ -644,6 +681,20 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         expect(executionEngine._action.perform.args[0][2]).to.be.a('function');
                     });
 
+                    it('should call the executionEngine._action.perform with ' +
+                        'the this context as the component', function() {
+                        executionEngine._steps = ['perform', 'effects'];
+                        executionEngine._actionConfig.options = {
+                            parameters: ['param1', 'param2'],
+                        };
+
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.perform.thisValues).to.deep.equal([
+                            myComponent,
+                        ]);
+                    });
+
                     describe('when the executionEngine._action.perform callback is called', function() {
                         describe('if there is an error returned', function() {
                             it('should throw the error', function() {
@@ -718,6 +769,17 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         expect(executionEngine._action.perform.args[0][0]).to.be.a('function');
                     });
 
+                    it('should call the executionEngine._action.perform with ' +
+                        'the this context as the component', function() {
+                        executionEngine._steps = ['perform', 'effects'];
+
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.perform.thisValues).to.deep.equal([
+                            myComponent,
+                        ]);
+                    });
+
                     describe('when the executionEngine._action.perform callback is called', function() {
                         describe('if there was an error returned', function() {
                             it('should throw the error', function() {
@@ -766,9 +828,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             describe('when the executionEngine._step is equal to the string \'effects\'', function() {
                 describe('if executionEngine._actionConfig.options.parameters is defined', function() {
                     it('should call executionEngine._action.effects once with the spread parameters ' +
-                        'prepended and executionEngine._expectedState', function() {
+                        'prepended, executionEngine._expectedState and executionEngine._dataStore', function() {
                         executionEngine._steps = ['effects'];
-                        executionEngine._expectedState = sinon.stub();
                         executionEngine._actionConfig.options = {
                             parameters: ['param1', 'param2'],
                         };
@@ -780,9 +841,26 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                                 'param1',
                                 'param2',
                                 executionEngine._expectedState,
+                                executionEngine._dataStore,
                             ],
                         ]);
                     });
+
+
+                    it('should call the executionEngine._action.effects with ' +
+                        'the this context as the component', function() {
+                        executionEngine._steps = ['effects'];
+                        executionEngine._actionConfig.options = {
+                            parameters: ['param1', 'param2'],
+                        };
+
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.effects.thisValues).to.deep.equal([
+                            myComponent,
+                        ]);
+                    });
+
                     it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
                         executionEngine._steps = ['effects'];
                         executionEngine._actionConfig.options = {
@@ -798,18 +876,29 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
                     it('should call executionEngine._action.effects once with the ' +
                         'executionEngine._expectedState', function() {
-                        let expectedState = sinon.stub();
-                        executionEngine._expectedState = expectedState;
                         executionEngine._steps = ['effects'];
 
                         executionEngine._executeStep();
 
                         expect(executionEngine._action.effects.args).to.deep.equal([
                             [
-                                expectedState,
+                                executionEngine._expectedState,
+                                executionEngine._dataStore,
                             ],
                         ]);
                     });
+
+                    it('should call the executionEngine._action.effects with ' +
+                        'the this context as the component', function() {
+                        executionEngine._steps = ['effects'];
+
+                        executionEngine._executeStep();
+
+                        expect(executionEngine._action.effects.thisValues).to.deep.equal([
+                            myComponent,
+                        ]);
+                    });
+
                     it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
                         executionEngine._steps = ['effects'];
                         executionEngine._action.effects.throws(new Error('TEST_ERROR'));
@@ -838,13 +927,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                 it('should call executionEngine.emit with the second parameter as ' +
                     'executionEngine._expectedState', function() {
-                    let expectedState = sinon.stub();
-                    executionEngine._expectedState = expectedState;
                     executionEngine._steps = ['effects'];
 
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.args[1][1]).to.equal(expectedState);
+                    expect(executionEngine.emit.args[1][1]).to.equal(executionEngine._expectedState);
                 });
 
                 it('should call executionEngine.emit with the third parameter as the number' +

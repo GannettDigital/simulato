@@ -1,15 +1,15 @@
 'use strict';
 
 module.exports = {
-  name: 'NewsArticle',
-  elements(instanceName, options) {
+  type: 'NewsArticle',
+  elements() {
     return [
       {
         name: 'newsArticle',
         selector: {
           type: 'attribute',
           key: 'id',
-          value: options.newsArticleId,
+          value: this.options.newsArticleId,
         },
       },
       {
@@ -17,7 +17,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Image`,
+          value: `${this.options.newsArticleId}Image`,
         },
       },
       {
@@ -25,7 +25,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Heading`,
+          value: `${this.options.newsArticleId}Heading`,
         },
       },
       {
@@ -33,7 +33,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Text`,
+          value: `${this.options.newsArticleId}Text`,
         },
       },
     ];
@@ -54,6 +54,7 @@ module.exports = {
       },
     };
   },
+<<<<<<< HEAD
   actions(instanceName, options, dataStore) {
     return {
       CLICK_TO_VIEW_STORY: {
@@ -64,17 +65,24 @@ module.exports = {
 
           // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
           // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
+=======
+  actions() {
+    return {
+      CLICK_TO_VIEW_STORY: {
+        preconditions(dataStore) {
+>>>>>>> origin/master
           return [
-            ['isTrue', `${instanceName}.displayed`],
+            ['isTrue', `${this.name}.displayed`],
           ];
         },
         perform(callback) {
-          driver.findElement(By.id(options.newsArticleId))
+          driver.findElement(By.id(this.options.newsArticleId))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState) {
+        effects(expectedState, dataStore) {
           expectedState.stash();
+<<<<<<< HEAD
           console.log(dataStore.retrieve(`${instanceName}HeadingText`));
           console.log(dataStore.retrieve(`${instanceName}Text`));
           expectedState.createAndAddComponent('ViewStoryModal', `${options.newsArticleId}ViewModal`, {
@@ -94,9 +102,31 @@ module.exports = {
             },
             xCloseButton: {
               displayed: true,
+=======
+          expectedState.createAndAddComponent({
+            type: 'ViewStoryModal',
+            name: `${this.options.newsArticleId}ViewModal`,
+            state: {
+              displayed: true,
+              modalTitle: {
+                displayed: true,
+                text: this.options.newsArticleHeading,
+              },
+              modalBodyText: {
+                displayed: true,
+                text: this.options.newsArticleText,
+              },
+              closeButton: {
+                displayed: true,
+              },
+              xCloseButton: {
+                displayed: true,
+              },
             },
-          }, {
-            newsArticleId: options.newsArticleId,
+            options: {
+              newsArticleId: this.options.newsArticleId,
+>>>>>>> origin/master
+            },
           });
         },
       },

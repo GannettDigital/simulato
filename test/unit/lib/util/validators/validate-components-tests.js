@@ -52,14 +52,14 @@ describe('lib/util/validators/validate-components.js', function() {
       ];
 
       component1 = {
-        name: 'component1',
+        type: 'component1',
         elements: sinon.stub(),
         model: sinon.stub(),
         actions: sinon.stub(),
       };
 
       component3 = {
-        name: 'component3',
+        type: 'component3',
         elements: sinon.stub(),
         model: sinon.stub(),
         actions: sinon.stub(),
@@ -155,8 +155,8 @@ describe('lib/util/validators/validate-components.js', function() {
         );
       });
 
-      it('should throw an error if the component.name is not a string', function() {
-        delete component3.name;
+      it('should throw an error if the component.type is not a string', function() {
+        delete component3.type;
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
@@ -174,7 +174,7 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {message: `The entryComponent property must be an object for component ${component3.name}`}
+            {message: `The entryComponent property must be an object for component ${component3.type}`}
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -182,25 +182,25 @@ describe('lib/util/validators/validate-components.js', function() {
           );
         });
 
-        it('should throw an error if the entryComponent.name is not a string', function() {
-          component3.entryComponent = {name: {key: 'im an object'}};
+        it('should throw an error if the entryComponent.type is not a string', function() {
+          component3.entryComponent = {type: {key: 'im an object'}};
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
-                `The entryComponent.name property is required and must be a string for component ${component3.name}`,
+                `The entryComponent.type property is required and must be a string for component ${component3.type}`,
             }
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The entryComponent.name property is required and must be a string for component component3`
+            `The entryComponent.type property is required and must be a string for component component3`
           );
         });
 
         it('should throw an error if the entryComponent.state is not an object', function() {
           component3.entryComponent = {
-            name: 'entryComponent',
+            type: 'entryComponent',
             state: [],
           };
           mockery.registerMock('path/to/file3.js', component3);
@@ -208,7 +208,7 @@ describe('lib/util/validators/validate-components.js', function() {
           MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
-              `The entryComponent.state property is required and must be an object for component ${component3.name}`,
+              `The entryComponent.state property is required and must be an object for component ${component3.type}`,
             }
           );
 
@@ -227,7 +227,7 @@ describe('lib/util/validators/validate-components.js', function() {
           MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
-              `The entryComponent.state property is required and must be an object for component ${component3.name}`,
+              `The entryComponent.state property is required and must be an object for component ${component3.type }`,
             }
           );
 
@@ -240,7 +240,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The elements property must be a function for component ${component3.name}`}
+          {message: `The elements property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -253,7 +253,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The model property must be a function for component ${component3.name}`}
+          {message: `The model property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -267,7 +267,7 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {message: `The options property must be an object for component '${component3.name}'`}
+            {message: `The options property must be an object for component '${component3.type}'`}
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -283,7 +283,7 @@ describe('lib/util/validators/validate-components.js', function() {
             MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
               {
                 message:
-                `The component.options.dynamicArea property must be an string for component '${component3.name}'`,
+                `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
               }
             );
 
@@ -298,7 +298,7 @@ describe('lib/util/validators/validate-components.js', function() {
             MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
               {
                 message:
-                `The component.options.dynamicArea property must be an string for component '${component3.name}'`,
+                `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
               }
             );
 
@@ -312,7 +312,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The elements property must be a function for component ${component3.name}`}
+          {message: `The elements property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -325,7 +325,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The model property must be a function for component ${component3.name}`}
+          {message: `The model property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
@@ -338,7 +338,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The actions property must be a function for component ${component3.name}`}
+          {message: `The actions property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(

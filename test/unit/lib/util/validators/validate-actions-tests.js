@@ -80,6 +80,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let MbttError;
     let EventEmitter;
     let EventEmitterInstance;
+    let message;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -95,6 +96,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         },
       };
       global.MbttError = MbttError;
+      message = `Error Thrown`;
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -117,12 +119,10 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     it('should throw an error if the passed in actions is not an object', function() {
       MbttError.ACTION.ACTIONS_NOT_OBJECT.throws(
-        {message: `Actions for '${instanceName}' was not returned as an Object by parent component '${componentName}'`}
+        {message}
       );
 
-      expect(validateActions.validate.bind(null, [], instanceName, componentName)).to.throw(
-        `Actions for 'instanceName' was not returned as an Object by parent component 'componentName'`
-      );
+      expect(validateActions.validate.bind(null, [], instanceName, componentName)).to.throw(message);
     });
 
     describe('for each key in the passed in actions object', function() {
@@ -132,12 +132,10 @@ describe('lib/util/validators/validate-actions.js', function() {
             ACTION_ONE: [],
           };
           MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-            {message: `Action 'ACTION_ONE' for '${instanceName}' is not an object`}
+            {message}
           );
 
-          expect(validateActions.validate.bind(null, actions, instanceName, componentName)).to.throw(
-            `Action 'ACTION_ONE' for 'instanceName' is not an object`
-          );
+          expect(validateActions.validate.bind(null, actions, instanceName, componentName)).to.throw(message);
         });
 
         it('should call validateActions.emit once with the event \'validateActions.actionReadyToValidate\''
@@ -176,6 +174,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let MbttError;
     let EventEmitter;
     let EventEmitterInstance;
+    let message;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -190,6 +189,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         },
       };
       global.MbttError = MbttError;
+      message = 'Error Thrown';
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -213,42 +213,23 @@ describe('lib/util/validators/validate-actions.js', function() {
     describe('if the passed in action has preconditions property', function() {
       it('should throw an error if the preconditions is not a function', function() {
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-          {message: `preconditions for 'actionName' of component '${componentName}' must be a function`}
+          {message}
         );
 
         expect(validateActions._validateAction.bind(null, {preconditions: {}}, instanceName, componentName)).to.throw(
-          `preconditions for 'actionName' of component 'componentName' must be a function`
+          message
         );
-      });
-
-      it('should call validateActions.emit once with the event \'validateActions.preconditionsReadyToValidate\''
-        + 'preconditions, actionName, and componentName', function() {
-        let action = {
-          preconditions: sinon.stub().returns(['array', 'of', 'preconditions']),
-          perform: sinon.stub(),
-          effects: sinon.stub(),
-        };
-        validateActions._validateAction(action, 'ACTION_ONE', componentName);
-
-        expect(validateActions.emit.args).to.deep.equal([
-          [
-            'validateActions.preconditionsReadyToValidate',
-            ['array', 'of', 'preconditions'],
-            'ACTION_ONE',
-            'componentName',
-          ],
-        ]);
       });
     });
 
     describe('if the passed in action has parameters property', function() {
       it('should throw an error if the parameters is not an Array', function() {
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-          {message: `The parameters property  for 'actionName' of component '${componentName}' must be an Array`}
+          {message}
         );
 
         expect(validateActions._validateAction.bind(null, {parameters: {}}, instanceName, componentName)).to.throw(
-          `The parameters property  for 'actionName' of component 'componentName' must be an Array`
+          message
         );
       });
 
@@ -279,11 +260,11 @@ describe('lib/util/validators/validate-actions.js', function() {
       };
 
       MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message: `perform is required for 'ACTION_ONE' of component '${componentName}' and must be a function`}
+        {message}
       );
 
       expect(validateActions._validateAction.bind(null, action, 'ACTION_ONE', componentName)).to.throw(
-        `perform is required for 'ACTION_ONE' of component 'componentName' and must be a function`
+        message
       );
     });
     it('should throw an error if the effects property is undefined or not a function', function() {
@@ -292,11 +273,11 @@ describe('lib/util/validators/validate-actions.js', function() {
       };
 
       MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message: `effects is required for 'ACTION_ONE' of component '${componentName}' and must be a function`}
+        {message}
       );
 
       expect(validateActions._validateAction.bind(null, action, 'ACTION_ONE', componentName)).to.throw(
-        `effects is required for 'ACTION_ONE' of component 'componentName' and must be a function`
+        message
       );
     });
   });
@@ -308,6 +289,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let MbttError;
     let EventEmitter;
     let EventEmitterInstance;
+    let message;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -322,6 +304,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         },
       };
       global.MbttError = MbttError;
+      message = 'Error thrown';
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -344,11 +327,11 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     it('should throw an error if the passed in preconditions is not an Array', function() {
       MbttError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message: `preconditions for '${actionName}' of component '${componentName}' must return an array`}
+        {message}
       );
 
       expect(validateActions._validatePreconditions.bind(null, {}, actionName, componentName)).to.throw(
-        `preconditions for 'actionName' of component 'componentName' must return an array`
+        message
       );
     });
 
@@ -361,14 +344,12 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `Precondition found at index '1' of preconditions`
-              + `for action '${actionName}' of component '${componentName}' must be an Array`,
+            message,
           }
         );
 
         expect(validateActions._validatePreconditions.bind(null, preconditions, actionName, componentName)).to.throw(
-          `Precondition found at index '1' of preconditions`
-            + `for action 'actionName' of component 'componentName' must be an Array`
+          message
         );
       });
 
@@ -380,16 +361,12 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `Precondition found at index '0' of preconditions `
-              + `for action '${actionName}' of component '${componentName}' must have `
-              + `a string value at the 0 index to denote chai assertion type`,
+            message,
           }
         );
 
         expect(validateActions._validatePreconditions.bind(null, preconditions, actionName, componentName)).to.throw(
-          `Precondition found at index '0' of preconditions `
-            + `for action 'actionName' of component 'componentName' must have `
-            + `a string value at the 0 index to denote chai assertion type`
+          message
         );
       });
     });
@@ -402,6 +379,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let MbttError;
     let EventEmitter;
     let EventEmitterInstance;
+    let message;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -416,6 +394,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         },
       };
       global.MbttError = MbttError;
+      message = 'Error thrown';
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -445,14 +424,12 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `Paramter found at index '0' of parameters `
-            + `for action '${actionName}' of component '${componentName}' must be an Object`,
+            message,
           }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          `Paramter found at index '0' of parameters `
-            + `for action 'actionName' of component 'componentName' must be an Object`
+          message
         );
       });
 
@@ -464,14 +441,12 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `The name property is required for parameter found at index '0' `
-              + `of parameters for action '${actionName}' of component '${componentName}' and must be a string`,
+            message,
           }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          `The name property is required for parameter found at index '0' `
-            + `of parameters for action 'actionName' of component 'componentName' and must be a string`
+          message
         );
       });
 
@@ -483,14 +458,12 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `The generate property is required for parameter found at index '0' `
-              + `of parameters for action '${actionName}' of component '${componentName}' and must be a function`,
+            message,
           }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          `The generate property is required for parameter found at index '0' `
-            + `of parameters for action '${actionName}' of component '${componentName}' and must be a function`
+          message
         );
       });
 
@@ -502,7 +475,7 @@ describe('lib/util/validators/validate-actions.js', function() {
 
         MbttError.ACTION.ACTION_TYPE_ERROR.throws(
           {
-            message: `I Threw`,
+            message,
           }
         );
 

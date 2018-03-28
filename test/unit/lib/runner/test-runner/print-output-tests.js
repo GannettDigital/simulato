@@ -478,7 +478,7 @@ describe('lib/runner/test-runner/print-output.js', function() {
           {
             testName: 'Test 1',
             error: {
-              instanceName: 'component1',
+              nameOfComponent: 'component1',
               name: 'My Error',
               actionName: 'actionX',
               failedStep: 'effects',
@@ -487,7 +487,7 @@ describe('lib/runner/test-runner/print-output.js', function() {
           {
             testName: 'Test 2',
             error: {
-              instanceName: 'component2',
+              nameOfComponent: 'component2',
               name: 'My Error',
               actionName: 'actionA',
               failedStep: 'effects',

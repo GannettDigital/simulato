@@ -1,14 +1,14 @@
 'use strict';
 
 module.exports = {
-  name: 'ViewStoryModal',
-  elements(instanceName, options) {
+  type: 'ViewStoryModal',
+  elements() {
     return [
       {
         name: 'modalContent',
         selector: {
           type: 'querySelector',
-          value: `#${options.newsArticleId}ViewModal > div > div`,
+          value: `#${this.options.newsArticleId}ViewModal > div > div`,
         },
       },
       {
@@ -16,7 +16,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}ModalTitle`,
+          value: `${this.options.newsArticleId}ModalTitle`,
         },
       },
       {
@@ -24,7 +24,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}ModalBodyText`,
+          value: `${this.options.newsArticleId}ModalBodyText`,
         },
       },
       {
@@ -32,14 +32,14 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}ModalCloseButton`,
+          value: `${this.options.newsArticleId}ModalCloseButton`,
         },
       },
       {
         name: 'xCloseButton',
         selector: {
           type: 'querySelector',
-          value: `#${options.newsArticleId}ViewModal > div > div > div.modal-header > button`,
+          value: `#${this.options.newsArticleId}ViewModal > div > div > div.modal-header > button`,
         },
       },
     ];
@@ -63,35 +63,35 @@ module.exports = {
       },
     };
   },
-  actions(instanceName, options) {
+  actions() {
     return {
       CLICK_CLOSE_BUTTON: {
-        preconditions() {
+        preconditions(dataStore) {
           return [
-            ['isTrue', `${instanceName}.closeButton.displayed`],
+            ['isTrue', `${this.name}.closeButton.displayed`],
           ];
         },
         perform(callback) {
-          driver.findElement(By.id(`${options.newsArticleId}ModalCloseButton`))
+          driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState) {
+        effects(expectedState, dataStore) {
           expectedState.pop();
         },
       },
       CLICK_X_CLOSE_BUTTON: {
-        preconditions() {
+        preconditions(dataStore) {
           return [
-            ['isTrue', `${instanceName}.xCloseButton.displayed`],
+            ['isTrue', `${this.name}.xCloseButton.displayed`],
           ];
         },
         perform(callback) {
-          driver.findElement(By.css(`#${options.newsArticleId}ViewModal > div > div > div.modal-header > button`))
+          driver.findElement(By.css(`#${this.options.newsArticleId}ViewModal > div > div > div.modal-header > button`))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState) {
+        effects(expectedState, dataStore) {
           expectedState.pop();
         },
       },

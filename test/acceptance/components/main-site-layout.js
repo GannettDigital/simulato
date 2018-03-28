@@ -3,7 +3,7 @@
 // const articleData = require('../article-data.json');
 
 module.exports = {
-  name: 'MainSiteLayout',
+  type: 'MainSiteLayout',
   elements() {
     return [
       {
@@ -24,17 +24,11 @@ module.exports = {
   actions() {
     return {};
   },
-  children(instancename, options, expectedState, dataStore) {
-    console.log(this.getFromPage('newsArticle2.newsArticleHeading.text'));
-    // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
-    // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
-
-    // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
-    // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
+  children(expectedState, dataStore) {
     return [
       {
-        componentName: 'NewsArticle',
-        instanceName: 'newsArticle1',
+        type: 'NewsArticle',
+        name: 'newsArticle1',
         state: {
           displayed: true,
           newsArticleImage: {
@@ -58,8 +52,8 @@ module.exports = {
         },
       },
       {
-        componentName: 'NewsArticle',
-        instanceName: 'newsArticle2',
+        type: 'NewsArticle',
+        name: 'newsArticle2',
         state: {
           displayed: true,
           newsArticleImage: {

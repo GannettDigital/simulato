@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  name: 'NavigateToTestSite',
+  type: 'NavigateToTestSite',
   entryComponent: {
     name: 'navigateToTestSite',
     state: {},
@@ -12,21 +12,21 @@ module.exports = {
   model() {
     return {};
   },
-  actions(instanceName, options, dataStore) {
+  actions() {
     return {
       NAVIGATE_TO_TEST_SITE: {
         perform(callback) {
           driver.get(`http://localhost:3000`)
-          .then(callback, callback);
+            .then(callback, callback);
         },
-        effects(expectedState) {
-          // console.log(this.expectedState._pageState);
-
+        effects(expectedState, dataStore) {
           expectedState.clear();
-
-          // console.log(this.getFromPage('newsArticle2.newsArticleHeading.text'));
-          expectedState.createAndAddComponent('MainSiteLayout', 'mainSiteLayout', {
-            displayed: true,
+          expectedState.createAndAddComponent({
+            type: 'MainSiteLayout',
+            name: 'mainSiteLayout',
+            state: {
+              displayed: true,
+            },
           });
 
           // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
