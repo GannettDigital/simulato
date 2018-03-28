@@ -220,25 +220,6 @@ describe('lib/util/validators/validate-actions.js', function() {
           message
         );
       });
-
-      it('should call validateActions.emit once with the event \'validateActions.preconditionsReadyToValidate\''
-        + 'preconditions, actionName, and componentName', function() {
-        let action = {
-          preconditions: sinon.stub().returns(['array', 'of', 'preconditions']),
-          perform: sinon.stub(),
-          effects: sinon.stub(),
-        };
-        validateActions._validateAction(action, 'ACTION_ONE', componentName);
-
-        expect(validateActions.emit.args).to.deep.equal([
-          [
-            'validateActions.preconditionsReadyToValidate',
-            ['array', 'of', 'preconditions'],
-            'ACTION_ONE',
-            'componentName',
-          ],
-        ]);
-      });
     });
 
     describe('if the passed in action has parameters property', function() {
