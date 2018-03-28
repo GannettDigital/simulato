@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  name: 'ViewStoryModal',
+  type: 'ViewStoryModal',
   elements() {
     return [
       {
@@ -68,7 +68,7 @@ module.exports = {
       CLICK_CLOSE_BUTTON: {
         preconditions(dataStore) {
           return [
-            ['isTrue', `${this.instanceName}.closeButton.displayed`],
+            ['isTrue', `${this.name}.closeButton.displayed`],
           ];
         },
         perform(callback) {
@@ -83,7 +83,7 @@ module.exports = {
       CLICK_X_CLOSE_BUTTON: {
         preconditions(dataStore) {
           return [
-            ['isTrue', `${this.instanceName}.xCloseButton.displayed`],
+            ['isTrue', `${this.name}.xCloseButton.displayed`],
           ];
         },
         perform(callback) {

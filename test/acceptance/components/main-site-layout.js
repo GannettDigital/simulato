@@ -3,7 +3,7 @@
 const articleData = require('../article-data.json');
 
 module.exports = {
-  name: 'MainSiteLayout',
+  type: 'MainSiteLayout',
   elements() {
     return [
       {
@@ -27,8 +27,8 @@ module.exports = {
   children(expectedState, dataStore) {
     return [
       {
-        componentName: 'NewsArticle',
-        instanceName: 'newsArticle1',
+        type: 'NewsArticle',
+        name: 'newsArticle1',
         state: {
           displayed: true,
           newsArticleImage: {
@@ -50,8 +50,8 @@ module.exports = {
         },
       },
       {
-        componentName: 'NewsArticle',
-        instanceName: 'newsArticle2',
+        type: 'NewsArticle',
+        name: 'newsArticle2',
         state: {
           displayed: true,
           newsArticleImage: {

@@ -24,9 +24,9 @@ describe('lib/executor/reporters/teamcity-reporter.js', function() {
             mockery.disable();
         });
 
-        it('should call console.log once with actionConfig.instanceName and ' +
+        it('should call console.log once with actionConfig.name and ' +
             'actionConfig.actionName in the teamcity format', function() {
-                teamcityReporter.reportStartAction('', {instanceName: 'myInstance', actionName: 'myAction'});
+                teamcityReporter.reportStartAction('', {name: 'myInstance', actionName: 'myAction'});
 
                 expect(console.log.args).to.deep.equal([
                     ['##teamcity[testSuiteStarted name=\'myInstance - myAction\']'],
@@ -78,12 +78,12 @@ describe('lib/executor/reporters/teamcity-reporter.js', function() {
                 expect(console.log.args[2]).to.deep.equal(['##teamcity[testFinished name=\'\'myStep\']']);
             });
 
-            it('should call conosle.log with test suite finished with actionConfig.instanceName and' +
+            it('should call conosle.log with test suite finished with actionConfig.name and' +
                 ' actionConfig.actionName', function() {
                 let error = new Error('myError');
 
                 teamcityReporter.reportEndStep(error, '',
-                    {instanceName: 'myInstance', actionName: 'actionName'}, '\'myStep', 'fail');
+                    {name: 'myInstance', actionName: 'actionName'}, '\'myStep', 'fail');
 
                 expect(console.log.args[3]).to.deep.equal(
                     ['##teamcity[testSuiteFinished name=\'myInstance - actionName\']']);
@@ -124,9 +124,9 @@ describe('lib/executor/reporters/teamcity-reporter.js', function() {
             mockery.disable();
         });
 
-        it('should call console.log once with actionConfig.instanceName and ' +
+        it('should call console.log once with actionConfig.name and ' +
             'actionConfig.actionName in the teamcity format', function() {
-                teamcityReporter.reportFinishedAction('', {instanceName: 'myInstance', actionName: 'myAction'});
+                teamcityReporter.reportFinishedAction('', {name: 'myInstance', actionName: 'myAction'});
 
                 expect(console.log.args).to.deep.equal([
                     ['##teamcity[testSuiteFinished name=\'myInstance - myAction\']'],

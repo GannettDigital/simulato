@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  name: 'NewsArticle',
+  type: 'NewsArticle',
   elements() {
     return [
       {
@@ -59,7 +59,7 @@ module.exports = {
       CLICK_TO_VIEW_STORY: {
         preconditions(dataStore) {
           return [
-            ['isTrue', `${this.instanceName}.displayed`],
+            ['isTrue', `${this.name}.displayed`],
           ];
         },
         perform(callback) {
@@ -70,8 +70,8 @@ module.exports = {
         effects(expectedState, dataStore) {
           expectedState.stash();
           expectedState.createAndAddComponent({
-            componentName: 'ViewStoryModal',
-            instanceName: `${this.options.newsArticleId}ViewModal`,
+            type: 'ViewStoryModal',
+            name: `${this.options.newsArticleId}ViewModal`,
             state: {
               displayed: true,
               modalTitle: {
@@ -86,7 +86,7 @@ module.exports = {
                 displayed: true,
               },
               xCloseButton: {
-                displayed: true,
+                displayed: false,
               },
             },
             options: {

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  name: 'NavigateToTestSite',
+  type: 'NavigateToTestSite',
   entryComponent: {
     name: 'navigateToTestSite',
     state: {},
@@ -22,8 +22,8 @@ module.exports = {
         effects(expectedState, dataStore) {
           expectedState.clear();
           expectedState.createAndAddComponent({
-            componentName: 'MainSiteLayout',
-            instanceName: 'mainSiteLayout',
+            type: 'MainSiteLayout',
+            name: 'mainSiteLayout',
             state: {
               displayed: true,
             },

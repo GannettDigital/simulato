@@ -11,6 +11,7 @@
 * Tom Dale
   * Refactored create & createAndAddComponent to only take an object as param to follow pattern of children
   * This context is now passed into elements, model, actions (params, preconditions, perform, effects), children, and events to access instanceName and options
+  * Changed componentName to type, instance name to name, and the name specified inside components to type for clarity when creating new components
 
 ## 0.2.1
 

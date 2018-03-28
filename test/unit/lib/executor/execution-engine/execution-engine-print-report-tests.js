@@ -65,7 +65,7 @@ describe('lib/executor/execution-engine/execution-engine-print-report.js', funct
             it('should call console.log 7 times if there are two errors', function() {
                 report.error = {
                     name: 'My Error',
-                    instanceName: 'Instance 1',
+                    nameOfComponent: 'Instance 1',
                     actionName: 'THIS_ACTION',
                     failedStep: 'preconditions',
                 };
@@ -75,11 +75,11 @@ describe('lib/executor/execution-engine/execution-engine-print-report.js', funct
                 expect(console.log.callCount).to.equal(7);
             });
 
-            it('should print the failed action with the report.error.instanceName and ' +
+            it('should print the failed action with the report.error.name and ' +
                 'report.error.actionName', function() {
                 report.error = {
                     name: 'My Error',
-                    instanceName: 'Instance 1',
+                    nameOfComponent: 'Instance 1',
                     actionName: 'THIS_ACTION',
                     failedStep: 'preconditions',
                 };
@@ -92,7 +92,7 @@ describe('lib/executor/execution-engine/execution-engine-print-report.js', funct
             it('should print the step from report.error.failedStep', function() {
                 report.error = {
                     name: 'My Error',
-                    instanceName: 'Instance 1',
+                    nameOfComponent: 'Instance 1',
                     actionName: 'THIS_ACTION',
                     failedStep: 'preconditions',
                 };
@@ -105,11 +105,10 @@ describe('lib/executor/execution-engine/execution-engine-print-report.js', funct
             it('should print the error\'s name from report.error.name', function() {
                 report.error = {
                     name: 'My Error',
-                    instanceName: 'Instance 1',
+                    nameOfComponent: 'Instance 1',
                     actionName: 'THIS_ACTION',
                     failedStep: 'preconditions',
                 };
-
 
                 executionEnginePrintReport.printOutputToConsole(report);
 

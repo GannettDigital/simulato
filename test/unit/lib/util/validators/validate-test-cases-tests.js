@@ -53,9 +53,9 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
       testCase1 = [
         {
-          name: 'initialization',
-          componentName: 'Component1',
-          instanceName: 'component1',
+          initialization: true,
+          type: 'Component1',
+          name: 'component1',
           state: {},
         },
         {
@@ -68,9 +68,9 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
       testCase3 = [
         {
-          name: 'initialization',
-          componentName: 'Component1',
-          instanceName: 'component1',
+          initialization: true,
+          type: 'Component1',
+          name: 'component1',
           state: {},
         },
         {
@@ -214,40 +214,40 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           );
         });
 
-        describe('if the action name is \'initialization\'', function() {
-          it('should throw an error if the action.componentName is not string', function() {
-            testCase3[0].componentName = ['i', 'am', 'not', 'a', 'string'];
+        describe('if the action initialization is true', function() {
+          it('should throw an error if the action.type is not string', function() {
+            testCase3[0].name = ['i', 'am', 'not', 'a', 'string'];
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
             MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
               {
                 message:
                   `The test case at file path ${files[2]} action initialization must`
-                  + ` have a componentName thats a string`,
+                  + ` have a name thats a string`,
               }
             );
 
             expect(validateTestCases.bind(null, files, callback)).to.throw(
               `The test case at file path path/to/file3.json action initialization must`
-              + ` have a componentName thats a string`
+              + ` have a name thats a string`
             );
           });
 
-          it('should throw an error if the action.instanceName is not string', function() {
-            delete testCase3[0].instanceName;
+          it('should throw an error if the action.name is not string', function() {
+            delete testCase3[0].name;
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
             MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
               {
                 message:
                   `The test case at file path ${files[2]} action initialization must`
-                  + ` have a instanceName thats a string`,
+                  + ` have a name thats a string`,
               }
             );
 
             expect(validateTestCases.bind(null, files, callback)).to.throw(
               `The test case at file path path/to/file3.json action initialization must`
-              + ` have a instanceName thats a string`
+              + ` have a name thats a string`
             );
           });
 
