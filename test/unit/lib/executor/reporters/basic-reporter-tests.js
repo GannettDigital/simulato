@@ -24,9 +24,9 @@ describe('lib/executor/reporters/basic-reporter.js', function() {
             mockery.disable();
         });
 
-        it('should call console.log once with the passed in actionConfig.instanceName and' +
+        it('should call console.log once with the passed in actionConfig.name and' +
             'actionConfig.actionName in a string', function() {
-            basicReporter.reportStartAction('', {instanceName: 'myInstance', actionName: 'myAction'});
+            basicReporter.reportStartAction('', {name: 'myInstance', actionName: 'myAction'});
 
             expect(console.log.args).to.deep.equal([[
                 'myInstance - myAction',

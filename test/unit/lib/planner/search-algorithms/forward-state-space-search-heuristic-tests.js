@@ -29,13 +29,13 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             next = sinon.stub();
             components = [
                 {
-                    instanceName: 'myInstance',
+                    name: 'myInstance',
                     actions: {
                         MY_ACTION: 'myAction',
                     },
                 },
                 {
-                    instanceName: 'myInstance2',
+                    name: 'myInstance2',
                     actions: {
                         MY_ACTION_2: 'myAction2',
                     },
@@ -96,7 +96,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
         describe('for each action in all components', function() {
             it('should call forwardStateSpaceSearch.checkPreconditions with the event \'forwardStateSpaceSearch' +
-                '.checkPreconditions\', node, action, actionIdentifier, and next', function() {
+                '.checkPreconditions\', node, component, actionName, and next', function() {
                 let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
 
                 generator.next();
@@ -107,15 +107,15 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     [
                         'forwardStateSpaceSearch.checkPreconditions',
                         node,
-                        'myAction',
-                        'myInstance.MY_ACTION',
+                        components[0],
+                        'MY_ACTION',
                         next,
                     ],
                     [
                         'forwardStateSpaceSearch.checkPreconditions',
                         node,
-                        'myAction2',
-                        'myInstance2.MY_ACTION_2',
+                        components[1],
+                        'MY_ACTION_2',
                         next,
                     ],
                 ]);
@@ -703,6 +703,8 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         let EventEmitter;
         let EventEmitterInstance;
         let forwardStateSpaceSearch;
+        let component;
+        let node;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -718,6 +720,20 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             EventEmitter.returns(EventEmitterInstance);
             next = sinon.stub();
             callback = sinon.stub();
+            component = {
+                name: 'myInstance',
+                actions: {
+                    MY_ACTION: {
+                        preconditions: sinon.stub(),
+                    },
+                },
+            };
+            node = {
+                dataStore: {storedData: 'someData'},
+                state: {
+                    getState: sinon.stub().returns({property: 'myProperty'}),
+                },
+            };
 
             mockery.registerMock('events', {EventEmitter});
 
@@ -734,7 +750,8 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
         describe('if action.preconditions is undefined', function() {
             it('should call the passed in callback once with null, and true as parameters', function() {
-                let generator = forwardStateSpaceSearch._checkPreconditions({}, {}, '', callback);
+                delete component.actions.MY_ACTION.preconditions;
+                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
                 generator.next();
                 generator.next(next);
 
@@ -748,28 +765,33 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         describe('if action.preconditions is defined', function() {
-            it('should call action.preconditions once with no parameters', function() {
-                let action = {
-                    preconditions: sinon.stub(),
-                };
-
-                let generator = forwardStateSpaceSearch._checkPreconditions({}, action, '', callback);
+            it('should call action.preconditions once with the node.dataStore', function() {
+                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
                 generator.next();
                 generator.next(next);
 
-                expect(action.preconditions.args).to.deep.equal([[]]);
+                expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
+                    {storedData: 'someData'},
+                ]]);
+            });
+
+            it('should call action.preconditions with the this context of the component', function() {
+                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                generator.next();
+                generator.next(next);
+
+                expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
+                    component,
+                ]);
             });
 
             describe('if actions.preconditions throws', function() {
                 it('should throw an error with a precondition failure message', function() {
                     let err = new Error('An error occurred');
                     let thrownError;
-                    let action = {
-                        preconditions: sinon.stub().throws(err),
-                    };
-
+                    component.actions.MY_ACTION.preconditions.throws(err);
                     let generator = forwardStateSpaceSearch
-                        ._checkPreconditions({}, action, 'myComponent.MY_ACTION', callback);
+                        ._checkPreconditions(node, component, 'MY_ACTION', callback);
                     generator.next();
                     try {
                         generator.next(next);
@@ -779,7 +801,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
                     expect(thrownError.message).to.equal(
                         'An error with the message \'An error occurred\' was thrown while ' +
-                        'executing preconditions for the action \'myComponent.MY_ACTION\''
+                        'executing preconditions for the action \'myInstance.MY_ACTION\''
                     );
                 });
             });
@@ -788,19 +810,12 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 it('should call fowardStateSpaceSearch.emit once with the event \'forwardStateSpaceSearch.' +
                     'runAssertions\', the result of the call to node.state.getState(), ' +
                     'the preconditions, and the next callback', function() {
-                    let action = {
-                        preconditions: sinon.stub().returns([
-                            ['isTrue', 'component.displayed'],
-                            ['isFalse', 'component.checkbox.checked'],
-                        ]),
-                    };
-                    let node = {
-                        state: {
-                            getState: sinon.stub().returns({property: 'myProperty'}),
-                        },
-                    };
+                    component.actions.MY_ACTION.preconditions.returns([
+                        ['isTrue', 'component.displayed'],
+                        ['isFalse', 'component.checkbox.checked'],
+                    ]);
 
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
+                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
                     generator.next();
                     generator.next(next);
 
@@ -818,19 +833,12 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 });
 
                 it('should call node.state.getState once with no parameters', function() {
-                    let action = {
-                        preconditions: sinon.stub().returns([
-                            ['isTrue', 'component.displayed'],
-                            ['isFalse', 'component.checkbox.checked'],
-                        ]),
-                    };
-                    let node = {
-                        state: {
-                            getState: sinon.stub().returns({property: 'myProperty'}),
-                        },
-                    };
+                    component.actions.MY_ACTION.preconditions.returns([
+                        ['isTrue', 'component.displayed'],
+                        ['isFalse', 'component.checkbox.checked'],
+                    ]);
 
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
+                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
                     generator.next();
                     generator.next(next);
 
@@ -839,19 +847,13 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
                 describe('if forwardStateSpaceSearch.emit throws', function() {
                     it('should call the callback once with null, and false', function() {
-                        let action = {
-                            preconditions: sinon.stub().returns([
-                                ['isTrue', 'component.displayed'],
-                                ['isFalse', 'component.checkbox.checked'],
-                            ]),
-                        };
-                        let node = {
-                            state: {
-                                getState: sinon.stub().returns({property: 'myProperty'}),
-                            },
-                        };
+                        component.actions.MY_ACTION.preconditions.returns([
+                            ['isTrue', 'component.displayed'],
+                            ['isFalse', 'component.checkbox.checked'],
+                        ]);
 
-                        let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
+                        let generator = forwardStateSpaceSearch
+                            ._checkPreconditions(node, component, 'MY_ACTION', callback);
                         generator.next();
                         generator.next(next);
                         generator.throw(new Error('An error occurred'));
@@ -867,19 +869,13 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
                 describe('if forwardStateSpaceSearch.emit does not throw', function() {
                     it('should call the callback once with null, and true', function() {
-                        let action = {
-                            preconditions: sinon.stub().returns([
-                                ['isTrue', 'component.displayed'],
-                                ['isFalse', 'component.checkbox.checked'],
-                            ]),
-                        };
-                        let node = {
-                            state: {
-                                getState: sinon.stub().returns({property: 'myProperty'}),
-                            },
-                        };
+                        component.actions.MY_ACTION.preconditions.returns([
+                            ['isTrue', 'component.displayed'],
+                            ['isFalse', 'component.checkbox.checked'],
+                        ]);
 
-                        let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
+                        let generator = forwardStateSpaceSearch
+                            ._checkPreconditions(node, component, 'MY_ACTION', callback);
                         generator.next();
                         generator.next(next);
                         generator.next();
@@ -906,6 +902,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         let sampleMap;
         let stateObj;
         let action;
+        let dataStore;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -942,12 +939,17 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 getComponentsAsMap: sinon.stub().returns(sampleMap),
             };
 
+            dataStore = {
+                storedData: 'someData',
+            };
+
             node = {
                 path: sampleSet,
                 state: stateObj,
                 testCase: {
                     push: sinon.stub(),
                 },
+                dataStore: dataStore,
             };
             callback = sinon.stub();
             action = node.state.getComponentsAsMap().get('test').actions.ACTION;
@@ -982,15 +984,37 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             expect(node.lastAction).to.equal('test.ACTION');
         });
         describe('if the parameters are an array', function() {
+            it('should call the generate function passing in node.datastore', function() {
+                forwardStateSpaceSearch._applyActionToNode(node, callback);
+
+                expect(action.parameters[0].generate.args).to.deep.equal([[
+                    dataStore,
+                ]]);
+            });
+            it('should call the generate function with the passed in this context of component', function() {
+                forwardStateSpaceSearch._applyActionToNode(node, callback);
+
+                expect(action.parameters[0].generate.thisValues).to.deep.equal([
+                    node.state.getComponentsAsMap().get('test'),
+                ]);
+            });
             it('should call the generate function and produce "parameter"', function() {
                 forwardStateSpaceSearch._applyActionToNode(node, callback);
 
                 expect(action.effects.args[0][0]).to.deep.equal('parameter');
             });
-            it('should call action effects with the testCaseAction option parameters and the node state', function() {
+            it('should call action effects with the testCaseAction.option.parameters, '
+                + 'the node.state, and the node.dataStore', function() {
                 forwardStateSpaceSearch._applyActionToNode(node, callback);
 
-                expect(action.effects.args[0]).to.deep.equal(['parameter', stateObj]);
+                expect(action.effects.args[0]).to.deep.equal(['parameter', stateObj, dataStore]);
+            });
+            it('should call action effects with the this context of component', function() {
+                forwardStateSpaceSearch._applyActionToNode(node, callback);
+
+                expect(action.effects.thisValues).to.deep.equal([
+                    node.state.getComponentsAsMap().get('test'),
+                ]);
             });
             it('should throw an error if the parameters and action effects throws an error', function() {
                 let thrown = new Error('ERROR_THROWN');
@@ -1007,12 +1031,22 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             });
         });
         describe('if the parameters are not an array', function() {
-            it('it should call action.effects with node state passed in', function() {
+            it('it should call action.effects with node state and node dataStore passed in', function() {
                 action.parameters = {};
 
                 forwardStateSpaceSearch._applyActionToNode(node, callback);
 
-                expect(action.effects.args[0]).to.deep.equal([stateObj]);
+                expect(action.effects.args[0]).to.deep.equal([stateObj, dataStore]);
+            });
+
+            it('should call action effects with the this context of component', function() {
+                action.parameters = {};
+
+                forwardStateSpaceSearch._applyActionToNode(node, callback);
+
+                expect(action.effects.thisValues).to.deep.equal([
+                    node.state.getComponentsAsMap().get('test'),
+                ]);
             });
             it('should throw an error if the action effects throws an error', function() {
                 let thrown = new Error('ERROR_THROWN');

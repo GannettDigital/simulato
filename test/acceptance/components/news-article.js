@@ -1,15 +1,15 @@
 'use strict';
 
 module.exports = {
-  name: 'NewsArticle',
-  elements(instanceName, options) {
+  type: 'NewsArticle',
+  elements() {
     return [
       {
         name: 'newsArticle',
         selector: {
           type: 'attribute',
           key: 'id',
-          value: options.newsArticleId,
+          value: this.options.newsArticleId,
         },
       },
       {
@@ -17,7 +17,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Image`,
+          value: `${this.options.newsArticleId}Image`,
         },
       },
       {
@@ -25,7 +25,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Heading`,
+          value: `${this.options.newsArticleId}Heading`,
         },
       },
       {
@@ -33,7 +33,7 @@ module.exports = {
         selector: {
           type: 'attribute',
           key: 'id',
-          value: `${options.newsArticleId}Text`,
+          value: `${this.options.newsArticleId}Text`,
         },
       },
     ];
@@ -54,39 +54,44 @@ module.exports = {
       },
     };
   },
-  actions(instanceName, options) {
+  actions() {
     return {
       CLICK_TO_VIEW_STORY: {
-        preconditions() {
+        preconditions(dataStore) {
           return [
-            ['isTrue', `${instanceName}.displayed`],
+            ['isTrue', `${this.name}.displayed`],
           ];
         },
         perform(callback) {
-          driver.findElement(By.id(options.newsArticleId))
+          driver.findElement(By.id(this.options.newsArticleId))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState) {
+        effects(expectedState, dataStore) {
           expectedState.stash();
-          expectedState.createAndAddComponent('ViewStoryModal', `${options.newsArticleId}ViewModal`, {
-            displayed: true,
-            modalTitle: {
+          expectedState.createAndAddComponent({
+            type: 'ViewStoryModal',
+            name: `${this.options.newsArticleId}ViewModal`,
+            state: {
               displayed: true,
-              text: options.newsArticleHeading,
+              modalTitle: {
+                displayed: true,
+                text: this.options.newsArticleHeading,
+              },
+              modalBodyText: {
+                displayed: true,
+                text: this.options.newsArticleText,
+              },
+              closeButton: {
+                displayed: true,
+              },
+              xCloseButton: {
+                displayed: true,
+              },
             },
-            modalBodyText: {
-              displayed: true,
-              text: options.newsArticleText,
+            options: {
+              newsArticleId: this.options.newsArticleId,
             },
-            closeButton: {
-              displayed: true,
-            },
-            xCloseButton: {
-              displayed: true,
-            },
-          }, {
-            newsArticleId: options.newsArticleId,
           });
         },
       },
