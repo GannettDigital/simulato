@@ -54,10 +54,16 @@ module.exports = {
       },
     };
   },
-  actions(instanceName, options) {
+  actions(instanceName, options, dataStore) {
     return {
       CLICK_TO_VIEW_STORY: {
         preconditions() {
+          console.log('hello');
+          dataStore.store(`${instanceName}HeadingText`, this.getFromPage(`${instanceName}.newsArticleHeading.text`));
+          dataStore.store(`${instanceName}Text`, this.getFromPage(`${instanceName}.newsArticleText.text`));
+
+          // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
+          // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
           return [
             ['isTrue', `${instanceName}.displayed`],
           ];
@@ -69,15 +75,19 @@ module.exports = {
         },
         effects(expectedState) {
           expectedState.stash();
+          console.log(dataStore.retrieve(`${instanceName}HeadingText`));
+          console.log(dataStore.retrieve(`${instanceName}Text`));
           expectedState.createAndAddComponent('ViewStoryModal', `${options.newsArticleId}ViewModal`, {
             displayed: true,
             modalTitle: {
               displayed: true,
-              text: options.newsArticleHeading,
+              // text: options.newsArticleHeading,
+              text: dataStore.retrieve(`${instanceName}HeadingText`),
             },
             modalBodyText: {
               displayed: true,
-              text: options.newsArticleText,
+              // text: options.newsArticleText,
+              text: dataStore.retrieve(`${instanceName}Text`),
             },
             closeButton: {
               displayed: true,

@@ -1,6 +1,6 @@
 'use strict';
 
-const articleData = require('../article-data.json');
+// const articleData = require('../article-data.json');
 
 module.exports = {
   name: 'MainSiteLayout',
@@ -24,7 +24,13 @@ module.exports = {
   actions() {
     return {};
   },
-  children(instancename, options, expectedState) {
+  children(instancename, options, expectedState, dataStore) {
+    console.log(this.getFromPage('newsArticle2.newsArticleHeading.text'));
+    // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
+    // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
+
+    // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
+    // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
     return [
       {
         componentName: 'NewsArticle',
@@ -36,17 +42,19 @@ module.exports = {
           },
           newsArticleHeading: {
             displayed: true,
-            text: articleData[0].heading,
+            // text: articleData[0].heading,
+            text: this.getFromPage('newsArticle1.newsArticleHeading.text'),
           },
           newsArticleText: {
             displayed: true,
-            text: articleData[0].text,
+            // text: articleData[0].text,
+            text: this.getFromPage('newsArticle1.newsArticleText.text'),
           },
         },
         options: {
           newsArticleId: 'article1',
-          newsArticleHeading: articleData[0].heading,
-          newsArticleText: articleData[0].text,
+          // newsArticleHeading: articleData[0].heading,
+          // newsArticleText: articleData[0].text,
         },
       },
       {
@@ -59,17 +67,32 @@ module.exports = {
           },
           newsArticleHeading: {
             displayed: true,
-            text: articleData[1].heading,
+            text: this.getFromPage('newsArticle2.newsArticleHeading.text'),
           },
           newsArticleText: {
             displayed: true,
-            text: articleData[1].text,
+            text: this.getFromPage('newsArticle2.newsArticleText.text'),
           },
         },
         options: {
           newsArticleId: 'article2',
-          newsArticleHeading: articleData[1].heading,
-          newsArticleText: articleData[1].text,
+          // newsArticleHeading: articleData[1].heading,
+          // newsArticleText: articleData[1].text,
+        },
+      },
+    ];
+  },
+  events(instanceName, options, expectedState, dataStore) {
+    // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
+    // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
+
+    // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
+    // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
+    return [
+      {
+        name: 'something',
+        listener() {
+          console.log('hello');
         },
       },
     ];

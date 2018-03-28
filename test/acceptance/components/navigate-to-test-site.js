@@ -12,7 +12,7 @@ module.exports = {
   model() {
     return {};
   },
-  actions(instanceName, options) {
+  actions(instanceName, options, dataStore) {
     return {
       NAVIGATE_TO_TEST_SITE: {
         perform(callback) {
@@ -20,10 +20,20 @@ module.exports = {
           .then(callback, callback);
         },
         effects(expectedState) {
+          // console.log(this.expectedState._pageState);
+
           expectedState.clear();
+
+          // console.log(this.getFromPage('newsArticle2.newsArticleHeading.text'));
           expectedState.createAndAddComponent('MainSiteLayout', 'mainSiteLayout', {
             displayed: true,
           });
+
+          // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
+          // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
+
+          // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
+          // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
         },
       },
     };
