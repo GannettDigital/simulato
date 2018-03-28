@@ -2,6 +2,10 @@
 Simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
 ## Components
 This section details the different sections of a component
+### type
+* type is **required**
+* Description
+    * `type` must be a string that denotes the components type
 ### elements
 * elements is **required**
 * Description
@@ -21,11 +25,6 @@ This section details the different sections of a component
             * The selenium representation of the web element 
         * isDisplayed
             * A boolean computed based on whether the element is visible to a user
-* Parameters
-    * `instanceName`
-        * The unique name of the component which was given upon creation
-    * `options`
-        * The options object for the component which was given upon creation
 * Element properties
     * `name`
         * Must a be a string and is **required**
@@ -49,7 +48,7 @@ This section details the different sections of a component
         * If the `selector.type` is querySelectory this should be the query selector
 * Example
     ```
-    elements(instanceName, options) {
+    elements() {
         return [
             {
                 name: 'searchResults',
@@ -68,11 +67,6 @@ This section details the different sections of a component
     * `model` must be a function that must return an object
     * The model specficied here is created from the `elements` specified above are scraped and returned from the browser
     * Only model what is important for determining correctness and leave out anything else
-* Parameters
-    * `instanceName`
-        * The unique name of the component which was given upon creation
-    * `options`
-        * The options object for the component which was given upon creation
 * Model Properties
     * There are no predfined properties
     * Each property must be an object, string, or a function
@@ -85,7 +79,7 @@ This section details the different sections of a component
 * Example
     * Given the following model
     ```
-    model(instanceName, options) {
+    model() {
         return {
             displayed: 'myButton.isDisplayed',
             disabled: 'myButton.disabled',
@@ -99,7 +93,7 @@ This section details the different sections of a component
     ```
     * Given the following elements
     ```
-    elements(instanceName, options) {
+    elements() {
         return [
             {
                 name: 'myButton',
@@ -154,13 +148,6 @@ This section details the different sections of a component
     * Actions are used act on the system under test, retrieve data, and anything else that is desired during test execution
     *  The actions format is loosely based on STRIPS and similar techniques for specifying actions within a planning domain
     *  Actions consist of: parameters, preconditions, perform, and effects
-* Parameters
-    * `instanceName`
-        * The unique name of the component which was given upon creation
-    * `options`
-        * The options for the component
-    * `dataStore`
-        * The utility used to store data during test execution and planning
 * Action properties
     * `<SOME_ACION>`
         * The name of the first level property is the name of the action
@@ -180,6 +167,8 @@ This section details the different sections of a component
         * Parameters
             * Action Parameters
                 * Action parameters are prepended
+            * `dataStore`
+                * The utility used to store data during test execution and planning
     * `<SOME_ACTION>.perform`
         * Must be a function, must call the passed in callback, and is **required** 
         * During test execution this function is called to act on the system or do anything else desired during execution
@@ -197,6 +186,8 @@ This section details the different sections of a component
                 * Action parameters are prepended
             * `expectedState`
                 * The utility used to modify the desired state of the program
+            * `dataStore`
+                * The utility used to store data during test execution and planning
 * Example
     ```
     MY_ACTION: {
@@ -208,10 +199,10 @@ This section details the different sections of a component
                 },
             },
         ],
-        preconditions() {
+        preconditions(dataStore) {
             return [
-                ['isTrue', `${instanceName}.displayed`],
-                ['equal', `${instanceName}.value`, 'some value'],
+                ['isTrue', `${this.name}.displayed`],
+                ['equal', `${this.name}.value`, 'some value'],
             ];
         },
         perform(myParameter, callback) {
@@ -220,8 +211,8 @@ This section details the different sections of a component
             .sendKeys(myParameter)
             .then(callback, callback);
         },
-        effects(myParameter, expectedState) {
-            expectedState.modify(instanceName, function(myComponentInstance) {
+        effects(myParameter, expectedState, dataStore) {
+            expectedState.modify(this.name, function(myComponentInstance) {
                 myComponentInstance.value = myParameter;
             });
         },
@@ -234,18 +225,14 @@ This section details the different sections of a component
     * Use children to reduce the burden of specifying repetative and lengthy state objects when a component is created and added
     * It is a good idea to create small, reusable components for common UI elements under test and then simply specify them as children when needed
 * Parameters
-    * `instanceName`
-        * The unique name of the component which was given upon creation
-    * `options`
-        * The options object for the component which was given upon creation
     * `expectedState`
         * The utility used to modify the desired state of the program
     * `dataStore`
         * The utility used to store data during test execution and planning
 * Child properties
-    * `componentName`
-        * The name of the component to be created and is **required**
-    * `instanceName`
+    * `type`
+        * The type of component to be created and is **required**
+    * `name`
         * The unique name to give the created component and is **required**
     * `state`
         * The state of the component upon creation and is **required**
@@ -253,11 +240,11 @@ This section details the different sections of a component
         * The options to be passed to the component upon creation
 * Example
     ```
-    children(instanceName, options, expectedState, dataStore) {
+    children(expectedState, dataStore) {
         return [
             {
-                componentName: 'Button',
-                instanceName: 'myButton',
+                type: 'Button',
+                name: 'myButton',
                 state: {
                     displayed: true,
                     disabled: false,
@@ -267,8 +254,8 @@ This section details the different sections of a component
                 },
             },
             {
-                componentName: 'TextInput',
-                instanceName: 'myTextInput',
+                type: 'TextInput',
+                name: 'myTextInput',
                 state: {
                     displayed: true,
                     value: '',
@@ -289,10 +276,6 @@ This section details the different sections of a component
     * Use events to facilitate communication between components
     * This can be a good way for child components to communicate to parent components
 * Parameters
-    * `instanceName`
-        * The unique name of the component which was given upon creation
-    * `options`
-        * The options object for the component which was given upon creation
     * `expectedState`
         * The utility used to modify the desired state of the program
     * `dataStore`
@@ -304,7 +287,7 @@ This section details the different sections of a component
         * A function to runs when the event(s) in the `name` property is/are run and is **required**
 * Example
     ```
-    events(instanceName, options, expectedState, dataStore) {
+    events(expectedState, dataStore) {
         return [
             {
                 name: 'myTextBoxTextEntered',
@@ -429,26 +412,32 @@ This section documents utilization of the configuration file in place of CLI opt
 
 ## Expected State
 This section documents functions for the expected state used throughout the tool
-* `createAndAddComponent(componentName, instanceName, state, options)`
+* `createAndAddComponent(componentConfig)`
     * Creates a component and adds it to the expected state
     * Parameters
-        * `componentName`
-            * A string corresponding to one of the components' `name` property
-        * `instanceName`
-            * A string that denotes the unique name of component when created
-        * `state`
-            * An object representing the state of the component
-        * `options`
-            * An object used for any data the user wants the component to have   
-* `createComponent(componentName, instanceName, options)`
+        * `componentConfig`
+            * An object with the following fields
+                * `type`
+                    * A string corresponding to one of the components' `type` property
+                * `name`
+                    * A string that denotes the unique name of component when created
+                * `state`
+                    * An object representing the state of the component
+                * `options`
+                    * An object used for any data the user wants the component to have
+                * `dyanamicArea`
+                    * A string that denotes the dynamicArea this component should be a part of
+* `createComponent(componentConfig)`
     * Creates a component
     * Parameters
-        * `componentName`
-            * A string corresponding to one of the components' `name` property
-        * `instanceName`
-            * A string that denotes the unique name of component when created
-        * `options`
-            * An object used for any data the user wants the component to have
+        * `componentConfig`
+            * An object with the following fields
+                * `type`
+                    * A string corresponding to one of the components' `type` property
+                * `name`
+                    * A string that denotes the unique name of component when created
+                * `options`
+                    * An object used for any data the user wants the component to have
 * `addComponent(component, state)`
     * Adds a created component with the given state
     * Parameters
@@ -456,10 +445,12 @@ This section documents functions for the expected state used throughout the tool
             * The created componend to be added to the state
         * `state`
             * An object representing the state of the component to be added
-* `delete(instanceName)`
+        * `dyanmicArea`
+            * A string that denotes the dynamicArea this component should be a part of
+* `delete(name)`
     * Deletes a single component from the expected state
     * Parameters
-        * `instanceName`
+        * `name`
             * A string denoting name of the component to delete
 * `clear()`
     * Clears the expected state (does not save anything)
@@ -470,10 +461,10 @@ This section documents functions for the expected state used throughout the tool
             * A string denoting the dynamic area to clear
 * `getState()`
     * Gets a JavaScript object representing the current state 
-* `modify(instanceName, callback)`
+* `modify(name, callback)`
     * Modifies a component
         * Parameters
-            * `instanceName`
+            * `name`
                 * A string denoting the component to modify
             * `callback`
                 * The function that is called with the component as the first parameter
