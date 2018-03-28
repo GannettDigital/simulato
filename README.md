@@ -5,7 +5,7 @@ This section details the different sections of a component
 ### type
 * type is **required**
 * Description
-    * `type` must be a string that denotes the components type
+    * `type` must be a string that denotes the component's type
 ### elements
 * elements is **required**
 * Description
