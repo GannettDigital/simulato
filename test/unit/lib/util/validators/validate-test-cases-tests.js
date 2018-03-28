@@ -53,7 +53,6 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
       testCase1 = [
         {
-          initialization: true,
           type: 'Component1',
           name: 'component1',
           state: {},
@@ -68,7 +67,6 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
       testCase3 = [
         {
-          initialization: true,
           type: 'Component1',
           name: 'component1',
           state: {},
@@ -214,7 +212,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           );
         });
 
-        describe('if the action initialization is true', function() {
+        describe('if the action is the first action', function() {
           it('should throw an error if the action.type is not string', function() {
             testCase3[0].name = ['i', 'am', 'not', 'a', 'string'];
             mockery.registerMock('path/to/file3.json', testCase3);
