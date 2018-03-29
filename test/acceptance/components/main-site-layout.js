@@ -1,7 +1,5 @@
 'use strict';
 
-// const articleData = require('../article-data.json');
-
 module.exports = {
   type: 'MainSiteLayout',
   elements() {
@@ -36,19 +34,15 @@ module.exports = {
           },
           newsArticleHeading: {
             displayed: true,
-            // text: articleData[0].heading,
             text: this.getFromPage('newsArticle1.newsArticleHeading.text'),
           },
           newsArticleText: {
             displayed: true,
-            // text: articleData[0].text,
             text: this.getFromPage('newsArticle1.newsArticleText.text'),
           },
         },
         options: {
           newsArticleId: 'article1',
-          // newsArticleHeading: articleData[0].heading,
-          // newsArticleText: articleData[0].text,
         },
       },
       {
@@ -70,23 +64,27 @@ module.exports = {
         },
         options: {
           newsArticleId: 'article2',
-          // newsArticleHeading: articleData[1].heading,
-          // newsArticleText: articleData[1].text,
         },
       },
     ];
   },
-  events(instanceName, options, expectedState, dataStore) {
+  events(expectedState, dataStore) {
     // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
     // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
 
     // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
     // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
+    // let myThis = this;s
     return [
       {
         name: 'something',
         listener() {
           console.log('hello');
+          // dataStore.store('newsArticle1HeadingText', myThis.getFromPage('newsArticle1.newsArticleHeading.text'));
+          // dataStore.store('newsArticle1Text', myThis.getFromPage('newsArticle1.newsArticleText.text'));
+
+          // dataStore.store('newsArticle2HeadingText', myThis.getFromPage('newsArticle2.newsArticleHeading.text'));
+          // dataStore.store('newsArticle2Text', myThis.getFromPage('newsArticle2.newsArticleText.text'));
         },
       },
     ];

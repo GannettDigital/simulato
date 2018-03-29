@@ -27,7 +27,9 @@ module.exports = {
             state: {
               displayed: true,
             },
-          });
+        });
+
+        expectedState.eventEmitter.emit('something');
 
           // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
           // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
