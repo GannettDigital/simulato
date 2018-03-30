@@ -4,7 +4,7 @@ Steps for core contributers to publish a new release of simulato
 
 * Pull down and verify you have the most recent version of master
 * Update the version number in the package.json using [semantic versioning](https://semver.org/)
-* Verify the changelog has the aggregated list of changes under the version number that simulato is being updated to
+* Verify the [CHANGELOG.md](./CHANGELOG.md) has the aggregated list of changes under the version number to which simulato is being updated
 * Confirm your registry is pointing to the default registry of `https://registry.npmjs.org/`
 * Run the command [npm login](https://docs.npmjs.com/cli/adduser)
 * Run the command [npm publish](https://docs.npmjs.com/cli/publish)
