@@ -1,3 +1,5 @@
+# simulato release document
+
 Steps for core contributers to publish a new release of simulato
 
 * Pull down and verify you have the most recent version of master
