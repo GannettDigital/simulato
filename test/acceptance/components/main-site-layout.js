@@ -74,7 +74,7 @@ module.exports = {
 
     // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
     // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
-    // let myThis = this;s
+    // let myThis = this;
     return [
       {
         name: 'something',
