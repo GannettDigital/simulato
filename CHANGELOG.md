@@ -3,7 +3,7 @@
 ## 0.3.1
 
 * Tom Dale
-  * Fixed bug where action paramaters were not being executed and passed properly during execution
+  * Fixed bug where action parameters were not being executed and passed properly during execution
 
 ## 0.3.0
 
