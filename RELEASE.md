@@ -5,6 +5,8 @@
 * Pull down and verify you have the most recent version of master
 * Update the version number in the package.json using [semantic versioning](https://semver.org/)
 * Verify the [CHANGELOG.md](./CHANGELOG.md) has the aggregated list of changes under the version number to which simulato is being updated
+* Delete package-lock.json and node_modules
+* Run the command `npm install` to generate a new package-lock.json with the proper version
 * Push any versioning update changes listed above to a branch titled the version number
 * Follow PR process to have merged into master
 * Confirm your registry is pointing to the default registry of `https://registry.npmjs.org/`
