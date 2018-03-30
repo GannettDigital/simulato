@@ -12,6 +12,7 @@
   * Refactored create & createAndAddComponent to only take an object as param to follow pattern of children
   * This context is now passed into elements, model, actions (params, preconditions, perform, effects), children, and events to access instanceName and options
   * Changed componentName to type, instance name to name, and the name specified inside components to type for clarity when creating new components
+  * Created RELEASE.md document to detail the release process for simulato
 
 ## 0.2.1
 
@@ -21,7 +22,7 @@
 
 * Scott Gunther - Prepare code for open sourcing
 * Tom Dale - Fixed a bug where dataStore was not being cloned inside expected state
-* Scott Gunther - pumped simulato test site version, updated appveyor script for CI builds to run the test site in background
+* Scott Gunther - bumped simulato test site version, updated appveyor script for CI builds to run the test site in background
 * Tom Dale - Added component names in error messages when validating elements
 * Brian Fitzpatrick - Updated article text for more generic use
 
