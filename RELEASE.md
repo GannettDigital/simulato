@@ -13,7 +13,7 @@ Steps for core contributers to publish a new release of simulato
     * Example v0.2.0
   * `Title` Enter the package.json version prepended with v
     * Example: v0.2.0
-  * `Description` Enter the list summary found inside the [CHANGELOG.md](./CHAGELOG.md) for the release version.
+  * `Description` Enter the list summary found inside the [CHANGELOG.md](./CHANGELOG.md) for the release version.
     * Example:
       ```
         * Scott Gunther - Prepare code for open sourcing
