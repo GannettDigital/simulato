@@ -339,6 +339,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 expect(executionEngine._actionConfig).to.deep.equal({
                     name: 'myInstance',
                     actionName: 'MY_ACTION',
+                    options: undefined,
                 });
             });
 
@@ -418,6 +419,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         {
                             name: 'myInstance',
                             actionName: 'MY_ACTION',
+                            options: undefined,
                         },
                         ['preconditions', 'perform', 'effects'],
                     ],
