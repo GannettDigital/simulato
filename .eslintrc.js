@@ -7,6 +7,7 @@ module.exports = {
     },
     rules: {
         'max-len': ['error', 120],
-        'require-jsdoc': 'off'
+        'require-jsdoc': 'off',
+        'prefer-rest-params': 'off'
     } 
 };

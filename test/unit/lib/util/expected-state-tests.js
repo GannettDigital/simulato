@@ -80,12 +80,13 @@ describe('lib/util/expected-state.js', function() {
                 _stashedComponents: [],
                 eventEmitter: EventEmitterInstance,
                 _dataStore: {},
+                _pageState: {},
             };
 
             expectedState.create({}, callback);
 
             expect(Object.getOwnPropertyNames(callback.args[0][0]))
-            .to.deep.equal(Object.getOwnPropertyNames(comparableObject));
+                .to.deep.equal(Object.getOwnPropertyNames(comparableObject));
         });
     });
 
@@ -117,6 +118,9 @@ describe('lib/util/expected-state.js', function() {
                 create: sinon.stub(),
                 _components: new Map(),
                 _stashedComponents: [],
+                _pageState: {
+                    name: 'model',
+                },
             };
             clonedExpectedState = {
                 createAndAddComponent: sinon.stub(),
@@ -149,6 +153,30 @@ describe('lib/util/expected-state.js', function() {
         });
 
         describe('when the expectedState.create callback is called', function() {
+            it('should call _.cloneDeep with this._pageState', function() {
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(_.cloneDeep.args[0]).to.deep.equal([
+                    {
+                        name: 'model',
+                    },
+                ]);
+            });
+
+            it('should set the cloned expected state property \'_pageState\' to the ' +
+                'result of the first call to _.cloneDeep', function() {
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+                _.cloneDeep.onCall(0).returns({myName: 'myModel'});
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(clonedExpectedState._pageState).to.deep.equal({
+                    myName: 'myModel',
+                });
+            });
+
             describe('for each component in the expectedState being cloned', function() {
                 it('should call _.deepClone with that components state', function() {
                     myThis._components.set('key', {name: 'test'});
@@ -157,7 +185,7 @@ describe('lib/util/expected-state.js', function() {
 
                     expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[0]).to.deep.equal([{name: 'test'}]);
+                    expect(_.cloneDeep.args[1]).to.deep.equal([{name: 'test'}]);
                 });
 
                 it('should call _.deepClone with that components options', function() {
@@ -167,15 +195,15 @@ describe('lib/util/expected-state.js', function() {
 
                     expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[1]).to.deep.equal([{option1: 'option1'}]);
+                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
                 });
 
                 it('should call createAndAddComponent with an object containing: ' +
                     'component.type, component.name, componentState, and componentOptions', function() {
                     myThis._components.set('key', {type: 'componentName', name: 'instanceName'});
                     myThis._state = {type: 'componentName', name: 'instanceName'};
-                    _.cloneDeep.onCall(0).returns('myComponentState');
-                    _.cloneDeep.onCall(1).returns('myComponentOptions');
+                    _.cloneDeep.onCall(1).returns('myComponentState');
+                    _.cloneDeep.onCall(2).returns('myComponentOptions');
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
                     expectedState.clone.call(myThis, {}, callback);
@@ -199,7 +227,7 @@ describe('lib/util/expected-state.js', function() {
 
                 expectedState.clone.call(myThis, {}, callback);
 
-                expect(_.cloneDeep.args[0]).to.deep.equal([['stashedState1', 'stashedState2']]);
+                expect(_.cloneDeep.args[1]).to.deep.equal([['stashedState1', 'stashedState2']]);
             });
 
             describe('for each stashed component in the expectedState.stashedComponents being cloned', function() {
@@ -212,7 +240,7 @@ describe('lib/util/expected-state.js', function() {
 
                     expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[1]).to.deep.equal([{option1: 'option1'}]);
+                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
                 });
 
                 it('should call clonedState.createComponent with and object containing'
@@ -225,7 +253,7 @@ describe('lib/util/expected-state.js', function() {
                     myThis._stashedComponents = [stashedComponents];
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
                     clonedExpectedState.createComponent.returns({});
-                    _.cloneDeep.onCall(1).returns('myComponentOptions');
+                    _.cloneDeep.onCall(2).returns('myComponentOptions');
 
                     expectedState.clone.call(myThis, {}, callback);
 
@@ -274,6 +302,7 @@ describe('lib/util/expected-state.js', function() {
         let component;
         let errorCalled;
         let componentConfig;
+        let _;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -307,9 +336,12 @@ describe('lib/util/expected-state.js', function() {
                     option1: 'someOption',
                 },
             };
+            _ = {
+                get: sinon.stub(),
+            };
 
             mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {});
+            mockery.registerMock('lodash', _);
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._dataStore = {storedData: 'someData'};
         });
@@ -386,6 +418,33 @@ describe('lib/util/expected-state.js', function() {
                 expect(errorCalled).to.equal(true);
             });
 
+            describe('when the newComponent.getFromPage function is called', function() {
+                it('should call _.get once with this.expectedState._pageState and the passed in key', function() {
+                    expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+                    let newComponent = expectedState.createComponent(componentConfig);
+                    expectedState._pageState = {component: 'model'};
+
+                    newComponent.getFromPage('myKey');
+
+                    expect(_.get.args).to.deep.equal([
+                        [
+                            {component: 'model'},
+                            'myKey',
+                        ],
+                    ]);
+                });
+
+                it('should return the result of the call to _.get', function() {
+                    expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+                    let newComponent = expectedState.createComponent(componentConfig);
+                    _.get.returns('myValue');
+
+                    let result = newComponent.getFromPage('myKey');
+
+                    expect(result).to.equal('myValue');
+                });
+            });
+
             it('should create the component with options', function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
@@ -394,10 +453,12 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent).to.deep.equal({
                     name: 'instanceName',
                     type: 'componentType',
+                    expectedState,
                     elements: ['myElements'],
                     model: {model: 'modelValue'},
                     actions: {ACTION_1: 'someAction'},
                     options: {option1: 'someOption'},
+                    getFromPage: newComponent.getFromPage,
                 });
             });
 
@@ -412,9 +473,11 @@ describe('lib/util/expected-state.js', function() {
                         name: 'instanceName',
                         type: 'componentType',
                         elements: ['myElements'],
+                        expectedState,
                         model: {model: 'modelValue'},
                         actions: {ACTION_1: 'someAction'},
                         options: {},
+                        getFromPage: newComponent.getFromPage,
                     });
                 });
             });
@@ -636,10 +699,12 @@ describe('lib/util/expected-state.js', function() {
                         name: 'instanceName',
                         type: 'componentType',
                         elements: ['myElements'],
+                        expectedState,
                         model: {model: 'modelValue'},
                         actions: {ACTION_1: 'someAction'},
                         options: {option1: 'someOption'},
                         dynamicArea: 'aDynamicArea',
+                        getFromPage: newComponent.getFromPage,
                     });
                 });
             });
@@ -674,6 +739,11 @@ describe('lib/util/expected-state.js', function() {
                 _addToDynamicArea: sinon.stub(),
                 _components: new Map(),
                 _dynamicAreas: new Map(),
+                _pageState: {
+                    'instanceName': {
+                        key: 'value',
+                    },
+                },
             };
             expectedState._state = {};
             component = {
@@ -720,6 +790,12 @@ describe('lib/util/expected-state.js', function() {
             expect(myThis._state[component.name]).to.deep.equal({state: 'someState'});
         });
 
+        it('should set component._currentWorkingModel to the value from this._pageState[component.name]', function() {
+            expectedState.addComponent.call(myThis, component, state);
+
+            expect(component._currentWorkingModel).to.deep.equal({key: 'value'});
+        });
+
         describe('if component.events is defined', function() {
             it('should call this._registerEvents once with the passed in component', function() {
                 component.events = [
@@ -750,6 +826,9 @@ describe('lib/util/expected-state.js', function() {
                             ],
                             name: 'instanceName',
                             options: {},
+                            _currentWorkingModel: {
+                                key: 'value',
+                            },
                         },
                     ],
                 ]);
@@ -790,6 +869,9 @@ describe('lib/util/expected-state.js', function() {
                             ],
                             name: 'instanceName',
                             options: {},
+                            _currentWorkingModel: {
+                                key: 'value',
+                            },
                         },
                     ],
                 ]);
@@ -808,6 +890,9 @@ describe('lib/util/expected-state.js', function() {
                             name: 'instanceName',
                             options: {},
                             dynamicArea: 'myDynamicArea',
+                            _currentWorkingModel: {
+                                key: 'value',
+                            },
                         },
                     ],
                 ]);
