@@ -27,15 +27,7 @@ module.exports = {
             state: {
               displayed: true,
             },
-        });
-
-        expectedState.eventEmitter.emit('something');
-
-          // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
-          // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
-
-          // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
-          // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
+          });
         },
       },
     };

@@ -68,25 +68,4 @@ module.exports = {
       },
     ];
   },
-  events(expectedState, dataStore) {
-    // dataStore.store('newsArticle1HeadingText', this.getFromPage('newsArticle1.newsArticleHeading.text'));
-    // dataStore.store('newsArticle1Text', this.getFromPage('newsArticle1.newsArticleText.text'));
-
-    // dataStore.store('newsArticle2HeadingText', this.getFromPage('newsArticle2.newsArticleHeading.text'));
-    // dataStore.store('newsArticle2Text', this.getFromPage('newsArticle2.newsArticleText.text'));
-    // let myThis = this;
-    return [
-      {
-        name: 'something',
-        listener() {
-          console.log('hello');
-          // dataStore.store('newsArticle1HeadingText', myThis.getFromPage('newsArticle1.newsArticleHeading.text'));
-          // dataStore.store('newsArticle1Text', myThis.getFromPage('newsArticle1.newsArticleText.text'));
-
-          // dataStore.store('newsArticle2HeadingText', myThis.getFromPage('newsArticle2.newsArticleHeading.text'));
-          // dataStore.store('newsArticle2Text', myThis.getFromPage('newsArticle2.newsArticleText.text'));
-        },
-      },
-    ];
-  },
 };
