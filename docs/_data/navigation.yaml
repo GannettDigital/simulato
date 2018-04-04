@@ -5,8 +5,8 @@ docs:
         url: /about-simulato/
       - title: "About Model Based Testing"
         url: /about-mbtt/
-      - title: "Installation"
-        url: /installation/
+      - title: "Quick Start Guide"
+        url: '/quick-start-guide/'
   - title: "Documentation"
     children:
       - title: 'Components'
