@@ -1,10 +1,14 @@
-# simulato release document
+---
+permalink: /publish/
+title: 'Publising New Version'
+toc: false
+---
 
-## Steps for core contributers to publish a new release of simulato
+Steps for core contributers to publish a new release of simulato
 
 * Pull down and verify you have the most recent version of master
 * Update the version number in the package.json using [semantic versioning](https://semver.org/)
-* Verify the [CHANGELOG.md](./CHANGELOG.md) has the aggregated list of changes under the version number to which simulato is being updated
+* Verify the CHANGELOG.md has the aggregated list of changes under the version number to which simulato is being updated
 * Prepend the aggregated list of changes under the version number to docs/_pages/release-notes.md
 * Delete package-lock.json and node_modules
 * Run the command `npm install` to generate a new package-lock.json with the proper version
@@ -18,11 +22,4 @@
     * Example v0.2.0
   * `Title` Enter the package.json version prepended with v
     * Example: v0.2.0
-  * `Description` Enter the list summary found inside the [CHANGELOG.md](./CHANGELOG.md) for the release version.
-    * Example:
-      ```
-        * Scott Gunther - Prepare code for open sourcing
-        * Tom Dale - Fixed a bug where dataStore was not being cloned inside expected state
-        * Scott Gunther - bumped simulato test site version, updated appveyor script for CI builds to run the test site in background
-        * Tom Dale - Added component names in error messages when validating elements
-        * Brian Fitzpatrick - Updated article text for more generic use```
+  * `Description` Enter the list summary found inside the CHANGELOG.md for the release version.
