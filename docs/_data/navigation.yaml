@@ -1,0 +1,29 @@
+docs:
+  - title: "Getting Started"
+    children:
+      - title: "About Simulato"
+        url: /about-simulato/
+      - title: "About Model Based Testing"
+        url: /about-mbtt/
+      - title: "Installation"
+        url: /installation/
+  - title: "Documentation"
+    children:
+      - title: 'Components'
+        url: /components/
+      - title: 'CLI'
+        url: /cli/
+      - title: 'Configuration File'
+        url: /configuration-file/
+      - title: 'Expected State'
+        url: /expected-state/
+      - title: 'Data Store'
+        url: /data-store/
+  - title: "Release Notes"
+    children: 
+      - title: 'Current Release Notes'
+        url: '/release-notes/'
+  - title: "Contributing"
+    children:
+      - title: 'Publishing New Version'
+        url: '/publish/'

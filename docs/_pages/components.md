@@ -1,15 +1,17 @@
-# simulato
-Simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
+---
+permalink: /components/
+title: 'Components'
+toc_label: 'Components'
+---
 
-## Components
 This section details the different sections of a component
 
-### type
+## type
 * type is **required**
 * Description
     * `type` must be a string that denotes the component's type
     
-### elements
+## elements
 * elements is **required**
 * Description
     * `elements` must be a function that must return an array
@@ -65,7 +67,7 @@ This section details the different sections of a component
     }
     ```
 
-### model
+## model
 * model is **required**
 * Description
     * `model` must be a function that must return an object
@@ -146,7 +148,7 @@ This section details the different sections of a component
         * `active`
             * The tool executes the function with the data from the browser. The function checks if the string `active` is contained within the class attribute of myButton. Since the string `active` is indeed inside the class attribute the function returns the boolean value `true` which is then assigned to the attribute `active` in the model.
 
-### actions
+## actions
 * actions is **required**
 * Description
     * `actions` must be a function and must return an object
@@ -224,7 +226,7 @@ This section details the different sections of a component
     },
     ```
 
-### children
+## children
 * Description
     * `children` must be a function and must return an array
     * Children are used to specify other components that need to be created when the component is added to the expected state
@@ -275,7 +277,7 @@ This section details the different sections of a component
     }
     ```
 
-### events
+## events
 * Description
     * `events` must be a function and must return an array
     * Events are used to specify ilsteners to events occuring on the `expectedState.eventEmitter`
@@ -310,221 +312,3 @@ This section details the different sections of a component
         ];
     }
     ```
-
-## CLI
-### Commands
-#### run <testPaths...>
-* Description
-    * Runs the tests in the folder paths specified
-* Example usage
-    * `model-based-test-tool run ./tests -c ./components -o ./tests`
-* Options
-    * `-T`, `--testPath` **required**
-        * Path to tests
-        * Example: `-T ./my-test-folder`
-    * `-c`, `--components` **required**
-        * Path to components
-        * Example: `-c ./my-components-folder`
-    * `-r`, `--reporter`
-        * Specify a reporter to use. Either `basic` or `teamcity` 
-        * Default is `basic`
-        * Example: `-r teamcity`
-    * `-s`, `--saucelabs`
-        * Flag for running tests in saucelabs. A sauce tunnel will be started
-        * Must have `SAUCE_USERNAME` AND `SAUCE_ACCESS_KEY` specified
-        * Example: `-s`
-    * `-p`, `--parallelism`
-        *  Amount of tests to run in parallel
-        *  Default is `20`
-        *  Example; `-p 5`
-    * `-R`, `--reportPath`
-        * The parth wherein to write the test report
-        * Example: `-o ./my-reports`
-    * `-b`, `--before`
-        * The path to a before script run before the test suite
-        * Must be a valid JavaScript file that exports a single function
-        * Example: `-b my-before-script.js`
-    * `-f`, `--configFile`
-        * Path to configFile
-        * Example: `-f ./config.js`
-
-#### generate <pathToComponents>
-* Description
-    * Generates tests using the supplied components
-* Example Usage
-    * `model-based-test-tool generate ./components -o ./tests -t actionFocused`
-* Options
-    * `-c`, `--components` **required**
-        * Path to components
-        * Example: `-c ./my-components-folder`
-    * `-o`, `--outputPath`
-        * The path wherein to write the generated test cases
-        * Default is the current working directory
-        * Example `-o ./tests` 
-    * `-t`, `--technique` **required**
-        * The test generation technique
-        * The only and required option at this point is `actionFocused`
-        * Example: `-t actionFocused`
-    * `-a`, `--actionToCover`
-        *  The single action to generate a test to cover
-        *  Example: `-a myComponent.MY_ACTION`
-    * `-f`, `--configFile`
-        * Path to configFile
-        * Example: `-f ./config.js`
-
-## Configuration File
-
-This section documents utilization of the configuration file in place of CLI options.
-
-### Parameters
-
-#### testPath
-  * Path to tests
-  * Example: `testPath: ./my-test-folder`
-
-#### components
-  * Path to components
-  * Example: `components: /my-components-folder`
-
-#### reporter
-  * Specify a reporter to use. Either `basic` or `teamcity` 
-  * Default is `basic`
-  * Example: `reporter: teamcity`
-    
-#### saucelabs
-  * Flag for running tests in saucelabs. A sauce tunnel will be started
-  * Must have `SAUCE_USERNAME` AND `SAUCE_ACCESS_KEY` specified
-  * Example: `saucelabs: true`
-
-#### parallelism
-  *  Amount of tests to run in parallel
-  *  Default is `20`
-  *  Example; `parallelism: 5`
-
-#### reportPath
-  * The parth wherein to write the test report
-  * Example: `reportPath: ./my-reports`
-
-#### before
-  * The path to a before script run before the test suite
-  * Must be a valid JavaScript file that exports a single function
-  * Example: `before: my-before-script.js`
-
-#### outputPath
-  * The path wherein to write the generated test cases
-  * Default is the current working directory
-  * Example `outputPath ./tests`
-
-#### technique
-  * The test generation technique
-  * The only and required option at this point is actionFocused
-  * Example `technique actionFocused`
-
-#### actionToCover
-  * The single action to generate a test to cover
-  * Default is the current working directory
-  * Example `actionToCover myComponent.MY_ACTION`
-
-### Example File
-    use strict'
-
-    module.exports = {
-        testPath: './test/acceptance/tests',
-        components: './test/acceptance/components',
-        reportPath: './test/acceptance/tests',
-        saucelabs: true
-        outputPath: './test/acceptance/tests',
-        technique: 'actionFocused',
-    }
-
-## Expected State
-This section documents functions for the expected state used throughout the tool
-* `createAndAddComponent(componentConfig)`
-    * Creates a component and adds it to the expected state
-    * Parameters
-        * `componentConfig`
-            * An object with the following fields
-                * `type`
-                    * A string corresponding to one of the components' `type` property
-                * `name`
-                    * A string that denotes the unique name of component when created
-                * `state`
-                    * An object representing the state of the component
-                * `options`
-                    * An object used for any data the user wants the component to have
-                * `dyanamicArea`
-                    * A string that denotes the dynamicArea this component should be a part of
-* `createComponent(componentConfig)`
-    * Creates a component
-    * Parameters
-        * `componentConfig`
-            * An object with the following fields
-                * `type`
-                    * A string corresponding to one of the components' `type` property
-                * `name`
-                    * A string that denotes the unique name of component when created
-                * `options`
-                    * An object used for any data the user wants the component to have
-                * `dyanamicArea`
-                    * A string that denotes the dynamicArea this component should be a part of
-* `addComponent(component, state)`
-    * Adds a created component with the given state
-    * Parameters
-        * `component`
-            * The created componend to be added to the state
-        * `state`
-            * An object representing the state of the component to be added
-* `delete(name)`
-    * Deletes a single component from the expected state
-    * Parameters
-        * `name`
-            * A string denoting name of the component to delete
-* `clear()`
-    * Clears the expected state (does not save anything)
-* `clearDynamicArea(dynamicArea)`
-    * Deletes all components for a given dynamic area
-    * Parameters
-        * `dynamicArea`
-            * A string denoting the dynamic area to clear
-* `getState()`
-    * Gets a JavaScript object representing the current state 
-* `modify(name, callback)`
-    * Modifies a component
-        * Parameters
-            * `name`
-                * A string denoting the component to modify
-            * `callback`
-                * The function that is called with the component as the first parameter
-* `stash()`
-    * Stash the current state (can be popped later)
-* `pop()`
-    * Pops the most recent stashed state
-* `eventEmitter`
-    * An event emitter instance wherein the events returned from the `events` function are registered
-    * Use this emitter to emit events to other components
-    
-## Data Store
-* `store(key, value)`
-    * Stores data
-    * Parameters
-        * `key`
-            * Any value valid as a key in a JS object that is used to identify the value
-        * `value`
-            * The data to store. This value is deep cloned
-* `retrieve(key)`
-    * Returns data from the data store
-    * Parameters
-        * `key`
-            * The key associated with value to be returned from the data store
-* `delete(key)`
-    * Deletes data from the data store
-    * Parameters
-        * `key`
-            * The key of the value to delete from the data store
-* `retrieveAndDelete(key)`
-    * Deletes and then returns the data from the data store
-    * Parameters
-        * `key`
-            * The key to be retrieved and deleted from the data store
-* `retrieveAll()`
-    * Returns the entire data store object
