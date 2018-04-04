@@ -1,6 +1,7 @@
 ---
 permalink: /about-mbt/
 title: "About Model Based Testing"
+toc: false
 ---
 
 ## Definition
