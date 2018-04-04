@@ -1,5 +1,5 @@
 ---
-permalink: /about-mbtt/
+permalink: /about-mbt/
 title: "About Model Based Testing"
 ---
 

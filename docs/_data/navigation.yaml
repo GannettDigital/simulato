@@ -4,7 +4,7 @@ docs:
       - title: "About Simulato"
         url: /about-simulato/
       - title: "About Model Based Testing"
-        url: /about-mbtt/
+        url: /about-mbt/
       - title: "Quick Start Guide"
         url: '/quick-start-guide/'
   - title: "Documentation"
