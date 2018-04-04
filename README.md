@@ -1,11 +1,14 @@
 # simulato
 Simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
+
 ## Components
 This section details the different sections of a component
+
 ### type
 * type is **required**
 * Description
     * `type` must be a string that denotes the component's type
+    
 ### elements
 * elements is **required**
 * Description
@@ -61,6 +64,7 @@ This section details the different sections of a component
         ];
     }
     ```
+
 ### model
 * model is **required**
 * Description
@@ -141,6 +145,7 @@ This section details the different sections of a component
             * A lodash `get` is done on the data returned from the browser with the string `myButton.disabled` specified in the model which results in the boolean value `false`
         * `active`
             * The tool executes the function with the data from the browser. The function checks if the string `active` is contained within the class attribute of myButton. Since the string `active` is indeed inside the class attribute the function returns the boolean value `true` which is then assigned to the attribute `active` in the model.
+
 ### actions
 * actions is **required**
 * Description
@@ -218,6 +223,7 @@ This section details the different sections of a component
         },
     },
     ```
+
 ### children
 * Description
     * `children` must be a function and must return an array
@@ -341,6 +347,7 @@ This section details the different sections of a component
     * `-f`, `--configFile`
         * Path to configFile
         * Example: `-f ./config.js`
+
 #### generate <pathToComponents>
 * Description
     * Generates tests using the supplied components
@@ -475,6 +482,7 @@ This section documents functions for the expected state used throughout the tool
 * `eventEmitter`
     * An event emitter instance wherein the events returned from the `events` function are registered
     * Use this emitter to emit events to other components
+    
 ## Data Store
 * `store(key, value)`
     * Stores data
