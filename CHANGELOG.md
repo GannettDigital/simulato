@@ -2,6 +2,14 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Added run time varibles
+  * Created run time varible documentation
+
+* Tom Dale
+  * Created github.io page
+  * Converted old documentation to github.io
+  * Added a contributing document
 
 ## 0.3.1
 
