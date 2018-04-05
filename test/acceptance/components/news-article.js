@@ -58,6 +58,9 @@ module.exports = {
     return {
       CLICK_TO_VIEW_STORY: {
         preconditions(dataStore) {
+          dataStore.store(`${this.name}HeadingText`, this.getFromPage(`${this.name}.newsArticleHeading.text`));
+          dataStore.store(`${this.name}Text`, this.getFromPage(`${this.name}.newsArticleText.text`));
+
           return [
             ['isTrue', `${this.name}.displayed`],
           ];
@@ -76,11 +79,11 @@ module.exports = {
               displayed: true,
               modalTitle: {
                 displayed: true,
-                text: this.options.newsArticleHeading,
+                text: dataStore.retrieve(`${this.name}HeadingText`),
               },
               modalBodyText: {
                 displayed: true,
-                text: this.options.newsArticleText,
+                text: dataStore.retrieve(`${this.name}Text`),
               },
               closeButton: {
                 displayed: true,

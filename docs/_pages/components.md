@@ -6,6 +6,37 @@ toc_label: 'Components'
 
 This section details the different sections of a component
 
+## `this` context
+* Description
+    * The passed in `this` context to all of the component functions which has certain useful properties
+    * `this` properties and functions
+        * `name`
+            * The unique name given the component upon creation
+        * `type`
+            * The type of the component
+        * `options`
+            * The options given to the component upon creation
+        * `elements`
+            * The computed elements from executing the elements function
+        * `model`
+            * The computed model from executing the elemetns function
+        * `actions`
+            * The computed actions from executing the actions function
+        * `events`
+            * The computed events from executing the events function
+        * `children`
+            * The computed children from executing the children function
+        * `dynamicArea`
+            * The dynamicArea given to the component upon creation
+        * `getFromPage(key)`
+            * Gets a value from the current model of the page
+            * Parameters
+                * `key` **required**
+                    * A string to access the value in the model
+            * Example
+                ```
+this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
+                ```
 ## type
 * type is **required**
 * Description
