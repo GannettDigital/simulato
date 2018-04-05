@@ -1,5 +1,8 @@
 # simulato change log
 
+* Brian Fitzpatrick
+ * Made changes to ingestion of saucelabs config to allow for percision when modifying    default values.
+
 ## 0.3.1
 
 * Tom Dale
