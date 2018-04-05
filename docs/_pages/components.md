@@ -35,7 +35,7 @@ This section details the different sections of a component
                     * A string to access the value in the model
             * Example
                 ```
-                    this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
+this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
                 ```
 ## type
 * type is **required**

@@ -19,35 +19,35 @@ Remember, the particular problem run time variables solves is: a property in the
 ## Examples
 * In the effects
     ```
-    effects(expectedState) {
-        expectedState.createAndAddComponent({
-            name: 'myName',
-            type: 'myType',
-            state: {
-                displayed: true,
-                searchResult: this.getFromPage('myName.searchResult'),
-            }
-        });
-    }
+effects(expectedState) {
+    expectedState.createAndAddComponent({
+        name: 'myName',
+        type: 'myType',
+        state: {
+            displayed: true,
+            searchResult: this.getFromPage('myName.searchResult'),
+        }
+    });
+}
     ```
 * Storing in the data store
     ```
-    SELECT_FIRST_DROPDOWN_CHOICE: {
-        preconditions(dataStore) {
-            dataStore.store('myDropDownChoice', this.getFromPage('myComponentName.dropDown.firstChoice'));
+SELECT_FIRST_DROPDOWN_CHOICE: {
+    preconditions(dataStore) {
+        dataStore.store('myDropDownChoice', this.getFromPage('myComponentName.dropDown.firstChoice'));
 
-            return [
-                ['isTrue', 'dropDown.expanded'],
-            ];
-        },
-        perform(callback) {
-            // Select the first choice in the drop down
-        },
-        effects(expectedState, dataStore) {
-            expectedState.modify('myComponentName', function(myComponentName) {
-                myComponentName.dropDown.currentSelection = dataStore.retrieve('myDropDownChoice');
-                myComponentName.dropDown.expanded = false;
-            });
-        }
+        return [
+            ['isTrue', 'dropDown.expanded'],
+        ];
+    },
+    perform(callback) {
+        // Select the first choice in the drop down
+    },
+    effects(expectedState, dataStore) {
+        expectedState.modify('myComponentName', function(myComponentName) {
+            myComponentName.dropDown.currentSelection = dataStore.retrieve('myDropDownChoice');
+            myComponentName.dropDown.expanded = false;
+        });
     }
+}
     ```
