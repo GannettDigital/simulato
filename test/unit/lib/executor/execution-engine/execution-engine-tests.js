@@ -521,126 +521,67 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             });
 
             describe('when the executionEngine._step is equal to the string \'preconditions\'', function() {
-                describe('if executionEngine._actionConfig.options.parameters is defined', function() {
-                    it('should call the executionEngine._action.preconditions with the spread ' +
-                        'actionParameters and the executionEngine._dataStore', function() {
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.preconditions.args).to.deep.equal([
-                            [
-                                'param1',
-                                'param2',
-                                {storedData: 'someData'},
-                            ],
-                        ]);
-                    });
-
-                    it('should call the executionEngine._action.preconditions with ' +
-                        'the this context as the component', function() {
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
-                });
-
-                describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
-                    it('should call the executionEngine._action.preconditions with the dataStore', function() {
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.preconditions.args).to.deep.equal([[
-                            {storedData: 'someData'},
-                        ]]);
-                    });
-                    it('should call the executionEngine._action.preconditions with ' +
-                        'the this context as the component', function() {
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
-                });
-
-                it('should call executionEngine.emit twice', function() {
-                    executionEngine._executeStep();
-
-                    expect(executionEngine.emit.callCount).to.equal(2);
-                });
-
-                it('should call executionEngine.emit with the event \'executionEngine.preconditionsReady\' ' +
-                    'as the first parameter', function() {
-                    executionEngine._executeStep();
-
-                    expect(executionEngine.emit.args[1][0]).to.equal('executionEngine.preconditionsReady');
-                });
-
-                it('should call executionEngine.emit with executionEngine._expectedState as the second ' +
-                    'parameter', function() {
-                    executionEngine._executeStep();
-
-                    expect(executionEngine.emit.args[1][1]).to.deep.equal({_state: 'myState', getComponentsAsMap});
-                });
-
-                it('should call executionEngine.emit with the preconditions as the third parameter', function() {
-                    executionEngine._action.preconditions.returns([['isTrue', 'myElement.displayed']]);
+                it('should call executionEngine.emit with the event \'executionEngine.preconditionsReadyFor' +
+                    'Verification\',  executionEngine._expectedState, executionEngine._action, ' +
+                    'executionEngine._actionConfig, executionEngine._dataStore, actionParameters, ' +
+                    'and the number 10000', function() {
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1', 'param2'],
+                    };
 
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.args[1][2]).to.deep.equal([['isTrue', 'myElement.displayed']]);
+                    expect(executionEngine.emit.args[1]).to.deep.equal([
+                        'executionEngine.preconditionsReadyForVerification',
+                        executionEngine._expectedState,
+                        executionEngine._action,
+                        {
+                            name: 'testName',
+                            actionName: 'testAction',
+                            options: {
+                                parameters: ['param1', 'param2'],
+                            },
+                        },
+                        {
+                            storedData: 'someData',
+                        },
+                        ['param1', 'param2'],
+                        10000,
+                    ]);
                 });
-
-                it('should call executionEngine.emit with the number \'10000\' as the fourth parameter', function() {
-                    executionEngine._action.preconditions.returns([['isTrue', 'myElement.displayed']]);
-
-                    executionEngine._executeStep();
-
-                    expect(executionEngine.emit.args[1][3]).to.equal(10000);
-                });
-
-                it('should call executionEngine.emit with a function as the fifth parameter', function() {
-                    executionEngine._action.preconditions.returns([['isTrue', 'myElement.displayed']]);
-
-                    executionEngine._executeStep();
-
-                    expect(executionEngine.emit.args[1][4]).to.be.a('function');
-                });
-
-
+            });
+            describe('when the executionEngine._step is equal to the string \'perform\'', function() {
                 describe('when the executionEngine._action.perform callback is called', function() {
                     describe('if there is an error', function() {
                         it('should throw the error', function() {
+                            executionEngine._steps = ['perform', 'effects'];
                             let error = new Error('An error occurred!');
-                            executionEngine.emit.onCall(1).callsArgWith(4, error);
-                            executionEngine._action.preconditions.returns([['isTrue', 'myElement.displayed']]);
+                            executionEngine._executeStep();
+                            let callback = executionEngine._action.perform.args[0][0];
 
-                            expect(executionEngine._executeStep.bind(null)).to.throw('An error occurred!');
+                            expect(callback.bind(null, error)).to.throw('An error occurred!');
                         });
                     });
                     describe('if there is not an error', function() {
-                        it('should call executionEngine.emit three times', function() {
-                            executionEngine.emit.onCall(1).callsArg(4);
-                            executionEngine._action.preconditions.returns([['isTrue', 'myElement.displayed']]);
-
+                        it('should call executionEngine.emit two times', function() {
+                            executionEngine._steps = ['perform', 'effects'];
                             executionEngine._executeStep();
+                            let callback = executionEngine._action.perform.args[0][0];
 
-                            expect(executionEngine.emit.callCount).to.equal(3);
+                            callback(null);
+
+                            expect(executionEngine.emit.callCount).to.equal(2);
                         });
 
                         it('should call executionEngine.emit with the event' +
                             ' \'executionEngine.stepCompleted\'', function() {
-                            executionEngine.emit.onCall(1).callsArgWith(4);
+                                executionEngine._steps = ['perform', 'effects'];
+                                executionEngine._executeStep();
+                                let callback = executionEngine._action.perform.args[0][0];
 
-                            executionEngine._executeStep();
+                                callback(null);
 
-                            expect(executionEngine.emit.args[2]).to.deep.equal([
+                            expect(executionEngine.emit.args[1]).to.deep.equal([
                                 'executionEngine.stepCompleted',
                             ]);
                         });
@@ -648,345 +589,471 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 });
             });
 
-            describe('when the executionEngine._step is equal to the string \'perform\'', function() {
-                describe('if executionEngine._actionConfig.options.parameters is defined', function() {
-                    it('should call executionEngine._action.perform once', function() {
-                        executionEngine._steps = ['perform', 'effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1'],
-                        };
+            describe('if executionEngine._actionConfig.options.parameters is defined', function() {
+                it('should call executionEngine._action.perform once', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1'],
+                    };
 
-                        executionEngine._executeStep();
+                    executionEngine._executeStep();
 
-                        expect(executionEngine._action.perform.callCount).to.equal(1);
-                    });
-
-                    it('should call executionEngine._action.perform with the spread parameters prepended', function() {
-                        executionEngine._steps = ['perform', 'effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1'],
-                        };
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.perform.args[0][0]).to.equal('param1');
-                    });
-
-                    it('should call executionEngine._action.perform with a function as the last parameter', function() {
-                        executionEngine._steps = ['perform', 'effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.perform.args[0][2]).to.be.a('function');
-                    });
-
-                    it('should call the executionEngine._action.perform with ' +
-                        'the this context as the component', function() {
-                        executionEngine._steps = ['perform', 'effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.perform.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
-
-                    describe('when the executionEngine._action.perform callback is called', function() {
-                        describe('if there is an error returned', function() {
-                            it('should throw the error', function() {
-                                let error = new Error('An error occurred!');
-                                executionEngine._steps = ['perform', 'effects'];
-                                executionEngine._actionConfig.options = {
-                                    parameters: ['param1', 'param2'],
-                                };
-
-                                executionEngine._executeStep();
-                                let callback = executionEngine._action.perform.args[0][2];
-
-                                expect(callback.bind(null, error)).to.throw('An error occurred!');
-                            });
-                        });
-                        describe('if there is not an error returned', function() {
-                            it('should call executionEngine.emit with twice', function() {
-                                executionEngine._action.perform.callsArg(2);
-                                executionEngine._steps = ['perform', 'effects'];
-                                executionEngine._actionConfig.options = {
-                                    parameters: ['param1', 'param2'],
-                                };
-
-                                executionEngine._executeStep();
-
-                                expect(executionEngine.emit.callCount).to.equal(2);
-                            });
-
-                            it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
-                                'and the passed in error', function() {
-                                executionEngine._action.perform.callsArgWith(2);
-                                executionEngine._steps = ['perform', 'effects'];
-                                executionEngine._actionConfig.options = {
-                                    parameters: ['param1', 'param2'],
-                                };
-
-                                executionEngine._executeStep();
-
-                                expect(executionEngine.emit.args[1]).to.deep.equal([
-                                    'executionEngine.stepCompleted',
-                                ]);
-                            });
-                        });
-                    });
-                    it('should catch an error if one is thrown by executionEngine._action.perform ', function() {
-                            executionEngine._steps = ['perform', 'effects'];
-                            executionEngine._actionConfig.options = {
-                                parameters: ['param1'],
-                            };
-                            executionEngine._action.perform.throws(new Error('TEST_ERROR'));
-
-                            expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '
-                            + 'while executing the perform function for \'testName\' - \'testAction\'');
-                    });
+                    expect(executionEngine._action.perform.callCount).to.equal(1);
                 });
 
-                describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
-                    it('should call executionEngine._action.perform once', function() {
-                        executionEngine._steps = ['perform', 'effects'];
+                it('should call executionEngine._action.perform with the spread parameters prepended', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1'],
+                    };
 
-                        executionEngine._executeStep();
+                    executionEngine._executeStep();
 
-                        expect(executionEngine._action.perform.callCount).to.equal(1);
-                    });
+                    expect(executionEngine._action.perform.args[0][0]).to.equal('param1');
+                });
 
-                    it('should call executionEngine._action.perform with a function as the first ' +
-                        'parameter', function() {
-                        executionEngine._steps = ['perform', 'effects'];
+                it('should call executionEngine._action.perform with a function as the last parameter', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1', 'param2'],
+                    };
 
-                        executionEngine._executeStep();
+                    executionEngine._executeStep();
 
-                        expect(executionEngine._action.perform.args[0][0]).to.be.a('function');
-                    });
+                    expect(executionEngine._action.perform.args[0][2]).to.be.a('function');
+                });
 
-                    it('should call the executionEngine._action.perform with ' +
-                        'the this context as the component', function() {
-                        executionEngine._steps = ['perform', 'effects'];
+                it('should call the executionEngine._action.perform with ' +
+                    'the this context as the component', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1', 'param2'],
+                    };
 
-                        executionEngine._executeStep();
+                    executionEngine._executeStep();
 
-                        expect(executionEngine._action.perform.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
+                    expect(executionEngine._action.perform.thisValues).to.deep.equal([
+                        myComponent,
+                    ]);
+                });
 
-                    describe('when the executionEngine._action.perform callback is called', function() {
-                        describe('if there was an error returned', function() {
-                            it('should throw the error', function() {
-                                let error = new Error('An error occurred!');
-                                executionEngine._steps = ['perform', 'effects'];
+                describe('when the executionEngine._action.perform callback is called', function() {
+                    describe('if there is an error returned', function() {
+                        it('should throw the error', function() {
+                            let error = new Error('An error occurred!');
+                            executionEngine._steps = ['perform', 'effects'];
+                            executionEngine._actionConfig.options = {
+                                parameters: ['param1', 'param2'],
+                            };
 
-                                executionEngine._executeStep();
-                                let callback = executionEngine._action.perform.args[0][0];
+                            executionEngine._executeStep();
+                            let callback = executionEngine._action.perform.args[0][2];
 
-                                expect(callback.bind(null, error)).to.throw('An error occurred!');
-                            });
-                        });
-                        describe('if there was no error returned', function() {
-                            it('should call executionEngine.emit with twice', function() {
-                                executionEngine._action.perform.callsArg(0);
-                                executionEngine._steps = ['perform', 'effects'];
-
-                                executionEngine._executeStep();
-
-                                expect(executionEngine.emit.callCount).to.equal(2);
-                            });
-
-                            it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
-                                'and the passed in error', function() {
-                                executionEngine._action.perform.callsArgWith(0);
-                                executionEngine._steps = ['perform', 'effects'];
-
-                                executionEngine._executeStep();
-
-                                expect(executionEngine.emit.args[1]).to.deep.equal([
-                                    'executionEngine.stepCompleted',
-                                ]);
-                            });
+                            expect(callback.bind(null, error)).to.throw('An error occurred!');
                         });
                     });
-                    it('should catch an error if one is thrown by executionEngine._action.perform ', function() {
+                    describe('if there is not an error returned', function() {
+                        it('should call executionEngine.emit with twice', function() {
+                            executionEngine._action.perform.callsArg(2);
+                            executionEngine._steps = ['perform', 'effects'];
+                            executionEngine._actionConfig.options = {
+                                parameters: ['param1', 'param2'],
+                            };
+
+                            executionEngine._executeStep();
+
+                            expect(executionEngine.emit.callCount).to.equal(2);
+                        });
+
+                        it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
+                            'and the passed in error', function() {
+                            executionEngine._action.perform.callsArgWith(2);
+                            executionEngine._steps = ['perform', 'effects'];
+                            executionEngine._actionConfig.options = {
+                                parameters: ['param1', 'param2'],
+                            };
+
+                            executionEngine._executeStep();
+
+                            expect(executionEngine.emit.args[1]).to.deep.equal([
+                                'executionEngine.stepCompleted',
+                            ]);
+                        });
+                    });
+                });
+                it('should catch an error if one is thrown by executionEngine._action.perform ', function() {
                         executionEngine._steps = ['perform', 'effects'];
+                        executionEngine._actionConfig.options = {
+                            parameters: ['param1'],
+                        };
                         executionEngine._action.perform.throws(new Error('TEST_ERROR'));
 
-                        expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '+
-                        'while executing the perform function for \'testName\' - \'testAction\'');
+                        expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '
+                        + 'while executing the perform function for \'testName\' - \'testAction\'');
+                });
+            });
+
+            describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
+                it('should call executionEngine._action.perform once', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+
+                    executionEngine._executeStep();
+
+                    expect(executionEngine._action.perform.callCount).to.equal(1);
+                });
+
+                it('should call executionEngine._action.perform with a function as the first ' +
+                    'parameter', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+
+                    executionEngine._executeStep();
+
+                    expect(executionEngine._action.perform.args[0][0]).to.be.a('function');
+                });
+
+                it('should call the executionEngine._action.perform with ' +
+                    'the this context as the component', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+
+                    executionEngine._executeStep();
+
+                    expect(executionEngine._action.perform.thisValues).to.deep.equal([
+                        myComponent,
+                    ]);
+                });
+
+                describe('when the executionEngine._action.perform callback is called', function() {
+                    describe('if there was an error returned', function() {
+                        it('should throw the error', function() {
+                            let error = new Error('An error occurred!');
+                            executionEngine._steps = ['perform', 'effects'];
+
+                            executionEngine._executeStep();
+                            let callback = executionEngine._action.perform.args[0][0];
+
+                            expect(callback.bind(null, error)).to.throw('An error occurred!');
+                        });
                     });
+                    describe('if there was no error returned', function() {
+                        it('should call executionEngine.emit with twice', function() {
+                            executionEngine._action.perform.callsArg(0);
+                            executionEngine._steps = ['perform', 'effects'];
+
+                            executionEngine._executeStep();
+
+                            expect(executionEngine.emit.callCount).to.equal(2);
+                        });
+
+                        it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
+                            'and the passed in error', function() {
+                            executionEngine._action.perform.callsArgWith(0);
+                            executionEngine._steps = ['perform', 'effects'];
+
+                            executionEngine._executeStep();
+
+                            expect(executionEngine.emit.args[1]).to.deep.equal([
+                                'executionEngine.stepCompleted',
+                            ]);
+                        });
+                    });
+                });
+                it('should catch an error if one is thrown by executionEngine._action.perform ', function() {
+                    executionEngine._steps = ['perform', 'effects'];
+                    executionEngine._action.perform.throws(new Error('TEST_ERROR'));
+
+                    expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '+
+                    'while executing the perform function for \'testName\' - \'testAction\'');
                 });
             });
 
             describe('when the executionEngine._step is equal to the string \'effects\'', function() {
-                describe('if executionEngine._actionConfig.options.parameters is defined', function() {
-                    it('should call executionEngine._action.effects once with the spread parameters ' +
-                        'prepended, executionEngine._expectedState and executionEngine._dataStore', function() {
-                        executionEngine._steps = ['effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.effects.args).to.deep.equal([
-                            [
-                                'param1',
-                                'param2',
-                                executionEngine._expectedState,
-                                executionEngine._dataStore,
-                            ],
-                        ]);
-                    });
-
-
-                    it('should call the executionEngine._action.effects with ' +
-                        'the this context as the component', function() {
-                        executionEngine._steps = ['effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1', 'param2'],
-                        };
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.effects.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
-
-                    it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
-                        executionEngine._steps = ['effects'];
-                        executionEngine._actionConfig.options = {
-                            parameters: ['param1'],
-                        };
-                        executionEngine._action.effects.throws(new Error('TEST_ERROR'));
-
-                        expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown ' +
-                        'while executing the perform function for \'testName\' - \'testAction\'');
-                    });
-                });
-
-                describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
-                    it('should call executionEngine._action.effects once with the ' +
-                        'executionEngine._expectedState', function() {
-                        executionEngine._steps = ['effects'];
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.effects.args).to.deep.equal([
-                            [
-                                executionEngine._expectedState,
-                                executionEngine._dataStore,
-                            ],
-                        ]);
-                    });
-
-                    it('should call the executionEngine._action.effects with ' +
-                        'the this context as the component', function() {
-                        executionEngine._steps = ['effects'];
-
-                        executionEngine._executeStep();
-
-                        expect(executionEngine._action.effects.thisValues).to.deep.equal([
-                            myComponent,
-                        ]);
-                    });
-
-                    it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
-                        executionEngine._steps = ['effects'];
-                        executionEngine._action.effects.throws(new Error('TEST_ERROR'));
-
-                        expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '+
-                        'while executing the perform function for \'testName\' - \'testAction\'');
-                    });
-                });
-
-                it('should call executionEngine.emit with twice', function() {
+                it('should call executionEngine.emit with the event \'executionEngine.effectsReadyFor' +
+                    'Verification\',  executionEngine._expectedState, executionEngine._action, ' +
+                    'executionEngine._actionConfig, executionEngine._dataStore, actionParameters, ' +
+                    'and the number 10000', function() {
                     executionEngine._steps = ['effects'];
+                    executionEngine._actionConfig.options = {
+                        parameters: ['param1', 'param2'],
+                    };
 
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.callCount).to.equal(2);
+                    expect(executionEngine.emit.args[1]).to.deep.equal([
+                        'executionEngine.effectsReadyForVerification',
+                        executionEngine._expectedState,
+                        executionEngine._action,
+                        {
+                            name: 'testName',
+                            actionName: 'testAction',
+                            options: {
+                                parameters: ['param1', 'param2'],
+                            },
+                        },
+                        {
+                            storedData: 'someData',
+                        },
+                        ['param1', 'param2'],
+                        10000,
+                    ]);
                 });
+            });
+        });
+    });
 
-                it('should call executionEngine.emit with the first parameter as the event ' +
-                    '\'executionEngine.effectsApplied\'', function() {
-                    executionEngine._steps = ['effects'];
+    describe('applyPreconditions', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let executionEngine;
 
-                    executionEngine._executeStep();
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-                    expect(executionEngine.emit.args[1][0]).to.equal('executionEngine.effectsApplied');
-                });
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
 
-                it('should call executionEngine.emit with the second parameter as ' +
-                    'executionEngine._expectedState', function() {
-                    executionEngine._steps = ['effects'];
+            mockery.registerMock('events', {EventEmitter});
 
-                    executionEngine._executeStep();
+            executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-                    expect(executionEngine.emit.args[1][1]).to.equal(executionEngine._expectedState);
-                });
+            executionEngine._action = {
+                preconditions: sinon.stub(),
+            },
+            executionEngine._actionConfig = {
+                name: 'myName',
+                actionName: 'MY_ACTION',
+            };
+            executionEngine._expectedState = {
+                getComponent: sinon.stub().returns('myComponent'),
+            };
+            executionEngine._dataStore = {
+                storedData: 'someData',
+            };
+        });
 
-                it('should call executionEngine.emit with the third parameter as the number' +
-                    '10000', function() {
-                    executionEngine._steps = ['effects'];
+        afterEach(function() {
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
 
-                    executionEngine._executeStep();
+        it('should call executionEngine._expectedState.getComponent once with executionEngine._actionConfig.name ' +
+            'as the parameter', function() {
+            executionEngine.applyPreconditions();
 
-                    expect(executionEngine.emit.args[1][2]).to.equal(10000);
-                });
+            expect(executionEngine._expectedState.getComponent.args).to.deep.equal([
+                ['myName'],
+            ]);
+        });
 
-                it('should call executionEngine.emit with the fourth parameter as a function', function() {
-                    executionEngine._steps = ['effects'];
+        describe('if executionEngine._actionConfig.options.parameters is defined', function() {
+            it('should call the executionEngine._action.preconditions with the spread ' +
+                'actionParameters and the executionEngine._dataStore', function() {
+                executionEngine._actionConfig.options = {
+                    parameters: ['param1', 'param2'],
+                };
 
-                    executionEngine._executeStep();
+                executionEngine.applyPreconditions();
 
-                    expect(executionEngine.emit.args[1][3]).to.be.a('function');
-                });
+                expect(executionEngine._action.preconditions.args).to.deep.equal([
+                    [
+                        'param1',
+                        'param2',
+                        {storedData: 'someData'},
+                    ],
+                ]);
+            });
 
-                describe('when the executionEngine.emit callback is called', function() {
-                    describe('if the there was an error returned', function() {
-                        it('should throw the error', function() {
-                            let error = new Error('An error occurred!');
-                            executionEngine.emit.onCall(1).callsArgWith(3, error);
-                            executionEngine._steps = ['effects'];
+            it('should call the executionEngine._action.preconditions with ' +
+                'the this context as the component', function() {
+                executionEngine._actionConfig.options = {
+                    parameters: ['param1', 'param2'],
+                };
 
-                            expect(executionEngine._executeStep.bind(null)).to.throw('An error occurred!');
-                        });
-                    });
+                executionEngine.applyPreconditions();
 
-                    describe('if there was no error returned', function() {
-                        it('should call executionEngine.emit with thrice', function() {
-                            executionEngine.emit.onCall(1).callsArg(3);
-                            executionEngine._steps = ['effects'];
+                expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
+                    'myComponent',
+                ]);
+            });
+        });
 
-                            executionEngine._executeStep();
+        describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
+            it('should call the executionEngine._action.preconditions with the dataStore', function() {
+                executionEngine.applyPreconditions();
 
-                            expect(executionEngine.emit.callCount).to.equal(3);
-                        });
+                expect(executionEngine._action.preconditions.args).to.deep.equal([[
+                    {storedData: 'someData'},
+                ]]);
+            });
 
-                        it('should call executionEngine.emit with the event'
-                            + ' \'executionEngine.stepCompleted\'', function() {
-                            executionEngine.emit.onCall(1).callsArgWith(3);
-                            executionEngine._steps = ['effects'];
+            it('should call the executionEngine._action.preconditions with ' +
+                'the this context as the component', function() {
+                executionEngine.applyPreconditions();
 
-                            executionEngine._executeStep();
+                expect(executionEngine._action.preconditions.thisValues).to.deep.equal([
+                    'myComponent',
+                ]);
+            });
+        });
 
-                            expect(executionEngine.emit.args[2]).to.deep.equal([
-                                'executionEngine.stepCompleted',
-                            ]);
-                        });
-                    });
-                });
+        describe('if executionEngine._action.preconditions throws', function() {
+            it('should throw an error with a modified error message', function() {
+                let error = new Error('An Error Occurred!');
+                executionEngine._action.preconditions.throws(error);
+
+                expect(executionEngine.applyPreconditions).to.throw(
+                    `The error 'An Error Occurred!' was thrown while executing the preconditions ` +
+                    `function for 'myName' - 'MY_ACTION'`
+                );
+            });
+        });
+
+        describe('if executionEngine._action.preconditions does not throw', function() {
+            it('should call executionEngine.emit once with the event \'executionEngine.stepCompleted\'', function() {
+                executionEngine.applyPreconditions();
+
+                expect(executionEngine.emit.args).to.deep.equal([
+                    ['executionEngine.stepCompleted'],
+                ]);
+            });
+        });
+    });
+
+    describe('applyEffects', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let executionEngine;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            mockery.registerMock('events', {EventEmitter});
+
+            executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
+
+            executionEngine._action = {
+                effects: sinon.stub(),
+            },
+            executionEngine._actionConfig = {
+                name: 'myName',
+                actionName: 'MY_ACTION',
+            };
+            executionEngine._expectedState = {
+                getComponent: sinon.stub().returns('myComponent'),
+            };
+            executionEngine._dataStore = {
+                storedData: 'someData',
+            };
+        });
+
+        afterEach(function() {
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call executionEngine._expectedState.getComponent once with executionEngine._actionConfig.name ' +
+            'as the parameter', function() {
+            executionEngine.applyEffects();
+
+            expect(executionEngine._expectedState.getComponent.args).to.deep.equal([
+                ['myName'],
+            ]);
+        });
+
+        describe('if executionEngine._actionConfig.options.parameters is defined', function() {
+            it('should call executionEngine._action.effects once with the spread parameters ' +
+                'prepended, executionEngine._expectedState and executionEngine._dataStore', function() {
+                executionEngine._steps = ['effects'];
+                executionEngine._actionConfig.options = {
+                    parameters: ['param1', 'param2'],
+                };
+
+                executionEngine.applyEffects();
+
+                expect(executionEngine._action.effects.args).to.deep.equal([
+                    [
+                        'param1',
+                        'param2',
+                        executionEngine._expectedState,
+                        {
+                            storedData: 'someData',
+                        },
+                    ],
+                ]);
+            });
+
+            it('should call the executionEngine._action.effects with ' +
+                'the this context as the component', function() {
+                executionEngine._steps = ['effects'];
+                executionEngine._actionConfig.options = {
+                    parameters: ['param1', 'param2'],
+                };
+
+                executionEngine.applyEffects();
+
+                expect(executionEngine._action.effects.thisValues).to.deep.equal([
+                    'myComponent',
+                ]);
+            });
+        });
+
+        describe('if executionEngine._actionConfig.options.parameters is not defined', function() {
+            it('should call executionEngine._action.effects once with the ' +
+                'executionEngine._expectedState', function() {
+                executionEngine.applyEffects();
+
+                expect(executionEngine._action.effects.args).to.deep.equal([
+                    [
+                        executionEngine._expectedState,
+                        {
+                            storedData: 'someData',
+                        },
+                    ],
+                ]);
+            });
+
+            it('should call the executionEngine._action.effects with ' +
+                'the this context as the component', function() {
+                executionEngine.applyEffects();
+
+                expect(executionEngine._action.effects.thisValues).to.deep.equal([
+                    'myComponent',
+                ]);
+            });
+        });
+
+        describe('if executionEngine._action.effects throws', function() {
+            it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
+                let error = new Error('An Error Occurred!');
+                executionEngine._action.effects.throws(error);
+
+                expect(executionEngine.applyEffects).to.throw(
+                    `The error 'An Error Occurred!' was thrown ` +
+                    `while executing the effects function for 'myName' - 'MY_ACTION'`);
+            });
+        });
+
+        describe('if executionEngine._action.effects does not throw', function() {
+            it('should call executionEngine.emit once with the event \'executionEngine.stepCompleted\'', function() {
+                executionEngine.applyEffects();
+
+                expect(executionEngine.emit.args).to.deep.equal([
+                    ['executionEngine.stepCompleted'],
+                ]);
             });
         });
     });
