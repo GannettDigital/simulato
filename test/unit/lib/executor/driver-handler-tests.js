@@ -161,10 +161,108 @@ describe('lib/executor/driver-handler.js', function() {
                 expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
                     [
                         {
-                            mySauceConfig: 'myConfig',
-                        },
+                            "accessKey": "sauceAccessKey",
+                            "browserName": "chrome",
+                            "customData": {
+                            "build": "buildNumber",
+                            "commithash": "commitHash",
+                            "environment": "test",
+                            "release": "releaseVersion"
+                            },
+                            "mySauceConfig": "myConfig",
+                            "name": "my-test.json",
+                            "platform": "Windows 10",
+                            "tunnel-identifier": "mbtt-tunnel",
+                            "username": "sauceUsername",
+                            "version": "63.0",
+                        }
                     ],
                 ]);
+            });
+            describe('if the field in the sauce config contains a sub-object', function(){
+                it('should add the field to the sub-object without overwriting', function(){
+                    process.env.SAUCE_CONFIG =`{"customData": {"testField": "testVal"}}`;
+
+                    driverHandler.inSaucelabs();
+
+                    expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                        [
+                            {
+                                "accessKey": "sauceAccessKey",
+                                "browserName": "chrome",
+                                "customData": {
+                                "build": "buildNumber",
+                                "commithash": "commitHash",
+                                "environment": "test",
+                                "release": "releaseVersion",
+                                "testField": "testVal"
+                                },
+                                "name": "my-test.json",
+                                "platform": "Windows 10",
+                                "tunnel-identifier": "mbtt-tunnel",
+                                "username": "sauceUsername",
+                                "version": "63.0",
+                            }
+                        ],
+                    ]);
+                })
+            });
+            describe('if the field in the sauce config does not contain a sub-object', function(){
+                describe('if the field is not defined on the object being modified', function(){
+                    it('should add the field to the sub-object without overwriting', function(){
+                        process.env.SAUCE_CONFIG =`{"newField": "newVal"}`;
+
+                        driverHandler.inSaucelabs();
+
+                        expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                            [
+                                {
+                                    "accessKey": "sauceAccessKey",
+                                    "browserName": "chrome",
+                                    "customData": {
+                                    "build": "buildNumber",
+                                    "commithash": "commitHash",
+                                    "environment": "test",
+                                    "release": "releaseVersion",
+                                    },
+                                    "newField": "newVal",
+                                    "name": "my-test.json",
+                                    "platform": "Windows 10",
+                                    "tunnel-identifier": "mbtt-tunnel",
+                                    "username": "sauceUsername",
+                                    "version": "63.0",
+                                }
+                            ],
+                        ]);
+                    })
+                });
+                describe('if all the fields are defined on the object being modified', function(){
+                    it('should add the field to the sub-object without overwriting', function(){
+                        process.env.SAUCE_CONFIG =`{"accessKey": "newKey"}`;
+
+                        driverHandler.inSaucelabs();
+
+                        expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                            [
+                                {
+                                    "accessKey": "newKey",
+                                    "browserName": "chrome",
+                                    "customData": {
+                                    "build": "buildNumber",
+                                    "commithash": "commitHash",
+                                    "environment": "test",
+                                    "release": "releaseVersion",
+                                    },
+                                    "name": "my-test.json",
+                                    "platform": "Windows 10",
+                                    "tunnel-identifier": "mbtt-tunnel",
+                                    "username": "sauceUsername",
+                                    "version": "63.0",
+                                }
+                            ],
+                        ]);
+                    })
+                });
             });
         });
 
