@@ -41,5 +41,8 @@ When adding or modifying a feature of the tool, an acceptance test must be added
 ## Changelog
 Before putting up the pull request for your changes, please add what you did to the CHANGELOG.md file. This allows us and others to know who did what, and what they did. At the top of the changelog under "Pending Version" your name, and detail out the changes made. See previous version descriptions for examples.
 
-## PR Reviews
+## PR Process
+
 Once everything is ready to go based on the guidelines above you are ready to put up your Pull Request! Title the pull request your issue number, and follow the template provided in github for creating the PR.
+
+All checks must be passing that are automatically run by the CI process, and the branch must be updated to the most recent version of the branch it is merging into. Once all these checks are passing it will be reviewed by a core member of the simulato team.  Once approved your code will be merged in, and you can count yourself a contributer to simulato!
