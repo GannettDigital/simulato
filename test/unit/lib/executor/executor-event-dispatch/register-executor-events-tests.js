@@ -48,6 +48,8 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
             configure: sinon.stub(),
             errorOccurred: sinon.stub(),
             done: sinon.stub(),
+            applyEffects: sinon.stub(),
+            applyPreconditions: sinon.stub(),
         };
         eeReportHandler = {
             on: sinon.stub(),
@@ -371,22 +373,22 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executionEngine.on with the event \'executionEngine.preconditionsReady\' ' +
+    it('should call executionEngine.on with the event \'executionEngine.preconditionsReadyForVerification\' ' +
         'and the function assertionHandler.assertPageState', function() {
         registerExecutorEvents(executorEventDispatch);
 
         expect(executionEngine.on.args[6]).to.deep.equal([
-            'executionEngine.preconditionsReady',
+            'executionEngine.preconditionsReadyForVerification',
             assertionHandler.assertPageState,
         ]);
     });
 
-    it('should call executionEngine.on with the event \'executionEngine.effectsApplied\' ' +
+    it('should call executionEngine.on with the event \'executionEngine.effectsReadyForVerification\' ' +
         'and the function assertionHandler.assertExpectedPageState', function() {
         registerExecutorEvents(executorEventDispatch);
 
         expect(executionEngine.on.args[7]).to.deep.equal([
-            'executionEngine.effectsApplied',
+            'executionEngine.effectsReadyForVerification',
             assertionHandler.assertExpectedPageState,
         ]);
     });
@@ -500,10 +502,10 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call assertionHandler.on 4 times', function() {
+    it('should call assertionHandler.on 6 times', function() {
         registerExecutorEvents(executorEventDispatch);
 
-        expect(assertionHandler.on.callCount).to.equal(4);
+        expect(assertionHandler.on.callCount).to.equal(6);
     });
 
     it('should call assertionHandler.on with the event \'assertionHandler.getPageState\'', function() {
@@ -600,6 +602,26 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         expect(assertionHandler.on.args[3]).to.deep.equal([
             'assertionHandler.stateCheckTimedOut',
             stateCompare.printDifference,
+        ]);
+    });
+
+    it('should call assertionHandler.on with the event \'assertionHandler.effectsVerified\''
+        + 'and the function executionEngine.applyEffects', function() {
+        registerExecutorEvents(executorEventDispatch);
+
+        expect(assertionHandler.on.args[4]).to.deep.equal([
+            'assertionHandler.effectsVerified',
+            executionEngine.applyEffects,
+        ]);
+    });
+
+    it('should call assertionHandler.on with the event \'assertionHandler.preconditionsVerified\''
+        + 'and the function executionEngine.applyPreconditions', function() {
+        registerExecutorEvents(executorEventDispatch);
+
+        expect(assertionHandler.on.args[5]).to.deep.equal([
+            'assertionHandler.preconditionsVerified',
+            executionEngine.applyPreconditions,
         ]);
     });
 });
