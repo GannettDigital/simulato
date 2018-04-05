@@ -25,5 +25,7 @@ docs:
         url: '/release-notes/'
   - title: "Contributing"
     children:
+      - title: 'Contributing Guidelines'
+        url: '/contributing-guidelines'
       - title: 'Publishing New Version'
         url: '/publish/'
