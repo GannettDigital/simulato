@@ -19,11 +19,15 @@ docs:
         url: /expected-state/
       - title: 'Data Store'
         url: /data-store/
+      - title: 'Run Time Variables'
+        url: /run-time-variables/
   - title: "Release Notes"
     children: 
       - title: 'Current Release Notes'
         url: '/release-notes/'
   - title: "Contributing"
     children:
+      - title: 'Contributing Guidelines'
+        url: '/contributing-guidelines'
       - title: 'Publishing New Version'
         url: '/publish/'

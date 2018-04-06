@@ -1,8 +1,21 @@
 # simulato change log
 
+## Pending Version
+
+## 0.3.2
+
 * Brian Fitzpatrick
  * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
  * Modified generated test names to be more clear
+
+* Scott Gunther
+  * Added run time varibles
+  * Created run time varible documentation
+
+* Tom Dale
+  * Created github.io page
+  * Converted old documentation to github.io
+  * Added a contributing document
 
 ## 0.3.1
 
