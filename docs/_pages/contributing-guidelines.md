@@ -11,7 +11,7 @@ All Issues are tracked within the github repository's [issue section](https://gi
 ### Creating an Issue
 When adding a feature request, bug, or even just questions please check that a prexsisting issue doesn't already exist for the same topic.
 
-Please add a descriptive label from the right side bar, a concise, easily understandable title, and fill out a comment section with the description of your issue.
+When adding a bug issue, please follow the bug report template found in this documentation. Otherwise, please add a descriptive label from the right side bar, a concise, easily understandable title, and fill out a comment section with the description of your issue.
 
 ### Working on an Issue
 If there is an issue you want to help solve to contribute back to the project, first check if that issue is currently being worked on. This can be found inside the [projects tab](https://github.com/GannettDigital/simulato/projects) on github. If someone is currently working on an issue reach out to them! Having two heads working on a problem is better than one, don't be afraid to collaborate. If no one is currently working on the issue, inside the issue section you can set it to the project simulato, and add yourself as the assignee.
