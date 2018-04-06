@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.3.2
+
 * Scott Gunther
   * Added run time varibles
   * Created run time varible documentation

@@ -4,6 +4,17 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 ---
 
+## 0.3.2
+
+* Scott Gunther
+  * Added run time varibles
+  * Created run time varible documentation
+
+* Tom Dale
+  * Created github.io page
+  * Converted old documentation to github.io
+  * Added a contributing document
+
 ## 0.3.1
 
 * Tom Dale
