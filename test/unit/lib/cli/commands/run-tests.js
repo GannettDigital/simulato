@@ -89,7 +89,8 @@ describe('lib/cli/run.js', function() {
                 testPath: 'sanity_tests',
                 components: './test/acceptance/components',
                 reporter: 'testReporter',
-                saucelabs: sauceConfig,
+                saucelabs: true,
+                sauceCapabilities: sauceConfig,
                 parallelism: '',
                 reportPath: 'sanity_tests',
                 before: 'script',
@@ -294,15 +295,6 @@ describe('lib/cli/run.js', function() {
 
                     expect(process.env.SAUCE_LABS).to.equal('true');
                 });
-                it('should set the SAUCE_CAPABILITIES env variable', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {saucelabs: sauceConfig};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(JSON.parse(process.env.SAUCE_CAPABILITIES)).to.deep.equal(sauceConfig);
-                });
                 it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {saucelabs: sauceConfig};
@@ -317,6 +309,7 @@ describe('lib/cli/run.js', function() {
                     let options = {saucelabs: sauceConfig};
                     mockery.registerMock(pathLoc, configFile);
                     configFile.saucelabs = undefined;
+                    configFile.sauceCapabilities = undefined;
 
                     run.configure(options);
 

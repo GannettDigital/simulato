@@ -151,7 +151,7 @@ describe('lib/executor/driver-handler.js', function() {
             mockery.disable();
         });
 
-        describe('if process.env.SAUCE_CAPABILITIES is set', function() {
+        describe.only('if process.env.SAUCE_CAPABILITIES is set', function() {
             it('should call webdriver.withCapabailities once with the' +
                 'capabilities as the JSON.parsed process.env.SAUCE_CAPABILITIES', function() {
                 process.env.SAUCE_CAPABILITIES =`{"mySauceConfig": "myConfig"}`;

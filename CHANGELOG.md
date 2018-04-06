@@ -2,11 +2,14 @@
 
 ## Pending Version
 
-## 0.3.2
-
 * Brian Fitzpatrick
- * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
- * Modified generated test names to be more clear
+  * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
+  * Modified generated test names to be more clear
+
+* Tom Dale 
+  * Added bug report template
+
+## 0.3.2
 
 * Scott Gunther
   * Added run time varibles
