@@ -9,6 +9,9 @@
 * Tom Dale 
   * Added bug report template
 
+* Scott Gunther
+  * Add badges to readme
+
 ## 0.3.2
 
 * Scott Gunther

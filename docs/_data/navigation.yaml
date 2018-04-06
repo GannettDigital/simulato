@@ -29,5 +29,7 @@ docs:
     children:
       - title: 'Contributing Guidelines'
         url: '/contributing-guidelines'
+      - title: 'Bug Report Template'
+        url: /bug-report-template/
       - title: 'Publishing New Version'
         url: '/publish/'
