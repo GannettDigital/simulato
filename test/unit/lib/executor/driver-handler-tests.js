@@ -99,6 +99,82 @@ describe('lib/executor/driver-handler.js', function() {
         });
     });
 
+    describe('_navigateToAndModifyObject', function() {
+        let webdriver;
+        let webdriverBuilder;
+        let driverHandler;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/executor/driver-handler.js');
+
+            webdriver = {
+                Builder: sinon.stub(),
+            };
+            webdriverBuilder = {
+                forBrowser: sinon.stub(),
+                build: sinon.stub(),
+            };
+            webdriver.Builder.returns(webdriverBuilder);
+            webdriverBuilder.forBrowser.returns(webdriverBuilder);
+            webdriverBuilder.build.returns('myDriver');
+
+            mockery.registerMock('selenium-webdriver', webdriver);
+            mockery.registerMock('saucelabs', sinon.stub());
+
+            driverHandler = require('../../../../lib/executor/driver-handler.js');
+        });
+
+        afterEach(function() {
+            delete global.driver;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        describe('if the explored index of the modifying object is an object', function() {
+            it('should call driverHandler._navigateToAndModifyObject once', function() {
+                let obj1 = {val1: {}};
+                let obj2 = {val2: 'value2'};
+                let recursiveShell = driverHandler._navigateToAndModifyObject;
+                driverHandler._navigateToAndModifyObject = sinon.stub();
+
+                Object.keys.forEach = sinon.stub().callsArgOnWith(0, null, 1);
+
+                recursiveShell(obj1, obj2);
+
+                expect(driverHandler._navigateToAndModifyObject.callCount).to.deep.equal(1);
+            });
+        });
+        describe('if the explored index of the modifying object is not an object', function() {
+            describe('if the field does not already exist on the modifiedObject', function() {
+                it('should call driverHandler._navigateToAndModifyObject', function() {
+                    let obj1 = {val1: 'value1'};
+                    let obj2 = {val2: 'value2'};
+                    let recursiveShell = driverHandler._navigateToAndModifyObject;
+                    driverHandler._navigateToAndModifyObject = sinon.stub();
+
+                    Object.keys.forEach = sinon.stub().callsArgOnWith(0, null, 'val1');
+
+                    recursiveShell(obj1, obj2);
+
+                    expect(obj2.val1).to.deep.equal(obj1.val1);
+                });
+            });
+            it('should overwrite a field if it already exists', function() {
+                let obj1 = {val1: 'value1'};
+                let obj2 = {val1: 'value2'};
+                let recursiveShell = driverHandler._navigateToAndModifyObject;
+                driverHandler._navigateToAndModifyObject = sinon.stub();
+
+                Object.keys.forEach = sinon.stub().callsArgOnWith(0, null, 'val1');
+
+                recursiveShell(obj1, obj2);
+
+                expect(obj2.val1).to.deep.equal('value1');
+            });
+        });
+    });
+
     describe('inSaucelabs', function() {
         let webdriver;
         let webdriverBuilder;
@@ -151,10 +227,11 @@ describe('lib/executor/driver-handler.js', function() {
             mockery.disable();
         });
 
-        describe.only('if process.env.SAUCE_CAPABILITIES is set', function() {
+        describe('if process.env.SAUCE_CAPABILITIES is set', function() {
             it('should call webdriver.withCapabailities once with the' +
                 'capabilities as the JSON.parsed process.env.SAUCE_CAPABILITIES', function() {
                 process.env.SAUCE_CAPABILITIES =`{"mySauceConfig": "myConfig"}`;
+
 
                 driverHandler.inSaucelabs();
 
@@ -205,63 +282,6 @@ describe('lib/executor/driver-handler.js', function() {
                             },
                         ],
                     ]);
-                });
-            });
-            describe('if the field in the sauce config does not contain a sub-object', function() {
-                describe('if the field is not defined on the object being modified', function() {
-                    it('should add the field to the sub-object without overwriting', function() {
-                        process.env.SAUCE_CAPABILITIES =`{"newField": "newVal"}`;
-
-                        driverHandler.inSaucelabs();
-
-                        expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
-                            [
-                                {
-                                    'accessKey': 'sauceAccessKey',
-                                    'browserName': 'chrome',
-                                    'customData': {
-                                    'build': 'buildNumber',
-                                    'commithash': 'commitHash',
-                                    'environment': 'test',
-                                    'release': 'releaseVersion',
-                                    },
-                                    'newField': 'newVal',
-                                    'name': 'my-test.json',
-                                    'platform': 'Windows 10',
-                                    'tunnel-identifier': 'mbtt-tunnel',
-                                    'username': 'sauceUsername',
-                                    'version': '63.0',
-                                },
-                            ],
-                        ]);
-                    });
-                });
-                describe('if all the fields are defined on the object being modified', function() {
-                    it('should add the field to the sub-object without overwriting', function() {
-                        process.env.SAUCE_CAPABILITIES =`{"accessKey": "newKey"}`;
-
-                        driverHandler.inSaucelabs();
-
-                        expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
-                            [
-                                {
-                                    'accessKey': 'newKey',
-                                    'browserName': 'chrome',
-                                    'customData': {
-                                    'build': 'buildNumber',
-                                    'commithash': 'commitHash',
-                                    'environment': 'test',
-                                    'release': 'releaseVersion',
-                                    },
-                                    'name': 'my-test.json',
-                                    'platform': 'Windows 10',
-                                    'tunnel-identifier': 'mbtt-tunnel',
-                                    'username': 'sauceUsername',
-                                    'version': '63.0',
-                                },
-                            ],
-                        ]);
-                    });
                 });
             });
         });
