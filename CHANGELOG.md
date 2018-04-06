@@ -1,7 +1,8 @@
 # simulato change log
 
 * Brian Fitzpatrick
- * Made changes to ingestion of saucelabs config to allow for percision when modifying    default values.
+ * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
+ * Modified generated test names to be more clear
 
 ## 0.3.1
 

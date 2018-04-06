@@ -145,16 +145,16 @@ describe('lib/executor/driver-handler.js', function() {
             delete process.env.COMMIT_HASH;
             delete process.env.NODE_ENV;
             delete process.env.TUNNEL_IDENTIFIER;
-            delete process.env.SAUCE_CONFIG;
+            delete process.env.SAUCE_CAPABILITIES;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        describe('if process.env.SAUCE_CONFIG is set', function() {
+        describe('if process.env.SAUCE_CAPABILITIES is set', function() {
             it('should call webdriver.withCapabailities once with the' +
-                'capabilities as the JSON.parsed process.env.SAUCE_CONFIG', function() {
-                process.env.SAUCE_CONFIG =`{"mySauceConfig": "myConfig"}`;
+                'capabilities as the JSON.parsed process.env.SAUCE_CAPABILITIES', function() {
+                process.env.SAUCE_CAPABILITIES =`{"mySauceConfig": "myConfig"}`;
 
                 driverHandler.inSaucelabs();
 
@@ -181,7 +181,7 @@ describe('lib/executor/driver-handler.js', function() {
             });
             describe('if the field in the sauce config contains a sub-object', function() {
                 it('should add the field to the sub-object without overwriting', function() {
-                    process.env.SAUCE_CONFIG =`{"customData": {"testField": "testVal"}}`;
+                    process.env.SAUCE_CAPABILITIES =`{"customData": {"testField": "testVal"}}`;
 
                     driverHandler.inSaucelabs();
 
@@ -210,7 +210,7 @@ describe('lib/executor/driver-handler.js', function() {
             describe('if the field in the sauce config does not contain a sub-object', function() {
                 describe('if the field is not defined on the object being modified', function() {
                     it('should add the field to the sub-object without overwriting', function() {
-                        process.env.SAUCE_CONFIG =`{"newField": "newVal"}`;
+                        process.env.SAUCE_CAPABILITIES =`{"newField": "newVal"}`;
 
                         driverHandler.inSaucelabs();
 
@@ -238,7 +238,7 @@ describe('lib/executor/driver-handler.js', function() {
                 });
                 describe('if all the fields are defined on the object being modified', function() {
                     it('should add the field to the sub-object without overwriting', function() {
-                        process.env.SAUCE_CONFIG =`{"accessKey": "newKey"}`;
+                        process.env.SAUCE_CAPABILITIES =`{"accessKey": "newKey"}`;
 
                         driverHandler.inSaucelabs();
 
@@ -266,7 +266,7 @@ describe('lib/executor/driver-handler.js', function() {
             });
         });
 
-        describe('if process.env.SAUCE_CONFIG is not set', function() {
+        describe('if process.env.SAUCE_CAPABILITIES is not set', function() {
             it('should call webdriver.withCapabailities once with the capabilities' +
                 'as the predefined object', function() {
                 driverHandler.inSaucelabs();
