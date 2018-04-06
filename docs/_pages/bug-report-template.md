@@ -4,11 +4,11 @@ title: 'Bug Report Template'
 toc: false
 ---
 
-Please use the following template when creating a bug [issue](https://github.com/GannettDigital/simulato/issues) in github
+Please use the following template when creating a bug [issue](https://github.com/GannettDigital/simulato/issues) in github.
 
 ## Description of What You Observed
 
-Provide a small description of the issue. What unexpected behavior is the bug producing, how is it effecting the normal flow of the code.
+Provide a small description of the issue. What unexpected behavior is the bug producing, how is it affecting the normal flow of the code.
 
 ## Steps to Reproduce
 
@@ -16,11 +16,11 @@ Provide a detailed list of steps that someone can follow to replicate the bug. D
 
 ## Expected Behavior
 
-Descripe what the behavior should be when you reach the point the bug is found.
+Descripe what the behavior should be when you reach the point where the bug is found.
 
 ## Suggestion to Fix (optional)
 
-If you have an idea of how to fix it provide a description of how you think it can be fixed.
+If you have an idea of how to fix it provide a set of instructions as to how you think it can be fixed.
 
 ## Example Report
 
