@@ -286,4 +286,54 @@ describe('lib/util/data-store', function() {
             expect(result).to.deep.equal({myKey: 'myValue'});
         });
     });
+
+    describe('has', function() {
+        let myThis;
+        let DataStore;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/data-store.js');
+
+            myThis = {
+                _data: {},
+            };
+            sinon.spy(myThis._data, 'hasOwnProperty');
+
+            mockery.registerMock('lodash', {});
+
+            DataStore = require('../../../../lib/util/data-store.js');
+        });
+
+        afterEach(function() {
+            myThis._data.hasOwnProperty.restore();
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call this._data.hasOwnProperty once with the passed in key', function() {
+            DataStore.has.call(myThis, 'myKey');
+
+            expect(myThis._data.hasOwnProperty.args).to.deep.equal([
+                [
+                    'myKey',
+                ],
+            ]);
+        });
+
+        it('should return true if this._data has the passed in key as a property', function() {
+            myThis._data.myKey = undefined;
+
+            let result = DataStore.has.call(myThis, 'myKey');
+
+            expect(result).to.deep.equal(true);
+        });
+
+        it('should return false if this._data has the passed in key as a property', function() {
+            let result = DataStore.has.call(myThis, 'myKey');
+
+            expect(result).to.deep.equal(false);
+        });
+    });
 });

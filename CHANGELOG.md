@@ -4,6 +4,7 @@
 
 * Scott Gunther
   * Add badges to readme
+  * Add 'has' method to data store
 
 ## 0.3.2
 

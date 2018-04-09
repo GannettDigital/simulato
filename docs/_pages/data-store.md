@@ -36,3 +36,9 @@ This section documents functions for the data store used throughout the tool
 
 ### retrieveAll()
   * Returns the entire data store object
+
+### has(key)
+  * Returns true if the key is in the data store. Otherwise returns false
+  * Parameters
+    * `key` **required**
+      * The key for which to check the existence of
