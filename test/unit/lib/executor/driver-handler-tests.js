@@ -101,23 +101,11 @@ describe('lib/executor/driver-handler.js', function() {
 
     describe('_navigateToAndModifyObject', function() {
         let webdriver;
-        let webdriverBuilder;
         let driverHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/executor/driver-handler.js');
-
-            webdriver = {
-                Builder: sinon.stub(),
-            };
-            webdriverBuilder = {
-                forBrowser: sinon.stub(),
-                build: sinon.stub(),
-            };
-            webdriver.Builder.returns(webdriverBuilder);
-            webdriverBuilder.forBrowser.returns(webdriverBuilder);
-            webdriverBuilder.build.returns('myDriver');
 
             mockery.registerMock('selenium-webdriver', webdriver);
             mockery.registerMock('saucelabs', sinon.stub());
@@ -228,61 +216,13 @@ describe('lib/executor/driver-handler.js', function() {
         });
 
         describe('if process.env.SAUCE_CAPABILITIES is set', function() {
-            it('should call webdriver.withCapabailities once with the' +
-                'capabilities as the JSON.parsed process.env.SAUCE_CAPABILITIES', function() {
+            it('should call navigateToAndModifyObject once', function() {
                 process.env.SAUCE_CAPABILITIES =`{"mySauceConfig": "myConfig"}`;
-
+                driverHandler._navigateToAndModifyObject = sinon.stub();
 
                 driverHandler.inSaucelabs();
 
-                expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
-                    [
-                        {
-                            'accessKey': 'sauceAccessKey',
-                            'browserName': 'chrome',
-                            'customData': {
-                            'build': 'buildNumber',
-                            'commithash': 'commitHash',
-                            'environment': 'test',
-                            'release': 'releaseVersion',
-                            },
-                            'mySauceConfig': 'myConfig',
-                            'name': 'my-test.json',
-                            'platform': 'Windows 10',
-                            'tunnel-identifier': 'mbtt-tunnel',
-                            'username': 'sauceUsername',
-                            'version': '63.0',
-                        },
-                    ],
-                ]);
-            });
-            describe('if the field in the sauce config contains a sub-object', function() {
-                it('should add the field to the sub-object without overwriting', function() {
-                    process.env.SAUCE_CAPABILITIES =`{"customData": {"testField": "testVal"}}`;
-
-                    driverHandler.inSaucelabs();
-
-                    expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
-                        [
-                            {
-                                'accessKey': 'sauceAccessKey',
-                                'browserName': 'chrome',
-                                'customData': {
-                                'build': 'buildNumber',
-                                'commithash': 'commitHash',
-                                'environment': 'test',
-                                'release': 'releaseVersion',
-                                'testField': 'testVal',
-                                },
-                                'name': 'my-test.json',
-                                'platform': 'Windows 10',
-                                'tunnel-identifier': 'mbtt-tunnel',
-                                'username': 'sauceUsername',
-                                'version': '63.0',
-                            },
-                        ],
-                    ]);
-                });
+                expect(driverHandler._navigateToAndModifyObject.callCount).to.equal(1);
             });
         });
 
