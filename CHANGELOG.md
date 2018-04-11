@@ -5,6 +5,8 @@
 * Scott Gunther
   * Add badges to readme
   * Add 'has' method to data store
+* Tom Dale
+  * Sauce connect tunnel is now created before user specified before scripts are run
 
 ## 0.3.2
 
