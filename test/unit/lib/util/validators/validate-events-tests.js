@@ -11,7 +11,7 @@ describe('lib/util/validators/validate-events.js', function() {
         mockery.enable({useCleanCache: true});
         mockery.registerAllowable('../../../../../lib/util/validators/validate-events.js');
 
-        global.MbttError = {
+        global.SimulatoError = {
             EVENT: {
                 EVENTS_NOT_ARRAY: sinon.stub(),
                 EVENT_NOT_OBJECT: sinon.stub(),
@@ -23,7 +23,7 @@ describe('lib/util/validators/validate-events.js', function() {
     });
 
     afterEach(function() {
-        delete global.MbttError;
+        delete global.SimulatoError;
         mockery.resetCache();
         mockery.deregisterAll();
         mockery.disable();
@@ -49,17 +49,17 @@ describe('lib/util/validators/validate-events.js', function() {
     describe('if the passed in events is not an array', function() {
         it('should throw an error', function() {
             let error = new Error('An error occurred!');
-            MbttError.EVENT.EVENTS_NOT_ARRAY.throws(error);
+            SimulatoError.EVENT.EVENTS_NOT_ARRAY.throws(error);
 
             expect(validateEvents.bind(null, '', '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.EVENT.EVENTS_NOT_ARRAY once with an error message', function() {
+        it('should call SimulatoError.EVENT.EVENTS_NOT_ARRAY once with an error message', function() {
             try {
                 validateEvents('', 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.EVENT.EVENTS_NOT_ARRAY.args).to.deep.equal([
+            expect(SimulatoError.EVENT.EVENTS_NOT_ARRAY.args).to.deep.equal([
                 [`Events for 'myInstance' were not returned as an Array by parent component 'myComponent'`],
             ]);
         });
@@ -75,12 +75,12 @@ describe('lib/util/validators/validate-events.js', function() {
                 'Not an object',
             ];
             let error = new Error('An error occurred!');
-            MbttError.EVENT.EVENT_NOT_OBJECT.throws(error);
+            SimulatoError.EVENT.EVENT_NOT_OBJECT.throws(error);
 
             expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.EVENT.EVENT_NOT_OBJECT once with an error message', function() {
+        it('should call SimulatoError.EVENT.EVENT_NOT_OBJECT once with an error message', function() {
             let events = [
                 {
                     name: 'hey',
@@ -93,7 +93,7 @@ describe('lib/util/validators/validate-events.js', function() {
                 validateEvents(events, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.EVENT.EVENT_NOT_OBJECT.args).to.deep.equal([
+            expect(SimulatoError.EVENT.EVENT_NOT_OBJECT.args).to.deep.equal([
                 [`Event of events array at index '1' for component 'myComponent' must be an object`],
             ]);
         });
@@ -111,12 +111,12 @@ describe('lib/util/validators/validate-events.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let events = [
                 {
                     name: 'hey',
@@ -131,7 +131,7 @@ describe('lib/util/validators/validate-events.js', function() {
                 validateEvents(events, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'name' property of event at index '1' for component 'myComponent' ` +
                     `must be a string or an array. Found 'undefined'`,
                 ],
@@ -153,7 +153,7 @@ describe('lib/util/validators/validate-events.js', function() {
                     },
                 ];
                 let error = new Error('An error occurred!');
-                MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
+                SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
                 expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
             });
@@ -172,12 +172,12 @@ describe('lib/util/validators/validate-events.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let events = [
                 {
                     name: 'hey',
@@ -192,7 +192,7 @@ describe('lib/util/validators/validate-events.js', function() {
                 validateEvents(events, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'listener' property of event at index '1' for component 'myComponent' ` +
                     `must be a function. Found 'undefined'`,
                 ],

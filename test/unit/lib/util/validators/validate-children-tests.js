@@ -11,7 +11,7 @@ describe('lib/util/validators/validate-children.js', function() {
         mockery.enable({useCleanCache: true});
         mockery.registerAllowable('../../../../../lib/util/validators/validate-children.js');
 
-        global.MbttError = {
+        global.SimulatoError = {
             CHILD: {
                 CHILDREN_NOT_ARRAY: sinon.stub(),
                 CHILD_NOT_OBJECT: sinon.stub(),
@@ -23,7 +23,7 @@ describe('lib/util/validators/validate-children.js', function() {
     });
 
     afterEach(function() {
-        delete global.MbttError;
+        delete global.SimulatoError;
         mockery.resetCache();
         mockery.deregisterAll();
         mockery.disable();
@@ -58,17 +58,17 @@ describe('lib/util/validators/validate-children.js', function() {
     describe('if the passed in children is not an array', function() {
         it('should throw an error', function() {
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILDREN_NOT_ARRAY.throws(error);
+            SimulatoError.CHILD.CHILDREN_NOT_ARRAY.throws(error);
 
             expect(validateChildren.bind(null, '', '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILDREN_NOT_ARRAY once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILDREN_NOT_ARRAY once with an error message', function() {
             try {
                 validateChildren('', 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILDREN_NOT_ARRAY.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILDREN_NOT_ARRAY.args).to.deep.equal([
                 [`Children for 'myInstance' were not returned as an Array by parent component 'myComponent'`],
             ]);
         });
@@ -90,12 +90,12 @@ describe('lib/util/validators/validate-children.js', function() {
                 'Not an object',
             ];
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILD_NOT_OBJECT.throws(error);
+            SimulatoError.CHILD.CHILD_NOT_OBJECT.throws(error);
 
             expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILD_NOT_OBJECT once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILD_NOT_OBJECT once with an error message', function() {
             let children = [
                 {
                     type: 'myComponent',
@@ -114,7 +114,7 @@ describe('lib/util/validators/validate-children.js', function() {
                 validateChildren(children, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILD_NOT_OBJECT.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILD_NOT_OBJECT.args).to.deep.equal([
                 [`Child of children array at index '1' for component 'myComponent' must be an object`],
             ]);
         });
@@ -145,12 +145,12 @@ describe('lib/util/validators/validate-children.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
                     type: 'myComponent',
@@ -178,7 +178,7 @@ describe('lib/util/validators/validate-children.js', function() {
                 validateChildren(children, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'type' property of child at index '1' for component 'myComponent' ` +
                     `must be a string. Found 'undefined'`,
                 ],
@@ -211,12 +211,12 @@ describe('lib/util/validators/validate-children.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
                     type: 'myComponent',
@@ -244,7 +244,7 @@ describe('lib/util/validators/validate-children.js', function() {
                 validateChildren(children, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'name' property of child at index '1' for component 'myComponent' ` +
                     `must be a string. Found 'undefined'`,
                 ],
@@ -275,12 +275,12 @@ describe('lib/util/validators/validate-children.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
                     type: 'myComponent',
@@ -306,7 +306,7 @@ describe('lib/util/validators/validate-children.js', function() {
                 validateChildren(children, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'state' property of child at index '1' for component 'myComponent' ` +
                     `must be an object. Found ''`,
                 ],
@@ -337,12 +337,12 @@ describe('lib/util/validators/validate-children.js', function() {
                 },
             ];
             let error = new Error('An error occurred!');
-            MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
+            SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
             expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
         });
 
-        it('should call MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
+        it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
             let children = [
                 {
                     type: 'myComponent',
@@ -368,7 +368,7 @@ describe('lib/util/validators/validate-children.js', function() {
                 validateChildren(children, 'myInstance', 'myComponent');
             } catch (error) {}
 
-            expect(MbttError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
+            expect(SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.args).to.deep.equal([
                 [`The 'options' property of child at index '1' for component 'myComponent' ` +
                     `must be an object. Found ''`,
                 ],

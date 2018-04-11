@@ -5,6 +5,8 @@
 * Scott Gunther
   * Add badges to readme
   * Add 'has' method to data store
+* Tom Dale
+  * Switched over all MBTT errors to SimulatoErrors for clairty
 
 ## 0.3.2
 

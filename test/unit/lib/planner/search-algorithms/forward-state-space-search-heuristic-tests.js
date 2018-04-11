@@ -261,7 +261,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             };
             EventEmitter.returns(EventEmitterInstance);
             next = sinon.stub();
-            global.MbttError = {
+            global.SimulatoError = {
                 PLANNER: {
                     GOAL_NOT_FOUND: sinon.stub(),
                 },
@@ -275,7 +275,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -298,7 +298,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             it('should throw an error', function() {
                 let error = new Error('My Error');
                 let thrownError;
-                global.MbttError.PLANNER.GOAL_NOT_FOUND.throws(error);
+                global.SimulatoError.PLANNER.GOAL_NOT_FOUND.throws(error);
                 let generator = forwardStateSpaceSearch._findGoalActions();
 
                 generator.next();
@@ -312,11 +312,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 expect(thrownError).to.deep.equal(error);
             });
 
-            it('should call global.MbttError.PLANNER.GOAL_NOT_FOUND once with the goals not found', function() {
+            it('should call global.SimulatoError.PLANNER.GOAL_NOT_FOUND once with the goals not found', function() {
                 forwardStateSpaceSearch.goalActions.add('componentInstance.MY_ACTION');
                 forwardStateSpaceSearch.goalActions.add('componentInstance2.MY_OTHER_ACTION');
                 let error = new Error('My Error');
-                global.MbttError.PLANNER.GOAL_NOT_FOUND.throws(error);
+                global.SimulatoError.PLANNER.GOAL_NOT_FOUND.throws(error);
                 let generator = forwardStateSpaceSearch._findGoalActions();
 
                 generator.next();
@@ -325,7 +325,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next(null);
                 } catch (err) {}
 
-                expect(global.MbttError.PLANNER.GOAL_NOT_FOUND.args).to.deep.equal([
+                expect(global.SimulatoError.PLANNER.GOAL_NOT_FOUND.args).to.deep.equal([
                     [
                         'Planning finished before finding the following goal(s): ' +
                             'componentInstance.MY_ACTION,componentInstance2.MY_OTHER_ACTION',
