@@ -288,7 +288,7 @@ describe('lib/executor/assertion-handler.js', function() {
                 },
             };
             clock = sinon.useFakeTimers(381);
-            global.MbttError = {
+            global.SimulatoError = {
                 ACTION: {
                     PRECONDITION_ASSERTION_FAILURE: sinon.stub(),
                     PRECONDITION_CHECK_FAILED: sinon.stub(),
@@ -303,7 +303,7 @@ describe('lib/executor/assertion-handler.js', function() {
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             clock.restore();
             mockery.resetCache();
             mockery.deregisterAll();
@@ -314,7 +314,7 @@ describe('lib/executor/assertion-handler.js', function() {
             describe('if the passed in error.name is equal to \'AssertionError\'', function() {
                 it('should throw an error', function() {
                     assertionHandler._timeout = 100;
-                    global.MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
+                    global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
                         {message: 'My Error'}
                     );
                     let error = new Error('An error');
@@ -323,10 +323,10 @@ describe('lib/executor/assertion-handler.js', function() {
                     expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
                 });
 
-                it('should call MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE once with the passed ' +
+                it('should call SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE once with the passed ' +
                     'in error.message', function() {
                     assertionHandler._timeOut = 100;
-                    global.MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
+                    global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
                         {message: 'My Error'}
                     );
                     let error = new Error('An error');
@@ -338,7 +338,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
                     }
 
-                    expect(MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE.args).to.deep.equal([
+                    expect(SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.args).to.deep.equal([
                         ['An error'],
                     ]);
                 });
@@ -347,7 +347,7 @@ describe('lib/executor/assertion-handler.js', function() {
             describe('if the passed in error.name not equal to \'AssertionError\'', function() {
                 it('should throw an error', function() {
                     assertionHandler._timeout = 100;
-                    global.MbttError.ACTION.PRECONDITION_CHECK_FAILED.returns(
+                    global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
                         {message: 'My Error'}
                     );
                     let error = new Error('An error');
@@ -356,10 +356,10 @@ describe('lib/executor/assertion-handler.js', function() {
                     expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
                 });
 
-                it('should call MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE once with the passed ' +
+                it('should call SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE once with the passed ' +
                     'in error.message', function() {
                         assertionHandler._timeout = 100;
-                        global.MbttError.ACTION.PRECONDITION_CHECK_FAILED.returns(
+                        global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
                             {message: 'My Error'}
                         );
                         let error = new Error('An error');
@@ -371,7 +371,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
                     }
 
-                    expect(MbttError.ACTION.PRECONDITION_CHECK_FAILED.args).to.deep.equal([
+                    expect(SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.args).to.deep.equal([
                         ['NotAssertionError'],
                     ]);
                 });
@@ -382,7 +382,7 @@ describe('lib/executor/assertion-handler.js', function() {
             describe('if the passed in error.name is equal to \'AssertionError\'', function() {
                 it('should throw an error', function() {
                     assertionHandler._timeout = 381;
-                    global.MbttError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
+                    global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
                         {message: 'My Error'}
                     );
                     let error = new Error('An error');
@@ -395,7 +395,7 @@ describe('lib/executor/assertion-handler.js', function() {
             describe('if the passed in error.name not equal to \'AssertionError\'', function() {
                 it('should throw an error', function() {
                     assertionHandler._timeout = 381;
-                    global.MbttError.ACTION.PRECONDITION_CHECK_FAILED.returns(
+                    global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
                         {message: 'My Error'}
                     );
                     let error = new Error('An error');
@@ -672,7 +672,7 @@ describe('lib/executor/assertion-handler.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             clock = sinon.useFakeTimers(381);
-            global.MbttError = {
+            global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
@@ -690,7 +690,7 @@ describe('lib/executor/assertion-handler.js', function() {
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             clock.restore();
             mockery.resetCache();
             mockery.deregisterAll();
@@ -722,16 +722,16 @@ describe('lib/executor/assertion-handler.js', function() {
 
             it('should throw an error', function() {
                 assertionHandler._timeout = 100;
-                global.MbttError.ACTION.EXPECTED_STATE_ERROR.returns(
+                global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
                     {message: 'My Error'}
                 );
 
                 expect(assertionHandler._getAndCheckExpectedPageStateContinually).to.throw('My Error');
             });
 
-            it('should call MbttError.ACTION.EXPECTED_STATE_ERROR once with a message', function() {
+            it('should call SimulatoError.ACTION.EXPECTED_STATE_ERROR once with a message', function() {
                 assertionHandler._timeout = 100;
-                global.MbttError.ACTION.EXPECTED_STATE_ERROR.returns(
+                global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
                     {message: 'My Error'}
                 );
 
@@ -741,7 +741,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
                 }
 
-                expect(MbttError.ACTION.EXPECTED_STATE_ERROR.args).to.deep.equal([
+                expect(SimulatoError.ACTION.EXPECTED_STATE_ERROR.args).to.deep.equal([
                     ['Page state did not equal expected state'],
                 ]);
             });
@@ -750,7 +750,7 @@ describe('lib/executor/assertion-handler.js', function() {
         describe('if Date.now() returns a value equal to assertionHandler._timeout', function() {
             it('should throw an error', function() {
                 assertionHandler._timeout = 381;
-                global.MbttError.ACTION.EXPECTED_STATE_ERROR.returns(
+                global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
                     {message: 'My Error'}
                 );
 

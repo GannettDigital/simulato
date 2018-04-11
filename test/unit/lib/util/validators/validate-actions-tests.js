@@ -77,7 +77,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let instanceName;
     let componentName;
     let validateActions;
-    let MbttError;
+    let SimulatoError;
     let EventEmitter;
     let EventEmitterInstance;
     let message;
@@ -89,13 +89,13 @@ describe('lib/util/validators/validate-actions.js', function() {
       instanceName = 'instanceName';
       componentName = 'componentName';
 
-      MbttError = {
+      SimulatoError = {
         ACTION: {
           ACTIONS_NOT_OBJECT: sinon.stub(),
           ACTION_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
       message = `Error Thrown`;
 
       EventEmitter = sinon.stub();
@@ -111,14 +111,14 @@ describe('lib/util/validators/validate-actions.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
     it('should throw an error if the passed in actions is not an object', function() {
-      MbttError.ACTION.ACTIONS_NOT_OBJECT.throws(
+      SimulatoError.ACTION.ACTIONS_NOT_OBJECT.throws(
         {message}
       );
 
@@ -131,7 +131,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           let actions = {
             ACTION_ONE: [],
           };
-          MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+          SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
             {message}
           );
 
@@ -171,7 +171,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let instanceName;
     let componentName;
     let validateActions;
-    let MbttError;
+    let SimulatoError;
     let EventEmitter;
     let EventEmitterInstance;
     let message;
@@ -183,12 +183,12 @@ describe('lib/util/validators/validate-actions.js', function() {
       instanceName = 'instanceName';
       componentName = 'componentName';
 
-      MbttError = {
+      SimulatoError = {
         ACTION: {
           ACTION_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
       message = 'Error Thrown';
 
       EventEmitter = sinon.stub();
@@ -204,7 +204,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -212,7 +212,7 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     describe('if the passed in action has preconditions property', function() {
       it('should throw an error if the preconditions is not a function', function() {
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {message}
         );
 
@@ -224,7 +224,7 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     describe('if the passed in action has parameters property', function() {
       it('should throw an error if the parameters is not an Array', function() {
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {message}
         );
 
@@ -259,7 +259,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         effects: sinon.stub(),
       };
 
-      MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+      SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
         {message}
       );
 
@@ -272,7 +272,7 @@ describe('lib/util/validators/validate-actions.js', function() {
         perform: sinon.stub(),
       };
 
-      MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+      SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
         {message}
       );
 
@@ -286,7 +286,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let componentName;
     let actionName;
     let validateActions;
-    let MbttError;
+    let SimulatoError;
     let EventEmitter;
     let EventEmitterInstance;
     let message;
@@ -298,12 +298,12 @@ describe('lib/util/validators/validate-actions.js', function() {
       componentName = 'componentName';
       actionName = 'actionName';
 
-      MbttError = {
+      SimulatoError = {
         ACTION: {
           ACTION_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
       message = 'Error thrown';
 
       EventEmitter = sinon.stub();
@@ -319,14 +319,14 @@ describe('lib/util/validators/validate-actions.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
     it('should throw an error if the passed in preconditions is not an Array', function() {
-      MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+      SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
         {message}
       );
 
@@ -342,7 +342,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           {},
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }
@@ -359,7 +359,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           ['isTrue', 'myElement.displayed'],
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }
@@ -376,7 +376,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     let componentName;
     let actionName;
     let validateActions;
-    let MbttError;
+    let SimulatoError;
     let EventEmitter;
     let EventEmitterInstance;
     let message;
@@ -388,12 +388,12 @@ describe('lib/util/validators/validate-actions.js', function() {
       componentName = 'componentName';
       actionName = 'actionName';
 
-      MbttError = {
+      SimulatoError = {
         ACTION: {
           ACTION_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
       message = 'Error thrown';
 
       EventEmitter = sinon.stub();
@@ -409,7 +409,7 @@ describe('lib/util/validators/validate-actions.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -422,7 +422,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           {},
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }
@@ -439,7 +439,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           {name: 1},
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }
@@ -456,7 +456,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           {name: 'name', generate: 'im not a function'},
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }
@@ -473,7 +473,7 @@ describe('lib/util/validators/validate-actions.js', function() {
           {name: 'name', generate: sinon.stub()},
         ];
 
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {
             message,
           }

@@ -35,7 +35,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                 foundGoalActions: new Set(),
             };
             sinon.spy(planningProblem.fringe, 'delete');
-            global.MbttError = {
+            global.SimulatoError = {
                 PLANNER: {
                     GOAL_NOT_FOUND: sinon.stub(),
                 },
@@ -51,7 +51,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
 
         afterEach(function() {
             planningProblem.fringe.delete.restore();
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -61,7 +61,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             it('should throw an error', function() {
                 let error = new Error('My Error');
                 let thrownError;
-                global.MbttError.PLANNER.GOAL_NOT_FOUND.throws(error);
+                global.SimulatoError.PLANNER.GOAL_NOT_FOUND.throws(error);
                 let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                 generator.next();
@@ -74,11 +74,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                 expect(thrownError).to.deep.equal(error);
             });
 
-            it('should call global.MbttError.PLANNER.GOAL_NOT_FOUND once with the goals not found', function() {
+            it('should call global.SimulatoError.PLANNER.GOAL_NOT_FOUND once with the goals not found', function() {
                 planningProblem.goalActions.add('componentInstance.MY_ACTION');
                 planningProblem.goalActions.add('componentInstance2.MY_OTHER_ACTION');
                 let error = new Error('My Error');
-                global.MbttError.PLANNER.GOAL_NOT_FOUND.throws(error);
+                global.SimulatoError.PLANNER.GOAL_NOT_FOUND.throws(error);
                 let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                 generator.next();
@@ -86,7 +86,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                     generator.next();
                 } catch (err) {}
 
-                expect(global.MbttError.PLANNER.GOAL_NOT_FOUND.args).to.deep.equal([
+                expect(global.SimulatoError.PLANNER.GOAL_NOT_FOUND.args).to.deep.equal([
                     [
                         'Planning finished before finding the following goal(s): ' +
                             'componentInstance.MY_ACTION,componentInstance2.MY_OTHER_ACTION',
@@ -382,7 +382,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             it('should throw an error', function() {
                                 let error = new Error('My Error');
                                 let thrownError;
-                                global.MbttError.PLANNER.GOAL_NOT_FOUND.throws(error);
+                                global.SimulatoError.PLANNER.GOAL_NOT_FOUND.throws(error);
                                 let node = {
                                     actions: new Set([
                                         'myComponent.MY_ACTION',
