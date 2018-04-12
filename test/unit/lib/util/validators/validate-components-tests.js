@@ -28,7 +28,7 @@ describe('lib/util/validators/validate-components.js', function() {
 
   describe('on exported function being executed', function() {
     let validateComponents;
-    let MbttError;
+    let SimulatoError;
     let path;
     let files;
     let callback;
@@ -71,20 +71,20 @@ describe('lib/util/validators/validate-components.js', function() {
 
       sinon.spy(files, 'filter');
 
-      MbttError = {
+      SimulatoError = {
         COMPONENT: {
           FILE_TYPE_ERROR: sinon.stub(),
           COMPONENT_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
 
       mockery.registerMock('path', path);
       mockery.registerMock('path/to/file1.js', component1);
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -146,7 +146,7 @@ describe('lib/util/validators/validate-components.js', function() {
         component3 = ['array', 'of', 'stuff'];
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The component at file path ${files[2]} must be an object`}
         );
 
@@ -159,7 +159,7 @@ describe('lib/util/validators/validate-components.js', function() {
         delete component3.type;
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The component at file path ${files[2]} must have a string for name property`}
         );
 
@@ -173,7 +173,7 @@ describe('lib/util/validators/validate-components.js', function() {
           component3.entryComponent = ['entry', 'options'];
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-          MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+          SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {message: `The entryComponent property must be an object for component ${component3.type}`}
           );
 
@@ -186,7 +186,7 @@ describe('lib/util/validators/validate-components.js', function() {
           component3.entryComponent = {type: {key: 'im an object'}};
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-          MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+          SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
                 `The entryComponent.type property is required and must be a string for component ${component3.type}`,
@@ -206,7 +206,7 @@ describe('lib/util/validators/validate-components.js', function() {
           };
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-          MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+          SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
               `The entryComponent.state property is required and must be an object for component ${component3.type}`,
@@ -225,7 +225,7 @@ describe('lib/util/validators/validate-components.js', function() {
           };
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-          MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+          SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {
               message:
               `The entryComponent.state property is required and must be an object for component ${component3.type }`,
@@ -240,7 +240,7 @@ describe('lib/util/validators/validate-components.js', function() {
         component3.elements = {};
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The elements property must be a function for component ${component3.type}`}
         );
 
@@ -253,7 +253,7 @@ describe('lib/util/validators/validate-components.js', function() {
         component3.model = 'im a string';
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The model property must be a function for component ${component3.type}`}
         );
 
@@ -267,7 +267,7 @@ describe('lib/util/validators/validate-components.js', function() {
           component3.options = ['entry', 'options'];
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-          MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+          SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
             {message: `The options property must be an object for component '${component3.type}'`}
           );
 
@@ -281,7 +281,7 @@ describe('lib/util/validators/validate-components.js', function() {
             component3.options = {dynamicArea: 1};
             mockery.registerMock('path/to/file3.js', component3);
             validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-            MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+            SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
               {
                 message:
                 `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
@@ -296,7 +296,7 @@ describe('lib/util/validators/validate-components.js', function() {
             component3.options = {dynamicArea: 'dynamicArea1'};
             mockery.registerMock('path/to/file3.js', component3);
             validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-            MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+            SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
               {
                 message:
                 `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
@@ -312,7 +312,7 @@ describe('lib/util/validators/validate-components.js', function() {
         component3.elements = {};
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The elements property must be a function for component ${component3.type}`}
         );
 
@@ -325,7 +325,7 @@ describe('lib/util/validators/validate-components.js', function() {
         component3.model = 'im a string';
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The model property must be a function for component ${component3.type}`}
         );
 
@@ -338,7 +338,7 @@ describe('lib/util/validators/validate-components.js', function() {
         delete component3.actions;
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
-        MbttError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
+        SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
           {message: `The actions property must be a function for component ${component3.type}`}
         );
 

@@ -27,7 +27,7 @@ describe('lib/util/validators/validate-elements.js', function() {
     let instanceName;
     let componentName;
     let validateElements;
-    let MbttError;
+    let SimulatoError;
     let elementsNotArrayError;
 
     beforeEach(function() {
@@ -41,20 +41,20 @@ describe('lib/util/validators/validate-elements.js', function() {
         message: `Elements for ${instanceName} were not returned as an Array by parent component ${componentName}`,
       };
 
-      MbttError = {
+      SimulatoError = {
         ELEMENT: {
           ELEMENTS_NOT_ARRAY: sinon.stub().throws(elementsNotArrayError),
           ELEMENT_NOT_OBJECT: sinon.stub(),
           ELEMENT_OBJECT_PROPERTY_TYPE: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
 
       validateElements = require('../../../../../lib/util/validators/validate-elements.js');
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -68,7 +68,7 @@ describe('lib/util/validators/validate-elements.js', function() {
 
     describe('for each value of the passed in elements', function() {
       it('should throw an error if the value is not an object', function() {
-        MbttError.ELEMENT.ELEMENT_NOT_OBJECT.throws(
+        SimulatoError.ELEMENT.ELEMENT_NOT_OBJECT.throws(
           {message: `Element of elements array at index ${0} for component ${componentName} must be an object`}
         );
 
@@ -78,7 +78,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       });
 
       it('should throw an error if the value.name is not a string', function() {
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `Element of elements array at index ${0} for component ${componentName} must be an string`}
         );
 
@@ -90,7 +90,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       it('should throw an error if the selector field is not an object', function() {
         let elements = [{name: 'name', selector: []}];
 
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector field for ${elements[0].name} must be an object`}
         );
 
@@ -102,7 +102,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       it('should throw an error if value.selector.type is not a string', function() {
         let elements = [{name: 'name', selector: {type: 1}}];
 
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'type' field for ${elements[0].name} must be a string`}
         );
 
@@ -114,7 +114,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       it('should throw an error if value.selector.type is not \'attribute\' or \'querySelector\'', function() {
         let elements = [{name: 'name', selector: {type: 'madeUpType'}}];
 
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'type' field for ${elements[0].name} must be either 'attribute' or 'querySelector`}
         );
 
@@ -127,7 +127,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         it('should throw an error if value.selector.key is not a string', function() {
           let elements = [{name: 'name', selector: {type: 'attribute', key: 1}}];
 
-          MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
             {message: `The selector 'key' field for ${elements[0].name}`
               + ` must be a string when using selector type attribute`}
           );
@@ -141,7 +141,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       it('should throw an error if the value.selector.value is not a string', function() {
         let elements = [{name: 'name', selector: {type: 'attribute', key: 'key', value: 1}}];
 
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
@@ -152,7 +152,7 @@ describe('lib/util/validators/validate-elements.js', function() {
       it('should throw no error if value.selector.value is a string', function() {
         let elements = [{name: 'name', selector: {type: 'attribute', key: 'key', value: 'value'}}];
 
-        MbttError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
