@@ -2,7 +2,7 @@
 
 'use strict';
 
-global.MbttError = require('./lib/errors');
+global.SimulatoError = require('./lib/errors');
 const program = require('commander');
 const packageJSON = require('./package.json');
 const commands = require('./lib/cli/commands');

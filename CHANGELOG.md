@@ -7,6 +7,7 @@
   * Add 'has' method to data store
 * Tom Dale
   * Sauce connect tunnel is now created before user specified before scripts are run
+  * Switched over all MBTT errors to SimulatoErrors for clairty
 
 ## 0.3.2
 

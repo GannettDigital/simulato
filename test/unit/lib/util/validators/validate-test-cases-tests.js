@@ -28,7 +28,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
   describe('on exported function being executed', function() {
     let validateTestCases;
-    let MbttError;
+    let SimulatoError;
     let path;
     let files;
     let callback;
@@ -88,21 +88,21 @@ describe('lib/util/validators/validate-test-cases.js', function() {
 
       sinon.spy(files, 'filter');
 
-      MbttError = {
+      SimulatoError = {
         TEST_CASE: {
           FILE_TYPE_ERROR: sinon.stub(),
           TEST_CASE_NOT_ARRAY: sinon.stub(),
           TEST_CASE_TYPE_ERROR: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
 
       mockery.registerMock('path', path);
       mockery.registerMock('path/to/file1.json', testCase1);
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -176,7 +176,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
         testCase3 = {key: 'im not an array'};
         mockery.registerMock('path/to/file3.json', testCase3);
         validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-        MbttError.TEST_CASE.TEST_CASE_NOT_ARRAY.throws(
+        SimulatoError.TEST_CASE.TEST_CASE_NOT_ARRAY.throws(
           {message: `The test case at path ${files[2]} must be an Array`}
         );
 
@@ -190,7 +190,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           testCase3[0] = [];
           mockery.registerMock('path/to/file3.json', testCase3);
           validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-          MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
+          SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
             {message: `The test case at file path ${files[2]} array index 0 must be an object`}
           );
 
@@ -203,7 +203,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           delete testCase3[0].name;
           mockery.registerMock('path/to/file3.json', testCase3);
           validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-          MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
+          SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
             {message: `The test case at file path ${files[2]} array index 0 name value must be a string`}
           );
 
@@ -217,7 +217,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             testCase3[0].type = ['i', 'am', 'not', 'a', 'string'];
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-            MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
+            SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
               {
                 message:
                   `The test case at file path ${files[2]} action initialization must`
@@ -235,7 +235,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             delete testCase3[0].name;
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-            MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
+            SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
               {
                 message:
                   `The test case at file path ${files[2]} action initialization must`
@@ -253,7 +253,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             testCase3[0].state = [];
             mockery.registerMock('path/to/file3.json', testCase3);
             validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
-            MbttError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
+            SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
               {
                 message:
                   `The test case at file path ${files[2]} action initialization must`

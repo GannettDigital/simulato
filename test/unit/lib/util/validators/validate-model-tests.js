@@ -67,7 +67,7 @@ describe('lib/util/validators/validate-model.js', function() {
     let instanceName;
     let componentName;
     let validateModel;
-    let MbttError;
+    let SimulatoError;
     let EventEmitter;
     let EventEmitterInstance;
 
@@ -78,12 +78,12 @@ describe('lib/util/validators/validate-model.js', function() {
       instanceName = 'instanceName';
       componentName = 'componentName';
 
-      MbttError = {
+      SimulatoError = {
         MODEL: {
           MODEL_NOT_OBJECT: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -98,14 +98,14 @@ describe('lib/util/validators/validate-model.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
     it('should throw an error if the passed in model is not an object', function() {
-      MbttError.MODEL.MODEL_NOT_OBJECT.throws(
+      SimulatoError.MODEL.MODEL_NOT_OBJECT.throws(
         {message: `Model for ${instanceName} were not returned as an Object by parent component ${componentName}`}
       );
 
@@ -183,7 +183,7 @@ describe('lib/util/validators/validate-model.js', function() {
   describe('_handleValueTypes', function() {
     let componentName;
     let validateModel;
-    let MbttError;
+    let SimulatoError;
     let parentKeyString;
     let EventEmitter;
     let EventEmitterInstance;
@@ -195,12 +195,12 @@ describe('lib/util/validators/validate-model.js', function() {
       componentName = 'componentName';
       parentKeyString = 'parentKeyString.';
 
-      MbttError = {
+      SimulatoError = {
         MODEL: {
           MODEL_OBJECT_VALUE: sinon.stub(),
         },
       };
-      global.MbttError = MbttError;
+      global.SimulatoError = SimulatoError;
 
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
@@ -216,7 +216,7 @@ describe('lib/util/validators/validate-model.js', function() {
     });
 
     afterEach(function() {
-      delete global.MbttError;
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -237,7 +237,7 @@ describe('lib/util/validators/validate-model.js', function() {
       it('should throw an error', function() {
         let value = [];
 
-        MbttError.MODEL.MODEL_OBJECT_VALUE.throws(
+        SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
           {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );
@@ -250,7 +250,7 @@ describe('lib/util/validators/validate-model.js', function() {
 
     describe('if the value is a string or function', function() {
       it('should not throw an error when value is a string', function() {
-        MbttError.MODEL.MODEL_OBJECT_VALUE.throws(
+        SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
           {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );
@@ -260,7 +260,7 @@ describe('lib/util/validators/validate-model.js', function() {
         )).to.not.throw();
       });
       it('should not throw an error when value is a function', function() {
-        MbttError.MODEL.MODEL_OBJECT_VALUE.throws(
+        SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
           {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );

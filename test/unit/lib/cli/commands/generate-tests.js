@@ -76,7 +76,7 @@ describe('lib/cli/generate.js', function() {
                 normalize: sinon.stub().returns('../../../../config.js'),
             };
 
-            global.MbttError = {
+            global.SimulatoError = {
                 CLI: {
                     INVALID_COMPONENT_PATH: sinon.stub(),
                     INVALID_GENERATION_TECHNIQUE: sinon.stub(),
@@ -117,7 +117,7 @@ describe('lib/cli/generate.js', function() {
                 };
                 configFile.components = false;
                 mockery.registerMock(pathLoc, configFile);
-                MbttError.CLI.INVALID_COMPONENT_PATH.throws({message});
+                SimulatoError.CLI.INVALID_COMPONENT_PATH.throws({message});
 
                 expect(generate.configure.bind(null, options)).to.throw(message);
             });
@@ -152,7 +152,7 @@ describe('lib/cli/generate.js', function() {
                 };
                 configFile.components = false;
                 mockery.registerMock(pathLoc, configFile);
-                MbttError.CLI.INVALID_COMPONENT_PATH.throws({message});
+                SimulatoError.CLI.INVALID_COMPONENT_PATH.throws({message});
 
                 expect(generate.configure.bind(null, options)).to.throw(message);
             });
@@ -189,7 +189,7 @@ describe('lib/cli/generate.js', function() {
                 };
                 configFile.components = false;
                 mockery.registerMock(pathLoc, configFile);
-                MbttError.CLI.INVALID_COMPONENT_PATH.throws({message});
+                SimulatoError.CLI.INVALID_COMPONENT_PATH.throws({message});
 
                 expect(generate.configure.bind(null, options)).to.throw(message);
             });
@@ -292,7 +292,7 @@ describe('lib/cli/generate.js', function() {
                 let pathLoc = '../../../../config.js';
                 let message = 'invalid generation technique';
                 let options = {};
-                MbttError.CLI.INVALID_GENERATION_TECHNIQUE.throws({message});
+                SimulatoError.CLI.INVALID_GENERATION_TECHNIQUE.throws({message});
                 configFile.technique = 'wrongAction';
                 mockery.registerMock(pathLoc, configFile);
 
