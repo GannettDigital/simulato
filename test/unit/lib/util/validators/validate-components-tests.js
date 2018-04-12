@@ -201,6 +201,7 @@ describe('lib/util/validators/validate-components.js', function() {
         it('should throw an error if the entryComponent.state is not an object', function() {
           component3.entryComponent = {
             type: 'entryComponent',
+            name: 'theEntryComponent',
             state: [],
           };
           mockery.registerMock('path/to/file3.js', component3);

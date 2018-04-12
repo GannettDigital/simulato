@@ -220,6 +220,23 @@ describe('lib/util/validators/validate-actions.js', function() {
           message
         );
       });
+
+      it('should NOT throw an error if the preconditions is a function', function() {
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
+          {message}
+        );
+
+        expect(validateActions._validateAction.bind(
+          null,
+          {
+            preconditions: sinon.stub(),
+            perform: sinon.stub(),
+            effects: sinon.stub(),
+          },
+          instanceName,
+          componentName
+        )).to.not.throw();
+      });
     });
 
     describe('if the passed in action has parameters property', function() {
