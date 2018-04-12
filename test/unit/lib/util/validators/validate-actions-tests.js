@@ -222,7 +222,7 @@ describe('lib/util/validators/validate-actions.js', function() {
       });
 
       it('should NOT throw an error if the preconditions is a function', function() {
-        MbttError.ACTION.ACTION_TYPE_ERROR.throws(
+        SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
           {message}
         );
 
