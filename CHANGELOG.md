@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.3.3
+
 * Scott Gunther
   * Add badges to readme
   * Add 'has' method to data store
