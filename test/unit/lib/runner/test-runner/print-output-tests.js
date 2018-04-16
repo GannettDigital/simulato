@@ -498,6 +498,7 @@ describe('lib/runner/test-runner/print-output.js', function() {
     });
 
     afterEach(function() {
+      process.exitCode = 0;
       console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
@@ -546,6 +547,11 @@ describe('lib/runner/test-runner/print-output.js', function() {
 
     describe('for each test report', function() {
       describe('if there is an error', function() {
+        it('should change the process.exitCode to 1', function() {
+          printOutput._printTestSummary();
+
+          expect(process.exitCode).to.equal(1);
+        });
         it('should call console.log 13 times if there are 2 failed tests'
           + 'each with 1 failed action having 1 failed step', function() {
             printOutput._printTestSummary();
@@ -587,6 +593,14 @@ describe('lib/runner/test-runner/print-output.js', function() {
       });
 
       describe('when there are no failed tests', function() {
+        it('should not change the process.exitCode', function() {
+          delete printOutput._testSummary.testReports[0].error;
+          delete printOutput._testSummary.testReports[1].error;
+
+          printOutput._printTestSummary();
+
+          expect(process.exitCode).to.equal(0);
+        });
         it('should only call console.log 5 times', function() {
           delete printOutput._testSummary.testReports[0].error;
           delete printOutput._testSummary.testReports[1].error;
