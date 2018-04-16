@@ -96,7 +96,7 @@ describe('lib/cli/run.js', function() {
                 before: 'script',
             };
 
-            global.MbttError = {
+            global.SimulatoError = {
                 TEST_CASE: {
                     NO_TEST_CASES_FOUND: sinon.stub(),
                 },
@@ -127,7 +127,7 @@ describe('lib/cli/run.js', function() {
             delete process.env.TUNNEL_IDENTIFIER;
             delete process.env.BEFORE_SCRIPT;
             delete process.env.USING_PARENT_TEST_RUNNER;
-            delete global.MbttError;
+            delete global.SimulatoError;
             delete process.env.CONFIG_FILE;
             process.cwd.restore();
             mockery.resetCache();
@@ -523,7 +523,7 @@ describe('lib/cli/run.js', function() {
                         let pathLoc = '../../../../config.js';
                         let options = {};
                         let message = 'No test cases were found at path';
-                        MbttError.TEST_CASE.NO_TEST_CASES_FOUND.throws({message});
+                        SimulatoError.TEST_CASE.NO_TEST_CASES_FOUND.throws({message});
                         configFile.reportPath = false;
                         mockery.registerMock(pathLoc, configFile);
                         run.emit.onCall(0).callsArgWith(2, files);

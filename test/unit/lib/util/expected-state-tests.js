@@ -349,7 +349,7 @@ describe('lib/util/expected-state.js', function() {
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            global.MbttError = {
+            global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
@@ -382,7 +382,7 @@ describe('lib/util/expected-state.js', function() {
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -391,7 +391,7 @@ describe('lib/util/expected-state.js', function() {
         it('should throw an error if the passed in componentConfig.type is not a string'
             + 'or a string of length 0', function() {
             let message = `Error was thrown`;
-            MbttError.ACTION.EXPECTED_STATE_ERROR.throws(
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
                 {message}
             );
             delete componentConfig.type;
@@ -402,7 +402,7 @@ describe('lib/util/expected-state.js', function() {
         it('should throw an error if the passed in componentConfig.name is not a string'
             + 'or a string of length 0', function() {
             let message = `Error was thrown`;
-            MbttError.ACTION.EXPECTED_STATE_ERROR.throws(
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
                 {message}
             );
             componentConfig.name = 1234;
@@ -412,7 +412,7 @@ describe('lib/util/expected-state.js', function() {
 
         it('should throw an error if the passed in componentConfig.options is not an object', function() {
             let message = `Error was thrown`;
-            MbttError.ACTION.EXPECTED_STATE_ERROR.throws(
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
                 {message}
             );
             componentConfig.options = [];
@@ -786,7 +786,7 @@ describe('lib/util/expected-state.js', function() {
                 options: {},
             };
             state = {state: 'someState'};
-            global.MbttError = {
+            global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
@@ -794,7 +794,7 @@ describe('lib/util/expected-state.js', function() {
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -802,7 +802,7 @@ describe('lib/util/expected-state.js', function() {
 
         it('should throw an error the passed in state is not an object', function() {
             let message = `Error thrown`;
-            MbttError.ACTION.EXPECTED_STATE_ERROR.throws(
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
                 {message}
             );
 
@@ -1936,7 +1936,7 @@ describe('lib/util/expected-state.js', function() {
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            global.MbttError = {
+            global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
@@ -1963,7 +1963,7 @@ describe('lib/util/expected-state.js', function() {
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -1977,21 +1977,21 @@ describe('lib/util/expected-state.js', function() {
             it('should throw an error', function() {
                 myThis._stashedStates.shift();
                 let error = new Error('My Error');
-                MbttError.ACTION.EXPECTED_STATE_ERROR.throws(error);
+                SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(error);
 
                 expect(expectedState.pop.bind(myThis)).to.throw('My Error');
             });
 
-            it('should call MbttError.ActionError.EXPECTED_STATE_ERROR a could not pop error message', function() {
+            it('should call SimulatoError.ActionError.EXPECTED_STATE_ERROR a could not pop error message', function() {
                 myThis._stashedStates.shift();
                 let error = new Error('My Error');
-                MbttError.ACTION.EXPECTED_STATE_ERROR.throws(error);
+                SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(error);
 
                 try {
                     expectedState.pop.call(myThis);
                 } catch (err) {}
 
-                expect(MbttError.ACTION.EXPECTED_STATE_ERROR.args).to.deep.equal([
+                expect(SimulatoError.ACTION.EXPECTED_STATE_ERROR.args).to.deep.equal([
                     [
                         'Failed to pop. No stashed states.',
                     ],

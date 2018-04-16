@@ -3,15 +3,22 @@
 ## Pending Version
 
 * Brian Fitzpatrick
+  * Included PR template
   * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
   * Modified generated test names to be more clear
 
 * Tom Dale 
   * Added bug report template
+  * Parent exit code set to 1 when child has an error
+
+## 0.3.3
 
 * Scott Gunther
   * Add badges to readme
   * Add 'has' method to data store
+* Tom Dale
+  * Sauce connect tunnel is now created before user specified before scripts are run
+  * Switched over all MBTT errors to SimulatoErrors for clairty
 
 ## 0.3.2
 

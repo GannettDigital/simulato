@@ -91,7 +91,7 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            global.MbttError = {
+            global.SimulatoError = {
                 COMPONENT: {
                     NO_ENTRY_POINT: sinon.stub(),
                 },
@@ -106,7 +106,7 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
         });
 
         afterEach(function() {
-            delete global.MbttError;
+            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -159,19 +159,19 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
                         },
                     };
                     actionFocusedTechnique.emit.onCall(0).callsArgWith(1, null, components);
-                    MbttError.COMPONENT.NO_ENTRY_POINT.returns({message: 'My Error'});
+                    SimulatoError.COMPONENT.NO_ENTRY_POINT.returns({message: 'My Error'});
 
                     expect(actionFocusedTechnique.determineActions).to.throw('My Error');
                 });
 
-                it('shoul call MbttError.COMPONENT.NO_ENTRY_POINT once with a planning failed message', function() {
+                it('shoul call SimulatoError.COMPONENT.NO_ENTRY_POINT once with a planning failed message', function() {
                     let components = {
                         myComponent3: {
                             entryComponent: false,
                         },
                     };
                     actionFocusedTechnique.emit.onCall(0).callsArgWith(1, null, components);
-                    MbttError.COMPONENT.NO_ENTRY_POINT.returns({message: 'My Error'});
+                    SimulatoError.COMPONENT.NO_ENTRY_POINT.returns({message: 'My Error'});
 
                     try {
                         actionFocusedTechnique.determineActions();
@@ -179,7 +179,7 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
 
                     }
 
-                    expect(MbttError.COMPONENT.NO_ENTRY_POINT.args).to.deep.equal([
+                    expect(SimulatoError.COMPONENT.NO_ENTRY_POINT.args).to.deep.equal([
                         ['Planning failed, no entry component found'],
                     ]);
                 });
