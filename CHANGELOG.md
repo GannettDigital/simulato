@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Tom Dale
+  * Parent exit code set to 1 when child has an error
+
 ## 0.3.3
 
 * Scott Gunther
