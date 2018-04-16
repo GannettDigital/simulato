@@ -6,4 +6,6 @@ module.exports = {
     reportPath: './test/acceptance/tests',
     outputPath: './test/acceptance/tests',
     technique: 'actionFocused',
+    saucelabs: 'true',
+    sauceCapabilities: {},
 };
