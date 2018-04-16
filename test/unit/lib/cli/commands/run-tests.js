@@ -129,6 +129,8 @@ describe('lib/cli/run.js', function() {
             delete process.env.USING_PARENT_TEST_RUNNER;
             delete global.SimulatoError;
             delete process.env.CONFIG_FILE;
+            delete process.env.SAUCE_USERNAME;
+            delete process.env.SAUCE_ACCESS_KEY;
             process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
@@ -340,15 +342,6 @@ describe('lib/cli/run.js', function() {
 
                     expect(process.env.SAUCE_LABS).to.equal('true');
                 });
-                it('should set the SAUCE_CAPABILITIES env variable', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(JSON.parse(process.env.SAUCE_CAPABILITIES)).to.deep.equal(sauceConfig);
-                });
                 it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
                     let pathLoc = '../../../../config.js';
                     let options = {};
@@ -357,6 +350,65 @@ describe('lib/cli/run.js', function() {
                     run.configure(options);
 
                     expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
+                });
+                describe('if configFile contains sauce capabilities', function() {
+                    it('should set the SAUCE_CAPABILITIES env variable', function() {
+                        let pathLoc = '../../../../config.js';
+                        let options = {};
+                        mockery.registerMock(pathLoc, configFile);
+
+                        run.configure(options);
+
+                        expect(JSON.parse(process.env.SAUCE_CAPABILITIES)).to.deep.equal(sauceConfig);
+                    });
+                    describe('if sauce capabilities has username set', function() {
+                        it('should set the SAUCE_USERNAME', function() {
+                            let pathLoc = '../../../../config.js';
+                            let options = {};
+                            mockery.registerMock(pathLoc, configFile);
+
+                            run.configure(options);
+
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).username)
+                            .to.deep.equal(process.env.SAUCE_USERNAME);
+                        });
+                    });
+                    describe('if sauce capabilities does not have username set', function() {
+                        it('should not set the SAUCE_USERNAME', function() {
+                            let pathLoc = '../../../../config.js';
+                            let options = {};
+                            delete sauceConfig.username;
+                            mockery.registerMock(pathLoc, configFile);
+
+                            run.configure(options);
+
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).username).to.deep.equal(undefined);
+                        });
+                    });
+                    describe('if sauce capabilities has accesskey set', function() {
+                        it('should set the SAUCE_ACCESS_KEY', function() {
+                            let pathLoc = '../../../../config.js';
+                            let options = {};
+                            sauceConfig.accesskey = 'key';
+                            mockery.registerMock(pathLoc, configFile);
+
+                            run.configure(options);
+
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accesskey)
+                            .to.deep.equal(process.env.SAUCE_ACCESS_KEY);
+                        });
+                    });
+                    describe('if sauce capabilities does not have accesskey set', function() {
+                        it('should not set the SAUCE_ACCESS_KEY', function() {
+                            let pathLoc = '../../../../config.js';
+                            let options = {};
+                            mockery.registerMock(pathLoc, configFile);
+
+                            run.configure(options);
+
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accesskey).to.deep.equal(undefined);
+                        });
+                    });
                 });
             });
         });
