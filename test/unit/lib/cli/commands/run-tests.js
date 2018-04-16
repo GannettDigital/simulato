@@ -385,28 +385,28 @@ describe('lib/cli/run.js', function() {
                             expect(JSON.parse(process.env.SAUCE_CAPABILITIES).username).to.deep.equal(undefined);
                         });
                     });
-                    describe('if sauce capabilities has accesskey set', function() {
+                    describe('if sauce capabilities has accessKey set', function() {
                         it('should set the SAUCE_ACCESS_KEY', function() {
                             let pathLoc = '../../../../config.js';
                             let options = {};
-                            sauceConfig.accesskey = 'key';
                             mockery.registerMock(pathLoc, configFile);
 
                             run.configure(options);
 
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accesskey)
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accessKey)
                             .to.deep.equal(process.env.SAUCE_ACCESS_KEY);
                         });
                     });
-                    describe('if sauce capabilities does not have accesskey set', function() {
+                    describe('if sauce capabilities does not have accessKey set', function() {
                         it('should not set the SAUCE_ACCESS_KEY', function() {
                             let pathLoc = '../../../../config.js';
                             let options = {};
+                            delete sauceConfig.accessKey;
                             mockery.registerMock(pathLoc, configFile);
 
                             run.configure(options);
 
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accesskey).to.deep.equal(undefined);
+                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accessKey).to.deep.equal(undefined);
                         });
                     });
                 });
