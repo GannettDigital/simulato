@@ -23,8 +23,15 @@ This section documents utilization of the configuration file in place of CLI opt
     
 ### saucelabs
   * Flag for running tests in saucelabs. A sauce tunnel will be started
-  * Must have `SAUCE_USERNAME` AND `SAUCE_ACCESS_KEY` specified
   * Example: `saucelabs: true`
+
+### sauceCapabilities
+  * Object containing saucelabs configuration options
+  * Can include a specified `username` for your saucelabs account
+  * Can include a specified `accessKey` for your saucelabs account
+  * Example: `sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'}`
+  * All other options can be found here:
+  https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
 
 ### parallelism
   *  Amount of tests to run in parallel
@@ -62,7 +69,8 @@ This section documents utilization of the configuration file in place of CLI opt
         testPath: './test/acceptance/tests',
         components: './test/acceptance/components',
         reportPath: './test/acceptance/tests',
-        saucelabs: true
+        saucelabs: true,
+        sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'},
         outputPath: './test/acceptance/tests',
         technique: 'actionFocused',
     }
