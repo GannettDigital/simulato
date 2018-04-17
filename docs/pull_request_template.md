@@ -4,4 +4,4 @@ Changes proposed in this pull request:
 -
 -
 
-@GannettDigital/core-contributors
+@GannettDigital/simulato-core-contributors
