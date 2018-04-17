@@ -5,5 +5,5 @@ module.exports = {
     components: './test/acceptance/components',
     reportPath: './test/acceptance/tests',
     outputPath: './test/acceptance/tests',
-    technique: 'actionFocused'
+    technique: 'actionFocused',
 };

@@ -100,14 +100,13 @@ describe('lib/executor/driver-handler.js', function() {
     });
 
     describe('_navigateToAndModifyObject', function() {
-        let webdriver;
         let driverHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/executor/driver-handler.js');
 
-            mockery.registerMock('selenium-webdriver', webdriver);
+            mockery.registerMock('selenium-webdriver', {});
             mockery.registerMock('saucelabs', sinon.stub());
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
