@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.3.4
+
 * Brian Fitzpatrick
   * Included PR template
   * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
