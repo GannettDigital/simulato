@@ -4,6 +4,17 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 ---
 
+## 0.3.4
+
+* Brian Fitzpatrick
+  * Included PR template
+  * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
+  * Modified generated test names to be more clear
+
+* Tom Dale 
+  * Added bug report template
+  * Parent exit code set to 1 when child has an error
+
 ## 0.3.3
 
 * Scott Gunther
