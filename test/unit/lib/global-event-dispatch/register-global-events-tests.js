@@ -53,7 +53,9 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             on: sinon.stub(),
             create: sinon.stub(),
         };
-        findFiles = sinon.stub();
+        findFiles = {
+            search: sinon.stub(),
+        };
         oracle = {
             runAssertions: sinon.stub(),
             deepEqual: sinon.stub(),
@@ -330,7 +332,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
 
         expect(componentHandler.on.args[0]).to.deep.equal([
             'componentHandler.findFiles',
-            findFiles,
+            findFiles.search,
         ]);
     });
 
