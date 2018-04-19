@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/util/component-handler.js', function() {
+describe('lib/util/component-handler.js', function() {
   describe('on file being required', function() {
     let componentHandler;
     let EventEmitter;
