@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/util/page-state-handler.js', function() {
+describe('lib/util/page-state-handler.js', function() {
   describe('on file being required', function() {
     let pageStateHandler;
     let EventEmitter;
