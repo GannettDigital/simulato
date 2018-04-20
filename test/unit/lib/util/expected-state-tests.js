@@ -223,6 +223,7 @@ describe('lib/util/expected-state.js', function() {
                                 state: 'myComponentState',
                                 options: 'myComponentOptions',
                                 dynamicArea: 'myDynamicArea',
+                                cloning: true,
                             }],
                         ]
                     );
@@ -1398,6 +1399,7 @@ describe('lib/util/expected-state.js', function() {
             expect(expectedState.addComponent.args).to.deep.equal([[
                 newComponent,
                 {someState: 'stateValue'},
+                undefined,
             ]]);
         });
     });
