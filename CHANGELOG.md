@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Brian Fitzpatrick
+  * Fixed a bug where modifications to the expected state by deletion were not retained on children
+
 ## 0.3.4
 
 * Brian Fitzpatrick
