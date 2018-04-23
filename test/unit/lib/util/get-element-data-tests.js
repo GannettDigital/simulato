@@ -80,7 +80,7 @@ describe('lib/util/get-element-data.js', function() {
     });
   });
 
-  describe('when get elementData is called and the functions are returned', function() {
+  describe('when get getElementData is called and the functions are returned', function() {
     describe('on call of findElement', function() {
       describe('for each element of the passed in elements', function() {
         describe('if the element[key] is the passed in value', function() {
@@ -363,7 +363,7 @@ describe('lib/util/get-element-data.js', function() {
           expect(element.getBoundingClientRect.callCount).to.equal(2);
         });
 
-        describe('if the passed in elements offset width and height plus its heigh and width is 0', function() {
+        describe('if the passed in elements offset width and height plus its height and width is 0', function() {
           it('should return false', function() {
             let element = new Element('element1');
             element.offsetWidth = -10;
