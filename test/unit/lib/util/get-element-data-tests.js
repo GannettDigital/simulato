@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/util/get-element-data.js', function() {
+describe('lib/util/get-element-data.js', function() {
   let getElementData;
   let getElementDataFunctions;
   let callback;
