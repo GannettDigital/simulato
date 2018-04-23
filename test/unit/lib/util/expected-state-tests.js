@@ -871,7 +871,7 @@ describe('lib/util/expected-state.js', function() {
             });
         });
 
-        describe('if component.children is defined', function() {
+        describe('if component.children is defined and cloning is not true', function() {
             it('should call this._addChildren once with the passed in component', function() {
                 component.children = [
                     {
@@ -911,6 +911,56 @@ describe('lib/util/expected-state.js', function() {
                         },
                     ],
                 ]);
+            });
+            it('should add this children if children is not cloning', function() {
+                component.children = [
+                    {
+                        type: 'myComponent',
+                        name: 'myInstance',
+                        state: {
+                            property: 'value',
+                        },
+                        options: {
+                            option: 'option1',
+                        },
+                    },
+                ];
+
+                expectedState.addComponent.call(myThis, component, state, false);
+
+                expect(myThis._addChildren.args).to.deep.equal([
+                    [
+                        {
+                            children: [
+                                {
+                                    type: 'myComponent',
+                                    name: 'myInstance',
+                                    state: {
+                                        property: 'value',
+                                    },
+                                    options: {
+                                        option: 'option1',
+                                    },
+                                },
+                            ],
+                            name: 'instanceName',
+                            options: {},
+                            _currentWorkingModel: {
+                                key: 'value',
+                            },
+                        },
+                    ],
+                ]);
+            });
+        });
+        describe('if component.children is not defined and cloning is false', function() {
+            it('should not add the children', function() {
+                component.children = false;
+                expectedState._addChildren = sinon.stub();
+
+                expectedState.addComponent.call(myThis, component, state, false);
+
+                expect(expectedState._addChildren.callCount).to.equal(0);
             });
         });
 
