@@ -4,6 +4,8 @@
 
 * Brian Fitzpatrick
   * Fixed a bug where modifications to the expected state by deletion were not retained on children
+* Tom Dale
+  * Unit tests rest of lib/util lib/cli/orchestration and lib/cli/cli-event-dispatch
 
 ## 0.3.4
 
