@@ -14,24 +14,21 @@ module.exports = {
       {
         name: 'modalTitle',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}ModalTitle`,
         },
       },
       {
         name: 'modalBodyText',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}ModalBodyText`,
         },
       },
       {
         name: 'closeButton',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}ModalCloseButton`,
         },
       },
