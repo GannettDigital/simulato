@@ -2,6 +2,14 @@
 
 ## Pending Version
 
+* Tom Dale
+  * Changed the selector methods inside elements to use
+    * getElementById
+    * querySelector
+    * querySelectorAll
+    * getElementsByTagName
+    * getElementsByClassName
+
 ## 0.3.5
 
 * Brian Fitzpatrick
