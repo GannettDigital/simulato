@@ -100,6 +100,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       sinon.stub(process, 'hrtime').returns([0, 0]);
 
+      process.env.TEST_DELAY = 5;
+
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
@@ -109,6 +111,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     afterEach(function() {
+      delete process.env.TEST_DELAY;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -116,13 +119,13 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     it('should call process.hrtime once', function() {
-      testRunner.configure();
+      testRunner.configure([]);
 
       expect(process.hrtime.callCount).to.equal(1);
     });
 
     it('should set the _testTimer to process.hrTime', function() {
-      testRunner.configure();
+      testRunner.configure([]);
 
       expect(testRunner._testTimer).to.deep.equal([0, 0]);
     });
@@ -133,8 +136,32 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(testRunner._testFiles).to.deep.equal(['../path/to/file1', '/pathto/file2']);
     });
 
+    it('should set _testsRemaining to the passed in testFiles.length', function() {
+      testRunner.configure(['../path/to/file1', '/pathto/file2']);
+
+      expect(testRunner._testsRemaining).equal(2);
+    });
+
+    describe('if process.env.TEST_DELAY is set to a number', function() {
+      it('should set _staggerTime to process.env.TEST_DELAY', function() {
+        testRunner.configure([]);
+
+        expect(testRunner._staggerTime).equal(5);
+      });
+    });
+
+    describe('if process.env.TEST_DELAY is NOT set to a number', function() {
+      it('should leave _staggerTime at the default', function() {
+        delete process.env.TEST_DELAY;
+
+        testRunner.configure([]);
+
+        expect(testRunner._staggerTime).equal(50);
+      });
+    });
+
     it('should call testRunner.emit with the correct event', function() {
-      testRunner.configure();
+      testRunner.configure([]);
 
       expect(testRunner.emit.args).to.deep.equal([
         ['testRunner.configured'],
@@ -151,7 +178,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
     describe('if no parallelism is passed in', function() {
       it('should leave ._parallelism at the default 20', function() {
-        testRunner.configure();
+        testRunner.configure([]);
 
         expect(testRunner._parallelism).to.equal(20);
       });
@@ -381,6 +408,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         expect(testRunner._testsRunning).to.equal(0);
       });
 
+      it('should decrement testRunner._testsRemaining once', function() {
+        test.on.callsArgWith(1);
+        testRunner._testsRemaining = 4;
+
+        testRunner._startTest(sampleSpawnArgs);
+
+        expect(testRunner._testsRemaining).to.equal(3);
+      });
+
       it('should call testRunner.emit with the correct event testRunner.testFinished', function() {
         test.on.callsArgWith(1, 'message data');
 
@@ -400,9 +436,10 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         expect(testRunner.emit.callCount).to.deep.equal(3);
       });
 
-      describe('when testRunner._testsRunning is decremented down to 0', function() {
+      describe('when testRunner._testsRemaining is decremented down to 0', function() {
         it('should call testRunner.emit with the correct event testRunner.done', function() {
           test.on.callsArgWith(1, 'message data');
+          testRunner._testsRemaining = 1;
 
           testRunner._startTest(sampleSpawnArgs);
 
@@ -413,6 +450,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
         it('should call testRunner.emit 4 times', function() {
           test.on.callsArgWith(1, 'message data');
+          testRunner._testsRemaining = 1;
 
           testRunner._startTest(sampleSpawnArgs);
 
@@ -443,6 +481,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     let testRunner;
     let EventEmitter;
     let EventEmitterInstance;
+    let clock;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -454,6 +493,9 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         on: sinon.stub(),
       };
       EventEmitter.returns(EventEmitterInstance);
+
+      clock = sinon.useFakeTimers(700);
+      sinon.spy(clock, 'setTimeout');
 
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('path', {});
@@ -471,6 +513,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     afterEach(function() {
+      clock.setTimeout.restore();
+      clock.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -484,7 +528,9 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           expect(testRunner._testFiles.pop.callCount).to.equal(20);
         });
 
-        it('should call printOutput.emit with the correct event 20 times', function() {
+        it('should call testRunner.emit with the correct event 20 times', function() {
+          testRunner._staggerTime = 0;
+
           testRunner._scheduleTests();
 
           expect(testRunner.emit.args).to.deep.equal([
@@ -511,12 +557,131 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           expect(testRunner._testFiles.pop.callCount).to.equal(16);
         });
 
-        it('should call printOutput.emit as many times as there are testFiles times', function() {
+        it('should call testRunner.emit as many times as there are testFiles times', function() {
           testRunner._testFiles.splice(14, 5);
+          testRunner._staggerTime = 0;
 
           testRunner._scheduleTests();
 
           expect(testRunner.emit.callCount).to.equal(15);
+        });
+      });
+    });
+
+    describe('if testRunner._staggerTime is set to 10', function() {
+      describe('if Date.now() is greater than the _timeToStartNextTest', function() {
+        it('should set _timeToStartNextTest to Date.now() + 10', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 300;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(testRunner._timeToStartNextTest).to.equal(710);
+        });
+
+        it('should call testRunner.emit with testRunner.testScheduled and the test file', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 300;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(testRunner.emit.args).to.deep.equal([
+            ['testRunner.testScheduled', 'test 20'],
+          ]);
+        });
+      });
+
+      describe('if Date.now() is equal to _timeToStartNextTest', function() {
+        it('should set _timeToStartNextTest to Date.now() + 10', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 700;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(testRunner._timeToStartNextTest).to.equal(710);
+        });
+
+        it('should call testRunner.emit with testRunner.testScheduled and the test file', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 700;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(testRunner.emit.args).to.deep.equal([
+            ['testRunner.testScheduled', 'test 20'],
+          ]);
+        });
+      });
+
+      describe('if Date.now() is less than _timeToStartNextTest', function() {
+        it('should set _timeToStartNextTest to _timeToStartNextTest + 10', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 900;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(testRunner._timeToStartNextTest).to.equal(910);
+        });
+
+        it('should call setTimeout once', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 900;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(clock.setTimeout.callCount).to.equal(1);
+        });
+
+        it('should call setTimeout a function as first param', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 900;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(clock.setTimeout.args[0][0]).to.be.a('function');
+        });
+
+        it('should call setTimeout with _timeToStartNextTest - Date.now() as second param', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 900;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+
+          expect(clock.setTimeout.args[0][1]).to.equal(200);
+        });
+
+        it('should not call the callback after 199 clock ticks', function() {
+          testRunner._staggerTime = 10;
+          testRunner._timeToStartNextTest = 900;
+          testRunner._testFiles.splice(0, 19);
+
+          testRunner._scheduleTests();
+          clock.tick(199);
+
+          expect(testRunner.emit.callCount).to.equal(0);
+        });
+
+        describe('when setTimeout callback is called at the 200th clock tick', function() {
+          it('should call testRunner.emit with testRunner.testScheduled and the test file', function() {
+            testRunner._staggerTime = 10;
+            testRunner._timeToStartNextTest = 900;
+            testRunner._testFiles.splice(0, 19);
+
+            testRunner._scheduleTests();
+            clock.tick(200);
+
+            expect(testRunner.emit.args).to.deep.equal([
+              ['testRunner.testScheduled', 'test 20'],
+            ]);
+          });
         });
       });
     });
@@ -654,6 +819,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         ]);
       });
     });
+
     describe('if process.env.CONFIG_FILE is set', function() {
       it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args', function() {
         process.env.CONFIG_FILE = 'pathToConfig';
@@ -672,6 +838,30 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               './path/to/components',
               '-f',
               'pathToConfig',
+            ],
+          ],
+        ]);
+      });
+    });
+
+    describe('if process.env.TEST_DELAY is set', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including testDelay args', function() {
+        process.env.TEST_DELAY = '500';
+
+        testRunner._createSpawnArgs(testPath);
+
+        expect(testRunner.emit.args).to.deep.equal([
+          [
+            'testRunner.spawnArgsCreated',
+            [
+              'curDir/../../../index.js',
+              'run',
+              '-T',
+              './path/to/test',
+              '-c',
+              './path/to/components',
+              '-d',
+              '500',
             ],
           ],
         ]);
