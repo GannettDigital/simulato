@@ -21,6 +21,7 @@ program
     .option('-R, --reportPath [path]', 'The path to write the test result report to')
     .option('-b, --before <path>', 'The path to the before script')
     .option('-f, --configFile <path>', 'The path to the config file')
+    .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
     .action(commands.run);
 
 program

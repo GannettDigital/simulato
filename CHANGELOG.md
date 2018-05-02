@@ -9,6 +9,7 @@
     * querySelectorAll
     * getElementsByTagName
     * getElementsByClassName
+  * Created a new cli/option command to stagger start time of tests using the test runner
 
 ## 0.3.5
 
