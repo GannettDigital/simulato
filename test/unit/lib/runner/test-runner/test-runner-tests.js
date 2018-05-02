@@ -156,7 +156,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
         testRunner.configure([]);
 
-        expect(testRunner._staggerTime).equal(50);
+        expect(testRunner._staggerTime).equal(200);
       });
     });
 
