@@ -3,6 +3,12 @@
 ## Pending Version
 
 * Tom Dale
+  * Changed the selector methods inside elements to use
+    * getElementById
+    * querySelector
+    * querySelectorAll
+    * getElementsByTagName
+    * getElementsByClassName
   * Created a new cli/option command to stagger start time of tests using the test runner
 
 ## 0.3.5

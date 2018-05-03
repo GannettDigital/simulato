@@ -20,8 +20,7 @@ describe('lib/util/get-element-data.js', function() {
     element1 = {
       name: 'element1',
       selector: {
-        type: 'attribute',
-        key: 'id',
+        type: 'getElementById',
         value: 'someId',
       },
     };
@@ -37,6 +36,9 @@ describe('lib/util/get-element-data.js', function() {
     global.document = {
       getElementsByTagName: sinon.stub().returns(['element1', 'element2']),
       querySelector: sinon.stub().returns(null),
+      querySelectorAll: sinon.stub(),
+      getElementById: sinon.stub(),
+      getElementsByClassName: sinon.stub(),
     };
 
     global.Element = function(name) {
@@ -81,65 +83,6 @@ describe('lib/util/get-element-data.js', function() {
   });
 
   describe('when get getElementData is called and the functions are returned', function() {
-    describe('on call of findElement', function() {
-      describe('for each element of the passed in elements', function() {
-        describe('if the element[key] is the passed in value', function() {
-          it('should return that element', function() {
-            let returnData;
-
-            returnData = getElementDataFunctions.findElement('key', 'value', [{key: 'value'}]);
-
-            expect(returnData).to.deep.equal({key: 'value'});
-          });
-        });
-
-        describe('if that element.shadowRoot is not null', function() {
-          it('should call querySelectorAll propety of the shadowRoot once with \'*\'', function() {
-            let element = {
-              key: 'value',
-              shadowRoot: {
-                querySelectorAll: sinon.stub(),
-              },
-            };
-            let findElementToCall = getElementDataFunctions.findElement;
-            getElementDataFunctions.findElement = sinon.stub();
-
-            findElementToCall('key', 'notTheValue', [element]);
-
-            expect(element.shadowRoot.querySelectorAll.args).to.deep.equal([[
-              '*',
-            ]]);
-          });
-
-          it('should return the result from the resursive calls of findElement', function() {
-            let element = {
-              key: 'value',
-              shadowRoot: {
-                querySelectorAll: sinon.stub(),
-              },
-            };
-            let findElementToCall = getElementDataFunctions.findElement;
-            getElementDataFunctions.findElement = sinon.stub().returns('matchedElement');
-            let returnData;
-
-            returnData = findElementToCall('key', 'notTheValue', [element]);
-
-            expect(returnData).to.deep.equal('matchedElement');
-          });
-        });
-
-        describe('if the element[key] is not the passed in value and .shadowRoot is null', function() {
-          it('should not return anything', function() {
-            let returnData;
-
-            getElementDataFunctions.findElement('key', 'value', [{key: 'notValue'}]);
-
-            expect(returnData).to.deep.equal(undefined);
-          });
-        });
-      });
-    });
-
     describe('on call of getElementData', function() {
       describe('for each element in the passed in elementsToFind', function() {
         describe('if the the element\'s selector type is querySelector', function() {
@@ -153,32 +96,75 @@ describe('lib/util/get-element-data.js', function() {
           });
         });
 
-        describe('if the the element\'s selector type is attribute', function() {
-          it('should call document.getElementsByTagName with the string \'*\'', function() {
+        describe('if the the element\'s selector type is querySelectorAll', function() {
+          it('should call document.querySelectorAll with that elements selector value', function() {
+            document.querySelectorAll.returns(['someElement1', 'someElement2']);
             getElementDataFunctions.getElementInfo = sinon.stub();
-            getElementDataFunctions.findElement = sinon.stub().returns('anElement');
 
-            getElementDataFunctions.getElementData([element1]);
+            getElementDataFunctions.getElementData([{
+              name: 'element',
+              selector: {
+                type: 'querySelectorAll',
+                value: 'someQuerySelectorAll',
+              },
+            }]);
 
-            expect(document.getElementsByTagName.args).to.deep.equal([['*']]);
-          });
-
-          it('should call functions.findElement with the selector.key, selector.value '
-            + 'and the returned elements from document.getElementsByTagName', function() {
-            getElementDataFunctions.getElementInfo = sinon.stub();
-            getElementDataFunctions.findElement = sinon.stub().returns('anElement');
-
-            getElementDataFunctions.getElementData([element1]);
-
-            expect(getElementDataFunctions.findElement.args).to.deep.equal([[
-              'id',
-              'someId',
-              ['element1', 'element2'],
-            ]]);
+            expect(document.querySelectorAll.args).to.deep.equal([['someQuerySelectorAll']]);
           });
         });
 
-        describe('if the the element\'s selector type is NOT attribute or querySelector', function() {
+        describe('if the the element\'s selector type is getElementById', function() {
+          it('should call document.getElementById with that elements selector value', function() {
+            document.getElementById.returns('someElement1');
+            getElementDataFunctions.getElementInfo = sinon.stub();
+
+            getElementDataFunctions.getElementData([{
+              name: 'element',
+              selector: {
+                type: 'getElementById',
+                value: 'someId',
+              },
+            }]);
+
+            expect(document.getElementById.args).to.deep.equal([['someId']]);
+          });
+        });
+
+        describe('if the the element\'s selector type is getElementsByTagName', function() {
+          it('should call document.getElementsByTagName with that elements selector value', function() {
+            document.getElementsByTagName.returns(['someElement1', 'someElement2']);
+            getElementDataFunctions.getElementInfo = sinon.stub();
+
+            getElementDataFunctions.getElementData([{
+              name: 'element',
+              selector: {
+                type: 'getElementsByTagName',
+                value: 'tagName',
+              },
+            }]);
+
+            expect(document.getElementsByTagName.args).to.deep.equal([['tagName']]);
+          });
+        });
+
+        describe('if the the element\'s selector type is getElementsByClassName', function() {
+          it('should call document.getElementsByClassName with that elements selector value', function() {
+            document.getElementsByClassName.returns(['someElement1', 'someElement2']);
+            getElementDataFunctions.getElementInfo = sinon.stub();
+
+            getElementDataFunctions.getElementData([{
+              name: 'element',
+              selector: {
+                type: 'getElementsByClassName',
+                value: 'className',
+              },
+            }]);
+
+            expect(document.getElementsByClassName.args).to.deep.equal([['className']]);
+          });
+        });
+
+        describe('if the the element\'s selector type is NOT valid', function() {
           it('should throw an error stating invalid selector.type', function() {
             getElementDataFunctions.getElementInfo = sinon.stub();
             getElementDataFunctions.findElement = sinon.stub().returns('anElement');
@@ -186,14 +172,17 @@ describe('lib/util/get-element-data.js', function() {
             expect(getElementDataFunctions.getElementData.bind(
               null,
               [{name: 'badElement', selector: {type: 'badType'}}]
-            )).to.throw(`Invalid selector.type for element badElement must be querySelector or attribute`);
+            )).to.throw(
+              'Invalid selector.type for element \'badElement\' must be '
+              + 'querySelector, querySelectorAll, getElementById, getElementsByTagName, or getElementsByClassName'
+            );
           });
         });
 
         it('should call getElementInfo with the passing in the element found', function() {
           document.querySelector.returns('someElement');
+          document.getElementById.returns('anElement');
           getElementDataFunctions.getElementInfo = sinon.stub();
-          getElementDataFunctions.findElement = sinon.stub().returns('anElement');
 
           getElementDataFunctions.getElementData([element1, element2]);
 
@@ -207,8 +196,8 @@ describe('lib/util/get-element-data.js', function() {
       it('should return an object with all the found element data', function() {
         let data;
         document.querySelector.returns('someElement');
+        document.getElementById.returns('anElement');
         getElementDataFunctions.getElementInfo = sinon.stub().returns('elementData');
-        getElementDataFunctions.findElement = sinon.stub().returns('anElement');
 
         data = getElementDataFunctions.getElementData([element1, element2]);
 
@@ -220,56 +209,141 @@ describe('lib/util/get-element-data.js', function() {
     });
 
     describe('on call of getElementInfo', function() {
-      it('should call extractNameAndValue once passing in the passed in element.attributes', function() {
-        let element = {
-          attributes: ['some', 'attributes'],
-        };
-        getElementDataFunctions.extractNameAndValue = sinon.stub();
-        getElementDataFunctions.isDisplayed = sinon.stub();
+      describe('if a singular element is passed in', function() {
+        it('should call extractNameAndValue once passing in the passed in element.attributes', function() {
+          let element = {
+            attributes: ['some', 'attributes'],
+          };
+          getElementDataFunctions.extractNameAndValue = sinon.stub();
+          getElementDataFunctions.isDisplayed = sinon.stub();
 
-        getElementDataFunctions.getElementInfo(element);
+          getElementDataFunctions.getElementInfo(element);
 
-        expect(getElementDataFunctions.extractNameAndValue.args).to.deep.equal([[['some', 'attributes']]]);
+          expect(getElementDataFunctions.extractNameAndValue.args).to.deep.equal([[['some', 'attributes']]]);
+        });
+
+        it('should call isDisplayed once passing in the passed in element', function() {
+          let element = {
+            attributes: ['some', 'attributes'],
+          };
+          getElementDataFunctions.extractNameAndValue = sinon.stub();
+          getElementDataFunctions.isDisplayed = sinon.stub();
+
+          getElementDataFunctions.getElementInfo(element);
+
+          expect(getElementDataFunctions.isDisplayed.args).to.deep.equal([[element]]);
+        });
+
+        it('should return the element with its an object with the element data we care about', function() {
+          let element = {
+            attributes: ['some', 'attributes'],
+            name: 'element1',
+            disabled: false,
+            innerHTML: '<h1>innerHtml</h1>',
+            innerText: 'someInnerText',
+            hidden: false,
+          };
+          let returnedData;
+
+          getElementDataFunctions.extractNameAndValue = sinon.stub().returns([{attr1: 'attribute1'}]);
+          getElementDataFunctions.isDisplayed = sinon.stub().returns(true);
+
+          returnedData = getElementDataFunctions.getElementInfo(element);
+
+          expect(returnedData).to.deep.equal({
+            attributes: [{attr1: 'attribute1'}],
+            name: 'element1',
+            disabled: false,
+            innerHTML: '<h1>innerHtml</h1>',
+            innerText: 'someInnerText',
+            hidden: false,
+            value: undefined,
+            webElement: element,
+            isDisplayed: true,
+          });
+        });
       });
 
-      it('should call isDisplayed once passing in the passed in element', function() {
-        let element = {
-          attributes: ['some', 'attributes'],
-        };
-        getElementDataFunctions.extractNameAndValue = sinon.stub();
-        getElementDataFunctions.isDisplayed = sinon.stub();
+      describe('if mutiple elements are passed in', function() {
+        describe('for each element in the passed in elemenets', function() {
+          it('should call extractNameAndValue passing in the element.attributes', function() {
+            let elements = [{
+              attributes: ['some', 'attributes'],
+            }, {
+              attributes: ['some', 'other', 'attributes'],
+            }];
+            getElementDataFunctions.extractNameAndValue = sinon.stub();
+            getElementDataFunctions.isDisplayed = sinon.stub();
 
-        getElementDataFunctions.getElementInfo(element);
+            getElementDataFunctions.getElementInfo(elements);
 
-        expect(getElementDataFunctions.isDisplayed.args).to.deep.equal([[element]]);
-      });
+            expect(getElementDataFunctions.extractNameAndValue.args).to.deep.equal([
+              [['some', 'attributes']],
+              [['some', 'other', 'attributes']],
+            ]);
+          });
 
-      it('should return the element with its an object with the element data we care about', function() {
-        let element = {
-          attributes: ['some', 'attributes'],
-          name: 'element1',
-          disabled: false,
-          innerHTML: '<h1>innerHtml</h1>',
-          innerText: 'someInnerText',
-          hidden: false,
-        };
-        let returnedData;
+          it('should call isDisplayed passing in the element', function() {
+            let elements = [{
+              attributes: ['some', 'attributes'],
+            }, {
+              attributes: ['some', 'other', 'attributes'],
+            }];
+            getElementDataFunctions.extractNameAndValue = sinon.stub();
+            getElementDataFunctions.isDisplayed = sinon.stub();
 
-        getElementDataFunctions.extractNameAndValue = sinon.stub().returns([{attr1: 'attribute1'}]);
-        getElementDataFunctions.isDisplayed = sinon.stub().returns(true);
+            getElementDataFunctions.getElementInfo(elements);
 
-        returnedData = getElementDataFunctions.getElementInfo(element);
+            expect(getElementDataFunctions.isDisplayed.args).to.deep.equal([[elements[0]], [elements[1]]]);
+          });
 
-        expect(returnedData).to.deep.equal({
-          attributes: [{attr1: 'attribute1'}],
-          name: 'element1',
-          disabled: false,
-          innerHTML: '<h1>innerHtml</h1>',
-          innerText: 'someInnerText',
-          hidden: false,
-          value: undefined,
-          webElement: element,
-          isDisplayed: true,
+          it('should return the elements with an object with the element data we care about', function() {
+            let elements = [{
+              attributes: ['some', 'attributes'],
+              name: 'element1',
+              disabled: false,
+              innerHTML: '<h1>innerHtml</h1>',
+              innerText: 'someInnerText',
+              hidden: false,
+            }, {
+              attributes: ['some', 'other', 'attributes'],
+              name: 'element2',
+              disabled: false,
+              innerHTML: '<h1>innerHtml2</h1>',
+              innerText: 'someInnerText2',
+              hidden: false,
+            }];
+            let returnedData;
+
+            getElementDataFunctions.extractNameAndValue = sinon.stub();
+            getElementDataFunctions.extractNameAndValue.onCall(0).returns([{attr1: 'attribute1'}]);
+            getElementDataFunctions.extractNameAndValue.onCall(1).returns([{attr2: 'attribute2'}]);
+            getElementDataFunctions.isDisplayed = sinon.stub().returns(true);
+
+            returnedData = getElementDataFunctions.getElementInfo(elements);
+
+            expect(returnedData).to.deep.equal([{
+              attributes: [{attr1: 'attribute1'}],
+              name: 'element1',
+              disabled: false,
+              innerHTML: '<h1>innerHtml</h1>',
+              innerText: 'someInnerText',
+              hidden: false,
+              value: undefined,
+              webElement: elements[0],
+              isDisplayed: true,
+            }, {
+              attributes: [{attr2: 'attribute2'}],
+              name: 'element2',
+              disabled: false,
+              innerHTML: '<h1>innerHtml2</h1>',
+              innerText: 'someInnerText2',
+              hidden: false,
+              value: undefined,
+              webElement: elements[1],
+              isDisplayed: true,
+            }]);
+          });
         });
       });
     });

@@ -7,32 +7,28 @@ module.exports = {
       {
         name: 'newsArticle',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: this.options.newsArticleId,
         },
       },
       {
         name: 'newsArticleImage',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Image`,
         },
       },
       {
         name: 'newsArticleHeading',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Heading`,
         },
       },
       {
         name: 'newsArticleText',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Text`,
         },
       },
