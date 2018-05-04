@@ -57,6 +57,7 @@ module.exports = {
       },
       closeButton: {
         displayed: 'closeButton.isDisplayed',
+        disabled: 'closeButton.disabled',
       },
       xCloseButton: {
         displayed: 'xCloseButton.isDisplayed',
@@ -69,6 +70,7 @@ module.exports = {
         preconditions(dataStore) {
           return [
             ['isTrue', `${this.name}.closeButton.displayed`],
+            ['isFalse', `${this.name}.closeButton.disabled`],
           ];
         },
         perform(callback) {
