@@ -63,17 +63,25 @@ module.exports = {
   actions() {
     return {
       CLICK_CLOSE_BUTTON: {
-        preconditions(dataStore) {
+        parameters: [
+          {
+            name: 'fakeParameter',
+            generate() {
+                return 'myFakeParameter';
+            },
+          },
+        ],
+        preconditions(fakeParam, dataStore) {
           return [
             ['isTrue', `pageState.${this.name}.closeButton.displayed`],
           ];
         },
-        perform(callback) {
+        perform(fakeParam, callback) {
           driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState, dataStore) {
+        effects(fakeParam, expectedState, dataStore) {
           expectedState.pop();
         },
       },
