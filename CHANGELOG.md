@@ -11,6 +11,9 @@
     * getElementsByClassName
   * Created a new cli/option command to stagger start time of tests using the test runner
 
+* Scott Gunther
+  * Changed the precondition assertions to be run against the pageState or dataStore
+
 ## 0.3.5
 
 * Brian Fitzpatrick

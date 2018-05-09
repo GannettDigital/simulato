@@ -58,7 +58,9 @@ module.exports = {
           dataStore.store(`${this.name}Text`, this.getFromPage(`${this.name}.newsArticleText.text`));
 
           return [
-            ['isTrue', `${this.name}.displayed`],
+            ['isTrue', `pageState.${this.name}.displayed`],
+            ['property', `dataStore`, `${this.name}HeadingText`],
+            ['property', `dataStore`, `${this.name}Text`],
           ];
         },
         perform(callback) {

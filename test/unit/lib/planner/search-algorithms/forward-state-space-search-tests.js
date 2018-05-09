@@ -510,6 +510,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
         let EventEmitter;
         let EventEmitterInstance;
         let forwardStateSpaceSearch;
+        let node;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -525,6 +526,15 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             EventEmitter.returns(EventEmitterInstance);
             next = sinon.stub();
             callback = sinon.stub();
+
+            node = {
+                state: {
+                    getState: sinon.stub().returns({property: 'myProperty'}),
+                },
+                dataStore: {
+                    retrieveAll: sinon.stub().returns({data: 'myData'}),
+                },
+            };
 
             mockery.registerMock('uuid/v4', {});
             mockery.registerMock('events', {EventEmitter});
@@ -602,11 +612,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             ['isFalse', 'component.checkbox.checked'],
                         ]),
                     };
-                    let node = {
-                        state: {
-                            getState: sinon.stub().returns({property: 'myProperty'}),
-                        },
-                    };
 
                     let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
                     generator.next();
@@ -616,6 +621,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         [
                             'forwardStateSpaceSearch.runAssertions',
                             {property: 'myProperty'},
+                            {data: 'myData'},
                             [
                                 ['isTrue', 'component.displayed'],
                                 ['isFalse', 'component.checkbox.checked'],
@@ -632,11 +638,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             ['isFalse', 'component.checkbox.checked'],
                         ]),
                     };
-                    let node = {
-                        state: {
-                            getState: sinon.stub().returns({property: 'myProperty'}),
-                        },
-                    };
 
                     let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
                     generator.next();
@@ -652,11 +653,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                                 ['isTrue', 'component.displayed'],
                                 ['isFalse', 'component.checkbox.checked'],
                             ]),
-                        };
-                        let node = {
-                            state: {
-                                getState: sinon.stub().returns({property: 'myProperty'}),
-                            },
                         };
 
                         let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);
@@ -680,11 +676,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                                 ['isTrue', 'component.displayed'],
                                 ['isFalse', 'component.checkbox.checked'],
                             ]),
-                        };
-                        let node = {
-                            state: {
-                                getState: sinon.stub().returns({property: 'myProperty'}),
-                            },
                         };
 
                         let generator = forwardStateSpaceSearch._checkPreconditions(node, action, '', callback);

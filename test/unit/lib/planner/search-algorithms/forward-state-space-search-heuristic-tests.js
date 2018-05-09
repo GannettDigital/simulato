@@ -729,9 +729,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 },
             };
             node = {
-                dataStore: {storedData: 'someData'},
                 state: {
                     getState: sinon.stub().returns({property: 'myProperty'}),
+                },
+                dataStore: {
+                    retrieveAll: sinon.stub().returns({data: 'myData'}),
                 },
             };
 
@@ -771,7 +773,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 generator.next(next);
 
                 expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
-                    {storedData: 'someData'},
+                    node.dataStore,
                 ]]);
             });
 
@@ -823,6 +825,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         [
                             'forwardStateSpaceSearch.runAssertions',
                             {property: 'myProperty'},
+                            {data: 'myData'},
                             [
                                 ['isTrue', 'component.displayed'],
                                 ['isFalse', 'component.checkbox.checked'],

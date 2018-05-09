@@ -65,7 +65,7 @@ module.exports = {
       CLICK_CLOSE_BUTTON: {
         preconditions(dataStore) {
           return [
-            ['isTrue', `${this.name}.closeButton.displayed`],
+            ['isTrue', `pageState.${this.name}.closeButton.displayed`],
           ];
         },
         perform(callback) {
@@ -80,7 +80,7 @@ module.exports = {
       CLICK_X_CLOSE_BUTTON: {
         preconditions(dataStore) {
           return [
-            ['isTrue', `${this.name}.xCloseButton.displayed`],
+            ['isTrue', `pageState.${this.name}.xCloseButton.displayed`],
           ];
         },
         perform(callback) {
