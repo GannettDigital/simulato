@@ -12,6 +12,7 @@
     "coverage": "istanbul cover --include-all-sources -x **/docs/** ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
     "generate-acceptance-tests": "node index.js generate -f test/acceptance/config.js",
     "acceptance-tests": "node index.js run -f test/acceptance/config.js",
+    "start-test-site": "npm explore simulato-test-site -- npm start",
     "lint": "eslint lib test index.js --fix",
     "lint-ci": "eslint lib test index.js"
   },
