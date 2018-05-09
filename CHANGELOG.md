@@ -13,6 +13,7 @@
 
 * Scott Gunther
   * Changed the precondition assertions to be run against the pageState or dataStore
+  * Fix bug where parameters are not passed in to preconditions during planning
 
 ## 0.3.5
 
