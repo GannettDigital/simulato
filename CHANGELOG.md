@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.4.0
+
 * Tom Dale
   * Changed the selector methods inside elements to use
     * getElementById
