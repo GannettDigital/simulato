@@ -1,4 +1,4 @@
-Simulato is a model based testing tool to help provide full and variable coverage to different test paths in Presto. While designed with Presto in mind, simulato is usable currently with any UI that follows regular javascript/HTML paradigms. In order to affiliate yourself with Simulato, there are a couple of concepts you may want to understand first:
+Simulato is a model based testing tool to help provide full and variable coverage to different test paths in a given UI. While designed with a particular internal tool in mind, simulato is usable currently with any UI that follows regular javascript/HTML paradigms. In order to affiliate yourself with Simulato, there are a couple of concepts you may want to understand first:
 
 * Basic Javascript and JSON format
 * Understanding of the DOM structure and HTML Elements (We use chrome devtools to investigate the DOM)
