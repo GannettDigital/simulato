@@ -29,6 +29,39 @@ All of the components are states of a given piece of the system. In this case, w
  
  [Details on Components can be found here](components.md)
 
+# Setting up your workspace
+
+In order to get started, make a directory and include in it another directory named 'tests', another directory named 'components', and the following package.json:
+
+{
+  "name": "simulato-lab-tests",
+  "version": "0.1.0",
+  "description": "set of tests for simulato lab",
+  "scripts": {
+    "generate-tests": "sim generate",
+    "run-tests": "sim run -p 5"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "simulato": "0.4.0"
+  }
+}
+
+You will also need a file named config.js with the following:
+
+    'use strict';
+
+    module.exports = {
+        testPath: 'tests',
+        components: 'components',
+        outputPath: 'tests',
+        technique: 'actionFocused',
+    };
+
+Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
+
+
 # Creating a component
 
 While components are individual pieces of a system, it helps to break down the full system into the components you will need before you start creating any one component.
@@ -48,7 +81,7 @@ Let's get started with navigation.
 
 A part of running the tests is arriving at our desired location. As we are using selenium to control our browser we will need to first make use of the driver to get there. Fortunately a navigation component is very simple as it doesn't have to deal with the elements or the models of the component and only needs to interact with the actions piece.
 
-Let us go through it piece by piece:
+Let us go through it piece by piece, first create a file in the components directory 'navigate-to-test-site.js', and include the following:
 
     'use strict';
 
@@ -75,7 +108,7 @@ As we have no elements on a navigation, we will simply return an empty array. Ot
 
 Likewise because there are no elements, our model does not have any state to display, so there are no values (this is why our state in the entry component is blank).
 
-Finally let's explore the actions below:
+Finally let's explore the actions below, include the following in your actions of 'navigate-to-test-site.js':
 
     return {
       NAVIGATE_TO_TEST_SITE: {
@@ -83,7 +116,7 @@ Finally let's explore the actions below:
           driver.get(`http://localhost:3000`)
             .then(callback, callback);
         },
-        effects(expectedState, dataStore) {
+        effects(expectedState) {
           expectedState.clear();
           expectedState.createAndAddComponent({
             type: 'MainSiteLayout',
@@ -123,7 +156,7 @@ Because our system only has one entry component, all tests will start at the sam
 
 So now that we have added MainSiteLayout to our path, that is the next component we should work on. Above you might have noticed that the MainSiteLayout has a component name, and instance name, and a state passed in. As we have no yet defined those fields, you have some freedom in how you might proceed with your modeling. You could choose to finish out your navigation component and then list what you plan to include in your MainSiteLayout component, or finish up your MainSiteLayout and go back to complete the action in your navigation component. As you fill out your model suite more and more it will matter less as the components involved in your actions will already be completed.
 
-In this tutorial we will proceed to your MainSiteLayout and build the model based on the state passed in navigation.
+In this tutorial we will proceed to your MainSiteLayout and build the model based on the state passed in navigation. Include the following in 'main-site-layout.js' in your components directory:
 
     'use strict';
 
@@ -169,26 +202,26 @@ In this tutorial we will proceed to your MainSiteLayout and build the model base
         ];
     },
 
-Above are a list of elements that will be used by the model, we already have our state from our navigation action. Below is the arrangement of those elements into a model:  
+Above are a list of elements that will be used by the model, we already have our state from our navigation action. Below is the arrangement of those elements into a model, include this in your 'main-site-layout.js':  
 
     model() {
         return {
             displayed: 'headerRow.isDisplayed',
             newsArticleImage: {
-            displayed: 'newsArticleImage.isDisplayed',
+            displayed: 'newsArticleImage1.isDisplayed',
             },
             newsArticleHeading: {
-                displayed: 'newsArticleHeading.isDisplayed',
-                text: 'newsArticleHeading.innerText',
+                displayed: 'newsArticleHeading1.isDisplayed',
+                text: 'newsArticleHeading1.innerText',
             },
             newsArticleText: {
-                displayed: 'newsArticleText.isDisplayed',
-                text: 'newsArticleText.innerText',
+                displayed: 'newsArticleText1.isDisplayed',
+                text: 'newsArticleText1.innerText',
             },
         };
     },
 
-Finally we have our action and its pieces:
+Finally we have our action and its pieces, include all these in 'main-site-layout.js' as well:
 
     actions() {
         return {
@@ -233,29 +266,27 @@ Here we are creating and adding a component to the expected, as we did before wi
                         displayed: true,
                         modalTitle: {
                             displayed: true,
-                            text: dataStore.retrieve(`${this.name}HeadingText`),
+                            text: 'Test Article One',
                         },
                         modalBodyText: {
                             displayed: true,
-                            text: dataStore.retrieve(`${this.name}Text`),
+                            text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
                         },
                         closeButton: {
-                            displayed: true,
-                        },
-                        xCloseButton: {
                             displayed: true,
                         },
                     },
 
 All of the pieces above in the state should look familiar as they were added the same way within the effects of the navigation component. They simply detail what to expect in the component being added. Below is something slightly different, the options are just variable parameters to except within the component being added, this is useful when referencing parent values within a model that inherits certain properties from the parent, such as an ID appended to additional information. 
 
-                    options: {
-                    newsArticleId: 'article1',
+                        options: {
+                        newsArticleId: 'article1',
+                        },
+                    });
                     },
-                });
                 },
-            },
-        };
+            };
+        }
     }
 
 
@@ -263,7 +294,7 @@ Our Structure is now:
 
     Entry Component(NavigateToTestSite) -> MainSiteLayout -> ViewStoryModal
 
-The third component is up to you to create (labs aren't too helpful if they aren't interactive), but don't worry! Above in the state that is passed to the ViewStoryModal component, we already have the model outlined for you! This template will also be provided to help you fill out your ViewStoryModal component:
+The third component is up to you to create (labs aren't too helpful if they aren't interactive), but don't worry! Above in the state that is passed to the ViewStoryModal component, we already have the model outlined for you! This template will also be provided to help you fill out your ViewStoryModal component, create the file 'view-story-modal.js' and include the following:
 
     'use strict';
 
@@ -290,4 +321,235 @@ The third component is up to you to create (labs aren't too helpful if they aren
         },
     };
 
-When you have completed filling out this template file and named it 'view-story-modal.js', add it to your components folder.
+Once you have completed filling out the ViewStoryModal, you should be able to npm install, npm run generate-tests and npm run run-tests. Your tests should build and run and you have successfully completed your first step into model based testing!
+
+Below are the files for the components used, I do no recommend simply copying and pasting them as you will not fully understand what they are doing, but if you are stuck, feel free to use them for reference:
+
+# navigate-to-test-site.js
+
+    'use strict';
+
+    module.exports = {
+        type: 'NavigateToTestSite',
+        entryComponent: {
+            name: 'navigateToTestSite',
+            state: {}
+        },
+        elements(){
+            return [];
+        },
+        model(){
+            return {};
+        },
+        actions(){
+            return {
+                NAVIGATE_TO_TEST_SITE: {
+                perform(callback) {
+                    driver.get(`http://localhost:3000`)
+                    .then(callback, callback);
+                },
+                effects(expectedState) {
+                    expectedState.clear();
+                    expectedState.createAndAddComponent({
+                    type: 'MainSiteLayout',
+                    name: 'mainSiteLayout',
+                    state: {
+                        displayed: true,
+                        newsArticleImage: {
+                            displayed: true,
+                        },
+                        newsArticleHeading: {
+                            displayed: true,
+                            text: 'Test Article One',
+                        },
+                        newsArticleText: {
+                            displayed: true,
+                            text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+                        },
+                    },
+                    });
+                },
+                },
+            };
+        }
+    }
+
+# main-site-layout.js
+
+    'use strict';
+
+    module.exports = {
+        type: 'MainSiteLayout',
+        elements() {
+            return [
+            {
+                name: 'headerRow',
+                selector: {
+                type: 'getElementById',
+                value: 'siteHeader',
+                },
+            },
+            {
+            name: 'newsArticle1',
+            selector: {
+            type: 'getElementById',
+            value: 'article1',
+                },
+            },
+            {
+                name: 'newsArticleImage1',
+                selector: {
+                type: 'getElementById',
+                value: 'article1Image',
+                },
+            },
+            {
+                name: 'newsArticleHeading1',
+                selector: {
+                type: 'getElementById',
+                value: 'article1Heading',
+                },
+            },
+            {
+                name: 'newsArticleText1',
+                selector: {
+                type: 'getElementById',
+                value: 'article1Text',
+                },
+            },
+            ];
+        },
+        model() {
+            return {
+                displayed: 'headerRow.isDisplayed',
+                newsArticleImage: {
+                displayed: 'newsArticleImage1.isDisplayed',
+                },
+                newsArticleHeading: {
+                    displayed: 'newsArticleHeading1.isDisplayed',
+                    text: 'newsArticleHeading1.innerText',
+                },
+                newsArticleText: {
+                    displayed: 'newsArticleText1.isDisplayed',
+                    text: 'newsArticleText1.innerText',
+                },
+            };
+        },
+        actions() {
+            return {
+                CLICK_TO_VIEW_STORY: {
+                    preconditions() {
+                        return [
+                            ['isTrue', `pageState.${this.name}.displayed`],
+                            ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
+                            ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
+                        ];
+                    },
+                    perform(callback) {
+                        driver.findElement(By.id('article1'))
+                        .click()
+                        .then(callback, callback);
+                    },
+                    effects(expectedState) {
+                        expectedState.stash();
+                        expectedState.createAndAddComponent({
+                            type: 'ViewStoryModal',
+                            name: 'article1ViewModal',
+                            state: {
+                                displayed: true,
+                                modalTitle: {
+                                    displayed: true,
+                                    text: 'Test Article One',
+                                },
+                                modalBodyText: {
+                                    displayed: true,
+                                    text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+                                },
+                                closeButton: {
+                                    displayed: true,
+                                },
+                            },
+                            options: {
+                                newsArticleId: 'article1',
+                                },
+                            });
+                            },
+                        },
+                    };
+                }
+            }
+
+# view-story-modal.js
+
+    'use strict';
+
+    module.exports = {
+        type: 'ViewStoryModal',
+        elements() {
+            return [
+                {
+                    name: 'modalContent',
+                    selector: {
+                    type: 'querySelector',
+                    value: `#${this.options.newsArticleId}ViewModal > div > div`,
+                    },
+                },
+                {
+                    name: 'modalTitle',
+                    selector: {
+                    type: 'getElementById',
+                    value: `${this.options.newsArticleId}ModalTitle`,
+                    },
+                },
+                {
+                    name: 'modalBodyText',
+                    selector: {
+                    type: 'getElementById',
+                    value: `${this.options.newsArticleId}ModalBodyText`,
+                    },
+                },
+                {
+                    name: 'closeButton',
+                    selector: {
+                    type: 'getElementById',
+                    value: `${this.options.newsArticleId}ModalCloseButton`,
+                    },
+                },
+            ];
+        },
+        model() {
+            return {
+                displayed: 'modalContent.isDisplayed',
+                modalTitle: {
+                    displayed: 'modalTitle.isDisplayed',
+                    text: 'modalTitle.innerText',
+                },
+                modalBodyText: {
+                    displayed: 'modalBodyText.isDisplayed',
+                    text: 'modalBodyText.innerText',
+                },
+                closeButton: {
+                    displayed: 'closeButton.isDisplayed',
+                },
+            };
+        },
+        actions() {
+            return {
+                CLICK_CLOSE_BUTTON: {
+                    preconditions() {
+                        return [
+                            ['isTrue', `pageState.${this.name}.closeButton.displayed`],
+                        ];
+                    },
+                    perform(callback) {
+                        driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
+                        .click()
+                        .then(callback, callback);
+                    },
+                    effects(expectedState) {
+                        expectedState.pop();
+                    },
+                },
+            };
+        },
+    };
