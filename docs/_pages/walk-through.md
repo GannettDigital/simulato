@@ -63,6 +63,17 @@ module.exports = {
 };
 ```
 
+
+Once created your directory should look like this:
+
+    - config.js
+    - package.json
+    - tests
+    - components
+        - navigate-to-test-site.js
+        - main-site-layout.js
+        - view-story-modal.js
+
 Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
 
 
@@ -85,7 +96,7 @@ Let's get started with navigation.
 
 A part of running the tests is arriving at our desired location. As we are using selenium to control our browser we will need to first make use of the driver to get there. Fortunately a navigation component is very simple as it doesn't have to deal with the elements or the models of the component and only needs to interact with the actions piece.
 
-Let us go through it piece by piece, first create a file in the components directory 'navigate-to-test-site.js', and include the following:
+Let us go through it piece by piece, and include the following in navigate-to-test-site.js:
 ```js
 'use strict';
 
@@ -305,7 +316,7 @@ Our Structure is now:
 
     Entry Component(NavigateToTestSite) -> MainSiteLayout -> ViewStoryModal
 
-The third component is up to you to create (labs aren't too helpful if they aren't interactive), but don't worry! Above in the state that is passed to the ViewStoryModal component, we already have the model outlined for you! This template will also be provided to help you fill out your ViewStoryModal component, create the file 'view-story-modal.js' and include the following:
+The third component is up to you to create (labs aren't too helpful if they aren't interactive), but don't worry! Above in the state that is passed to the ViewStoryModal component, we already have the model outlined for you! This template will also be provided to help you fill out your ViewStoryModal component, include the following in 'view-story-modal.js':
 ```js
 'use strict';
 
