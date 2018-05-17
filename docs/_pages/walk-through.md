@@ -66,13 +66,13 @@ module.exports = {
 
 Once created your directory should look like this:
 
-    - config.js
-    - package.json
+    config.js
+    package.json
     - tests
     - components
-        - navigate-to-test-site.js
-        - main-site-layout.js
-        - view-story-modal.js
+        navigate-to-test-site.js
+        main-site-layout.js
+        view-story-modal.js
 
 Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
 
