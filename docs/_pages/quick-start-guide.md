@@ -147,7 +147,7 @@ return {
         state: {
           displayed: true,
           newsArticleImage: {
-          displayed: true,
+            displayed: true,
           },
           newsArticleHeading: {
             displayed: true,
@@ -420,8 +420,8 @@ module.exports = {
       {
         name: 'headerRow',
         selector: {
-        type: 'getElementById',
-        value: 'siteHeader',
+          type: 'getElementById',
+          value: 'siteHeader',
         },
       },
       {
