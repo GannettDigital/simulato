@@ -193,6 +193,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     let _;
     let sampleSpawnArgs;
     let test;
+    let testPath;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -207,9 +208,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       test = {
         on: sinon.stub(),
-        stdout: {
-          on: sinon.stub(),
-        },
         stderr: {
           on: sinon.stub(),
         },
@@ -238,6 +236,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         './path/to/components',
       ];
 
+      testPath = 'dir/subDir/1527008636080-simulato-1_4.json';
+
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', childProcess);
@@ -248,13 +248,14 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     afterEach(function() {
+      process.exitCode = 0;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
     it('should call _.cloneDeep once with process.env as an arg', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(_.cloneDeep.args).to.deep.equal([
         [process.env],
@@ -262,7 +263,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     it('should call childProcess.spawn,"node", passed in spawnArgs, and options object', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(childProcess.spawn.args).to.deep.equal([
         [
@@ -287,63 +288,31 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     it('should increment _testCount once', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(testRunner._testCount).to.equal(1);
     });
 
     it('should increment _testsRunning once', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(testRunner._testsRunning).to.equal(1);
     });
 
-    it('should call test.stdout.on with the first arg is "data"', function() {
-      testRunner._startTest(sampleSpawnArgs);
-
-      expect(test.stdout.on.args[0][0]).to.deep.equal('data');
-    });
-
-    it('should call test.stdout.on with a function as the second arg', function() {
-      testRunner._startTest(sampleSpawnArgs);
-
-      expect(test.stdout.on.args[0][1]).to.be.a('function');
-    });
-
-    it('should call test.stdout.on once', function() {
-      testRunner._startTest(sampleSpawnArgs);
-
-      expect(test.stdout.on.callCount).to.equal(1);
-    });
-
-    describe('when the test.stdout.on callback is called', function() {
-      it('should call testRunner.emit with the correct event with the passed in data and test.number', function() {
-        test.stdout.on.callsArgWith(1, 'some data');
-
-        testRunner._startTest(sampleSpawnArgs);
-
-        expect(testRunner.emit.args[0]).to.deep.equal([
-          'testRunner.childStdoutReceived',
-          'some data',
-          0,
-        ]);
-      });
-    });
-
     it('should call test.stderr.on with the first arg is "data"', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.stderr.on.args[0][0]).to.deep.equal('data');
     });
 
     it('should call test.stderr.on with a function as the second arg', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.stderr.on.args[0][1]).to.be.a('function');
     });
 
     it('should call test.stderr.on once', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.stderr.on.callCount).to.equal(1);
     });
@@ -352,7 +321,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       it('should call testRunner.emit with the correct event with the passed in data and test.number', function() {
         test.stderr.on.callsArgWith(1, 'some error');
 
-        testRunner._startTest(sampleSpawnArgs);
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner.emit.args[0]).to.deep.equal([
           'testRunner.childStderrReceived',
@@ -363,13 +332,13 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     it('should call test.on with the first arg is "message"', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.on.args[0][0]).to.deep.equal('message');
     });
 
     it('should call test.on with a function as the second arg', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.on.args[0][1]).to.be.a('function');
     });
@@ -378,70 +347,82 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       it('should call testRunner.emit with the correct event with the passed in data and test.number', function() {
         test.on.callsArgWith(1, 'message data');
 
-        testRunner._startTest(sampleSpawnArgs);
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner.emit.args[0]).to.deep.equal([
           'testRunner.testDataReceived',
           'message data',
+          0,
         ]);
       });
     });
 
     it('should call test.on with the first arg is "close"', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.on.args[1][0]).to.deep.equal('close');
     });
 
     it('should call test.on with a function as the second arg', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.on.args[1][1]).to.be.a('function');
     });
 
     describe('when the test.on close callback is called', function() {
-      it('should decrement testRunner._testsRunning once', function() {
-        test.on.callsArgWith(1);
+      describe('if the returned exitCode is truthy', function() {
+        it('should set the process.exitCode to 1', function() {
+          test.on.callsArgWith(1, 1);
 
-        testRunner._startTest(sampleSpawnArgs);
+          testRunner._startTest(sampleSpawnArgs, testPath);
+
+          expect(process.exitCode).to.equal(1);
+        });
+      });
+
+      it('should decrement testRunner._testsRunning once', function() {
+        test.on.callsArgWith(1, 0);
+
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner._testsRunning).to.equal(0);
       });
 
       it('should decrement testRunner._testsRemaining once', function() {
-        test.on.callsArgWith(1);
+        test.on.callsArgWith(1, 0);
         testRunner._testsRemaining = 4;
 
-        testRunner._startTest(sampleSpawnArgs);
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner._testsRemaining).to.equal(3);
       });
 
-      it('should call testRunner.emit with the correct event testRunner.testFinished', function() {
-        test.on.callsArgWith(1, 'message data');
+      it('should call testRunner.emit with the correct event testRunner.testFinished and test.number', function() {
+        test.on.callsArgWith(1, 0);
 
-        testRunner._startTest(sampleSpawnArgs);
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner.emit.args[1]).to.deep.equal([
           'testRunner.testFinished',
+          0,
         ]);
       });
 
       it('should call testRunner.emit 3 times', function() {
-        test.on.callsArgWith(1, 'message data');
+        test.on.callsArgWith(1, 0);
         testRunner._testsRunning = 3;
 
-        testRunner._startTest(sampleSpawnArgs);
+        testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner.emit.callCount).to.deep.equal(3);
       });
 
       describe('when testRunner._testsRemaining is decremented down to 0', function() {
         it('should call testRunner.emit with the correct event testRunner.done', function() {
-          test.on.callsArgWith(1, 'message data');
+          test.on.callsArgWith(1, 0);
           testRunner._testsRemaining = 1;
 
-          testRunner._startTest(sampleSpawnArgs);
+          testRunner._startTest(sampleSpawnArgs, testPath);
 
           expect(testRunner.emit.args[2]).to.deep.equal([
             'testRunner.done',
@@ -449,10 +430,10 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         });
 
         it('should call testRunner.emit 4 times', function() {
-          test.on.callsArgWith(1, 'message data');
+          test.on.callsArgWith(1, 0);
           testRunner._testsRemaining = 1;
 
-          testRunner._startTest(sampleSpawnArgs);
+          testRunner._startTest(sampleSpawnArgs, testPath);
 
           expect(testRunner.emit.callCount).to.deep.equal(4);
         });
@@ -460,18 +441,19 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     it('should call test.on twice', function() {
-      testRunner._startTest(sampleSpawnArgs);
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(test.on.callCount).to.equal(2);
     });
 
-    it('should call testRunner.emit with the correct event and the test.number', function() {
-      testRunner._startTest(sampleSpawnArgs);
+    it('should call testRunner.emit with the correct event, the test.number, and test.name', function() {
+      testRunner._startTest(sampleSpawnArgs, testPath);
 
       expect(testRunner.emit.args).to.deep.equal([
         [
           'testRunner.testStarted',
           0,
+          '1527008636080-simulato-1_4.json',
         ],
       ]);
     });
@@ -731,7 +713,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       delete process.env.CONFIG_FILE;
     });
 
-    it('should call testRunner.emit with the correct event with default spawnArgs', function() {
+    it('should call testRunner.emit with the correct event with default spawnArgs and testPath', function() {
       testRunner._createSpawnArgs(testPath);
 
       expect(testRunner.emit.args).to.deep.equal([
@@ -745,12 +727,14 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             '-c',
             './path/to/components',
           ],
+          './path/to/test',
         ],
       ]);
     });
 
     describe('if process.env.REPORTER is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including reporter args', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including reporter args '
+        + 'and testPath', function() {
         process.env.REPORTER = 'reporterType';
 
         testRunner._createSpawnArgs(testPath);
@@ -768,13 +752,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               '-r',
               'reporterType',
             ],
+            './path/to/test',
           ],
         ]);
       });
     });
 
     describe('if process.env.OUTPUT_PATH is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including output_path args', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including output_path args '
+        + 'and testPath', function() {
         process.env.OUTPUT_PATH = './output/path';
 
         testRunner._createSpawnArgs(testPath);
@@ -792,13 +778,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               '-R',
               './output/path',
             ],
+            './path/to/test',
           ],
         ]);
       });
     });
 
     describe('if process.env.SAUCE_LABS is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args '
+        + 'and testPath', function() {
         process.env.SAUCE_LABS = true;
 
         testRunner._createSpawnArgs(testPath);
@@ -815,13 +803,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               './path/to/components',
               '-s',
             ],
+            './path/to/test',
           ],
         ]);
       });
     });
 
     describe('if process.env.CONFIG_FILE is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args '
+        + 'and testPath', function() {
         process.env.CONFIG_FILE = 'pathToConfig';
 
         testRunner._createSpawnArgs(testPath);
@@ -839,13 +829,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               '-f',
               'pathToConfig',
             ],
+            './path/to/test',
           ],
         ]);
       });
     });
 
     describe('if process.env.TEST_DELAY is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including testDelay args', function() {
+      it('should call testRunner.emit with the correct event with spawnArgs including testDelay args'
+        + 'and testPath', function() {
         process.env.TEST_DELAY = '500';
 
         testRunner._createSpawnArgs(testPath);
@@ -863,6 +855,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               '-d',
               '500',
             ],
+            './path/to/test',
           ],
         ]);
       });

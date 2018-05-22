@@ -6,22 +6,24 @@ const expect = require('chai').expect;
 
 describe('lib/executor/execution-engine/execution-engine.js', function() {
     describe('on file being required', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
         });
 
         afterEach(function() {
@@ -30,10 +32,15 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.disable();
         });
 
-        it('should set the object prototype of executionEngine to a new EventEmitter', function() {
+
+        it('should call Emitter.mixIn with the executionEngine', function() {
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            expect(Object.getPrototypeOf(executionEngine)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    executionEngine,
+                ],
+            ]);
         });
 
         it('should call executionEngine.on 7 times', function() {
@@ -120,8 +127,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('configure', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let testCaseActions;
         let expectedState;
         let executionEngine;
@@ -130,12 +136,16 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+
             expectedState = {
                 createAndAddComponent: sinon.stub(),
             };
@@ -147,7 +157,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             }];
             sinon.spy(testCaseActions, 'shift');
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
         });
@@ -171,28 +181,28 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             ]);
         });
 
-        it('should call exeuctionEngine.emit once with the event \'executionEngine.createDataStore\'', function() {
+        it('should call exeuctionEngine.emitAsync once with the event \'executionEngine.createDataStore\'', function() {
             executionEngine.configure();
 
-            expect(executionEngine.emit.args[0][0]).to.equal('executionEngine.createDataStore');
+            expect(executionEngine.emitAsync.args[0][0]).to.equal('executionEngine.createDataStore');
         });
 
         describe('when the callback for the event \'executionEngine.createDataStore\' is called', function() {
             it('should set executionEngine._dataStore to the passed in dataStore', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, 'myDataStore');
+                executionEngine.emitAsync.onCall(0).callsArgWith(1, 'myDataStore');
 
                 executionEngine.configure();
 
                 expect(executionEngine._dataStore).to.equal('myDataStore');
             });
 
-            it('should call emit with the event \'executionEngine.createExpectedState\'' +
+            it('should call emitAsync with the event \'executionEngine.createExpectedState\'' +
                 'and the passed in dataStore', function() {
-                executionEngine.emit.onCall(0).callsArgWith(1, 'myDataStore');
+                executionEngine.emitAsync.onCall(0).callsArgWith(1, 'myDataStore');
 
                 executionEngine.configure();
 
-                expect(executionEngine.emit.args[1].slice(0, 2)).to.deep.equal([
+                expect(executionEngine.emitAsync.args[1].slice(0, 2)).to.deep.equal([
                     'executionEngine.createExpectedState',
                     'myDataStore',
                 ]);
@@ -200,8 +210,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
             describe('when the callback for the event \'executionEngine.createExpectedState\' is called', function() {
                 it('should call executionEngine._actionList.shift once', function() {
-                    executionEngine.emit.onCall(0).callsArgWith(1, '');
-                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+                    executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
+                    executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
 
                     executionEngine.configure(testCaseActions);
 
@@ -209,8 +219,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 });
 
                 it('should set executionEngine.expectedState to the passed in expectedState', function() {
-                    executionEngine.emit.onCall(0).callsArgWith(1, '');
-                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+                    executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
+                    executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
 
                     executionEngine.configure(testCaseActions);
 
@@ -222,8 +232,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 it('should call executionEngine._expectedState.createAndAddComponent with an object containing type, ' +
                     'name, state, and options from the first' +
                     'action on executionEngine._actionList', function() {
-                    executionEngine.emit.onCall(0).callsArgWith(1, '');
-                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+                    executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
+                    executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
 
                     executionEngine.configure(testCaseActions);
 
@@ -243,32 +253,31 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                     ]);
                 });
 
-                it('should call emit once with the event \'executionEngine.configured\'', function() {
-                    executionEngine.emit.onCall(0).callsArgWith(1, '');
-                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+                it('should call emitAsync once with the event \'executionEngine.configured\'', function() {
+                    executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
+                    executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
 
                     executionEngine.configure(testCaseActions);
 
-                    expect(executionEngine.emit.args[2]).to.deep.equal([
+                    expect(executionEngine.emitAsync.args[2]).to.deep.equal([
                         'executionEngine.configured',
                     ]);
                 });
 
-                it('should call emit thrice', function() {
-                    executionEngine.emit.onCall(0).callsArgWith(1, '');
-                    executionEngine.emit.onCall(1).callsArgWith(2, expectedState);
+                it('should call emitAsync thrice', function() {
+                    executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
+                    executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
 
                     executionEngine.configure(testCaseActions);
 
-                    expect(executionEngine.emit.callCount).to.equal(3);
+                    expect(executionEngine.emitAsync.callCount).to.equal(3);
                 });
             });
         });
     });
 
     describe('_executeNextAction', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let components;
         let executionEngine;
 
@@ -276,14 +285,16 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -320,12 +331,12 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
         describe('if executionEngine._actionList.length is 0', function() {
-            it('should call executionEngine.emit', function() {
+            it('should call executionEngine.emitAsync', function() {
                 executionEngine._actionList.pop();
 
                 executionEngine._executeNextAction();
 
-                expect(executionEngine.emit.args).to.deep.equal([
+                expect(executionEngine.emitAsync.args).to.deep.equal([
                     ['executionEngine.actionsFinished'],
                 ]);
             });
@@ -408,20 +419,18 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 });
             });
 
-            it('should call executionEngine.emit with the event \'executionEngine.actionStarted\' and ' +
+            it('should call executionEngine.emitAsync with the event \'executionEngine.actionStarted\' and ' +
                 'executionEngine._action, executionEngine._actionConfig, and executionEngine._steps', function() {
                 executionEngine._executeNextAction();
 
-                expect(executionEngine.emit.args).to.deep.equal([
+                expect(executionEngine.emitAsync.args).to.deep.equal([
                     [
                         'executionEngine.actionStarted',
-                        components.get('myInstance').actions.MY_ACTION,
                         {
                             name: 'myInstance',
                             actionName: 'MY_ACTION',
                             options: undefined,
                         },
-                        ['preconditions', 'perform', 'effects'],
                     ],
                 ]);
             });
@@ -429,8 +438,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('_executeStep', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
         let componentMap;
         let getComponentsAsMap;
@@ -440,19 +448,21 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             componentMap = new Map();
             myComponent = {name: 'testName'};
             componentMap.set('testName', myComponent);
             getComponentsAsMap = sinon.stub();
-
-            mockery.registerMock('events', {EventEmitter});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -481,7 +491,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
         describe('if executionEngine._steps.length is 0', function() {
-            it('should call once executionEngine.emit with the event \'executionEngine.actionFinished\' ' +
+            it('should call once executionEngine.emitAsync with the event \'executionEngine.actionFinished\' ' +
                 'executionEngine._action', function() {
                 executionEngine._steps = [];
                 executionEngine._action = {
@@ -491,7 +501,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                 executionEngine._executeStep();
 
-                expect(executionEngine.emit.args).to.deep.equal([
+                expect(executionEngine.emitAsync.args).to.deep.equal([
                     [
                         'executionEngine.actionFinished',
                         {
@@ -510,18 +520,18 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 expect(executionEngine._steps.shift.callCount).to.equal(1);
             });
 
-            it('should call executionEngine.emit with the event \'executionEngine.stepStarted\' ' +
+            it('should call executionEngine.emitAsync with the event \'executionEngine.stepStarted\' ' +
                 'and executionEngine._step', function() {
                 executionEngine._executeStep();
 
-                expect(executionEngine.emit.args[0]).to.deep.equal([
+                expect(executionEngine.emitAsync.args[0]).to.deep.equal([
                     'executionEngine.stepStarted',
                     'preconditions',
                 ]);
             });
 
             describe('when the executionEngine._step is equal to the string \'preconditions\'', function() {
-                it('should call executionEngine.emit with the event \'executionEngine.preconditionsReadyFor' +
+                it('should call executionEngine.emitAsync with the event \'executionEngine.preconditionsReadyFor' +
                     'Verification\',  executionEngine._expectedState, executionEngine._action, ' +
                     'executionEngine._actionConfig, executionEngine._dataStore, actionParameters, ' +
                     'and the number 10000', function() {
@@ -531,7 +541,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.args[1]).to.deep.equal([
+                    expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                         'executionEngine.preconditionsReadyForVerification',
                         executionEngine._expectedState,
                         executionEngine._action,
@@ -563,17 +573,17 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         });
                     });
                     describe('if there is not an error', function() {
-                        it('should call executionEngine.emit two times', function() {
+                        it('should call executionEngine.emitAsync two times', function() {
                             executionEngine._steps = ['perform', 'effects'];
                             executionEngine._executeStep();
                             let callback = executionEngine._action.perform.args[0][0];
 
                             callback(null);
 
-                            expect(executionEngine.emit.callCount).to.equal(2);
+                            expect(executionEngine.emitAsync.callCount).to.equal(2);
                         });
 
-                        it('should call executionEngine.emit with the event' +
+                        it('should call executionEngine.emitAsync with the event' +
                             ' \'executionEngine.stepCompleted\'', function() {
                                 executionEngine._steps = ['perform', 'effects'];
                                 executionEngine._executeStep();
@@ -581,7 +591,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                                 callback(null);
 
-                            expect(executionEngine.emit.args[1]).to.deep.equal([
+                            expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                                 'executionEngine.stepCompleted',
                             ]);
                         });
@@ -653,7 +663,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         });
                     });
                     describe('if there is not an error returned', function() {
-                        it('should call executionEngine.emit with twice', function() {
+                        it('should call executionEngine.emitAsync with twice', function() {
                             executionEngine._action.perform.callsArg(2);
                             executionEngine._steps = ['perform', 'effects'];
                             executionEngine._actionConfig.options = {
@@ -662,10 +672,10 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                             executionEngine._executeStep();
 
-                            expect(executionEngine.emit.callCount).to.equal(2);
+                            expect(executionEngine.emitAsync.callCount).to.equal(2);
                         });
 
-                        it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
+                        it('should call executionEngine.emitAsync with the event \'executionEngine.stepCompleted\'' +
                             'and the passed in error', function() {
                             executionEngine._action.perform.callsArgWith(2);
                             executionEngine._steps = ['perform', 'effects'];
@@ -675,7 +685,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                             executionEngine._executeStep();
 
-                            expect(executionEngine.emit.args[1]).to.deep.equal([
+                            expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                                 'executionEngine.stepCompleted',
                             ]);
                         });
@@ -735,23 +745,23 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                         });
                     });
                     describe('if there was no error returned', function() {
-                        it('should call executionEngine.emit with twice', function() {
+                        it('should call executionEngine.emitAsync with twice', function() {
                             executionEngine._action.perform.callsArg(0);
                             executionEngine._steps = ['perform', 'effects'];
 
                             executionEngine._executeStep();
 
-                            expect(executionEngine.emit.callCount).to.equal(2);
+                            expect(executionEngine.emitAsync.callCount).to.equal(2);
                         });
 
-                        it('should call executionEngine.emit with the event \'executionEngine.stepCompleted\'' +
+                        it('should call executionEngine.emitAsync with the event \'executionEngine.stepCompleted\'' +
                             'and the passed in error', function() {
                             executionEngine._action.perform.callsArgWith(0);
                             executionEngine._steps = ['perform', 'effects'];
 
                             executionEngine._executeStep();
 
-                            expect(executionEngine.emit.args[1]).to.deep.equal([
+                            expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                                 'executionEngine.stepCompleted',
                             ]);
                         });
@@ -767,7 +777,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             });
 
             describe('when the executionEngine._step is equal to the string \'effects\'', function() {
-                it('should call executionEngine.emit with the event \'executionEngine.effectsReadyFor' +
+                it('should call executionEngine.emitAsync with the event \'executionEngine.effectsReadyFor' +
                     'Verification\',  executionEngine._expectedState, executionEngine._action, ' +
                     'executionEngine._actionConfig, executionEngine._dataStore, actionParameters, ' +
                     'and the number 10000', function() {
@@ -778,7 +788,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
                     executionEngine._executeStep();
 
-                    expect(executionEngine.emit.args[1]).to.deep.equal([
+                    expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                         'executionEngine.effectsReadyForVerification',
                         executionEngine._expectedState,
                         executionEngine._action,
@@ -801,22 +811,23 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('applyPreconditions', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -914,10 +925,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
         describe('if executionEngine._action.preconditions does not throw', function() {
-            it('should call executionEngine.emit once with the event \'executionEngine.stepCompleted\'', function() {
+            it('should call executionEngine.emitAsync once with '
+                + 'the event \'executionEngine.stepCompleted\'', function() {
                 executionEngine.applyPreconditions();
 
-                expect(executionEngine.emit.args).to.deep.equal([
+                expect(executionEngine.emitAsync.args).to.deep.equal([
                     ['executionEngine.stepCompleted'],
                 ]);
             });
@@ -925,22 +937,23 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('applyEffects', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1048,10 +1061,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
         describe('if executionEngine._action.effects does not throw', function() {
-            it('should call executionEngine.emit once with the event \'executionEngine.stepCompleted\'', function() {
+            it('should call executionEngine.emitAsync once with '
+                + 'the event \'executionEngine.stepCompleted\'', function() {
                 executionEngine.applyEffects();
 
-                expect(executionEngine.emit.args).to.deep.equal([
+                expect(executionEngine.emitAsync.args).to.deep.equal([
                     ['executionEngine.stepCompleted'],
                 ]);
             });
@@ -1059,22 +1073,23 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('_stepCompleted', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1096,70 +1111,53 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.disable();
         });
 
-        it('should call executionEngine.emit twice', function() {
+        it('should call executionEngine.emitAsync twice', function() {
             executionEngine._stepCompleted();
 
-            expect(executionEngine.emit.callCount).to.equal(2);
+            expect(executionEngine.emitAsync.callCount).to.equal(2);
         });
 
-        it('should call executionEngine.emit with the event \'executionEngine.stepEnded\', null, ' +
+        it('should call executionEngine.emitAsync with the event \'executionEngine.stepEnded\', null, ' +
             'executionEngine._action, executionEngine._actionConfig, executionEngine._step, ' +
             'and the string \'pass\' as parameters', function() {
             executionEngine._stepCompleted();
 
-            expect(executionEngine.emit.args[0]).to.deep.equal([
+            expect(executionEngine.emitAsync.args[0]).to.deep.equal([
                 'executionEngine.stepEnded',
                 null,
-                {
-                    preconditions: 'preconditions',
-                    perform: 'perform',
-                    effects: 'effects',
-                },
-                {
-                    name: 'myInstance.MY_ACTION',
-                },
                 'perform',
-                'pass',
             ]);
         });
 
-        it('should call executionEngine.emit with the event \'executionEngine.nextStepReadied\',' +
+        it('should call executionEngine.emitAsync with the event \'executionEngine.nextStepReadied\',' +
             'executionEngine._action, executionEngine._actionConfig, executionEngine._step, ' +
             'as parameters', function() {
             executionEngine._stepCompleted();
 
-            expect(executionEngine.emit.args[1]).to.deep.equal([
+            expect(executionEngine.emitAsync.args[1]).to.deep.equal([
                 'executionEngine.nextStepReadied',
-                {
-                    preconditions: 'preconditions',
-                    perform: 'perform',
-                    effects: 'effects',
-                },
-                {
-                    name: 'myInstance.MY_ACTION',
-                },
-                ['preconditions', 'perform', 'effects'],
             ]);
         });
     });
 
     describe('errorOccurred', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1180,59 +1178,49 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.disable();
         });
 
-        it('should call executionEngine.emit with the event \'executionEngine.actionErrored\' ' +
-            'and the passed in error', function() {
-            let error = new Error('An error occurred!');
-
-            executionEngine.errorOccurred(error, true);
-
-            expect(executionEngine.emit.args[0]).to.deep.equal([
-                'executionEngine.actionErrored',
-                error,
-            ]);
-        });
-
-        it('should call executionEngine.emit with the event \'executionEngine.stepEnded\', ' +
+        it('should call executionEngine.emitAsync with the event \'executionEngine.stepEnded\', ' +
             'the passed in error, executionEngine._action,executionEngine._actionConfig, ' +
             'executionEngine._step, and the string \'fail\'', function() {
             let error = new Error('An error occurred!');
 
             executionEngine.errorOccurred(error, true);
 
-            expect(executionEngine.emit.args[1]).to.deep.equal([
+            expect(executionEngine.emitAsync.args[0]).to.deep.equal([
                 'executionEngine.stepEnded',
                 error,
-                {
-                    preconditions: 'preconditions',
-                    perform: 'perform',
-                    effects: 'effects',
-                },
-                {
-                    name: 'myInstance.MY_ACTION',
-                },
                 'perform',
-                'fail',
+            ]);
+        });
+
+        it('should call executionEngine.emitAsync with the event \'executionEngine.errorHandled\'', function() {
+            let error = new Error('An error occurred!');
+
+            executionEngine.errorOccurred(error, true);
+
+            expect(executionEngine.emitAsync.args[1]).to.deep.equal([
+                'executionEngine.errorHandled',
             ]);
         });
     });
 
     describe('done', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executionEngine;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
+                    myObject.runOn = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('../../util/emitter.js', Emitter);
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
         });
@@ -1243,10 +1231,10 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             mockery.disable();
         });
 
-        it('should call executionEngine.emit once with the event \'executionEngine.done\'', function() {
+        it('should call executionEngine.emitAsync once with the event \'executionEngine.done\'', function() {
             executionEngine.done();
 
-            expect(executionEngine.emit.args).to.deep.equal([
+            expect(executionEngine.emitAsync.args).to.deep.equal([
                 [
                     'executionEngine.done',
                 ],
