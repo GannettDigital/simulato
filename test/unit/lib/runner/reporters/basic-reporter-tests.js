@@ -260,7 +260,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
             });
           });
 
-          describe('if the testReport.errorLocation property is falsy', function() {
+          describe('if the testReport.errorLocation property is falsey', function() {
             it('should call console.log to say no report received and to check stdErr', function() {
               report.status = 'fail';
               report.testReports[0] = {
@@ -291,72 +291,5 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
         });
       });
     });
-
-    // describe('for each test report', function() {
-    //   describe('if there is an error', function() {
-    //     it('should change the process.exitCode to 1', function() {
-    //       printOutput._printTestSummary();
-
-    //       expect(process.exitCode).to.equal(1);
-    //     });
-    //     it('should call console.log 13 times if there are 2 failed tests'
-    //       + 'each with 1 failed action having 1 failed step', function() {
-    //         printOutput._printTestSummary();
-
-    //         expect(console.log.callCount).to.equal(13);
-    //       });
-
-    //     it('should call console.log to the testName of the failed action', function() {
-    //       printOutput._printTestSummary();
-
-    //       expect(console.log.args[5]).to.deep.equal([
-    //         `${'Test 1'}:`,
-    //       ]);
-    //     });
-
-    //     it('should call console.log to say the failed action using instanceName and actioName', function() {
-    //       printOutput._printTestSummary();
-
-    //       expect(console.log.args[6]).to.deep.equal([
-    //         `\tFailed Action: ${'component1'} - ${'actionX'}`,
-    //       ]);
-    //     });
-
-    //     it('should call console.log to say the failedStep', function() {
-    //       printOutput._printTestSummary();
-
-    //       expect(console.log.args[7]).to.deep.equal([
-    //         `\t\tStep: ${'effects'}`,
-    //       ]);
-    //     });
-
-    //     it('should call console.log to say the Error name', function() {
-    //       printOutput._printTestSummary();
-
-    //       expect(console.log.args[8]).to.deep.equal([
-    //         `\t\t\tError: ${'My Error'}`,
-    //       ]);
-    //     });
-    //   });
-
-    //   describe('when there are no failed tests', function() {
-    //     it('should not change the process.exitCode', function() {
-    //       delete printOutput._testSummary.testReports[0].error;
-    //       delete printOutput._testSummary.testReports[1].error;
-
-    //       printOutput._printTestSummary();
-
-    //       expect(process.exitCode).to.equal(0);
-    //     });
-    //     it('should only call console.log 5 times', function() {
-    //       delete printOutput._testSummary.testReports[0].error;
-    //       delete printOutput._testSummary.testReports[1].error;
-
-    //       printOutput._printTestSummary();
-
-    //       expect(console.log.callCount).to.equal(5);
-    //     });
-    //   });
-    // });
   });
 });

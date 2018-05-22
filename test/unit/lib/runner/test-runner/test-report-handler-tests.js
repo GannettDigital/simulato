@@ -167,8 +167,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
-    describe('if stdErr is undefined for the test report', function() {
-      it('should the reports .stdErr to the passed in stdErr', function() {
+    describe('if stdErr is undefined in testReportHandler[<testNumber>]', function() {
+      it('should add the passed in stdErr to the testReportHandler[<testNumber>].stdErr', function() {
         testReportHandler._report.testReports[2] = {};
         testReportHandler.appendTestStdErr('newStdErr', 2);
 
