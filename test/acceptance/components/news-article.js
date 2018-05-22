@@ -7,32 +7,28 @@ module.exports = {
       {
         name: 'newsArticle',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: this.options.newsArticleId,
         },
       },
       {
         name: 'newsArticleImage',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Image`,
         },
       },
       {
         name: 'newsArticleHeading',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Heading`,
         },
       },
       {
         name: 'newsArticleText',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: `${this.options.newsArticleId}Text`,
         },
       },
@@ -57,20 +53,30 @@ module.exports = {
   actions() {
     return {
       CLICK_TO_VIEW_STORY: {
-        preconditions(dataStore) {
+        parameters: [
+          {
+            name: 'fakeParameter',
+            generate() {
+                return 'myFakeParameter';
+            },
+          },
+        ],
+        preconditions(fakeParam, dataStore) {
           dataStore.store(`${this.name}HeadingText`, this.getFromPage(`${this.name}.newsArticleHeading.text`));
           dataStore.store(`${this.name}Text`, this.getFromPage(`${this.name}.newsArticleText.text`));
 
           return [
-            ['isTrue', `${this.name}.displayed`],
+            ['isTrue', `pageState.${this.name}.displayed`],
+            ['property', `dataStore`, `${this.name}HeadingText`],
+            ['property', `dataStore`, `${this.name}Text`],
           ];
         },
-        perform(callback) {
+        perform(fakeParam, callback) {
           driver.findElement(By.id(this.options.newsArticleId))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState, dataStore) {
+        effects(fakeParam, expectedState, dataStore) {
           expectedState.stash();
           expectedState.createAndAddComponent({
             type: 'ViewStoryModal',

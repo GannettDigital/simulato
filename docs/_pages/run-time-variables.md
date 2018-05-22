@@ -37,7 +37,7 @@ SELECT_FIRST_DROPDOWN_CHOICE: {
         dataStore.store('myDropDownChoice', this.getFromPage('myComponentName.dropDown.firstChoice'));
 
         return [
-            ['isTrue', 'dropDown.expanded'],
+            ['isTrue', 'pageState.dropDown.expanded'],
         ];
     },
     perform(callback) {

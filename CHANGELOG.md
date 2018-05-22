@@ -2,6 +2,21 @@
 
 ## Pending Version
 
+## 0.4.0
+
+* Tom Dale
+  * Changed the selector methods inside elements to use
+    * getElementById
+    * querySelector
+    * querySelectorAll
+    * getElementsByTagName
+    * getElementsByClassName
+  * Created a new cli/option command to stagger start time of tests using the test runner
+
+* Scott Gunther
+  * Changed the precondition assertions to be run against the pageState or dataStore
+  * Fix bug where parameters are not passed in to preconditions during planning
+
 ## 0.3.5
 
 * Brian Fitzpatrick

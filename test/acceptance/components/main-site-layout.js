@@ -7,8 +7,7 @@ module.exports = {
       {
         name: 'headerRow',
         selector: {
-          type: 'attribute',
-          key: 'id',
+          type: 'getElementById',
           value: 'siteHeader',
         },
       },

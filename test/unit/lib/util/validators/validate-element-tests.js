@@ -111,7 +111,57 @@ describe('lib/util/validators/validate-elements.js', function() {
         );
       });
 
-      it('should throw an error if value.selector.type is not \'attribute\' or \'querySelector\'', function() {
+      it('should NOT throw an error if the value.selector type is \'getElementById\'', function() {
+        let elements = [{name: 'name', selector: {type: 'getElementById', value: 'value'}}];
+
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+        );
+
+        expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
+      });
+
+      it('should NOT throw an error if the value.selector type is \'querySelector\'', function() {
+        let elements = [{name: 'name', selector: {type: 'querySelector', value: 'value'}}];
+
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+        );
+
+        expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
+      });
+
+      it('should NOT throw an error if the value.selector type is \'querySelectorAll\'', function() {
+        let elements = [{name: 'name', selector: {type: 'querySelectorAll', value: 'value'}}];
+
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+        );
+
+        expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
+      });
+
+      it('should NOT throw an error if the value.selector type is \'getElementsByTagName\'', function() {
+        let elements = [{name: 'name', selector: {type: 'getElementsByTagName', value: 'value'}}];
+
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+        );
+
+        expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
+      });
+
+      it('should NOT throw an error if the value.selector type is \'getElementsByClassName\'', function() {
+        let elements = [{name: 'name', selector: {type: 'getElementsByClassName', value: 'value'}}];
+
+        SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
+          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+        );
+
+        expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
+      });
+
+      it('should throw an error if value.selector.type is not a valid type', function() {
         let elements = [{name: 'name', selector: {type: 'madeUpType'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
@@ -123,23 +173,8 @@ describe('lib/util/validators/validate-elements.js', function() {
         );
       });
 
-      describe('if the value.selector.type field is \'attribute\'', function() {
-        it('should throw an error if value.selector.key is not a string', function() {
-          let elements = [{name: 'name', selector: {type: 'attribute', key: 1}}];
-
-          SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-            {message: `The selector 'key' field for ${elements[0].name}`
-              + ` must be a string when using selector type attribute`}
-          );
-
-          expect(validateElements.bind(null, elements, instanceName, componentName)).to.throw(
-            `The selector 'key' field for name must be a string when using selector type attribute`
-          );
-        });
-      });
-
       it('should throw an error if the value.selector.value is not a string', function() {
-        let elements = [{name: 'name', selector: {type: 'attribute', key: 'key', value: 1}}];
+        let elements = [{name: 'name', selector: {type: 'getElementById', value: 1}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'value' field for ${elements[0].name} must be a string`}
@@ -149,8 +184,9 @@ describe('lib/util/validators/validate-elements.js', function() {
           `The selector 'value' field for name must be a string`
         );
       });
-      it('should throw no error if value.selector.value is a string', function() {
-        let elements = [{name: 'name', selector: {type: 'attribute', key: 'key', value: 'value'}}];
+
+      it('should NOT throw an error if value.selector.value is a string', function() {
+        let elements = [{name: 'name', selector: {type: 'getElementById', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
           {message: `The selector 'value' field for ${elements[0].name} must be a string`}
