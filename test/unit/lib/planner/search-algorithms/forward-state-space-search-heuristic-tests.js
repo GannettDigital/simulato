@@ -1046,7 +1046,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         let forwardStateSpaceSearch;
         let node;
         let callback;
-        let sampleSet;
         let sampleMap;
         let stateObj;
         let action;
@@ -1070,7 +1069,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             );
-            sampleSet = ['test.ACTION'];
 
             sampleMap = new Map();
             sampleMap.set('test', {
@@ -1091,7 +1089,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             };
 
             node = {
-                path: sampleSet,
+                path: ['test.ACTION'],
                 state: stateObj,
                 testCase: {
                     push: sinon.stub(),

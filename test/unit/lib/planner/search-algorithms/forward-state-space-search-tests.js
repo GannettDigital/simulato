@@ -853,7 +853,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
         let forwardStateSpaceSearch;
         let node;
         let callback;
-        let sampleSet;
         let sampleMap;
         let stateObj;
         let action;
@@ -878,7 +877,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search.js'
             );
-            sampleSet = ['test.ACTION'];
 
             sampleMap = new Map();
             sampleMap.set('test', {
@@ -895,7 +893,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             };
 
             node = {
-                path: sampleSet,
+                path: ['test.ACTION'],
                 state: stateObj,
                 testCase: {
                     push: sinon.stub(),
