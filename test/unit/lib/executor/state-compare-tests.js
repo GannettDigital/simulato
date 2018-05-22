@@ -207,8 +207,6 @@ describe('lib/executor/state-compare.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.spy(console, 'log');
-
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', {});
 
@@ -221,7 +219,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -273,16 +270,6 @@ describe('lib/executor/state-compare.js', function() {
         ]);
       });
 
-      it('should call console.log to print redText', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(console.log.args[0]).to.deep.equal([
-          `redText`,
-        ]);
-      });
-
       it('should call printGreen once with `++ Expected State`', function() {
         stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
 
@@ -290,16 +277,6 @@ describe('lib/executor/state-compare.js', function() {
 
         expect(stateCompare._printGreen.args).to.deep.equal([
           ['++ Expected State'],
-        ]);
-      });
-
-      it('should call console.log to print greenText', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(console.log.args[1]).to.deep.equal([
-          `greenText`,
         ]);
       });
 
@@ -312,15 +289,6 @@ describe('lib/executor/state-compare.js', function() {
         expect(stateCompare._indentCount).to.equal(1);
       });
 
-      it('should call console.log with `{`', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(console.log.args[2]).to.deep.equal([
-          `{`,
-        ]);
-      });
 
       it('should call stateCompare.emit with the event \'stateCompare.findDrifference\', '
         + 'difference, and expectedState', function() {
@@ -348,30 +316,24 @@ describe('lib/executor/state-compare.js', function() {
         ]);
       });
 
-      it('should call console.log with `}`', function() {
+      it('should call stateCompare.emit with the event \'stateCompare.differenceCreated\', '
+        + 'stateCompare._compareResult', function() {
         stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
 
         stateCompare.printDifference(samplePageState, sampleExpectedState);
 
-        expect(console.log.args[3]).to.deep.equal([
-          `}`,
+        expect(stateCompare.emit.args[2]).to.deep.equal([
+          'stateCompare.differenceCreated',
+          '\nredText\ngreenText\n{\n}',
         ]);
       });
 
-      it('should call console.log 4 times', function() {
+      it('should call stateCompare.emit three times', function() {
         stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
 
         stateCompare.printDifference(samplePageState, sampleExpectedState);
 
-        expect(console.log.callCount).to.deep.equal(4);
-      });
-
-      it('should call stateCompare.emit twice', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(stateCompare.emit.callCount).to.deep.equal(2);
+        expect(stateCompare.emit.callCount).to.deep.equal(3);
       });
     });
   });
@@ -606,8 +568,6 @@ describe('lib/executor/state-compare.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.spy(console, 'log');
-
       _ = {
         isObject: sinon.stub(),
       };
@@ -626,7 +586,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -688,18 +647,6 @@ describe('lib/executor/state-compare.js', function() {
             [`keyString key1: 'value2',`],
           ]);
         });
-        it('should call console.log with the params \'redText\'', function() {
-          let parentKey = 'key1';
-          let differenceValue = 'value2';
-          let baseValue = 'baseValue';
-          _.isObject.returns(false);
-
-          stateCompare._printKey(parentKey, differenceValue, baseValue);
-
-          expect(console.log.args[0]).to.deep.equal([
-            'redText',
-          ]);
-        });
 
         describe('if the baseValue is not an object', function() {
           describe('if the base value is a string', function() {
@@ -713,18 +660,6 @@ describe('lib/executor/state-compare.js', function() {
 
               expect(stateCompare._printGreen.args).to.deep.equal([
                 [`keyString key1: 'baseValue',`],
-              ]);
-            });
-            it('should call console.log with the params \'greenText\'', function() {
-              let parentKey = 'key1';
-              let differenceValue = 'value2';
-              let baseValue = 'baseValue';
-              _.isObject.returns(false);
-
-              stateCompare._printKey(parentKey, differenceValue, baseValue);
-
-              expect(console.log.args[1]).to.deep.equal([
-                'greenText',
               ]);
             });
           });
@@ -766,6 +701,17 @@ describe('lib/executor/state-compare.js', function() {
         });
       });
     });
+
+    it('should concatenate ._compareResult with the \'\\nredText\\ngreenText\'', function() {
+      let parentKey = 'key1';
+      let differenceValue = 'value2';
+      let baseValue = 'baseValue';
+      _.isObject.returns(false);
+
+      stateCompare._printKey(parentKey, differenceValue, baseValue);
+
+      expect(stateCompare._compareResult).to.equal('\nredText\ngreenText');
+    });
   });
 
   describe('_handleDifferenceArrayValue', function() {
@@ -789,8 +735,6 @@ describe('lib/executor/state-compare.js', function() {
         isObject: sinon.stub(),
       };
 
-      sinon.spy(console, 'log');
-
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', _);
 
@@ -803,7 +747,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -868,18 +811,6 @@ describe('lib/executor/state-compare.js', function() {
               [`keyString: 'baseValue',`],
             ]);
           });
-          it('should call console.log with the params \'greenText\'', function() {
-            let differenceValue = 'differenceValue';
-            let baseValue = 'baseValue';
-            let keyString = 'keyString';
-            _.isObject.returns(false);
-
-            stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
-
-            expect(console.log.args).to.deep.equal([
-              ['greenText'],
-            ]);
-          });
         });
         describe('if the base value is NOT a string', function() {
           it('should call ._printGreen once with keyString and base value', function() {
@@ -894,34 +825,21 @@ describe('lib/executor/state-compare.js', function() {
               [`keyString: 1,`],
             ]);
           });
-          it('should call console.log with the params \'greenText\'', function() {
-            let differenceValue = 'differenceValue';
-            let baseValue = 'baseValue';
-            let keyString = 'keyString';
-            _.isObject.returns(false);
-
-            stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
-
-            expect(console.log.args).to.deep.equal([
-              ['greenText'],
-            ]);
-          });
         });
       });
-    });
-    describe('if the baseValue is an Array', function() {
-      it('should call console.log to print the keystring followed by a [', function() {
+
+      it('should concatenate ._compareResult with \'\\ngreenText\'', function() {
         let differenceValue = 'differenceValue';
-        let baseValue = ['element1', 'element2'];
+        let baseValue = 1;
         let keyString = 'keyString';
+        _.isObject.returns(false);
 
         stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-        expect(console.log.args[0]).to.deep.equal([
-          'keyString [',
-        ]);
+        expect(stateCompare._compareResult).to.equal('\ngreenText');
       });
-
+    });
+    describe('if the baseValue is an Array', function() {
       it('should call increment and decrement the indentCount keeping it the same', function() {
         let differenceValue = 'differenceValue';
         let baseValue = ['element1', 'element2'];
@@ -960,16 +878,14 @@ describe('lib/executor/state-compare.js', function() {
         expect(stateCompare._indent.callCount).to.equal(1);
       });
 
-      it('should call console.log to print ]', function() {
+      it('should concatenate ._compareResult with the \'\\nkeyString [\\n],\'', function() {
         let differenceValue = 'differenceValue';
         let baseValue = ['element1', 'element2'];
         let keyString = 'keyString';
 
         stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-        expect(console.log.args[1]).to.deep.equal([
-          '],',
-        ]);
+        expect(stateCompare._compareResult).to.equal('\nkeyString [\n],');
       });
     });
   });
@@ -995,8 +911,6 @@ describe('lib/executor/state-compare.js', function() {
         isObject: sinon.stub(),
       };
 
-      sinon.spy(console, 'log');
-
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', _);
 
@@ -1009,7 +923,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1050,7 +963,8 @@ describe('lib/executor/state-compare.js', function() {
             [`keyString: 'baseValue',`],
           ]);
         });
-        it('should call console.log with the params \'greenText\'', function() {
+
+        it('should concatenate ._compareResult with \'\\ngreenText\'', function() {
           let differenceValue = 'differenceValue';
           let baseValue = 'baseValue';
           let keyString = 'keyString';
@@ -1059,9 +973,7 @@ describe('lib/executor/state-compare.js', function() {
 
           stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
 
-          expect(console.log.args).to.deep.equal([
-            ['greenText'],
-          ]);
+          expect(stateCompare._compareResult).to.equal('\ngreenText');
         });
       });
       describe('if the base value is NOT a string', function() {
@@ -1078,7 +990,8 @@ describe('lib/executor/state-compare.js', function() {
             [`keyString: 1,`],
           ]);
         });
-        it('should call console.log with the params \'greenText\'', function() {
+
+        it('should concatenate ._compareResult with \'\\ngreenText\'', function() {
           let differenceValue = 'differenceValue';
           let baseValue = 1;
           let keyString = 'keyString';
@@ -1087,27 +1000,11 @@ describe('lib/executor/state-compare.js', function() {
 
           stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
 
-          expect(console.log.args).to.deep.equal([
-            ['greenText'],
-          ]);
+          expect(stateCompare._compareResult).to.equal('\ngreenText');
         });
       });
     });
     describe('if the baseValue is an Object', function() {
-      it('should call console.log to print the keystring followed by a {', function() {
-        let differenceValue = 'differenceValue';
-        let baseValue = {key: 'baseValue'};
-        let keyString = 'keyString';
-        let parentKey = 'parentKey';
-        _.isObject.returns(true);
-
-        stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
-
-        expect(console.log.args[0]).to.deep.equal([
-          'keyString: {',
-        ]);
-      });
-
       it('should call increment and decrement the indentCount keeping it the same', function() {
         let differenceValue = 'differenceValue';
         let baseValue = {key: 'baseValue'};
@@ -1152,7 +1049,7 @@ describe('lib/executor/state-compare.js', function() {
         expect(stateCompare._indent.callCount).to.equal(1);
       });
 
-      it('should call console.log to print }', function() {
+      it('should concatenate ._compareResult with \'\\nkeyString: {\\n},\'', function() {
         let differenceValue = 'differenceValue';
         let baseValue = {key: 'baseValue'};
         let keyString = 'keyString';
@@ -1161,9 +1058,7 @@ describe('lib/executor/state-compare.js', function() {
 
         stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
 
-        expect(console.log.args[1]).to.deep.equal([
-          '},',
-        ]);
+        expect(stateCompare._compareResult).to.equal('\nkeyString: {\n},');
       });
     });
   });
@@ -1187,8 +1082,6 @@ describe('lib/executor/state-compare.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.spy(console, 'log');
-
       _ = {
         isObject: sinon.stub(),
       };
@@ -1208,7 +1101,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1330,15 +1222,13 @@ describe('lib/executor/state-compare.js', function() {
           ]);
         });
 
-        it('should call console.log and print the colored string', function() {
+        it('should concatenate ._compareResult with \'\\ngreenText\'', function() {
           let child = 'child';
           let baseString = null;
 
           stateCompare._printChild(child, colorFunc, baseString);
 
-          expect(console.log.args).to.deep.equal([
-            ['greenText'],
-          ]);
+          expect(stateCompare._compareResult).to.equal('\ngreenText');
         });
       });
       describe('if the child is not a string', function() {
@@ -1353,15 +1243,13 @@ describe('lib/executor/state-compare.js', function() {
           ]);
         });
 
-        it('should call console.log and print the colored string', function() {
+        it('should concatenate ._compareResult with \'\\ngreenText\'', function() {
           let child = 'child';
           let baseString = null;
 
           stateCompare._printChild(child, colorFunc, baseString);
 
-          expect(console.log.args).to.deep.equal([
-            ['greenText'],
-          ]);
+          expect(stateCompare._compareResult).to.equal('\ngreenText');
         });
       });
       describe('if there is a baseString passed in', function() {
@@ -1395,8 +1283,6 @@ describe('lib/executor/state-compare.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.spy(console, 'log');
-
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', {});
 
@@ -1407,7 +1293,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1420,13 +1305,7 @@ describe('lib/executor/state-compare.js', function() {
 
       expect(stateCompare._indentCount).to.equal(4);
     });
-    it('should call console.log to print colored String', function() {
-      stateCompare._printStartOfArray(null, colorFunc);
 
-      expect(console.log.args).to.deep.equal([
-        ['coloredString'],
-      ]);
-    });
     describe('if a string is NOT passed in', function() {
       it('should call the color function once with `[`', function() {
         stateCompare._printStartOfArray(null, colorFunc);
@@ -1434,6 +1313,12 @@ describe('lib/executor/state-compare.js', function() {
         expect(colorFunc.args).to.deep.equal([
           [`[`],
         ]);
+      });
+
+      it('should concatenate ._compareResult with \'\\ncoloredString\'', function() {
+        stateCompare._printStartOfArray(null, colorFunc);
+
+        expect(stateCompare._compareResult).to.equal('\ncoloredString');
       });
     });
     describe('if a string is passed in', function() {
@@ -1443,6 +1328,12 @@ describe('lib/executor/state-compare.js', function() {
         expect(colorFunc.args).to.deep.equal([
           [`passed string: [`],
         ]);
+      });
+
+      it('should concatenate ._compareResult with \'\\ncoloredString\'', function() {
+        stateCompare._printStartOfArray('passed string', colorFunc);
+
+        expect(stateCompare._compareResult).to.equal('\ncoloredString');
       });
     });
   });
@@ -1510,7 +1401,6 @@ describe('lib/executor/state-compare.js', function() {
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
-      sinon.spy(console, 'log');
 
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', {});
@@ -1521,7 +1411,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1551,12 +1440,10 @@ describe('lib/executor/state-compare.js', function() {
       expect(stateCompare._indent.callCount).to.equal(1);
     });
 
-    it('should call console.log once to print coloredString', function() {
+    it('should concatenate ._compareResult with \'\\n  coloredString\'', function() {
       stateCompare._printEndOfArray(colorFunc);
 
-      expect(console.log.args).to.deep.equal([
-        ['  coloredString'],
-      ]);
+      expect(stateCompare._compareResult).to.equal('\n  coloredString');
     });
   });
 
@@ -1577,8 +1464,6 @@ describe('lib/executor/state-compare.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.spy(console, 'log');
-
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', {});
 
@@ -1591,7 +1476,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1611,13 +1495,6 @@ describe('lib/executor/state-compare.js', function() {
       expect(stateCompare._indent.callCount).to.equal(1);
     });
 
-    it('should call console.log to print the colored string', function() {
-      stateCompare._printStartOfObject(null, colorFunc);
-
-      expect(console.log.args).to.deep.equal([
-        ['  coloredString'],
-      ]);
-    });
     describe('if a key is NOT passed in', function() {
       it('should call the color function once with `{`', function() {
         stateCompare._printStartOfObject(null, colorFunc);
@@ -1625,6 +1502,12 @@ describe('lib/executor/state-compare.js', function() {
         expect(colorFunc.args).to.deep.equal([
           [`{`],
         ]);
+      });
+
+      it('should concatenate ._compareResult with \'\\n  coloredString\'', function() {
+        stateCompare._printStartOfObject(null, colorFunc);
+
+        expect(stateCompare._compareResult).to.equal('\n  coloredString');
       });
     });
     describe('if a key is passed in', function() {
@@ -1634,6 +1517,12 @@ describe('lib/executor/state-compare.js', function() {
         expect(colorFunc.args).to.deep.equal([
           [`key: {`],
         ]);
+      });
+
+      it('should concatenate ._compareResult with \'\\n  coloredString\'', function() {
+        stateCompare._printStartOfObject('key', colorFunc);
+
+        expect(stateCompare._compareResult).to.equal('\n  coloredString');
       });
     });
   });
@@ -1657,7 +1546,6 @@ describe('lib/executor/state-compare.js', function() {
       EventEmitter.returns(EventEmitterInstance);
 
       colorFunc = sinon.stub();
-
 
       sampleObject = {
         key1: 'value1',
@@ -1722,7 +1610,6 @@ describe('lib/executor/state-compare.js', function() {
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
-      sinon.spy(console, 'log');
 
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('lodash', {});
@@ -1733,7 +1620,6 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     afterEach(function() {
-      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -1763,12 +1649,10 @@ describe('lib/executor/state-compare.js', function() {
       expect(stateCompare._indent.callCount).to.equal(1);
     });
 
-    it('should call console.log once to print coloredString', function() {
+    it('should concatenate ._compareResult with \'\\n  coloredString\'', function() {
       stateCompare._printEndOfObject(colorFunc);
 
-      expect(console.log.args).to.deep.equal([
-        ['  coloredString'],
-      ]);
+      expect(stateCompare._compareResult).to.equal('\n  coloredString');
     });
   });
 
