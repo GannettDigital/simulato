@@ -276,6 +276,47 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
     });
   });
 
+  describe('finalizeTestReport', function() {
+    let testReportHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      mockery.registerMock('events', {EventEmitter});
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call testReportHandler.emit with the event \'testReportHandler.testReportFinalized\' '
+      + 'and the report of the passed in testNumber', function() {
+      testReportHandler._report.testReports[0] = {
+        report: 'data',
+      };
+
+      testReportHandler.finalizeTestReport(0);
+
+      expect(testReportHandler.emit.args).to.deep.equal([[
+        'testReportHandler.testReportFinalized',
+        {report: 'data'},
+      ]]);
+    });
+  });
+
   describe('finalizeReport', function() {
     let testReportHandler;
     let EventEmitter;

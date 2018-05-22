@@ -6,7 +6,148 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/runner/reporters/basic-reporter.js', function() {
-  describe.only('printReportSummary', function() {
+  describe.only('printTestResult', function() {
+    let basicReporter;
+    let report;
+    let symbols;
+    let funSymbols;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/reporters/basic-reporter.js');
+
+      sinon.spy(console, 'log');
+
+      symbols = {
+        pass: '✓',
+        fail: '❌',
+        rerun: '⟲',
+      };
+
+      funSymbols = {
+        pass: '🌴',
+        fail: '🍅',
+        rerun: '⚠',
+      };
+
+      report = {
+        testName: 'testName',
+        status: 'pass',
+        errorLocation: {
+          actionIndex: 0,
+          step: 'preconditions',
+        },
+        actions: [
+          {
+            steps: {
+              preconditions: {
+                error: {
+                  name: 'ERROR NAME',
+                  message: 'ERROR MESSAGE',
+                  stack: 'an error stack',
+                },
+                stateCompare: 'state compare string',
+              },
+            },
+          },
+        ],
+      };
+
+      basicReporter = require('../../../../../lib/runner/reporters/basic-reporter.js');
+    });
+
+    afterEach(function() {
+      console.log.restore();
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call console.log to print the test name and its status', function() {
+      basicReporter.printTestResult(report);
+
+      expect(console.log.args[0]).to.deep.equal([
+        `${symbols.pass} testName ${funSymbols.pass}`,
+      ]);
+    });
+
+
+    it('should call console.log once', function() {
+      basicReporter.printTestResult(report);
+
+      expect(console.log.callCount).to.equal(1);
+    });
+
+    describe('if the report has a status of \'fail\'', function() {
+      describe('if report.stdErr is truthy', function() {
+        it('should call console.log to print the stdErr', function() {
+          report.status = 'fail';
+          report.stdErr = 'some stdErr',
+          delete report.errorLocation;
+
+          basicReporter.printTestResult(report);
+
+          expect(console.log.args[1]).to.deep.equal([
+            `\nsome stdErr`,
+          ]);
+        });
+
+        it('should call console.log twice', function() {
+          report.status = 'fail';
+          report.stdErr = 'some stdErr',
+          delete report.errorLocation;
+
+          basicReporter.printTestResult(report);
+
+          expect(console.log.callCount).to.equal(2);
+        });
+      });
+
+      describe('if report.errorLocation is truthy', function() {
+        it('should call console.log to print the failedSteps error stack', function() {
+          report.status = 'fail';
+          delete report.actions[0].steps.preconditions.stateCompare;
+
+          basicReporter.printTestResult(report);
+
+          expect(console.log.args[1]).to.deep.equal([
+            `\nan error stack`,
+          ]);
+        });
+
+        it('should call console.log twice', function() {
+          report.status = 'fail';
+          delete report.actions[0].steps.preconditions.stateCompare;
+
+          basicReporter.printTestResult(report);
+
+          expect(console.log.callCount).to.equal(2);
+        });
+
+        describe('if the failedStep has stateCompare', function() {
+          it('should call console.log to print the failedSteps error stack', function() {
+            report.status = 'fail';
+
+            basicReporter.printTestResult(report);
+
+            expect(console.log.args[2]).to.deep.equal([
+              `state compare string\n`,
+            ]);
+          });
+
+          it('should call console.log thrice', function() {
+            report.status = 'fail';
+
+            basicReporter.printTestResult(report);
+
+            expect(console.log.callCount).to.equal(3);
+          });
+        });
+      });
+    });
+  });
+
+  describe('printReportSummary', function() {
     let basicReporter;
     let report;
 
