@@ -81,7 +81,7 @@ Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and
 
 While components are individual pieces of a system, it helps to break down the full system into the components you will need before you start creating any one component.
 
-In the system described above, our actions might be to navigate to the website, click on an article, and close the article. In order to perform these actions, we will need a component to cover navigation. We will also need a component to represent the landing page, as well as a component component for structures we care about on the landing page (news articles). Finall we will need a modal representation for the news article:
+In the system described above, our actions might be to navigate to the website, click on an article, and close the article. In order to perform these actions, we will need a component to cover navigation. We will also need a component to represent the landing page, as well as a component for structures we care about on the landing page (news articles). Finally, we will need a modal representation for the news article:
 
 ![](../assets/modal-example.png)
 
@@ -120,7 +120,7 @@ module.exports = {
 
 The first thing in our component is the type, the type is the component name, it is how the object of the component will be referenced. Below is the entry component, an entry component is essentially a starting point for the test path. This entry component in particular contains the name of the component and its current state, which is empty, for now think of the state as the current values occupying the model.
 
-As we have no elements on a navigation, we simply return an empty array. Other components will contain elements which will be coveredß later.
+As we have no elements on a navigation, we simply return an empty array. Other components will contain elements which will be covered later.
 
 Likewise because there are no elements, our model does not have any state to display, so there are no values (this is why our state in the entry component is blank).
 

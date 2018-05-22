@@ -4,6 +4,9 @@
 
 ## 0.4.0
 
+* Brian FItzpatrick
+  * Added simulato walkthrough
+
 * Tom Dale
   * Changed the selector methods inside elements to use
     * getElementById
