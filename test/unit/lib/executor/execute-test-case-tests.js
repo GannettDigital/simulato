@@ -61,7 +61,6 @@ describe('lib/executor/execute-test-case.js', function() {
                 until: sinon.stub(),
             };
             sinon.stub(process, 'on');
-            sinon.spy(console, 'log');
 
             mockery.registerMock('selenium-webdriver', webdriver);
             mockery.registerMock('events', {EventEmitter});
@@ -75,11 +74,9 @@ describe('lib/executor/execute-test-case.js', function() {
             delete global.until;
             delete process.env.TEST_NAME;
             delete process.env.SAUCE_LABS;
-            delete process.env.REPORTER;
 
             process.exitCode = 0;
             process.on.restore();
-            console.log.restore();
 
             mockery.resetCache();
             mockery.deregisterAll();
@@ -99,13 +96,13 @@ describe('lib/executor/execute-test-case.js', function() {
         });
 
         describe('when the process.on callback is called', function() {
-            it('should call executeTestCase.emit 6 times', function() {
+            it('should call executeTestCase.emit 4 times', function() {
                 let error = new Error('An error occurred');
                 process.on.callsArgWith(1, error);
 
                 executeTestCase.configure(testPath);
 
-                expect(executeTestCase.emit.callCount).to.equal(6);
+                expect(executeTestCase.emit.callCount).to.equal(4);
             });
 
             it('should call process.on with the event \'executeTestCase.exceptionCaught\' and ' +
@@ -121,16 +118,6 @@ describe('lib/executor/execute-test-case.js', function() {
                 ]);
             });
 
-            it('should console.log once with the passed in error.stack', function() {
-                let error = new Error('An error occurred');
-                error.stack = 'myStack';
-                process.on.callsArgWith(1, error);
-
-                executeTestCase.configure(testPath);
-
-                expect(console.log.args[0]).to.deep.equal(['\nmyStack']);
-            });
-
             it('should set the process.exitCode to the number 1', function() {
                 let error = new Error('An error occurred');
                 process.on.callsArgWith(1, error);
@@ -139,17 +126,6 @@ describe('lib/executor/execute-test-case.js', function() {
 
                 expect(process.exitCode).to.equal(1);
             });
-
-            it('should call process.on with the event \'executeTestCase.errorHandled\'', function() {
-                let error = new Error('An error occurred');
-                process.on.callsArgWith(1, error);
-
-                executeTestCase.configure(testPath);
-
-                expect(executeTestCase.emit.args[1]).to.deep.equal([
-                    'executeTestCase.errorHandled',
-                ]);
-            });
         });
 
         it('should process.env.TEST_NAME to \'my-test-case.js\' if the path is ' +
@@ -157,12 +133,6 @@ describe('lib/executor/execute-test-case.js', function() {
             executeTestCase.configure(testPath);
 
             expect(process.env.TEST_NAME).to.equal('my-test-case.js');
-        });
-
-        it('should call console.log with the starting test message with the testName', function() {
-            executeTestCase.configure(testPath);
-
-            expect(console.log.args[0]).to.deep.equal(['+++ Starting Test: my-test-case.js +++\n']);
         });
 
         it('should set global.By to webdriver.By', function() {
@@ -177,10 +147,10 @@ describe('lib/executor/execute-test-case.js', function() {
             expect(global.until).to.deep.equal(webdriver.until);
         });
 
-        it('should call executeTestCase.emit 4 times', function() {
+        it('should call executeTestCase.emit 3 times', function() {
             executeTestCase.configure(testPath);
 
-            expect(executeTestCase.emit.callCount).to.equal(4);
+            expect(executeTestCase.emit.callCount).to.equal(3);
         });
 
         it('should call executeTestCase.emit with the event \'executeTestCase.loadComponents\' ' +
@@ -215,95 +185,13 @@ describe('lib/executor/execute-test-case.js', function() {
             });
         });
 
-        describe('if process.env.REPORTER equals the string \'teamcity\'', function() {
-            it('should call executeTestCase.emit with the event \'executeTestCase.reporterSetToTeamcity\'', function() {
-                process.env.REPORTER = 'teamcity';
-                executeTestCase.configure(testPath);
-
-                expect(executeTestCase.emit.args[2]).to.deep.equal([
-                    'executeTestCase.reporterSetToTeamcity',
-                ]);
-            });
-        });
-
-        describe('if process.env.REPORTER is not the string \'teamcity\'', function() {
-            it('should call executeTestCase.emit with the event \'executeTestCase.reporterSetToBasic\'', function() {
-                executeTestCase.configure(testPath);
-
-                expect(executeTestCase.emit.args[2]).to.deep.equal([
-                    'executeTestCase.reporterSetToBasic',
-                ]);
-            });
-        });
-
         it('should call executeTestCase.emit with the event \'executeTestCase.configured\'' +
             'and the required testCase', function() {
             executeTestCase.configure(testPath);
 
-            expect(executeTestCase.emit.args[3]).to.deep.equal([
+            expect(executeTestCase.emit.args[2]).to.deep.equal([
                 'executeTestCase.configured',
                 'testCase',
-            ]);
-        });
-    });
-
-    describe('finishTestCase', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let executeTestCase;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            process.send = sinon.stub();
-
-            mockery.registerMock('selenium-webdriver', {});
-            mockery.registerMock('events', {EventEmitter});
-
-            executeTestCase = require('../../../../lib/executor/execute-test-case.js');
-        });
-
-        afterEach(function() {
-            delete process.env.USING_PARENT_TEST_RUNNER;
-            delete process.send;
-
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-
-        describe('if process.env.USING_PARENT_TEST_RUNNER equals the string \'true\'', function() {
-            it('should call process.send once with the passed in report', function() {
-                process.env.USING_PARENT_TEST_RUNNER = 'true';
-
-                executeTestCase.finishTestCase('myReport');
-
-                expect(process.send.args).to.deep.equal([
-                    ['myReport'],
-                ]);
-            });
-        });
-
-        describe('if process.env.USING_PARENT_TEST_RUNNER is not the string \'true\'', function() {
-            it('should call process.send 0 times', function() {
-                executeTestCase.finishTestCase('myReport');
-
-                expect(process.send.callCount).to.equal(0);
-            });
-        });
-
-        it('should call executeTestCase.emit once with the event \'\'', function() {
-            executeTestCase.finishTestCase('myReport');
-
-            expect(executeTestCase.emit.args).to.deep.equal([
-                ['executeTestCase.finished'],
             ]);
         });
     });

@@ -71,18 +71,17 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       expect(process.hrtime.callCount).to.equal(1);
     });
 
-    it('should set the _startTime to process.hrTime', function() {
+    it('should set the testReportHandler._report.time to process.hrTime', function() {
       testReportHandler.startReportHandler();
 
-      expect(testReportHandler._startTime).to.deep.equal([0, 0]);
+      expect(testReportHandler._report.time).to.deep.equal([0, 0]);
     });
   });
 
-  describe('appendTestReport', function() {
+  describe('createTestReport', function() {
     let testReportHandler;
     let EventEmitter;
     let EventEmitterInstance;
-    let sampleTestReport;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -96,15 +95,6 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('events', {EventEmitter});
 
-      sampleTestReport = {
-        testName: 'The test that failed',
-        error: {
-          instanceName: 'componentA',
-          actionName: 'actionX',
-          failedStep: 'effects',
-        },
-      };
-
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
 
@@ -117,43 +107,171 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
     it('should increment testCount once', function() {
       testReportHandler._report.testCount = 2;
 
-      testReportHandler.appendTestReport(sampleTestReport);
+      testReportHandler.createTestReport(3, 'testName');
 
       expect(testReportHandler._report.testCount).to.equal(3);
     });
 
-    it('should push the passed in report onto to testReports array', function() {
-      testReportHandler.appendTestReport(sampleTestReport);
+    it('should increment failedTestCount once', function() {
+      testReportHandler._report.failedTestCount = 1;
 
-      expect(testReportHandler._report.testReports).to.deep.equal([
-        {
-          testName: 'The test that failed',
-          error: {
-            instanceName: 'componentA',
-            actionName: 'actionX',
-            failedStep: 'effects',
-          },
-        },
-      ]);
+      testReportHandler.createTestReport(3, 'testName');
+
+      expect(testReportHandler._report.failedTestCount).to.equal(2);
     });
 
-    describe('if the report has errors', function() {
-      it('should increment failedTestCount once', function() {
-        testReportHandler._report.failedTestCount = 0;
+    it('should create a base report for the test number passed in', function() {
+      testReportHandler.createTestReport(3, 'testName');
 
-        testReportHandler.appendTestReport(sampleTestReport);
+      expect(testReportHandler._report.testReports[3]).to.deep.equal({
+        testName: 'testName',
+        status: 'fail',
+      });
+    });
+  });
 
-        expect(testReportHandler._report.failedTestCount).to.equal(1);
+  describe('appendTestSrdErr', function() {
+    let testReportHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      mockery.registerMock('events', {EventEmitter});
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if stdErr already contains a value inside the test report', function() {
+      it('should concatenate the passed in stdErr to the existing stdErr', function() {
+        testReportHandler._report.testReports[2] = {
+          stdErr: 'previousStdErr ',
+        };
+        testReportHandler.appendTestStdErr('newStdErr', 2);
+
+        expect(testReportHandler._report.testReports[2].stdErr).to.equal('previousStdErr newStdErr');
       });
     });
 
-    describe('if the report has no errors', function() {
-      it('should not increment failedTestCount', function() {
-        delete sampleTestReport.error;
+    describe('if stdErr is undefined for the test report', function() {
+      it('should the reports .stdErr to the passed in stdErr', function() {
+        testReportHandler._report.testReports[2] = {};
+        testReportHandler.appendTestStdErr('newStdErr', 2);
 
-        testReportHandler.appendTestReport(sampleTestReport);
+        expect(testReportHandler._report.testReports[2].stdErr).to.equal('newStdErr');
+      });
+    });
+  });
 
-        expect(testReportHandler._report.failedTestCount).to.equal(0);
+  describe('appendTestReport', function() {
+    let testReportHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      mockery.registerMock('events', {EventEmitter});
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if the report for the passed in testNumber contains stdErr', function() {
+      it('should set the passed in reports.stdErr, and set that full report to '
+        + 'testReportHandler._report.testReports[<passedInTestNumber>]', function() {
+        testReportHandler._report.testReports[0] = {
+          stdErr: 'some stdErr',
+        };
+
+        testReportHandler.appendTestReport({status: 'fail', somePropFromReport: true}, 0);
+
+        expect(testReportHandler._report.testReports[0]).to.deep.equal({
+          stdErr: 'some stdErr',
+          status: 'fail',
+          somePropFromReport: true,
+        });
+      });
+
+      describe('if the passed in report has .status of \'pass\'', function() {
+        it('should decrement testReportHandler._report.failedTestCount by one', function() {
+          testReportHandler._report.testReports[0] = {
+            stdErr: 'some stdErr',
+          };
+          testReportHandler._report.failedTestCount = 2;
+
+          testReportHandler.appendTestReport({status: 'pass', somePropFromReport: true}, 0);
+
+          expect(testReportHandler._report.failedTestCount).to.equal(1);
+        });
+
+        it('should set the passed in reports.stdErr, and set that full report to '
+          + 'testReportHandler._report.testReports[<passedInTestNumber>] with status as \'pass\'', function() {
+          testReportHandler._report.testReports[0] = {
+            stdErr: 'some stdErr',
+          };
+
+          testReportHandler.appendTestReport({status: 'pass', somePropFromReport: true}, 0);
+
+          expect(testReportHandler._report.testReports[0]).to.deep.equal({
+            stdErr: 'some stdErr',
+            status: 'pass',
+            somePropFromReport: true,
+          });
+        });
+      });
+    });
+
+    describe('if the report for the passed in testNumber DOES NOT contain stdErr', function() {
+      it('should set the passed in report to testReportHandler._report.testReports[<passedInTestNumber>]', function() {
+        testReportHandler._report.testReports[0] = {};
+
+        testReportHandler.appendTestReport({status: 'fail', somePropFromReport: true}, 0);
+
+        expect(testReportHandler._report.testReports[0]).to.deep.equal({
+          status: 'fail',
+          somePropFromReport: true,
+        });
+      });
+
+      describe('if the passed in report has .status of \'pass\'', function() {
+        it('should set the passed in report to testReportHandler._report.testReports[<passedInTestNumber>] '
+          + 'with status \'pass\'', function() {
+          testReportHandler._report.testReports[0] = {};
+
+          testReportHandler.appendTestReport({status: 'pass', somePropFromReport: true}, 0);
+
+          expect(testReportHandler._report.testReports[0]).to.deep.equal({
+            status: 'pass',
+            somePropFromReport: true,
+          });
+        });
       });
     });
   });
@@ -178,7 +296,6 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       mockery.registerMock('events', {EventEmitter});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
-      testReportHandler._startTime = [0, 0];
     });
 
     afterEach(function() {
@@ -200,13 +317,42 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       expect(testReportHandler._report.time).to.deep.equal([4, 54321]);
     });
 
-    it('should call printOutput.emit with the correct event', function() {
+    describe('if testReportHandler._failedTestCount is 0', function() {
+      it('should call testReportHandler.emit with the event\'testReportHandler.reportFinalized\' and '
+        + 'and testReportHandler._report with the report having status of \'pass\'', function() {
+        testReportHandler.finalizeReport();
+
+        expect(testReportHandler.emit.args).to.deep.equal([
+          [
+            'testReportHandler.reportFinalized',
+            {
+              failedTestCount: 0,
+              status: 'pass',
+              testCount: 0,
+              testReports: [],
+              time: [4, 54321],
+            },
+          ],
+        ]);
+      });
+    });
+
+    it('should call testReportHandler.emit with the event\'testReportHandler.reportFinalized\' and '
+      + 'and testReportHandler._report', function() {
+      testReportHandler._report.failedTestCount = 1;
+
       testReportHandler.finalizeReport();
 
       expect(testReportHandler.emit.args).to.deep.equal([
         [
           'testReportHandler.reportFinalized',
-          testReportHandler._report,
+          {
+            failedTestCount: 1,
+            status: 'fail',
+            testCount: 0,
+            testReports: [],
+            time: [4, 54321],
+          },
         ],
       ]);
     });

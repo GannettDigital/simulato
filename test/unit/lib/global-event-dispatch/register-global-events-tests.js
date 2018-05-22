@@ -223,10 +223,10 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         });
     });
 
-    it('should call executeEventDispatch.on 8 times', function() {
+    it('should call executeEventDispatch.on 7 times', function() {
         registerGlobalEvents();
 
-        expect(executeEventDispatch.on.callCount).to.equal(8);
+        expect(executeEventDispatch.on.callCount).to.equal(7);
     });
 
     it('should call executeEventDispatch.on with the event \'executor.loadComponents\'' +
@@ -297,27 +297,6 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             'executor.runDeepEqual',
             oracle.deepEqual,
         ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.ended\'', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[7][0]).to.equal('executor.ended');
-    });
-
-    describe('when the callback is called for executeEventDispatch.on with the event ' +
-        'executor.ended', function() {
-        it('should call cliEventDispatch.emit once with the event \'cli.commandFinished\'', function() {
-            executeEventDispatch.on.onCall(7).callsArg(1);
-
-            registerGlobalEvents();
-
-            expect(cliEventDispatch.emit.args).to.deep.equal([
-                [
-                    'cli.commandFinished',
-                ],
-            ]);
-        });
     });
 
     it('should call componentHandler.on 2 times', function() {

@@ -14,7 +14,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/runner/test-runner/write-report-to-disk.js');
+      mockery.registerAllowable('../../../../../lib/runner/report-to-disk/write-json-to-disk.js');
 
       path = {
         resolve: sinon.stub(),
@@ -30,7 +30,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
       now = Date.now();
       clock = sinon.useFakeTimers(now);
 
-      writeReportToDisk = require('../../../../../lib/runner/test-runner/write-report-to-disk.js');
+      writeReportToDisk = require('../../../../../lib/runner/report-to-disk/write-json-to-disk.js');
     });
 
     afterEach(function() {
@@ -45,7 +45,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
         process.env.OUTPUT_PATH = './';
         let report = 'test report';
 
-        writeReportToDisk.writeReport(report);
+        writeReportToDisk(report);
 
         expect(path.resolve.args).to.deep.equal([
           [
@@ -60,7 +60,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
         let report = 'test report';
         path.resolve.returns(`./${now}-test-report.json`);
 
-        writeReportToDisk.writeReport(report);
+        writeReportToDisk(report);
 
         expect(fs.writeFileSync.args).to.deep.equal([
           [
@@ -76,7 +76,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
         delete process.env.OUTPUT_PATH;
         let report = 'test report';
 
-        writeReportToDisk.writeReport(report);
+        writeReportToDisk(report);
 
         expect(path.resolve.notCalled).to.be.true;
       });

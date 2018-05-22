@@ -7,11 +7,10 @@ const expect = require('chai').expect;
 describe('lib/runner/runner-event-dispatch/register-runner-events.js', function() {
   let registerRunnerEvents;
   let testRunner;
-  let childProcessOutputHandler;
   let testReportHandler;
   let runnerEventDispatch;
   let writeReportToDisk;
-  let printOutput;
+  let reporters;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -19,38 +18,33 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
     testRunner = {
       on: sinon.stub(),
-      configure: function() {},
-    };
-    childProcessOutputHandler = {
-      on: sinon.stub(),
-      addNewChildOutput: function() {},
-      appendStdout: function() {},
-      appendStderr: function() {},
-      finalizeChildOutput: function() {},
+      configure: sinon.stub(),
     };
     testReportHandler = {
       on: sinon.stub(),
-      startReportHanlder: function() {},
-      appendTestReport: function() {},
-      finalizeReport: function() {},
+      startReportHandler: sinon.stub(),
+      createTestReport: sinon.stub(),
+      appendTestStdErr: sinon.stub(),
+      finalizeTestReport: sinon.stub(),
     };
     runnerEventDispatch = {
       on: sinon.stub(),
       emit: sinon.stub(),
     };
     writeReportToDisk = {
-      writeReport: function() {},
+      json: sinon.stub(),
     };
-    printOutput = {
-      addChildOutput: function() {},
-      addTestSummary: function() {},
+    reporters = {
+      basic: {
+        printTestResult: sinon.stub(),
+        printReportSummary: sinon.stub(),
+      },
     };
 
     mockery.registerMock('../test-runner/test-runner.js', testRunner);
-    mockery.registerMock('../test-runner/child-process-output-handler.js', childProcessOutputHandler);
     mockery.registerMock('../test-runner/test-report-handler.js', testReportHandler);
-    mockery.registerMock('../test-runner/write-report-to-disk.js', writeReportToDisk);
-    mockery.registerMock('../test-runner/print-output.js', printOutput);
+    mockery.registerMock('../report-to-disk', writeReportToDisk);
+    mockery.registerMock('../reporters', reporters);
   });
 
   afterEach(function() {
@@ -95,7 +89,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     });
 
     it('should call testRunner.on with testRunner.testStarted'
-      + 'and childProcessOutputHandler.addNewChildOutput', function() {
+      + 'and testReportHandler.createTestReport', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
@@ -103,20 +97,20 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       expect(testRunner.on.args[0]).to.deep.equal([
         'testRunner.testStarted',
-        childProcessOutputHandler.addNewChildOutput,
+        testReportHandler.createTestReport,
       ]);
     });
 
-    it('should call testRunner.on with testRunner.testStarted'
-      + 'and childProcessOutputHandler.addNewChildOutput', function() {
+    it('should call testRunner.on with testRunner.testFinished'
+      + 'and testReportHandler.finalizeTestReport', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testRunner.on.args[0]).to.deep.equal([
-        'testRunner.testStarted',
-        childProcessOutputHandler.addNewChildOutput,
+      expect(testRunner.on.args[1]).to.deep.equal([
+        'testRunner.testFinished',
+        testReportHandler.finalizeTestReport,
       ]);
     });
 
@@ -127,27 +121,14 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testRunner.on.args[1]).to.deep.equal([
+      expect(testRunner.on.args[2]).to.deep.equal([
         'testRunner.testDataReceived',
         testReportHandler.appendTestReport,
       ]);
     });
 
-    it('should call testRunner.on with testRunner.childStdoutReceived'
-      + 'and childProcessOutputHandler.appendStdout', function() {
-      registerRunnerEvents = require('../../../../../'
-        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
-
-      registerRunnerEvents(runnerEventDispatch);
-
-      expect(testRunner.on.args[2]).to.deep.equal([
-        'testRunner.childStdoutReceived',
-        childProcessOutputHandler.appendStdout,
-      ]);
-    });
-
     it('should call testRunner.on with testRunner.childStderrReceived'
-      + 'and childProcessOutputHandler.appendStderr', function() {
+      + 'and testReportHandler.appendTestStdErr', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
@@ -155,20 +136,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       expect(testRunner.on.args[3]).to.deep.equal([
         'testRunner.childStderrReceived',
-        childProcessOutputHandler.appendStderr,
-      ]);
-    });
-
-    it('should call testRunner.on with testRunner.done'
-      + 'and childProcessOutputHandler.finalizeChildOutput', function() {
-      registerRunnerEvents = require('../../../../../'
-        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
-
-      registerRunnerEvents(runnerEventDispatch);
-
-      expect(testRunner.on.args[4]).to.deep.equal([
-        'testRunner.done',
-        childProcessOutputHandler.finalizeChildOutput,
+        testReportHandler.appendTestStdErr,
       ]);
     });
 
@@ -179,58 +147,36 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testRunner.on.args[5]).to.deep.equal([
+      expect(testRunner.on.args[4]).to.deep.equal([
         'testRunner.done',
         testReportHandler.finalizeReport,
       ]);
     });
 
-    it('should call testRunner.on six times', function() {
+    it('should call testRunner.on 5 times', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testRunner.on.callCount).to.equal(6);
+      expect(testRunner.on.callCount).to.equal(5);
     });
 
-    it('should call childProcessOutputHandler.on with childProcessOutputHandler.childOutputFinalized'
-      + 'and printOutput.addChildOutput', function() {
-      registerRunnerEvents = require('../../../../../'
-        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
-
-      registerRunnerEvents(runnerEventDispatch);
-
-      expect(childProcessOutputHandler.on.args[0]).to.deep.equal([
-        'childProcessOutputHandler.childOutputFinalized',
-        printOutput.addChildOutput,
-      ]);
-    });
-
-    it('should call childProcessOutputHandler.on once', function() {
-      registerRunnerEvents = require('../../../../../'
-        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
-
-      registerRunnerEvents(runnerEventDispatch);
-
-      expect(childProcessOutputHandler.on.callCount).to.equal(1);
-    });
-
-    it('should call testReportHandler.on with testReportHandler.reportFinalized'
-      + 'and writeReportToDisk.writeReport', function() {
+    it('should call testReportHandler.on with testReportHandler.testReportFinalized'
+      + 'and reporters.basic.printTestResult', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
       registerRunnerEvents(runnerEventDispatch);
 
       expect(testReportHandler.on.args[0]).to.deep.equal([
-        'testReportHandler.reportFinalized',
-        writeReportToDisk.writeReport,
+        'testReportHandler.testReportFinalized',
+        reporters.basic.printTestResult,
       ]);
     });
 
     it('should call testReportHandler.on with testReportHandler.reportFinalized'
-      + 'and printOutput.addTestSummary', function() {
+      + 'and writeReportToDisk.json', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
@@ -238,7 +184,20 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       expect(testReportHandler.on.args[1]).to.deep.equal([
         'testReportHandler.reportFinalized',
-        printOutput.addTestSummary,
+        writeReportToDisk.json,
+      ]);
+    });
+
+    it('should call testReportHandler.on with testReportHandler.reportFinalized'
+      + 'and reporters.basic.printReportSummary', function() {
+      registerRunnerEvents = require('../../../../../'
+        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
+
+      registerRunnerEvents(runnerEventDispatch);
+
+      expect(testReportHandler.on.args[2]).to.deep.equal([
+        'testReportHandler.reportFinalized',
+        reporters.basic.printReportSummary,
       ]);
     });
 
@@ -248,7 +207,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testReportHandler.on.args[2][0]).to.equal('testReportHandler.reportFinalized');
+      expect(testReportHandler.on.args[3][0]).to.equal('testReportHandler.reportFinalized');
     });
 
     it('should call testReportHandler.on with with anonymous function as 2nd param', function() {
@@ -257,7 +216,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testReportHandler.on.args[2][1]).to.be.a('function');
+      expect(testReportHandler.on.args[3][1]).to.be.a('function');
     });
 
     describe('when the testReportHandler.on testReportHandler.reportFinalized callback is called', function() {
@@ -274,13 +233,13 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
       });
     });
 
-    it('should call testReportHanlder.on thrice', function() {
+    it('should call testReportHanlder.on four times', function() {
       registerRunnerEvents = require('../../../../../'
       + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testReportHandler.on.callCount).to.equal(3);
+      expect(testReportHandler.on.callCount).to.equal(4);
     });
   });
 });
