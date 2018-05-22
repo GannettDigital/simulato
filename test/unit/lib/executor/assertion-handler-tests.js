@@ -447,6 +447,9 @@ describe('lib/executor/assertion-handler.js', function() {
             assertionHandler._expectedState = {
                 getComponentsAsMap: sinon.stub(),
             };
+            assertionHandler._clonedDataStore = {
+                retrieveAll: sinon.stub().returns({data: 'myData'}),
+            };
         });
 
         afterEach(function() {
@@ -514,6 +517,7 @@ describe('lib/executor/assertion-handler.js', function() {
             expect(assertionHandler.emitAsync.args[2]).to.deep.equal([
                 'assertionHandler.runAssertions',
                 {name: 'model'},
+                {data: 'myData'},
                 'myPreconditions',
                 next,
             ]);
@@ -541,23 +545,23 @@ describe('lib/executor/assertion-handler.js', function() {
             });
         });
 
-            it('should call assertionHandler.emit once with the event ' +
-                '\'assertionHandler.preconditionsVerified\'', function() {
-                assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-                let generator = assertionHandler._getAndCheckPageState();
+        it('should call assertionHandler.emit once with the event ' +
+            '\'assertionHandler.preconditionsVerified\'', function() {
+            assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
+            let generator = assertionHandler._getAndCheckPageState();
 
-                generator.next();
-                generator.next(next);
-                generator.next({name: 'model'});
-                generator.next('myPreconditions');
-                generator.next();
+            generator.next();
+            generator.next(next);
+            generator.next({name: 'model'});
+            generator.next('myPreconditions');
+            generator.next();
 
-                expect(assertionHandler.emit.args).to.deep.equal([
-                    [
-                        'assertionHandler.preconditionsVerified',
-                    ],
-                ]);
-            });
+            expect(assertionHandler.emit.args).to.deep.equal([
+                [
+                    'assertionHandler.preconditionsVerified',
+                ],
+            ]);
+        });
     });
 
     describe('assertExpectedPageState', function() {

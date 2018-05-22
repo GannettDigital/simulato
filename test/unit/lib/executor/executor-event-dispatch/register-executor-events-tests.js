@@ -403,6 +403,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
             assertionHandler.on.onCall(1).callsArgWith(
                 1,
                 {displayed: true},
+                {data: 'myData'},
                 [['isTrue', 'myElem.displayed']],
                 callback
             );
@@ -413,6 +414,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
                 [
                     'executor.runAssertions',
                     {displayed: true},
+                    {data: 'myData'},
                     [['isTrue', 'myElem.displayed']],
                     callback,
                 ],

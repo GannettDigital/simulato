@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Change searchNode.path to an array to support same action in path
+
+## 0.4.0
+
 * Tom Dale
   * Changed the selector methods inside elements to use
     * getElementById
@@ -12,6 +17,10 @@
   * Created a new cli/option command to stagger start time of tests using the test runner
   * Updated tests to print out the results as they are run
   * Tests now always use the test runner even if 1 test
+
+* Scott Gunther
+  * Changed the precondition assertions to be run against the pageState or dataStore
+  * Fix bug where parameters are not passed in to preconditions during planning
 
 ## 0.3.5
 
