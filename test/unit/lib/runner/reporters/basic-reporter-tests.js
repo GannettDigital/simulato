@@ -6,7 +6,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/runner/reporters/basic-reporter.js', function() {
-  describe.only('printTestResult', function() {
+  describe('printTestResult', function() {
     let basicReporter;
     let report;
     let symbols;
