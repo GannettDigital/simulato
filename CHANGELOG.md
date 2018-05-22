@@ -10,6 +10,8 @@
     * getElementsByTagName
     * getElementsByClassName
   * Created a new cli/option command to stagger start time of tests using the test runner
+  * Updated tests to print out the results as they are run
+  * Tests now always use the test runner even if 1 test
 
 ## 0.3.5
 
