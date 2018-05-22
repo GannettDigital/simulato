@@ -51,7 +51,7 @@ Create a directory for your project. Within, include the directories 'tests' and
   "author": "",
   "license": "ISC",
   "dependencies": {
-  "simulato": "0.4.0"
+    "simulato": "*"
   }
 }
 ```
