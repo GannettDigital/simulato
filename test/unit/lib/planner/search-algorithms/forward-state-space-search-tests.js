@@ -125,7 +125,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
 
                     generator.next();
                     generator.next(next);
-                    generator.next({path: new Set()});
+                    generator.next({path: []});
                     generator.next();
                     generator.next();
 
@@ -144,7 +144,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
 
                     generator.next();
                     generator.next(next);
-                    generator.next({path: new Set()});
+                    generator.next({path: []});
 
                     expect(forwardStateSpaceSearch.emit.args[0]).to.deep.equal([
                         'forwardStateSpaceSearch.cloneSearchNode',
@@ -160,7 +160,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         ]),
                     };
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                     generator.next();
@@ -180,7 +180,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
                     let clonedNode = {
                         path: {
-                            add: sinon.stub(),
+                            push: sinon.stub(),
                         },
                     };
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
@@ -190,7 +190,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                     generator.next(clonedNode);
                     generator.next();
 
-                    expect(clonedNode.path.add.args).to.deep.equal([
+                    expect(clonedNode.path.push.args).to.deep.equal([
                         [
                             'myComponent.MY_ACTION',
                         ],
@@ -205,7 +205,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         ]),
                     };
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                     generator.next();
@@ -216,7 +216,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         'forwardStateSpaceSearch.applyActionToNode',
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -230,7 +230,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         ]),
                     };
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                     generator.next();
@@ -249,7 +249,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         },
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -263,7 +263,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                     };
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
                     planningProblem.fringe.set = sinon.stub();
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     uuidv4.returns('my-uuid-v4');
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
@@ -278,7 +278,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             'my-uuid-v4',
                             {
                                 actions: new Set(),
-                                path: new Set(['myComponent.MY_ACTION']),
+                                path: ['myComponent.MY_ACTION'],
                             },
                         ],
                     ]);
@@ -292,7 +292,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         ]),
                     };
                     planningProblem.fringe.set('df9df09898-8314dssa', node);
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     uuidv4.returns('my-uuid-v4');
                     let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
@@ -307,7 +307,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         {
                             fringe: new Map([['my-uuid-v4', {
                                 actions: new Set(),
-                                path: new Set(['myComponent.MY_ACTION']),
+                                path: ['myComponent.MY_ACTION'],
                             }]]),
                             discoveredActions: new Set(),
                             goalActions: new Set(),
@@ -316,7 +316,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                         },
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -333,7 +333,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             };
                             planningProblem.fringe.set('df9df09898-8314dssa', node);
                             planningProblem.exploreAllActions = true;
-                            let clonedNode = {path: new Set()};
+                            let clonedNode = {path: []};
                             let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                             generator.next();
@@ -361,7 +361,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             planningProblem.exploreAllActions = true;
                             planningProblem.discoveredActions.add('myComponent.MY_ACTION');
                             planningProblem.foundGoalActions.add('myComponent.MY_ACTION');
-                            let clonedNode = {path: new Set()};
+                            let clonedNode = {path: []};
                             let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                             generator.next();
@@ -390,7 +390,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                                 };
                                 planningProblem.fringe.set('df9df09898-8314dssa', node);
                                 planningProblem.discoveredActions.add('myComponent.SOME_ACTION');
-                                let clonedNode = {path: new Set()};
+                                let clonedNode = {path: []};
                                 let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                                 try {
@@ -423,7 +423,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                                 planningProblem.fringe.set('df9df09898-8314dssa', node);
                                 planningProblem.fringe.set('5481340813-glkj3813', node2);
                                 planningProblem.discoveredActions.add('myComponent.SOME_ACTION');
-                                let clonedNode = {path: new Set()};
+                                let clonedNode = {path: []};
                                 let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                                 generator.next();
@@ -452,7 +452,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                                 planningProblem.fringe.set('df9df09898-8314dssa', node);
                                 planningProblem.fringe.set('5481340813-glkj3813', node2);
                                 planningProblem.discoveredActions.add('myComponent.SOME_ACTION');
-                                let clonedNode = {path: new Set()};
+                                let clonedNode = {path: []};
                                 let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                                 generator.next();
@@ -481,7 +481,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
                             planningProblem.exploreAllActions = false;
                             planningProblem.foundGoalActions.add('some action');
                             planningProblem.discoveredActions.add('some action');
-                            let clonedNode = {path: new Set()};
+                            let clonedNode = {path: []};
                             let generator = forwardStateSpaceSearch._findGoalActions(planningProblem);
 
                             generator.next();
@@ -853,7 +853,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
         let forwardStateSpaceSearch;
         let node;
         let callback;
-        let sampleSet;
         let sampleMap;
         let stateObj;
         let action;
@@ -878,8 +877,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search.js'
             );
-            sampleSet = new Set();
-            sampleSet.add('test.ACTION');
 
             sampleMap = new Map();
             sampleMap.set('test', {
@@ -896,7 +893,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search.js', function
             };
 
             node = {
-                path: sampleSet,
+                path: ['test.ACTION'],
                 state: stateObj,
                 testCase: {
                     push: sinon.stub(),
