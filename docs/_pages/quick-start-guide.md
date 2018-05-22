@@ -51,7 +51,7 @@ Create a directory for your project. Within, include the directories 'tests' and
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "simulato": "0.4.0"
+  "simulato": "0.4.0"
   }
 }
 ```
@@ -62,23 +62,23 @@ You will also need a file named config.js with the following:
 'use strict';
 
 module.exports = {
-    testPath: 'tests',
-    components: 'components',
-    outputPath: 'tests',
-    technique: 'actionFocused',
+  testPath: 'tests',
+  components: 'components',
+  outputPath: 'tests',
+  technique: 'actionFocused',
 };
 ```
 
 
 Once created your directory should look like this:
 
-    config.js
-    package.json
-    - tests
-    - components
-        navigate-to-test-site.js
-        main-site-layout.js
-        view-story-modal.js
+  config.js
+  package.json
+  - tests
+  - components
+    navigate-to-test-site.js
+    main-site-layout.js
+    view-story-modal.js
 
 Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
 
@@ -107,20 +107,20 @@ Let us go through it piece by piece, and include the following in navigate-to-te
 'use strict';
 
 module.exports = {
-    type: 'NavigateToTestSite',
-    entryComponent: {
-        name: 'navigateToTestSite',
-        state: {}
-    },
-    elements(){
-        return [];
-    },
-    model(){
-        return {};
-    },
-    actions(){
-        //below
-    }
+  type: 'NavigateToTestSite',
+  entryComponent: {
+    name: 'navigateToTestSite',
+    state: {}
+  },
+  elements(){
+    return [];
+  },
+  model(){
+    return {};
+  },
+  actions(){
+    //below
+  }
 }
 ```
 
@@ -134,33 +134,33 @@ Finally let's explore the actions below, include the following in your actions o
 
 ```js
 return {
-    NAVIGATE_TO_TEST_SITE: {
-        perform(callback) {
-            driver.get(`http://localhost:3000`)
-            .then(callback, callback);
-        },
-        effects(expectedState) {
-            expectedState.clear();
-            expectedState.createAndAddComponent({
-                type: 'MainSiteLayout',
-                name: 'mainSiteLayout',
-                state: {
-                    displayed: true,
-                    newsArticleImage: {
-                    displayed: true,
-                    },
-                    newsArticleHeading: {
-                        displayed: true,
-                        text: 'Test Article One',
-                    },
-                    newsArticleText: {
-                        displayed: true,
-                        text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-                    },
-                },
-            });
-        },
+  NAVIGATE_TO_TEST_SITE: {
+    perform(callback) {
+      driver.get(`http://localhost:3000`)
+      .then(callback, callback);
     },
+    effects(expectedState) {
+      expectedState.clear();
+      expectedState.createAndAddComponent({
+        type: 'MainSiteLayout',
+        name: 'mainSiteLayout',
+        state: {
+          displayed: true,
+          newsArticleImage: {
+          displayed: true,
+          },
+          newsArticleHeading: {
+            displayed: true,
+            text: 'Test Article One',
+          },
+          newsArticleText: {
+            displayed: true,
+            text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+          },
+        },
+      });
+    },
+  },
 };
 ```
 
@@ -174,7 +174,7 @@ Once the expected state is cleared, we then proceed to create and add a new comp
 
 At this point we now have our test directed in this manner:
 
-    Entry Component(NavigateToTestSite) -> MainSiteLayout
+  Entry Component(NavigateToTestSite) -> MainSiteLayout
 
 Because our system only has one entry component, all tests will start at the same point regardless of how many components we add, but having multiple entry components is a possibility.
 
@@ -190,88 +190,88 @@ In this tutorial we will proceed to your MainSiteLayout and build the model base
 module.exports = {
 type: 'MainSiteLayout',
 elements() {
-    return [
-        {
-            name: 'headerRow',
-            selector: {
-            type: 'getElementById',
-            value: 'siteHeader',
-            },
-        },
-        {
-        name: 'newsArticle1',
-        selector: {
-            type: 'getElementById',
-            value: 'article1',
-            },
-        },
-        {
-            name: 'newsArticleImage1',
-            selector: {
-            type: 'getElementById',
-            value: 'article1Image',
-            },
-        },
-        {
-            name: 'newsArticleHeading1',
-            selector: {
-            type: 'getElementById',
-            value: 'article1Heading',
-            },
-        },
-        {
-            name: 'newsArticleText1',
-            selector: {
-            type: 'getElementById',
-            value: 'article1Text',
-            },
-        },
-    ];
+  return [
+    {
+      name: 'headerRow',
+      selector: {
+      type: 'getElementById',
+      value: 'siteHeader',
+      },
+    },
+    {
+    name: 'newsArticle1',
+    selector: {
+      type: 'getElementById',
+      value: 'article1',
+      },
+    },
+    {
+      name: 'newsArticleImage1',
+      selector: {
+      type: 'getElementById',
+      value: 'article1Image',
+      },
+    },
+    {
+      name: 'newsArticleHeading1',
+      selector: {
+      type: 'getElementById',
+      value: 'article1Heading',
+      },
+    },
+    {
+      name: 'newsArticleText1',
+      selector: {
+      type: 'getElementById',
+      value: 'article1Text',
+      },
+    },
+  ];
 },
 ```
 
 Above are a list of elements that will be used by the model, we already have our state from our navigation action. Below is the arrangement of those elements into a model, include this in your 'main-site-layout.js':  
 ```js
 model() {
-    return {
-        displayed: 'headerRow.isDisplayed',
-        newsArticleImage: {
-            displayed: 'newsArticleImage1.isDisplayed',
-        },
-        newsArticleHeading: {
-            displayed: 'newsArticleHeading1.isDisplayed',
-            text: 'newsArticleHeading1.innerText',
-        },
-        newsArticleText: {
-            displayed: 'newsArticleText1.isDisplayed',
-            text: 'newsArticleText1.innerText',
-        },
-    };
+  return {
+    displayed: 'headerRow.isDisplayed',
+    newsArticleImage: {
+      displayed: 'newsArticleImage1.isDisplayed',
+    },
+    newsArticleHeading: {
+      displayed: 'newsArticleHeading1.isDisplayed',
+      text: 'newsArticleHeading1.innerText',
+    },
+    newsArticleText: {
+      displayed: 'newsArticleText1.isDisplayed',
+      text: 'newsArticleText1.innerText',
+    },
+  };
 },
 ```
 Finally we have our action and its pieces, include all these in 'main-site-layout.js' as well:
 ```js
-    actions() {
-        return {
-            CLICK_TO_VIEW_STORY: {
+  actions() {
+    return {
+      CLICK_TO_VIEW_STORY: {
 ```
 Above is the action name, we use all caps with underscores, so just stick with this naming convention, you can name it whatever you want and if you have additional actions, you will name those as additional object properties on the javascript object you are returning as the actions.
 ```js
 preconditions() {
-    return [
-        ['isTrue', `pageState.${this.name}.displayed`],
-        ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
-        ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
-    ];
+  return [
+    ['isTrue', `pageState.${this.name}.displayed`],
+    ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
+    ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
+  ];
 },
 ```
 The preconditions are what must be true prior to executing the perform block of the actions, you do not need to validate everything on the pages as a part of the pre-conditions, but what you might want to validate are properties involved in the perform block or other page state features that might relate directly to your actions. For example, above we are checking that the page is displayed, as well as the news article text and heading, we could also do things like check the image and the text accompanying the article, but what is tested is at the discretion of the user.
 
 ```js
 perform(callback) {
-    driver.findElement(By.id('article1'))
-    .click()
-    .then(callback, callback);
+  driver.findElement(By.id('article1'))
+  .click()
+  .then(callback, callback);
 },
 ```
 Once the preconditions are met, you can execute your perform block, in this case we are simply making a selenium call, which finds the element by its ID, then clicks on the element. After which it resolves or rejects the promise. If any of this language sounds unfamiliar, you may want to revisit some of the above posted selenium documentation or take a look at
@@ -286,44 +286,44 @@ expectedState.stash();
 Once you have the expected state, you're going to want to stash the expected state as we are not navigating away from the page, but rather adding a component on top of it. Stashing is similar to clearing the state, but if you plan to return to the previous state, it is better to hold onto it so re-navigating to the previous state only requires a pop as opposed to rebuilding the state from a cleared state. 
 ```js
 expectedState.createAndAddComponent({
-    type: 'ViewStoryModal',
-    name: 'article1ViewModal',
+  type: 'ViewStoryModal',
+  name: 'article1ViewModal',
 ```
 Here we are creating and adding a component to the expectedState, as we did before with adding the mainSiteLayout, we will be adding the ViewStoryModal component, whcih as you might have guessed displays the storymodal. As this action is particular to article1, we will include it as the name of the view modal. The final thing we are sending is the state of the component we are adding, which is detailed below.
 ```js
 state: {
+  displayed: true,
+  modalTitle: {
     displayed: true,
-    modalTitle: {
-        displayed: true,
-        text: 'Test Article One',
-    },
-    modalBodyText: {
-        displayed: true,
-        text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-    },
-    closeButton: {
-        displayed: true,
-    },
+    text: 'Test Article One',
+  },
+  modalBodyText: {
+    displayed: true,
+    text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+  },
+  closeButton: {
+    displayed: true,
+  },
 },
 ```
 
 All of the pieces above in the state should look familiar as they were added the same way within the effects of the navigation component. They simply detail what to expect in the component being added. Below is something slightly different, the options are parameters of the component, this is useful when referencing parent values within a model that inherits certain properties from the parent, such as an ID appended to additional information. 
 ```js
-                        options: {
-                        newsArticleId: 'article1',
-                        },
-                    });
-                },
+            options: {
+            newsArticleId: 'article1',
             },
-        };
-    }
+          });
+        },
+      },
+    };
+  }
 }
 ```
 
 
 Our Structure is now:
 
-    Entry Component(NavigateToTestSite) -> MainSiteLayout -> ViewStoryModal
+  Entry Component(NavigateToTestSite) -> MainSiteLayout -> ViewStoryModal
 
 ## View Story Modal
 
@@ -332,26 +332,26 @@ The third component is up to you to create (labs aren't too helpful if they aren
 'use strict';
 
 module.exports = {
-    type: 'ViewStoryModal',
-    elements() {
-        return [];
-    },
-    model() {
-        return {};
-    },
-    actions() {
-        return {
-            CLICK_CLOSE_BUTTON: {
-                preconditions() {
-                    return [];
-                },
-                perform(callback) {
-                },
-                effects(expectedState) {
-                },
-            },
-        };
-    },
+  type: 'ViewStoryModal',
+  elements() {
+    return [];
+  },
+  model() {
+    return {};
+  },
+  actions() {
+    return {
+      CLICK_CLOSE_BUTTON: {
+        preconditions() {
+          return [];
+        },
+        perform(callback) {
+        },
+        effects(expectedState) {
+        },
+      },
+    };
+  },
 };
 ```
 Once you have completed filling out the ViewStoryModal, you should be able to npm install, npm run generate-tests and npm run run-tests. Your tests should build and run and you have successfully completed your first step into model based testing!
@@ -365,48 +365,48 @@ Below are the files for the components used, I do no recommend simply copying an
 'use strict';
 
 module.exports = {
-    type: 'NavigateToTestSite',
-    entryComponent: {
-        name: 'navigateToTestSite',
-        state: {}
-    },
-    elements(){
-        return [];
-    },
-    model(){
-        return {};
-    },
-    actions(){
-        return {
-            NAVIGATE_TO_TEST_SITE: {
-                perform(callback) {
-                    driver.get(`http://localhost:3000`)
-                    .then(callback, callback);
-                },
-                effects(expectedState) {
-                    expectedState.clear();
-                    expectedState.createAndAddComponent({
-                        type: 'MainSiteLayout',
-                        name: 'mainSiteLayout',
-                        state: {
-                            displayed: true,
-                            newsArticleImage: {
-                                displayed: true,
-                            },
-                            newsArticleHeading: {
-                                displayed: true,
-                                text: 'Test Article One',
-                            },
-                            newsArticleText: {
-                                displayed: true,
-                                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-                            },
-                        },
-                    });
-                },
+  type: 'NavigateToTestSite',
+  entryComponent: {
+    name: 'navigateToTestSite',
+    state: {}
+  },
+  elements(){
+    return [];
+  },
+  model(){
+    return {};
+  },
+  actions(){
+    return {
+      NAVIGATE_TO_TEST_SITE: {
+        perform(callback) {
+          driver.get(`http://localhost:3000`)
+          .then(callback, callback);
+        },
+        effects(expectedState) {
+          expectedState.clear();
+          expectedState.createAndAddComponent({
+            type: 'MainSiteLayout',
+            name: 'mainSiteLayout',
+            state: {
+              displayed: true,
+              newsArticleImage: {
+                displayed: true,
+              },
+              newsArticleHeading: {
+                displayed: true,
+                text: 'Test Article One',
+              },
+              newsArticleText: {
+                displayed: true,
+                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+              },
             },
-        };
-    }
+          });
+        },
+      },
+    };
+  }
 }
 ```
 # main-site-layout.js
@@ -414,104 +414,104 @@ module.exports = {
 'use strict';
 
 module.exports = {
-    type: 'MainSiteLayout',
-    elements() {
-        return [
-            {
-                name: 'headerRow',
-                selector: {
-                type: 'getElementById',
-                value: 'siteHeader',
-                },
+  type: 'MainSiteLayout',
+  elements() {
+    return [
+      {
+        name: 'headerRow',
+        selector: {
+        type: 'getElementById',
+        value: 'siteHeader',
+        },
+      },
+      {
+      name: 'newsArticle1',
+      selector: {
+      type: 'getElementById',
+      value: 'article1',
+        },
+      },
+      {
+        name: 'newsArticleImage1',
+        selector: {
+        type: 'getElementById',
+        value: 'article1Image',
+        },
+      },
+      {
+        name: 'newsArticleHeading1',
+        selector: {
+        type: 'getElementById',
+        value: 'article1Heading',
+        },
+      },
+      {
+        name: 'newsArticleText1',
+        selector: {
+        type: 'getElementById',
+        value: 'article1Text',
+        },
+      },
+    ];
+  },
+  model() {
+    return {
+      displayed: 'headerRow.isDisplayed',
+      newsArticleImage: {
+        displayed: 'newsArticleImage1.isDisplayed',
+      },
+      newsArticleHeading: {
+        displayed: 'newsArticleHeading1.isDisplayed',
+        text: 'newsArticleHeading1.innerText',
+      },
+      newsArticleText: {
+        displayed: 'newsArticleText1.isDisplayed',
+        text: 'newsArticleText1.innerText',
+      },
+    };
+  },
+  actions() {
+    return {
+      CLICK_TO_VIEW_STORY: {
+        preconditions() {
+          return [
+            ['isTrue', `pageState.${this.name}.displayed`],
+            ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
+            ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
+          ];
+        },
+        perform(callback) {
+          driver.findElement(By.id('article1'))
+          .click()
+          .then(callback, callback);
+        },
+        effects(expectedState) {
+          expectedState.stash();
+          expectedState.createAndAddComponent({
+            type: 'ViewStoryModal',
+            name: 'article1ViewModal',
+            state: {
+              displayed: true,
+              modalTitle: {
+                displayed: true,
+                text: 'Test Article One',
+              },
+              modalBodyText: {
+                displayed: true,
+                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+              },
+              closeButton: {
+                displayed: true,
+              },
             },
-            {
-            name: 'newsArticle1',
-            selector: {
-            type: 'getElementById',
-            value: 'article1',
-                },
+            options: {
+              newsArticleId: 'article1',
             },
-            {
-                name: 'newsArticleImage1',
-                selector: {
-                type: 'getElementById',
-                value: 'article1Image',
-                },
-            },
-            {
-                name: 'newsArticleHeading1',
-                selector: {
-                type: 'getElementById',
-                value: 'article1Heading',
-                },
-            },
-            {
-                name: 'newsArticleText1',
-                selector: {
-                type: 'getElementById',
-                value: 'article1Text',
-                },
-            },
-        ];
-    },
-    model() {
-        return {
-            displayed: 'headerRow.isDisplayed',
-            newsArticleImage: {
-                displayed: 'newsArticleImage1.isDisplayed',
-            },
-            newsArticleHeading: {
-                displayed: 'newsArticleHeading1.isDisplayed',
-                text: 'newsArticleHeading1.innerText',
-            },
-            newsArticleText: {
-                displayed: 'newsArticleText1.isDisplayed',
-                text: 'newsArticleText1.innerText',
-            },
-        };
-    },
-    actions() {
-        return {
-            CLICK_TO_VIEW_STORY: {
-                preconditions() {
-                    return [
-                        ['isTrue', `pageState.${this.name}.displayed`],
-                        ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
-                        ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
-                    ];
-                },
-                perform(callback) {
-                    driver.findElement(By.id('article1'))
-                    .click()
-                    .then(callback, callback);
-                },
-                effects(expectedState) {
-                    expectedState.stash();
-                    expectedState.createAndAddComponent({
-                        type: 'ViewStoryModal',
-                        name: 'article1ViewModal',
-                        state: {
-                            displayed: true,
-                            modalTitle: {
-                                displayed: true,
-                                text: 'Test Article One',
-                            },
-                            modalBodyText: {
-                                displayed: true,
-                                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-                            },
-                            closeButton: {
-                                displayed: true,
-                            },
-                        },
-                        options: {
-                            newsArticleId: 'article1',
-                        },
-                    });
-                },
-            };
-        }
+          });
+        },
+      };
     }
+  }
 };
 
 ```
@@ -520,73 +520,73 @@ module.exports = {
 'use strict';
 
 module.exports = {
-    type: 'ViewStoryModal',
-    elements() {
-        return [
-            {
-                name: 'modalContent',
-                selector: {
-                type: 'querySelector',
-                value: `#${this.options.newsArticleId}ViewModal > div > div`,
-                },
-            },
-            {
-                name: 'modalTitle',
-                selector: {
-                type: 'getElementById',
-                value: `${this.options.newsArticleId}ModalTitle`,
-                },
-            },
-            {
-                name: 'modalBodyText',
-                selector: {
-                type: 'getElementById',
-                value: `${this.options.newsArticleId}ModalBodyText`,
-                },
-            },
-            {
-                name: 'closeButton',
-                selector: {
-                type: 'getElementById',
-                value: `${this.options.newsArticleId}ModalCloseButton`,
-                },
-            },
-        ];
-    },
-    model() {
-        return {
-            displayed: 'modalContent.isDisplayed',
-            modalTitle: {
-                displayed: 'modalTitle.isDisplayed',
-                text: 'modalTitle.innerText',
-            },
-            modalBodyText: {
-                displayed: 'modalBodyText.isDisplayed',
-                text: 'modalBodyText.innerText',
-            },
-            closeButton: {
-                displayed: 'closeButton.isDisplayed',
-            },
-        };
-    },
-    actions() {
-        return {
-            CLICK_CLOSE_BUTTON: {
-                preconditions() {
-                    return [
-                        ['isTrue', `pageState.${this.name}.closeButton.displayed`],
-                    ];
-                },
-                perform(callback) {
-                    driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
-                    .click()
-                    .then(callback, callback);
-                },
-                effects(expectedState) {
-                    expectedState.pop();
-                },
-            },
-        };
-    },
+  type: 'ViewStoryModal',
+  elements() {
+    return [
+      {
+        name: 'modalContent',
+        selector: {
+        type: 'querySelector',
+        value: `#${this.options.newsArticleId}ViewModal > div > div`,
+        },
+      },
+      {
+        name: 'modalTitle',
+        selector: {
+        type: 'getElementById',
+        value: `${this.options.newsArticleId}ModalTitle`,
+        },
+      },
+      {
+        name: 'modalBodyText',
+        selector: {
+        type: 'getElementById',
+        value: `${this.options.newsArticleId}ModalBodyText`,
+        },
+      },
+      {
+        name: 'closeButton',
+        selector: {
+        type: 'getElementById',
+        value: `${this.options.newsArticleId}ModalCloseButton`,
+        },
+      },
+    ];
+  },
+  model() {
+    return {
+      displayed: 'modalContent.isDisplayed',
+      modalTitle: {
+        displayed: 'modalTitle.isDisplayed',
+        text: 'modalTitle.innerText',
+      },
+      modalBodyText: {
+        displayed: 'modalBodyText.isDisplayed',
+        text: 'modalBodyText.innerText',
+      },
+      closeButton: {
+        displayed: 'closeButton.isDisplayed',
+      },
+    };
+  },
+  actions() {
+    return {
+      CLICK_CLOSE_BUTTON: {
+        preconditions() {
+          return [
+            ['isTrue', `pageState.${this.name}.closeButton.displayed`],
+          ];
+        },
+        perform(callback) {
+          driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
+          .click()
+          .then(callback, callback);
+        },
+        effects(expectedState) {
+          expectedState.pop();
+        },
+      },
+    };
+  },
 };
 ```
