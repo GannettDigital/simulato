@@ -1,14 +1,14 @@
-Simulato is a model based testing tool to help provide full and variable coverage to different test paths in a given UI. While designed with a particular internal tool in mind, simulato is usable currently with any UI that follows regular javascript/HTML paradigms. In order to affiliate yourself with Simulato, there are a couple of concepts you may want to understand first:
+Simulato is a model based testing tool to help provide full and variable coverage to different test paths in a given UI. While designed with a particular internal tool in mind, simulato is usable currently with any UI that follows regular javascript/HTML paradigms. In order to familiarize yourself with simulato, there are a couple of concepts you may want to understand first:
 
-* Basic Javascript and JSON format
+* Basic Javascript 
+* JSON format
 * Understanding of the DOM structure and HTML Elements (We use chrome devtools to investigate the DOM)
 * A high level overview of system you will be modeling
 * [Selenium Webdriver](https://www.seleniumhq.org/docs/03_webdriver.jsp)
 * [Chai Assertions](http://www.chaijs.com/api/assert/)
-* Optional: If modifying the system under test, access to the code base of the system
 
 # Process of Simulato
-To make use of the tool, you will need to build out a suite of components to reflect your system under test. A Component is a singular piece of the system you are describing in your test suite. For example, we have a basic webpage that has news articles:
+To make use of the tool, you will need to build out a suite of components to reflect your system under test. A component is a singular piece of the system you are describing in your test suite. For example, we have a basic webpage that has news articles:
 
 ![](../assets/test-site-sample.png)
 
@@ -21,7 +21,7 @@ In this "base state" of a homepage, we could test:
 * Each article is clickable
 * And much more!
 
-We do not need to generate every possible action and component of a given system.
+We do not need to specify every possible action and component of a given system.
 We can simplify this system into a few basic components isolating the actions and arrangement of elements on the page within a component.
 
 # Pieces of a Simulato Component
@@ -31,7 +31,7 @@ All of the components are states of a given piece of the system. In this case, w
 
 # Setting up your workspace
 
-In order to get started, make a directory and include in it another directory named 'tests', another directory named 'components', and the following package.json:
+Create a directory for your project. Within, include the directories 'tests' and 'components'. Also include the following package.json:
 
 ```js
 {
@@ -81,7 +81,7 @@ Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and
 
 While components are individual pieces of a system, it helps to break down the full system into the components you will need before you start creating any one component.
 
-In the system described above, our actions might be to navigate to the website, click on an article, and close the article. In order to perform these actions, we will need a component to cover navigation, a component to represent the landing page, a component for structures we care about on the landing page (news articles), and a modal representation for the news article:
+In the system described above, our actions might be to navigate to the website, click on an article, and close the article. In order to perform these actions, we will need a component to cover navigation. We will also need a component to represent the landing page, as well as a component component for structures we care about on the landing page (news articles). Finall we will need a modal representation for the news article:
 
 ![](../assets/modal-example.png)
 
@@ -94,7 +94,7 @@ Let's get started with navigation.
 
 ## Navigation
 
-A part of running the tests is arriving at our desired location. As we are using selenium to control our browser we will need to first make use of the driver to get there. Fortunately a navigation component is very simple as it doesn't have to deal with the elements or the models of the component and only needs to interact with the actions piece.
+A part of running the tests is arriving at our desired location. As we are using selenium to control our browser, we will need to first make use of the driver to get there. Fortunately, a navigation component is very simple as it doesn't have to deal with the elements or the models of the component and only needs to interact with the actions piece.
 
 Let us go through it piece by piece, and include the following in navigate-to-test-site.js:
 ```js
@@ -118,9 +118,9 @@ module.exports = {
 }
 ```
 
-The first thing in our component is the type, the type is the component name, it is how the object of the component will be referenced. Below is the entry component, an entry component is essentially a starting point for the test path. This entry component in particular contains the instanceName of the component and its current state, which is empty, for now think of the state as the current values occupying the model.
+The first thing in our component is the type, the type is the component name, it is how the object of the component will be referenced. Below is the entry component, an entry component is essentially a starting point for the test path. This entry component in particular contains the name of the component and its current state, which is empty, for now think of the state as the current values occupying the model.
 
-As we have no elements on a navigation, we will simply return an empty array. Other components will contain elements which we will cover later.
+As we have no elements on a navigation, we simply return an empty array. Other components will contain elements which will be coveredß later.
 
 Likewise because there are no elements, our model does not have any state to display, so there are no values (this is why our state in the entry component is blank).
 
@@ -247,7 +247,7 @@ Finally we have our action and its pieces, include all these in 'main-site-layou
         return {
             CLICK_TO_VIEW_STORY: {
 ```
-Above is the action name, we use app caps with underscores, so just stick with this naming convention, you can name it whatever you want and if you have additional actions, you will name those as additional object properties on the javascript object you are returning as the actions.
+Above is the action name, we use all caps with underscores, so just stick with this naming convention, you can name it whatever you want and if you have additional actions, you will name those as additional object properties on the javascript object you are returning as the actions.
 ```js
 preconditions() {
     return [
@@ -257,7 +257,8 @@ preconditions() {
     ];
 },
 ```
-The preconditions are what must be true prior to executing the performance of the actions, you do not need to validate everything on the pages as a part of the pre-conditions, but what you might want to validate are properties involved in the performance of the actions or other page state features that might relate directly to your actions. For example, above we are checking that the page is displayed, as well as the news article text and heading, we could also do things like check the image and the text accompanying the article, but that as mentioned above is up to the tester to determine if it is part of what they need to be testing or just extra.
+The preconditions are what must be true prior to executing the perform block of the actions, you do not need to validate everything on the pages as a part of the pre-conditions, but what you might want to validate are properties involved in the perform block or other page state features that might relate directly to your actions. For example, above we are checking that the page is displayed, as well as the news article text and heading, we could also do things like check the image and the text accompanying the article, but what is tested is at the discretion of the user.
+
 ```js
 perform(callback) {
     driver.findElement(By.id('article1'))
@@ -265,7 +266,7 @@ perform(callback) {
     .then(callback, callback);
 },
 ```
-Once the preconditions are met, you can execute your perform block, in this case we are simply making a selenium call, which finds the element by its ID, then clicks on the element. Afterwhich it resolves or rejects the promise. If any of this language sounds unfamiliar, you may want to revisit some of the above posted selenium documentation or take a look at
+Once the preconditions are met, you can execute your perform block, in this case we are simply making a selenium call, which finds the element by its ID, then clicks on the element. After which it resolves or rejects the promise. If any of this language sounds unfamiliar, you may want to revisit some of the above posted selenium documentation or take a look at
 [promises documentation.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 ```js
 effects(expectedState) {
@@ -280,7 +281,7 @@ expectedState.createAndAddComponent({
     type: 'ViewStoryModal',
     name: 'article1ViewModal',
 ```
-Here we are creating and adding a component to the expected, as we did before with adding the mainSiteLayout, we will be adding the ViewStoryModal component, whcih as you might have guessed displays the storymodal. As this action is particular to article1, we will include it as the name of the view modal. the final thing we are sending is the state of the component we are adding, which is detailed below.
+Here we are creating and adding a component to the expectedState, as we did before with adding the mainSiteLayout, we will be adding the ViewStoryModal component, whcih as you might have guessed displays the storymodal. As this action is particular to article1, we will include it as the name of the view modal. The final thing we are sending is the state of the component we are adding, which is detailed below.
 ```js
 state: {
     displayed: true,
@@ -298,7 +299,7 @@ state: {
 },
 ```
 
-All of the pieces above in the state should look familiar as they were added the same way within the effects of the navigation component. They simply detail what to expect in the component being added. Below is something slightly different, the options are just variable parameters to except within the component being added, this is useful when referencing parent values within a model that inherits certain properties from the parent, such as an ID appended to additional information. 
+All of the pieces above in the state should look familiar as they were added the same way within the effects of the navigation component. They simply detail what to expect in the component being added. Below is something slightly different, the options are parameters of the component, this is useful when referencing parent values within a model that inherits certain properties from the parent, such as an ID appended to additional information. 
 ```js
                     options: {
                     newsArticleId: 'article1',
