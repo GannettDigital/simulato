@@ -194,36 +194,36 @@ elements() {
     {
       name: 'headerRow',
       selector: {
-      type: 'getElementById',
-      value: 'siteHeader',
+        type: 'getElementById',
+        value: 'siteHeader',
       },
     },
     {
-    name: 'newsArticle1',
-    selector: {
-      type: 'getElementById',
-      value: 'article1',
+      name: 'newsArticle1',
+      selector: {
+        type: 'getElementById',
+        value: 'article1',
       },
     },
     {
       name: 'newsArticleImage1',
       selector: {
-      type: 'getElementById',
-      value: 'article1Image',
+        type: 'getElementById',
+        value: 'article1Image',
       },
     },
     {
       name: 'newsArticleHeading1',
       selector: {
-      type: 'getElementById',
-      value: 'article1Heading',
+        type: 'getElementById',
+        value: 'article1Heading',
       },
     },
     {
       name: 'newsArticleText1',
       selector: {
-      type: 'getElementById',
-      value: 'article1Text',
+        type: 'getElementById',
+        value: 'article1Text',
       },
     },
   ];
@@ -425,31 +425,31 @@ module.exports = {
         },
       },
       {
-      name: 'newsArticle1',
-      selector: {
-      type: 'getElementById',
-      value: 'article1',
+        name: 'newsArticle1',
+        selector: {
+          type: 'getElementById',
+          value: 'article1',
         },
       },
       {
         name: 'newsArticleImage1',
         selector: {
-        type: 'getElementById',
-        value: 'article1Image',
+          type: 'getElementById',
+          value: 'article1Image',
         },
       },
       {
         name: 'newsArticleHeading1',
         selector: {
-        type: 'getElementById',
-        value: 'article1Heading',
+          type: 'getElementById',
+          value: 'article1Heading',
         },
       },
       {
         name: 'newsArticleText1',
         selector: {
-        type: 'getElementById',
-        value: 'article1Text',
+          type: 'getElementById',
+          value: 'article1Text',
         },
       },
     ];
