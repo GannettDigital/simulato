@@ -8,6 +8,10 @@
 * Brian FItzpatrick
   * Added simulato walkthrough
 
+* Tom Dale
+  * Updated tests to print out the results as they are run
+  * Tests now always use the test runner even if 1 test
+
 ## 0.4.0
 
 * Tom Dale
@@ -18,8 +22,6 @@
     * getElementsByTagName
     * getElementsByClassName
   * Created a new cli/option command to stagger start time of tests using the test runner
-  * Updated tests to print out the results as they are run
-  * Tests now always use the test runner even if 1 test
 
 * Scott Gunther
   * Changed the precondition assertions to be run against the pageState or dataStore
