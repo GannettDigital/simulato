@@ -200,6 +200,9 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
         * Must be a function and must return a two dimmensional array
         * Each array in the returned array is a chai assertion method and its parameters
             * Example: `['myChaiAssertionMethod', 'firstParameter', 'secondParameter']`
+            * Note: The first parameter is used to lodash.get on either the `pageState` or the `dataStore`
+                * Example: `['isTrue', 'pageState.myComponent.displayed']`
+                * Exapmle: `['property', 'dataStore', 'myProperty']`
         * During execution these chai assertions are performed against the actual modeled state of the page and cause test failure if they are not true within an amount of time (currently 10 seconds)
         * During planning these chai assertions are performed against the expected state to determine if an action is applicable in a given state
         * Parameters
@@ -239,8 +242,8 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
         ],
         preconditions(dataStore) {
             return [
-                ['isTrue', `${this.name}.displayed`],
-                ['equal', `${this.name}.value`, 'some value'],
+                ['isTrue', `pageState.${this.name}.displayed`],
+                ['equal', `pageState.${this.name}.value`, 'some value'],
             ];
         },
         perform(myParameter, callback) {

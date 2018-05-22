@@ -729,9 +729,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 },
             };
             node = {
-                dataStore: {storedData: 'someData'},
                 state: {
                     getState: sinon.stub().returns({property: 'myProperty'}),
+                },
+                dataStore: {
+                    retrieveAll: sinon.stub().returns({data: 'myData'}),
                 },
             };
 
@@ -751,6 +753,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         describe('if action.preconditions is undefined', function() {
             it('should call the passed in callback once with null, and true as parameters', function() {
                 delete component.actions.MY_ACTION.preconditions;
+
                 let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
                 generator.next();
                 generator.next(next);
@@ -765,24 +768,167 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         describe('if action.preconditions is defined', function() {
-            it('should call action.preconditions once with the node.dataStore', function() {
-                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                generator.next();
-                generator.next(next);
+            describe('if actions.parameters is an array', function() {
+                describe('if there are two parmeters in the action.parametersArray', function() {
+                    it('should call the generate method for the first parameter with the dataStore', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub(),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub(),
+                            },
+                        ];
 
-                expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
-                    {storedData: 'someData'},
-                ]]);
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.parameters[0].generate.args).to.deep.equal([[
+                            node.dataStore,
+                        ]]);
+                    });
+
+                    it('should call the generate method for the first parameter with the this context ' +
+                        'of the component', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub(),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub(),
+                            },
+                        ];
+
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.parameters[0].generate.thisValues).to.deep.equal([
+                            component,
+                        ]);
+                    });
+
+                    it('should call the generate method for the second parameter with the dataStore', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub(),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub(),
+                            },
+                        ];
+
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.parameters[1].generate.args).to.deep.equal([[
+                            node.dataStore,
+                        ]]);
+                    });
+
+                    it('should call the generate method for the second parameter with the this context ' +
+                        'of the component', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub(),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub(),
+                            },
+                        ];
+
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.parameters[1].generate.thisValues).to.deep.equal([
+                            component,
+                        ]);
+                    });
+
+                    it('should call action.preconditions once with the generated parameters and ' +
+                        'node.dataStore', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub().returns('myFirstParameter'),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub().returns('mySecondParameter'),
+                            },
+                        ];
+
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
+                            'myFirstParameter',
+                            'mySecondParameter',
+                            node.dataStore,
+                        ]]);
+                    });
+
+                    it('should call action.preconditions with the this context of the component', function() {
+                        component.actions.MY_ACTION.parameters = [
+                            {
+                                name: 'parameterOne',
+                                generate: sinon.stub().returns('myFirstParameter'),
+                            },
+                            {
+                                name: 'parameterTwo',
+                                generate: sinon.stub().returns('mySecondParameter'),
+                            },
+                        ];
+
+                        let generator =
+                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                        generator.next();
+                        generator.next(next);
+
+                        expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
+                            component,
+                        ]);
+                    });
+                });
             });
 
-            it('should call action.preconditions with the this context of the component', function() {
-                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                generator.next();
-                generator.next(next);
+            describe('if actions.Parameters is not an array', function() {
+                it('should call action.preconditions once with the node.dataStore', function() {
+                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                    generator.next();
+                    generator.next(next);
 
-                expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
-                    component,
-                ]);
+                    expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
+                        node.dataStore,
+                    ]]);
+                });
+
+                it('should call action.preconditions with the this context of the component', function() {
+                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
+                    generator.next();
+                    generator.next(next);
+
+                    expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
+                        component,
+                    ]);
+                });
             });
 
             describe('if actions.preconditions throws', function() {
@@ -823,6 +969,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         [
                             'forwardStateSpaceSearch.runAssertions',
                             {property: 'myProperty'},
+                            {data: 'myData'},
                             [
                                 ['isTrue', 'component.displayed'],
                                 ['isFalse', 'component.checkbox.checked'],
