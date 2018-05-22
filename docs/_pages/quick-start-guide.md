@@ -135,31 +135,31 @@ Finally let's explore the actions below, include the following in your actions o
 ```js
 return {
     NAVIGATE_TO_TEST_SITE: {
-    perform(callback) {
-        driver.get(`http://localhost:3000`)
-        .then(callback, callback);
-    },
-    effects(expectedState) {
-        expectedState.clear();
-        expectedState.createAndAddComponent({
-        type: 'MainSiteLayout',
-        name: 'mainSiteLayout',
-        state: {
-            displayed: true,
-            newsArticleImage: {
-            displayed: true,
-            },
-            newsArticleHeading: {
-                displayed: true,
-                text: 'Test Article One',
-            },
-            newsArticleText: {
-                displayed: true,
-                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-            },
+        perform(callback) {
+            driver.get(`http://localhost:3000`)
+            .then(callback, callback);
         },
-        });
-    },
+        effects(expectedState) {
+            expectedState.clear();
+            expectedState.createAndAddComponent({
+                type: 'MainSiteLayout',
+                name: 'mainSiteLayout',
+                state: {
+                    displayed: true,
+                    newsArticleImage: {
+                    displayed: true,
+                    },
+                    newsArticleHeading: {
+                        displayed: true,
+                        text: 'Test Article One',
+                    },
+                    newsArticleText: {
+                        displayed: true,
+                        text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+                    },
+                },
+            });
+        },
     },
 };
 ```
@@ -178,6 +178,8 @@ At this point we now have our test directed in this manner:
 
 Because our system only has one entry component, all tests will start at the same point regardless of how many components we add, but having multiple entry components is a possibility.
 
+## Main Site Layout
+
 So now that we have added MainSiteLayout to our path, that is the next component we should work on. Above you might have noticed that the MainSiteLayout has a component name, and instance name, and a state passed in. As we have no yet defined those fields, you have some freedom in how you might proceed with your modeling. You could choose to finish out your navigation component and then list what you plan to include in your MainSiteLayout component, or finish up your MainSiteLayout and go back to complete the action in your navigation component. As you fill out your model suite more and more it will matter less as the components involved in your actions will already be completed.
 
 In this tutorial we will proceed to your MainSiteLayout and build the model based on the state passed in navigation. Include the following in 'main-site-layout.js' in your components directory:
@@ -189,41 +191,41 @@ module.exports = {
 type: 'MainSiteLayout',
 elements() {
     return [
-    {
-        name: 'headerRow',
+        {
+            name: 'headerRow',
+            selector: {
+            type: 'getElementById',
+            value: 'siteHeader',
+            },
+        },
+        {
+        name: 'newsArticle1',
         selector: {
-        type: 'getElementById',
-        value: 'siteHeader',
+            type: 'getElementById',
+            value: 'article1',
+            },
         },
-    },
-    {
-    name: 'newsArticle1',
-    selector: {
-        type: 'getElementById',
-        value: 'article1',
+        {
+            name: 'newsArticleImage1',
+            selector: {
+            type: 'getElementById',
+            value: 'article1Image',
+            },
         },
-    },
-    {
-        name: 'newsArticleImage1',
-        selector: {
-        type: 'getElementById',
-        value: 'article1Image',
+        {
+            name: 'newsArticleHeading1',
+            selector: {
+            type: 'getElementById',
+            value: 'article1Heading',
+            },
         },
-    },
-    {
-        name: 'newsArticleHeading1',
-        selector: {
-        type: 'getElementById',
-        value: 'article1Heading',
+        {
+            name: 'newsArticleText1',
+            selector: {
+            type: 'getElementById',
+            value: 'article1Text',
+            },
         },
-    },
-    {
-        name: 'newsArticleText1',
-        selector: {
-        type: 'getElementById',
-        value: 'article1Text',
-        },
-    },
     ];
 },
 ```
@@ -234,7 +236,7 @@ model() {
     return {
         displayed: 'headerRow.isDisplayed',
         newsArticleImage: {
-        displayed: 'newsArticleImage1.isDisplayed',
+            displayed: 'newsArticleImage1.isDisplayed',
         },
         newsArticleHeading: {
             displayed: 'newsArticleHeading1.isDisplayed',
@@ -307,10 +309,10 @@ state: {
 
 All of the pieces above in the state should look familiar as they were added the same way within the effects of the navigation component. They simply detail what to expect in the component being added. Below is something slightly different, the options are parameters of the component, this is useful when referencing parent values within a model that inherits certain properties from the parent, such as an ID appended to additional information. 
 ```js
-                    options: {
-                    newsArticleId: 'article1',
-                    },
-                });
+                        options: {
+                        newsArticleId: 'article1',
+                        },
+                    });
                 },
             },
         };
@@ -322,6 +324,8 @@ All of the pieces above in the state should look familiar as they were added the
 Our Structure is now:
 
     Entry Component(NavigateToTestSite) -> MainSiteLayout -> ViewStoryModal
+
+## View Story Modal
 
 The third component is up to you to create (labs aren't too helpful if they aren't interactive), but don't worry! Above in the state that is passed to the ViewStoryModal component, we already have the model outlined for you! This template will also be provided to help you fill out your ViewStoryModal component, include the following in 'view-story-modal.js':
 ```js
@@ -352,6 +356,8 @@ module.exports = {
 ```
 Once you have completed filling out the ViewStoryModal, you should be able to npm install, npm run generate-tests and npm run run-tests. Your tests should build and run and you have successfully completed your first step into model based testing!
 
+## Complete Files
+
 Below are the files for the components used, I do no recommend simply copying and pasting them as you will not fully understand what they are doing, but if you are stuck, feel free to use them for reference:
 
 # navigate-to-test-site.js
@@ -373,31 +379,31 @@ module.exports = {
     actions(){
         return {
             NAVIGATE_TO_TEST_SITE: {
-            perform(callback) {
-                driver.get(`http://localhost:3000`)
-                .then(callback, callback);
-            },
-            effects(expectedState) {
-                expectedState.clear();
-                expectedState.createAndAddComponent({
-                type: 'MainSiteLayout',
-                name: 'mainSiteLayout',
-                state: {
-                    displayed: true,
-                    newsArticleImage: {
-                        displayed: true,
-                    },
-                    newsArticleHeading: {
-                        displayed: true,
-                        text: 'Test Article One',
-                    },
-                    newsArticleText: {
-                        displayed: true,
-                        text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-                    },
+                perform(callback) {
+                    driver.get(`http://localhost:3000`)
+                    .then(callback, callback);
                 },
-                });
-            },
+                effects(expectedState) {
+                    expectedState.clear();
+                    expectedState.createAndAddComponent({
+                        type: 'MainSiteLayout',
+                        name: 'mainSiteLayout',
+                        state: {
+                            displayed: true,
+                            newsArticleImage: {
+                                displayed: true,
+                            },
+                            newsArticleHeading: {
+                                displayed: true,
+                                text: 'Test Article One',
+                            },
+                            newsArticleText: {
+                                displayed: true,
+                                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+                            },
+                        },
+                    });
+                },
             },
         };
     }
@@ -405,12 +411,12 @@ module.exports = {
 ```
 # main-site-layout.js
 ```js
-    'use strict';
+'use strict';
 
-    module.exports = {
-        type: 'MainSiteLayout',
-        elements() {
-            return [
+module.exports = {
+    type: 'MainSiteLayout',
+    elements() {
+        return [
             {
                 name: 'headerRow',
                 selector: {
@@ -446,67 +452,68 @@ module.exports = {
                 value: 'article1Text',
                 },
             },
-            ];
-        },
-        model() {
-            return {
-                displayed: 'headerRow.isDisplayed',
-                newsArticleImage: {
+        ];
+    },
+    model() {
+        return {
+            displayed: 'headerRow.isDisplayed',
+            newsArticleImage: {
                 displayed: 'newsArticleImage1.isDisplayed',
+            },
+            newsArticleHeading: {
+                displayed: 'newsArticleHeading1.isDisplayed',
+                text: 'newsArticleHeading1.innerText',
+            },
+            newsArticleText: {
+                displayed: 'newsArticleText1.isDisplayed',
+                text: 'newsArticleText1.innerText',
+            },
+        };
+    },
+    actions() {
+        return {
+            CLICK_TO_VIEW_STORY: {
+                preconditions() {
+                    return [
+                        ['isTrue', `pageState.${this.name}.displayed`],
+                        ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
+                        ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
+                    ];
                 },
-                newsArticleHeading: {
-                    displayed: 'newsArticleHeading1.isDisplayed',
-                    text: 'newsArticleHeading1.innerText',
+                perform(callback) {
+                    driver.findElement(By.id('article1'))
+                    .click()
+                    .then(callback, callback);
                 },
-                newsArticleText: {
-                    displayed: 'newsArticleText1.isDisplayed',
-                    text: 'newsArticleText1.innerText',
-                },
-            };
-        },
-        actions() {
-            return {
-                CLICK_TO_VIEW_STORY: {
-                    preconditions() {
-                        return [
-                            ['isTrue', `pageState.${this.name}.displayed`],
-                            ['isTrue', `pageState.${this.name}.newsArticleHeading.displayed`],
-                            ['isTrue', `pageState.${this.name}.newsArticleText.displayed`]
-                        ];
-                    },
-                    perform(callback) {
-                        driver.findElement(By.id('article1'))
-                        .click()
-                        .then(callback, callback);
-                    },
-                    effects(expectedState) {
-                        expectedState.stash();
-                        expectedState.createAndAddComponent({
-                            type: 'ViewStoryModal',
-                            name: 'article1ViewModal',
-                            state: {
+                effects(expectedState) {
+                    expectedState.stash();
+                    expectedState.createAndAddComponent({
+                        type: 'ViewStoryModal',
+                        name: 'article1ViewModal',
+                        state: {
+                            displayed: true,
+                            modalTitle: {
                                 displayed: true,
-                                modalTitle: {
-                                    displayed: true,
-                                    text: 'Test Article One',
-                                },
-                                modalBodyText: {
-                                    displayed: true,
-                                    text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
-                                },
-                                closeButton: {
-                                    displayed: true,
-                                },
+                                text: 'Test Article One',
                             },
-                            options: {
-                                newsArticleId: 'article1',
-                                },
-                            });
+                            modalBodyText: {
+                                displayed: true,
+                                text: 'This is the body text of a first test article that is long enough to pass by the preview and still show more in the pop up modal.',
+                            },
+                            closeButton: {
+                                displayed: true,
                             },
                         },
-                    };
-                }
-            }
+                        options: {
+                            newsArticleId: 'article1',
+                        },
+                    });
+                },
+            };
+        }
+    }
+};
+
 ```
 # view-story-modal.js
 ```js
