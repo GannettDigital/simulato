@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Change searchNode.path to an array to support same action in path
+
 ## 0.4.0
 
 * Tom Dale
