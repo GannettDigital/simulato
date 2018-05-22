@@ -677,22 +677,29 @@ describe('lib/cli/run.js', function() {
             });
             describe('calls the callback of run.emit for testCasesReadyToValidate on the 3rd argument', function() {
                 describe('if there are validated test cases', function() {
-                    describe('if the testFilePaths length is 1', function() {
+                    describe('if the process.env.USING_PARENT_TESTRUNNER is true', function() {
                         it('should call run.emit with args '+
-                            '(\'run.configuredRunOrchestration\', configureInfo) ', function() {
+                            '(\'run.configuredSkipOrchestration\', configureInfo) ', function() {
                             let files = 'files';
-                            let validTestCases = 'validTestCases';
+                            let validTestCases = ['validTestCases'];
                             let pathLoc = '../../../../config.js';
                             let options = {};
                             configFile.reportPath = false;
                             mockery.registerMock(pathLoc, configFile);
                             run.emit.onCall(0).callsArgWith(2, files);
                             run.emit.onCall(1).callsArgWith(2, validTestCases);
+                            process.env.USING_PARENT_TEST_RUNNER = true;
+                            process.env.CONFIG_FILE = pathLoc;
 
                             run.configure(options);
 
-                            expect(run.emit.args[2]).to.deep.equal(['run.configuredRunOrchestration', {
-                            'command': 'run', 'parallelism': '', 'testFilePaths': 'validTestCases'}]);
+                            expect(run.emit.args[2]).to.deep.equal([
+                                'run.configuredSkipOrchestration',
+                                {
+                                    command: 'execute',
+                                    testFile: 'validTestCases',
+                                },
+                            ]);
                         });
                         describe('if the process is using parent test runner', function() {
                             it('should call run.emit with args ' +
@@ -715,7 +722,7 @@ describe('lib/cli/run.js', function() {
                             });
                         });
                     });
-                    describe('else the testFilePath length is not 1', function() {
+                    describe('if the process.env.USING_PARENT_TESTRUNNER is NOT true', function() {
                         it('should call run.emit with (\'run.configuredRunOrchestration\', configureInfo), ' +
                         'but also have valid test cases', function() {
                             let files = 'files';
@@ -730,8 +737,14 @@ describe('lib/cli/run.js', function() {
 
                             run.configure(options);
 
-                            expect(run.emit.args[2]).to.deep.equal(['run.configuredRunOrchestration', {
-                                'command': 'execute', 'testFile': 'Case'}]);
+                            expect(run.emit.args[2]).to.deep.equal([
+                                'run.configuredRunOrchestration',
+                                {
+                                    command: 'run',
+                                    parallelism: '',
+                                    testFilePaths: ['Case'],
+                                },
+                            ]);
                         });
                     });
                 });

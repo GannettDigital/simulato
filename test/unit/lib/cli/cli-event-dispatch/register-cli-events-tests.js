@@ -39,8 +39,6 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
 
     callback = sinon.stub();
 
-    process.env.USING_PARENT_TEST_RUNNER = 'true';
-
     mockery.registerMock('../commands/generate.js', generate);
     mockery.registerMock('../commands/run.js', run);
     mockery.registerMock('../orchestration/before.js', before);
@@ -51,7 +49,6 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
   });
 
   afterEach(function() {
-    delete process.env.USING_PARENT_TEST_RUNNER;
     mockery.resetCache();
     mockery.deregisterAll();
     mockery.disable();
@@ -251,25 +248,12 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
   });
 
   describe('when the cliEventDispatch.on callback is called', function() {
-    describe('if process.env.USING_PARENT_TEST_RUNNER is set to true', function() {
-      it('should NOT call after', function() {
-        cliEventDispatch.on.onCall(0).callsArg(1);
+    it('should call after once with no params', function() {
+      cliEventDispatch.on.onCall(0).callsArg(1);
 
-        registerCliEvents(cliEventDispatch);
+      registerCliEvents(cliEventDispatch);
 
-        expect(after.callCount).to.equal(0);
-      });
-    });
-
-    describe('if process.env.USING_PARENT_TEST_RUNNER is NOT set to true', function() {
-      it('should call after once with no params', function() {
-        process.env.USING_PARENT_TEST_RUNNER = 'false';
-        cliEventDispatch.on.onCall(0).callsArg(1);
-
-        registerCliEvents(cliEventDispatch);
-
-        expect(after.args).to.deep.equal([[]]);
-      });
+      expect(after.args).to.deep.equal([[]]);
     });
   });
 });
