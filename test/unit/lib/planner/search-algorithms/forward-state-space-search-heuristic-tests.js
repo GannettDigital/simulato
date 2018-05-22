@@ -46,7 +46,8 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     getComponents: sinon.stub().returns(components),
                 },
                 path: {
-                    has: sinon.stub(),
+                    push: sinon.stub(),
+                    indexOf: sinon.stub(),
                 },
                 actions: {
                     add: sinon.stub(),
@@ -150,7 +151,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             });
 
             describe('if applicable is true', function() {
-                it('should call node.path.has with the actionIdentifier', function() {
+                it('should call node.path.indexOf with the actionIdentifier', function() {
                     let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
 
                     generator.next();
@@ -158,7 +159,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next(true);
                     generator.next(true);
 
-                    expect(node.path.has.args).to.deep.equal([
+                    expect(node.path.indexOf.args).to.deep.equal([
                         ['myInstance.MY_ACTION'],
                         ['myInstance2.MY_ACTION_2'],
                     ]);
@@ -180,7 +181,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             describe('if applicable is true and node.path.has returns false', function() {
                 it('should call node.actions.add with the actionIdentifier', function() {
-                    node.path.has.returns(false);
+                    node.path.indexOf.returns(-1);
                     let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
 
                     generator.next();
@@ -197,7 +198,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             describe('if applicable is true and node.path.has returns true', function() {
                 it('should not call node.actions.add', function() {
-                    node.path.has.returns(true);
+                    node.path.indexOf.returns(2);
                     let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
 
                     generator.next();
@@ -348,7 +349,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next();
                     generator.next(next);
                     generator.next(node);
-                    generator.next({path: new Set()});
+                    generator.next({path: []});
 
                     expect(forwardStateSpaceSearch.emit.args[1]).to.deep.equal([
                         'forwardStateSpaceSearch.cloneSearchNode',
@@ -363,7 +364,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'myComponent.MY_ACTION',
                         ]),
                     };
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions();
 
                     generator.next();
@@ -375,7 +376,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     expect(clonedNode.actions).to.deep.equal(new Set());
                 });
 
-                it('should call clonedNode.path.add once with the action', function() {
+                it('should call clonedNode.path.push once with the action', function() {
                     let node = {
                         actions: new Set([
                             'myComponent.MY_ACTION',
@@ -383,7 +384,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     };
                     let clonedNode = {
                         path: {
-                            add: sinon.stub(),
+                            push: sinon.stub(),
                         },
                     };
                     let generator = forwardStateSpaceSearch._findGoalActions();
@@ -394,7 +395,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next(clonedNode);
                     generator.next();
 
-                    expect(clonedNode.path.add.args).to.deep.equal([
+                    expect(clonedNode.path.push.args).to.deep.equal([
                         [
                             'myComponent.MY_ACTION',
                         ],
@@ -408,7 +409,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'myComponent.MY_ACTION',
                         ]),
                     };
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions();
 
                     generator.next();
@@ -420,7 +421,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         'forwardStateSpaceSearch.applyActionToNode',
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -433,7 +434,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'myComponent.MY_ACTION',
                         ]),
                     };
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions();
 
                     generator.next();
@@ -446,7 +447,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         'forwardStateSpaceSearch.addApplicableActions',
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -459,7 +460,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'myComponent.MY_ACTION',
                         ]),
                     };
-                    let clonedNode = {path: new Set()};
+                    let clonedNode = {path: []};
                     let generator = forwardStateSpaceSearch._findGoalActions();
 
                     generator.next();
@@ -473,7 +474,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         'forwardStateSpaceSearch.testForGoal',
                         {
                             actions: new Set(),
-                            path: new Set(['myComponent.MY_ACTION']),
+                            path: ['myComponent.MY_ACTION'],
                         },
                         next,
                     ]);
@@ -488,7 +489,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                 'myComponent.MY_ACTION',
                             ]),
                         };
-                        let clonedNode = {path: new Set()};
+                        let clonedNode = {path: []};
                         forwardStateSpaceSearch.callback = sinon.stub();
                         forwardStateSpaceSearch.discoveredActions = new Set();
                         forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
@@ -524,7 +525,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                 'myComponent.MY_ACTION',
                             ]),
                         };
-                        let clonedNode = {path: new Set()};
+                        let clonedNode = {path: []};
                         forwardStateSpaceSearch.callback = sinon.stub();
                         forwardStateSpaceSearch.discoveredActions = new Set();
                         forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
@@ -554,7 +555,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                 'myComponent.MY_ACTION',
                             ]),
                         };
-                        let clonedNode = {path: new Set()};
+                        let clonedNode = {path: []};
                         forwardStateSpaceSearch.callback = sinon.stub();
                         forwardStateSpaceSearch.discoveredActions = new Set();
                         forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
@@ -594,7 +595,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                 'myComponent.MY_ACTION',
                             ]),
                         };
-                        let clonedNode = {path: new Set()};
+                        let clonedNode = {path: []};
                         forwardStateSpaceSearch.discoveredActions = new Set();
                         forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
                         forwardStateSpaceSearch.foundGoalActions = new Set();
@@ -612,7 +613,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'forwardStateSpaceSearch.findUnfoundGoalActionCount',
                             {
                                 actions: new Set(),
-                                path: new Set(['myComponent.MY_ACTION']),
+                                path: ['myComponent.MY_ACTION'],
                             },
                             next,
                         ]);
@@ -625,7 +626,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                 'myComponent.MY_ACTION',
                             ]),
                         };
-                        let clonedNode = {path: new Set()};
+                        let clonedNode = {path: []};
                         forwardStateSpaceSearch.discoveredActions = new Set();
                         forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
                         forwardStateSpaceSearch.foundGoalActions = new Set();
@@ -644,7 +645,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             'forwardStateSpaceSearch.setNodeInMap',
                             {
                                 actions: new Set(),
-                                path: new Set(['myComponent.MY_ACTION']),
+                                path: ['myComponent.MY_ACTION'],
                             },
                             1,
                             next,
@@ -658,7 +659,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                                     'myComponent.MY_ACTION',
                                 ]),
                             };
-                            let clonedNode = {path: new Set()};
+                            let clonedNode = {path: []};
                             forwardStateSpaceSearch.discoveredActions = new Set();
                             forwardStateSpaceSearch.discoveredActions.add('myComponent.SOME_ACTION');
                             forwardStateSpaceSearch.foundGoalActions = new Set();
@@ -1045,7 +1046,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         let forwardStateSpaceSearch;
         let node;
         let callback;
-        let sampleSet;
         let sampleMap;
         let stateObj;
         let action;
@@ -1069,8 +1069,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             );
-            sampleSet = new Set();
-            sampleSet.add('test.ACTION');
 
             sampleMap = new Map();
             sampleMap.set('test', {
@@ -1091,7 +1089,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             };
 
             node = {
-                path: sampleSet,
+                path: ['test.ACTION'],
                 state: stateObj,
                 testCase: {
                     push: sinon.stub(),
