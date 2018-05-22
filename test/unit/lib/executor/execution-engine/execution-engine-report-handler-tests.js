@@ -38,26 +38,15 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             expect(Object.getPrototypeOf(eeReportHandler)).to.deep.equal(EventEmitterInstance);
         });
 
-        it('should call eeReportHandler.on with the event \'eeReportHandler.uncaughtErrorReceived\' and the ' +
-            'function eeReportHandler.appendReportError', function() {
+        it('should call eeReportHandler.on with the event \'eeReportHandler.errorOccured\' and the ' +
+            'function eeReportHandler.endAction', function() {
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            expect(eeReportHandler.on.args[0]).to.deep.equal([
-                'eeReportHandler.uncaughtErrorReceived',
-                eeReportHandler.appendReportError,
-            ]);
-        });
-
-        it('should call eeReportHandler.on with the event \'eeReportHandler.uncaughtErrorHandled\' and the ' +
-            'function eeReportHandler.finalizeReport', function() {
-            eeReportHandler =
-                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-
-            expect(eeReportHandler.on.args[1]).to.deep.equal([
-                'eeReportHandler.uncaughtErrorHandled',
-                eeReportHandler.finalizeReport,
-            ]);
+            expect(eeReportHandler.on.args).to.deep.equal([[
+                'eeReportHandler.errorOccured',
+                eeReportHandler.endAction,
+            ]]);
         });
     });
 
@@ -101,14 +90,20 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             expect(eeReportHandler._report.testName).to.equal('My Test');
         });
 
-        it('should set eeReportHandler._startTime to the result of the call to process.hrtime', function() {
+        it('should call process.hrtime once passing in no params', function() {
             eeReportHandler.startReport();
 
-            expect(eeReportHandler._startTime).to.deep.equal([123, 456]);
+            expect(process.hrtime.args).to.deep.equal([[]]);
+        });
+
+        it('should set eeReportHandler._report.time to the result of the call to process.hrtime', function() {
+            eeReportHandler.startReport();
+
+            expect(eeReportHandler._report.time).to.deep.equal([123, 456]);
         });
     });
 
-    describe('recordNewAction', function() {
+    describe('startAction', function() {
         let EventEmitter;
         let EventEmitterInstance;
         let eeReportHandler;
@@ -125,49 +120,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             };
             EventEmitter.returns(EventEmitterInstance);
 
-            mockery.registerMock('events', {EventEmitter});
-
-            eeReportHandler =
-                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-
-        it('should increment eeReportHandler._report.actionCount', function() {
-            eeReportHandler.recordNewAction();
-
-            expect(eeReportHandler._report.actionCount).to.equal(1);
-        });
-
-        it('should set eeReportHandler._currentAction to the passed in actionConfig', function() {
-            let actionConfig = {name: 'My Instance', action: 'My Action'};
-
-            eeReportHandler.recordNewAction('', actionConfig);
-
-            expect(eeReportHandler._currentAction).to.deep.equal({name: 'My Instance', action: 'My Action'});
-        });
-    });
-
-    describe('recordNewStep', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let eeReportHandler;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable(
-                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
 
@@ -176,97 +129,372 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
         });
 
         afterEach(function() {
+            process.hrtime.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        it('should set eeReportHandler._currentStep to the passed in step', function() {
-            eeReportHandler.recordNewStep('My Step');
+        it('should push a default report to eeReportHandler._report.actions', function() {
+            eeReportHandler.startAction({name: 'myName', actionName: 'MY_ACTION'});
 
-            expect(eeReportHandler._currentStep).to.equal('My Step');
-        });
-    });
-
-    describe('appendReportError', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let eeReportHandler;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable(
-                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
-
-            eeReportHandler =
-                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-
-        it('should call eeReportHandler.emit once with the event \'eeReportHandler.errorOccured\'', function() {
-            eeReportHandler._currentAction = {};
-
-            eeReportHandler.appendReportError({});
-
-            expect(eeReportHandler.emit.args).to.deep.equal([
-                [
-                    'eeReportHandler.errorOccured',
-                ],
+            expect(eeReportHandler._report.actions).to.deep.equal([
+                {
+                    component: 'myName',
+                    action: 'MY_ACTION',
+                    status: 'fail',
+                    time: [123, 456],
+                    steps: {
+                      preconditions: null,
+                      perform: null,
+                      effects: null,
+                    },
+                },
             ]);
         });
 
-        it('should set eeReportHandler._report.error to the passed in error', function() {
-            eeReportHandler._currentAction = {};
-            let error = new Error('An error occurred');
+        it('should set eeReportHandler._currentActionIndex to eeReportHandler._report.actions.length - 1', function() {
+            eeReportHandler._report.actions = [{}, {}];
+            eeReportHandler.startAction({name: 'myName', actionName: 'MY_ACTION'});
 
-            eeReportHandler.appendReportError(error);
+            expect(eeReportHandler._currentActionIndex).to.equal(2);
+        });
+    });
 
-            expect(eeReportHandler._report.error).to.deep.equal(error);
+    describe('endAction', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let eeReportHandler;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable(
+                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            sinon.stub(process, 'hrtime').returns([123, 456]);
+
+            mockery.registerMock('events', {EventEmitter});
+
+            eeReportHandler =
+                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            eeReportHandler._currentActionIndex = 0;
+            eeReportHandler._report.actions = [
+                {
+                    component: 'myName',
+                    action: 'MY_ACTION',
+                    status: 'fail',
+                    time: [123, 456],
+                    steps: {
+                      preconditions: null,
+                      perform: null,
+                      effects: null,
+                    },
+                },
+            ];
         });
 
-        it('should set eeReportHandler._report.error.nameOfComponent to ' +
-            'eeReportHandler._currentAction.name', function() {
-            eeReportHandler._currentAction = {name: 'myInstance'};
-            let error = new Error('An error occurred');
-
-            eeReportHandler.appendReportError(error);
-
-            expect(eeReportHandler._report.error.nameOfComponent).to.equal('myInstance');
+        afterEach(function() {
+            process.hrtime.restore();
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
         });
 
-        it('should set eeReportHandler._report.error.actionName to ' +
-            'eeReportHandler._currentAction.actionName', function() {
-            eeReportHandler._currentAction = {actionName: 'MY_ACTION'};
-            let error = new Error('An error occurred');
+        it('should call process.hrtime once passing in the action being ended \'time\' property', function() {
+            eeReportHandler.endAction();
 
-            eeReportHandler.appendReportError(error);
-
-            expect(eeReportHandler._report.error.actionName).to.equal('MY_ACTION');
+            expect(process.hrtime.args).to.deep.equal([[[123, 456]]]);
         });
 
-        it('should set eeReportHandler._report.error.failedStep to ' +
-            'eeReportHandler._currentAction.failedStep', function() {
-            eeReportHandler._currentAction = {};
-            eeReportHandler._currentStep = 'perform';
-            let error = new Error('An error occurred');
+        it('should set the action being ended \'time\' property to the result of '
+            + ' the call of process.hrtime', function() {
+            eeReportHandler.endAction();
 
-            eeReportHandler.appendReportError(error);
+            expect(eeReportHandler._report.actions[0].time).to.deep.equal([123, 456]);
+        });
 
-            expect(eeReportHandler._report.error.failedStep).to.equal('perform');
+        describe('if there is NO error specified for the current action', function() {
+            it('should set the action being ended \'status\' property to \'pass\'', function() {
+                eeReportHandler.endAction();
+
+                expect(eeReportHandler._report.actions[0].status).to.equal('pass');
+            });
+        });
+
+        describe('if there is an error specified for the current action', function() {
+            it('should keep the action being ended \'status\' property as \'fail\'', function() {
+                eeReportHandler._report.errorLocation.actionIndex = 0;
+
+                eeReportHandler.endAction();
+
+                expect(eeReportHandler._report.actions[0].status).to.equal('fail');
+            });
+        });
+    });
+
+    describe('startStep', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let eeReportHandler;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable(
+                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            sinon.stub(process, 'hrtime').returns([123, 456]);
+
+            mockery.registerMock('events', {EventEmitter});
+
+            eeReportHandler =
+                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            eeReportHandler._currentActionIndex = 0;
+            eeReportHandler._report.actions = [
+                {
+                    component: 'myName',
+                    action: 'MY_ACTION',
+                    status: 'fail',
+                    time: [123, 456],
+                    steps: {
+                        preconditions: null,
+                        perform: null,
+                        effects: null,
+                    },
+                },
+            ];
+        });
+
+        afterEach(function() {
+            process.hrtime.restore();
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call process.hrtime once passing in no params', function() {
+            eeReportHandler.startStep('preconditions');
+
+            expect(process.hrtime.args).to.deep.equal([[]]);
+        });
+
+        it('should push a default step report to ' +
+            'eeReportHandler._report.actions[currentActionIndex].steps[stepName]', function() {
+            eeReportHandler.startStep('effects');
+
+            expect(eeReportHandler._report.actions[0].steps['effects']).to.deep.equal({
+                status: 'fail',
+                time: [123, 456],
+                error: null,
+            });
+        });
+    });
+
+    describe('endStep', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let eeReportHandler;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable(
+                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            sinon.stub(process, 'hrtime').returns([123, 456]);
+
+            mockery.registerMock('events', {EventEmitter});
+
+            eeReportHandler =
+                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            eeReportHandler._currentActionIndex = 0;
+            eeReportHandler._report.actions = [
+                {
+                    component: 'myName',
+                    action: 'MY_ACTION',
+                    status: 'fail',
+                    time: [123, 456],
+                    steps: {
+                        preconditions: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                        perform: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                        effects: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                    },
+                },
+            ];
+        });
+
+        afterEach(function() {
+            process.hrtime.restore();
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call process.hrtime once passing in the current steps \'time\' property', function() {
+            eeReportHandler.endStep(null, 'preconditions');
+
+            expect(process.hrtime.args).to.deep.equal([[[123, 456]]]);
+        });
+
+        it('should set the current steps \'time\' property to the returned value of process.hrtime', function() {
+            eeReportHandler.endStep(null, 'preconditions');
+
+            expect(eeReportHandler._report.actions[0].steps['preconditions'].time).to.deep.equal([123, 456]);
+        });
+
+        describe('if an error was passed in', function() {
+            it('should set the step.error to the error passed in', function() {
+                let error = new Error('Error that was thrown');
+                error.code = 'error code';
+
+                eeReportHandler.endStep(error, 'preconditions');
+
+                expect(eeReportHandler._report.actions[0].steps['preconditions']).to.deep.equal({
+                    error: {
+                        name: 'Error',
+                        code: 'error code',
+                        stack: error.stack,
+                        message: 'Error that was thrown',
+                    },
+                    status: 'fail',
+                    time: [123, 456],
+                });
+            });
+
+            it('should set the eeReportHandler._report.errorLocation', function() {
+                let error = new Error('Error that was thrown');
+                error.code = 'error code';
+
+                eeReportHandler.endStep(error, 'preconditions');
+
+                expect(eeReportHandler._report.errorLocation).to.deep.equal({
+                    actionIndex: 0,
+                    step: 'preconditions',
+                });
+            });
+
+            it('should call eeReportHandler.emit with the event \'eeReportHandler.errorOccured\'', function() {
+                let error = new Error('Error that was thrown');
+                error.code = 'error code';
+
+                eeReportHandler.endStep(error, 'preconditions');
+
+                expect(eeReportHandler.emit.args).to.deep.equal([[
+                    'eeReportHandler.errorOccured',
+                ]]);
+            });
+        });
+
+        describe('if NO error was passed in', function() {
+            it('should set the current steps status to \'pass\'', function() {
+                eeReportHandler.endStep(null, 'preconditions');
+
+                expect(eeReportHandler._report.actions[0].steps['preconditions']).to.deep.equal({
+                    error: null,
+                    status: 'pass',
+                    time: [123, 456],
+                });
+            });
+        });
+    });
+
+    describe('appendStateCompare', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let eeReportHandler;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable(
+                '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            sinon.stub(process, 'hrtime').returns([123, 456]);
+
+            mockery.registerMock('events', {EventEmitter});
+
+            eeReportHandler =
+                require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
+
+            eeReportHandler._currentActionIndex = 0;
+            eeReportHandler._report.actions = [
+                {
+                    component: 'myName',
+                    action: 'MY_ACTION',
+                    status: 'fail',
+                    time: [123, 456],
+                    steps: {
+                        preconditions: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                        perform: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                        effects: {
+                            status: 'fail',
+                            time: [123, 456],
+                            error: null,
+                        },
+                    },
+                },
+            ];
+        });
+
+        afterEach(function() {
+            process.hrtime.restore();
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should set the current actions effects step the stateCompare to the passed in string', function() {
+            eeReportHandler.appendStateCompare('state compare string');
+
+            expect(eeReportHandler._report.actions[0].steps['effects'].stateCompare).to.equal('state compare string');
         });
     });
 
@@ -287,6 +515,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             };
             EventEmitter.returns(EventEmitterInstance);
             sinon.stub(process, 'hrtime').returns([123, 456]);
+            process.send = sinon.stub();
 
             mockery.registerMock('events', {EventEmitter});
 
@@ -302,7 +531,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
         });
 
         it('should call process.hrtime once with eeReportHandler._startTime', function() {
-            eeReportHandler._startTime = [111, 222];
+            eeReportHandler._report.time = [111, 222];
 
             eeReportHandler.finalizeReport();
 
@@ -317,21 +546,39 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             expect(eeReportHandler._report.time).deep.equal([123, 456]);
         });
 
-        it('should call eeReportHandler.emit once with the event \'eeReportHandler.reportFinalized\' ' +
-            'and eeReportHandler._report as parameters', function() {
+        describe('when eeReportHandler.errorLocation is not set', function() {
+            it('should set the report status to \'pass\'', function() {
+                eeReportHandler.finalizeReport();
+
+                expect(eeReportHandler._report.status).equal('pass');
+            });
+        });
+
+        describe('when eeReportHandler.errorLocation is set', function() {
+            it('should keep the report status as \'fail\'', function() {
+                eeReportHandler._report.errorLocation.actionIndex = 0;
+
+                eeReportHandler.finalizeReport();
+
+                expect(eeReportHandler._report.status).equal('fail');
+            });
+        });
+
+        it('should call process.send with the eeReportHandler._report', function() {
             eeReportHandler.finalizeReport();
 
-            expect(eeReportHandler.emit.args).to.deep.equal([
-                [
-                    'eeReportHandler.reportFinalized',
-                    {
-                        testName: null,
-                        actionCount: 0,
-                        time: [123, 456],
-                        error: null,
+            expect(process.send.args).to.deep.equal([[
+                {
+                    actions: [],
+                    errorLocation: {
+                        actionIndex: null,
+                        step: null,
                     },
-                ],
-            ]);
+                    status: 'pass',
+                    testName: null,
+                    time: [123, 456],
+                },
+            ]]);
         });
     });
 });

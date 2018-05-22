@@ -5,10 +5,14 @@
 * Scott Gunther
   * Change searchNode.path to an array to support same action in path
 
-## 0.4.0
-
 * Brian FItzpatrick
   * Added simulato walkthrough
+
+* Tom Dale
+  * Updated tests to print out the results as they are run
+  * Tests now always use the test runner even if 1 test
+
+## 0.4.0
 
 * Tom Dale
   * Changed the selector methods inside elements to use
