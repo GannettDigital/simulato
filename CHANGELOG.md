@@ -11,6 +11,7 @@
 * Tom Dale
   * Updated tests to print out the results as they are run
   * Tests now always use the test runner even if 1 test
+  * Option added to automatically rerun failed tests in both config and cli
 
 ## 0.4.0
 
