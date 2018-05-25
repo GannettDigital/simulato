@@ -4,6 +4,7 @@
 
 * Scott Gunther
   * Change searchNode.path to an array to support same action in path
+  * Factor out checking of preconditions
 
 * Brian FItzpatrick
   * Added simulato walkthrough
