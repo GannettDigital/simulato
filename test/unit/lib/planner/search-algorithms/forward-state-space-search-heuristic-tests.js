@@ -5,13 +5,10 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js', function() {
-    describe('_addApplicableActions', function() {
-        let next;
+    describe('_addActions', function() {
+        let callback;
         let EventEmitter;
         let EventEmitterInstance;
-        let node;
-        let callback;
-        let components;
         let forwardStateSpaceSearch;
 
         beforeEach(function() {
@@ -26,33 +23,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            next = sinon.stub();
-            components = [
-                {
-                    name: 'myInstance',
-                    actions: {
-                        MY_ACTION: 'myAction',
-                    },
-                },
-                {
-                    name: 'myInstance2',
-                    actions: {
-                        MY_ACTION_2: 'myAction2',
-                    },
-                },
-            ];
-            node = {
-                state: {
-                    getComponents: sinon.stub().returns(components),
-                },
-                path: {
-                    push: sinon.stub(),
-                    indexOf: sinon.stub(),
-                },
-                actions: {
-                    add: sinon.stub(),
-                },
-            };
             callback = sinon.stub();
 
             mockery.registerMock('events', {EventEmitter});
@@ -60,14 +30,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             );
-
-            forwardStateSpaceSearch.goalActions = {
-                add: sinon.stub(),
-            };
-            forwardStateSpaceSearch.discoveredActions = {
-                has: sinon.stub(),
-                add: sinon.stub(),
-            };
         });
 
         afterEach(function() {
@@ -76,170 +38,47 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             mockery.disable();
         });
 
-        it('should call node.state.getComponents once with no parameters', function() {
-            let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-            generator.next();
-            generator.next(next);
-
-            expect(node.state.getComponents.args).to.deep.equal([[]]);
-        });
-
-        it('should call the passed in callback once with no parameters', function() {
-            let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-            generator.next();
-            generator.next(next);
-            generator.next();
-
-            expect(callback.args).to.deep.equal([]);
-        });
-
-        describe('for each action in all components', function() {
-            it('should call forwardStateSpaceSearch.checkPreconditions with the event \'forwardStateSpaceSearch' +
-                '.checkPreconditions\', node, component, actionName, and next', function() {
-                let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                generator.next();
-                generator.next(next);
-                generator.next();
-
-                expect(forwardStateSpaceSearch.emit.args).to.deep.equal([
-                    [
-                        'forwardStateSpaceSearch.checkPreconditions',
-                        node,
-                        components[0],
-                        'MY_ACTION',
-                        next,
-                    ],
-                    [
-                        'forwardStateSpaceSearch.checkPreconditions',
-                        node,
-                        components[1],
-                        'MY_ACTION_2',
-                        next,
-                    ],
-                ]);
-            });
-
-            it('should call discoveredActions.has with the actionIdentifier', function() {
-                let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                generator.next();
-                generator.next(next);
-                generator.next(true);
-                generator.next(true);
-
-                expect(forwardStateSpaceSearch.discoveredActions.has.args).to.deep.equal([
-                    ['myInstance.MY_ACTION'],
-                    ['myInstance2.MY_ACTION_2'],
-                ]);
-            });
-
-            it('should call discoveredActions.add with the actionIdentifier', function() {
-                let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                generator.next();
-                generator.next(next);
-                generator.next(true);
-                generator.next(true);
-
-                expect(forwardStateSpaceSearch.discoveredActions.add.args).to.deep.equal([
-                    ['myInstance.MY_ACTION'],
-                    ['myInstance2.MY_ACTION_2'],
-                ]);
-            });
-
-            describe('if applicable is true', function() {
-                it('should call node.path.indexOf with the actionIdentifier', function() {
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                    generator.next();
-                    generator.next(next);
-                    generator.next(true);
-                    generator.next(true);
-
-                    expect(node.path.indexOf.args).to.deep.equal([
-                        ['myInstance.MY_ACTION'],
-                        ['myInstance2.MY_ACTION_2'],
-                    ]);
-                });
-            });
-
-            describe('if applicable is false', function() {
-                it('should not call node.actions.add', function() {
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                    generator.next();
-                    generator.next(next);
-                    generator.next(false);
-                    generator.next(false);
-
-                    expect(node.actions.add.args).to.deep.equal([]);
-                });
-            });
-
-            describe('if applicable is true and node.path.has returns false', function() {
-                it('should call node.actions.add with the actionIdentifier', function() {
-                    node.path.indexOf.returns(-1);
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                    generator.next();
-                    generator.next(next);
-                    generator.next(true);
-                    generator.next(true);
-
-                    expect(node.actions.add.args).to.deep.equal([
-                        ['myInstance.MY_ACTION'],
-                        ['myInstance2.MY_ACTION_2'],
-                    ]);
-                });
-            });
-
-            describe('if applicable is true and node.path.has returns true', function() {
-                it('should not call node.actions.add', function() {
-                    node.path.indexOf.returns(2);
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
-
-                    generator.next();
-                    generator.next(next);
-                    generator.next(true);
-                    generator.next(true);
-
-                    expect(node.actions.add.args).to.deep.equal([]);
-                });
-            });
-
+        describe('for each action in the passed in actions', function() {
             describe('if discoveredActions.has returns false', function() {
-                it('should call goalActions.add with the actionIdentifier', function() {
-                    forwardStateSpaceSearch.discoveredActions.has.returns(false);
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
+                it('should add it to goalActions', function() {
+                    let actions = new Set(['myComponent.MY_ACTION']);
 
-                    generator.next();
-                    generator.next(next);
-                    generator.next(true);
-                    generator.next(true);
+                    forwardStateSpaceSearch._addActions(actions, callback);
 
-                    expect(forwardStateSpaceSearch.goalActions.add.args).to.deep.equal([
-                        ['myInstance.MY_ACTION'],
-                        ['myInstance2.MY_ACTION_2'],
-                    ]);
+                    expect(forwardStateSpaceSearch.goalActions).to.deep.equal(
+                        new Set(['myComponent.MY_ACTION'])
+                    );
                 });
             });
 
             describe('if discoveredActions.has returns true', function() {
-                it('should call not goalActions.add', function() {
-                    forwardStateSpaceSearch.discoveredActions.has.returns(true);
-                    let generator = forwardStateSpaceSearch._addApplicableActions(node, callback);
+                it('should not add it to goalActions', function() {
+                    let actions = new Set(['myComponent.MY_ACTION']);
+                    forwardStateSpaceSearch.discoveredActions.add('myComponent.MY_ACTION');
 
-                    generator.next();
-                    generator.next(next);
-                    generator.next(true);
-                    generator.next(true);
+                    forwardStateSpaceSearch._addActions(actions, callback);
 
-                    expect(forwardStateSpaceSearch.goalActions.add.args).to.deep.equal([]);
+                    expect(forwardStateSpaceSearch.goalActions).to.deep.equal(new Set());
                 });
             });
+
+            it('should add the passed in action to discoveredActions', function() {
+                let actions = new Set(['myComponent.MY_ACTION', 'myComponent.MY_ACTION_2']);
+
+                forwardStateSpaceSearch._addActions(actions, callback);
+
+                expect(forwardStateSpaceSearch.goalActions).to.deep.equal(
+                    new Set(['myComponent.MY_ACTION', 'myComponent.MY_ACTION_2'])
+                );
+            });
+        });
+
+        it('should call the callback once with no arguments', function() {
+            let actions = new Set(['myComponent.MY_ACTION']);
+
+            forwardStateSpaceSearch._addActions(actions, callback);
+
+            expect(callback.args).to.deep.equal([[]]);
         });
     });
 
@@ -428,7 +267,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 });
 
                 it('should call forwardStateSpaceSearch.emit with the event \'forwardStateSpaceSearch.' +
-                    'addApplicableActions\', clonedNode, and the next callback', function() {
+                    'getPossibleActions\', clonedNode, and the next callback', function() {
                     let node = {
                         actions: new Set([
                             'myComponent.MY_ACTION',
@@ -444,7 +283,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next();
 
                     expect(forwardStateSpaceSearch.emit.args[3]).to.deep.equal([
-                        'forwardStateSpaceSearch.addApplicableActions',
+                        'forwardStateSpaceSearch.getPossibleActions',
                         {
                             actions: new Set(),
                             path: ['myComponent.MY_ACTION'],
@@ -468,9 +307,10 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next(node);
                     generator.next(clonedNode);
                     generator.next();
+                    generator.next({applicableActions: new Set(), allActions: new Set()});
                     generator.next();
 
-                    expect(forwardStateSpaceSearch.emit.args[4]).to.deep.equal([
+                    expect(forwardStateSpaceSearch.emit.args[5]).to.deep.equal([
                         'forwardStateSpaceSearch.testForGoal',
                         {
                             actions: new Set(),
@@ -504,6 +344,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         generator.next(node);
                         generator.next(clonedNode);
                         generator.next();
+                        generator.next({applicableActions: new Set(), allActions: new Set()});
                         generator.next();
                         generator.next();
 
@@ -540,6 +381,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         generator.next(node);
                         generator.next(clonedNode);
                         generator.next();
+                        generator.next({applicableActions: new Set(), allActions: new Set()});
                         generator.next();
                         generator.next();
 
@@ -572,6 +414,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         generator.next(node);
                         generator.next(clonedNode);
                         generator.next();
+                        generator.next({applicableActions: new Set(), allActions: new Set()});
                         generator.next();
                         generator.next();
 
@@ -606,10 +449,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         generator.next(node);
                         generator.next(clonedNode);
                         generator.next();
+                        generator.next({applicableActions: new Set(), allActions: new Set()});
                         generator.next();
                         generator.next();
 
-                        expect(forwardStateSpaceSearch.emit.args[5]).to.deep.equal([
+                        expect(forwardStateSpaceSearch.emit.args[6]).to.deep.equal([
                             'forwardStateSpaceSearch.findUnfoundGoalActionCount',
                             {
                                 actions: new Set(),
@@ -637,11 +481,12 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                         generator.next(node);
                         generator.next(clonedNode);
                         generator.next();
+                        generator.next({applicableActions: new Set(), allActions: new Set()});
                         generator.next();
                         generator.next();
                         generator.next(1);
 
-                        expect(forwardStateSpaceSearch.emit.args[6]).to.deep.equal([
+                        expect(forwardStateSpaceSearch.emit.args[7]).to.deep.equal([
                             'forwardStateSpaceSearch.setNodeInMap',
                             {
                                 actions: new Set(),
@@ -653,7 +498,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     });
 
                     describe('if there was only 1 action', function() {
-                        it('should call have called forwardStateSpaceSearch.emit 7 times', function() {
+                        it('should call have called forwardStateSpaceSearch.emit 8 times', function() {
                             let node = {
                                 actions: new Set([
                                     'myComponent.MY_ACTION',
@@ -670,11 +515,12 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                             generator.next(node);
                             generator.next(clonedNode);
                             generator.next();
+                            generator.next({applicableActions: new Set(), allActions: new Set()});
                             generator.next();
                             generator.next();
                             generator.next();
 
-                            expect(forwardStateSpaceSearch.emit.callCount).to.equal(7);
+                            expect(forwardStateSpaceSearch.emit.callCount).to.equal(8);
                         });
                     });
                 });
@@ -694,348 +540,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 expect(forwardStateSpaceSearch.emit.args[1]).to.deep.equal([
                     'forwardStateSpaceSearch.findGoalActions',
                 ]);
-            });
-        });
-    });
-
-    describe('_checkPreconditions', function() {
-        let next;
-        let callback;
-        let EventEmitter;
-        let EventEmitterInstance;
-        let forwardStateSpaceSearch;
-        let component;
-        let node;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable(
-                '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-            );
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-            next = sinon.stub();
-            callback = sinon.stub();
-            component = {
-                name: 'myInstance',
-                actions: {
-                    MY_ACTION: {
-                        preconditions: sinon.stub(),
-                    },
-                },
-            };
-            node = {
-                state: {
-                    getState: sinon.stub().returns({property: 'myProperty'}),
-                },
-                dataStore: {
-                    retrieveAll: sinon.stub().returns({data: 'myData'}),
-                },
-            };
-
-            mockery.registerMock('events', {EventEmitter});
-
-            forwardStateSpaceSearch = require(
-                '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-            );
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-
-        describe('if action.preconditions is undefined', function() {
-            it('should call the passed in callback once with null, and true as parameters', function() {
-                delete component.actions.MY_ACTION.preconditions;
-
-                let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                generator.next();
-                generator.next(next);
-
-                expect(callback.args).to.deep.equal([
-                    [
-                        null,
-                        true,
-                    ],
-                ]);
-            });
-        });
-
-        describe('if action.preconditions is defined', function() {
-            describe('if actions.parameters is an array', function() {
-                describe('if there are two parmeters in the action.parametersArray', function() {
-                    it('should call the generate method for the first parameter with the dataStore', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub(),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub(),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.parameters[0].generate.args).to.deep.equal([[
-                            node.dataStore,
-                        ]]);
-                    });
-
-                    it('should call the generate method for the first parameter with the this context ' +
-                        'of the component', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub(),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub(),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.parameters[0].generate.thisValues).to.deep.equal([
-                            component,
-                        ]);
-                    });
-
-                    it('should call the generate method for the second parameter with the dataStore', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub(),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub(),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.parameters[1].generate.args).to.deep.equal([[
-                            node.dataStore,
-                        ]]);
-                    });
-
-                    it('should call the generate method for the second parameter with the this context ' +
-                        'of the component', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub(),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub(),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.parameters[1].generate.thisValues).to.deep.equal([
-                            component,
-                        ]);
-                    });
-
-                    it('should call action.preconditions once with the generated parameters and ' +
-                        'node.dataStore', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub().returns('myFirstParameter'),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub().returns('mySecondParameter'),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
-                            'myFirstParameter',
-                            'mySecondParameter',
-                            node.dataStore,
-                        ]]);
-                    });
-
-                    it('should call action.preconditions with the this context of the component', function() {
-                        component.actions.MY_ACTION.parameters = [
-                            {
-                                name: 'parameterOne',
-                                generate: sinon.stub().returns('myFirstParameter'),
-                            },
-                            {
-                                name: 'parameterTwo',
-                                generate: sinon.stub().returns('mySecondParameter'),
-                            },
-                        ];
-
-                        let generator =
-                            forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-
-                        expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
-                            component,
-                        ]);
-                    });
-                });
-            });
-
-            describe('if actions.Parameters is not an array', function() {
-                it('should call action.preconditions once with the node.dataStore', function() {
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                    generator.next();
-                    generator.next(next);
-
-                    expect(component.actions.MY_ACTION.preconditions.args).to.deep.equal([[
-                        node.dataStore,
-                    ]]);
-                });
-
-                it('should call action.preconditions with the this context of the component', function() {
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                    generator.next();
-                    generator.next(next);
-
-                    expect(component.actions.MY_ACTION.preconditions.thisValues).to.deep.equal([
-                        component,
-                    ]);
-                });
-            });
-
-            describe('if actions.preconditions throws', function() {
-                it('should throw an error with a precondition failure message', function() {
-                    let err = new Error('An error occurred');
-                    let thrownError;
-                    component.actions.MY_ACTION.preconditions.throws(err);
-                    let generator = forwardStateSpaceSearch
-                        ._checkPreconditions(node, component, 'MY_ACTION', callback);
-                    generator.next();
-                    try {
-                        generator.next(next);
-                    } catch (error) {
-                        thrownError = error;
-                    }
-
-                    expect(thrownError.message).to.equal(
-                        'An error with the message \'An error occurred\' was thrown while ' +
-                        'executing preconditions for the action \'myInstance.MY_ACTION\''
-                    );
-                });
-            });
-
-            describe('if actions.preconditions is not thrown', function() {
-                it('should call fowardStateSpaceSearch.emit once with the event \'forwardStateSpaceSearch.' +
-                    'runAssertions\', the result of the call to node.state.getState(), ' +
-                    'the preconditions, and the next callback', function() {
-                    component.actions.MY_ACTION.preconditions.returns([
-                        ['isTrue', 'component.displayed'],
-                        ['isFalse', 'component.checkbox.checked'],
-                    ]);
-
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                    generator.next();
-                    generator.next(next);
-
-                    expect(forwardStateSpaceSearch.emit.args).to.deep.equal([
-                        [
-                            'forwardStateSpaceSearch.runAssertions',
-                            {property: 'myProperty'},
-                            {data: 'myData'},
-                            [
-                                ['isTrue', 'component.displayed'],
-                                ['isFalse', 'component.checkbox.checked'],
-                            ],
-                            next,
-                        ],
-                    ]);
-                });
-
-                it('should call node.state.getState once with no parameters', function() {
-                    component.actions.MY_ACTION.preconditions.returns([
-                        ['isTrue', 'component.displayed'],
-                        ['isFalse', 'component.checkbox.checked'],
-                    ]);
-
-                    let generator = forwardStateSpaceSearch._checkPreconditions(node, component, 'MY_ACTION', callback);
-                    generator.next();
-                    generator.next(next);
-
-                    expect(node.state.getState.args).to.deep.equal([[]]);
-                });
-
-                describe('if forwardStateSpaceSearch.emit throws', function() {
-                    it('should call the callback once with null, and false', function() {
-                        component.actions.MY_ACTION.preconditions.returns([
-                            ['isTrue', 'component.displayed'],
-                            ['isFalse', 'component.checkbox.checked'],
-                        ]);
-
-                        let generator = forwardStateSpaceSearch
-                            ._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-                        generator.throw(new Error('An error occurred'));
-
-                        expect(callback.args).to.deep.equal([
-                            [
-                                null,
-                                false,
-                            ],
-                        ]);
-                    });
-                });
-
-                describe('if forwardStateSpaceSearch.emit does not throw', function() {
-                    it('should call the callback once with null, and true', function() {
-                        component.actions.MY_ACTION.preconditions.returns([
-                            ['isTrue', 'component.displayed'],
-                            ['isFalse', 'component.checkbox.checked'],
-                        ]);
-
-                        let generator = forwardStateSpaceSearch
-                            ._checkPreconditions(node, component, 'MY_ACTION', callback);
-                        generator.next();
-                        generator.next(next);
-                        generator.next();
-
-                        expect(callback.args).to.deep.equal([
-                            [
-                                null,
-                                true,
-                            ],
-                        ]);
-                    });
-                });
             });
         });
     });
