@@ -33,7 +33,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         afterEach(function() {
-            delete global.SimulatoError;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
