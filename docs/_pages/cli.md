@@ -31,7 +31,7 @@ This section details the different commands used in the CLI. All passed in CLI o
         *  Default is `20`
         *  Example; `-p 5`
     * `-R`, `--reportPath`
-        * The parth wherein to write the test report
+        * The path wherein to write the test report
         * Example: `-o ./my-reports`
     * `-b`, `--before`
         * The path to a before script run before the test suite
@@ -40,6 +40,14 @@ This section details the different commands used in the CLI. All passed in CLI o
     * `-f`, `--configFile`
         * Path to configFile
         * Example: `-f ./config.js`
+    * `-d`, `--testDelay`
+        * Number of milliseconds to stagger test execution
+        * Default is `200`
+        * Example: `-d 1000`
+    * `-F`, `--rerunFailedTests`
+        * Number of times to rerun failedTests
+        * Default is `0`
+        * Example: `-F 2`
 
 ## generate
 * Description

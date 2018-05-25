@@ -6,4 +6,5 @@ module.exports = {
     reportPath: './test/acceptance/tests',
     outputPath: './test/acceptance/tests',
     technique: 'actionFocused',
+    rerunFailedTests: 1,
 };
