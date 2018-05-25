@@ -68,20 +68,16 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
     * `selector`
         * Must be an object and is **required**
     * `selector.type`
-        * Must be either the string `attribute` or `querySelector` and is **required**
-        * Attribute selectors
-            * Selects the first element in the DOM that matches the key/value pair below
-        * Query Selectors
-            * This uses the document.querySelector method to find elements
-    * `selector.key`
-        * Must be a string 
-        * The key is the attribute used to select the elements. Can be any property on an element
-        * Example: `id`
+        * Must be one of the following strings and is **required**
+            * `getElementById`
+            * `querySelector`
+            * `querySelectorAll`
+            * `getElementsByTagName`
+            * `getElementsByClassName`
     * `selector.value`
         * Can be anything and is **required**
         * Keep in mind this is sent to the browser via selenium-webdriver
-        * If the `selector.type` is attribute this should be the value of the attribute
-        * If the `selector.type` is querySelectory this should be the query selector
+            * It will call the specified selector.type document function passing in the value
 * Example
     ```
     elements() {
@@ -89,8 +85,7 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
             {
                 name: 'searchResults',
                 selector: {
-                    type: 'attribute',
-                    key: 'id',
+                    type: 'getElementById',
                     value: 'rhscol',
                 },
             },
@@ -135,8 +130,7 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
             {
                 name: 'myButton',
                 selector: {
-                    type: 'attribute',
-                    key: 'id',
+                    type: 'getElementById',
                     value: 'myId',
                 },
             },

@@ -95,6 +95,7 @@ describe('lib/cli/run.js', function() {
                 reportPath: 'sanity_tests',
                 before: 'script',
                 testDelay: '700',
+                rerunFailedTests: 5,
             };
 
             global.SimulatoError = {
@@ -133,6 +134,7 @@ describe('lib/cli/run.js', function() {
             delete process.env.SAUCE_USERNAME;
             delete process.env.SAUCE_ACCESS_KEY;
             delete process.env.TEST_DELAY;
+            delete process.env.TEST_RERUN_COUNT;
             process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
@@ -622,6 +624,45 @@ describe('lib/cli/run.js', function() {
                 run.configure(options);
 
                 expect(process.env.TEST_DELAY).to.equal(undefined);
+            });
+        });
+
+        describe('if rerunFailedTests is passed in by the options', function() {
+            it('should set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {
+                    rerunFailedTests: 2,
+                };
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.TEST_RERUN_COUNT).to.equal('2');
+            });
+        });
+
+        describe('if the rerunFailedTests is passed in by the configFile', function() {
+            it('should set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {};
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.TEST_RERUN_COUNT).to.equal('5');
+            });
+        });
+
+        describe('if rerunFailedTests is not passed in with configFile or ClI', function() {
+            it('should NOT set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {};
+                configFile.rerunFailedTests = undefined;
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.TEST_RERUN_COUNT).to.equal(undefined);
             });
         });
 

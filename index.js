@@ -22,6 +22,7 @@ program
     .option('-b, --before <path>', 'The path to the before script')
     .option('-f, --configFile <path>', 'The path to the config file')
     .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
+    .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests')
     .action(commands.run);
 
 program
