@@ -19,10 +19,6 @@ Simulato is a model based testing tool to help provide full and variable coverag
 * Chrome Browser installed
 * Chromedriver installed
 	* Download here: https://sites.google.com/a/chromium.org/chromedriver/downloads
-	* If on a mac
-		* You can `brew install chromedriver`
-	* If on a Windows/Linux machine
-		* Ensure the executable is in your system path
 * Code editor
 	* Visual Studio Code: https://code.visualstudio.com/
 	* Atom: https://atom.io/
