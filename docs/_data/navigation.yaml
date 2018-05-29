@@ -1,8 +1,6 @@
 docs:
   - title: "Getting Started"
     children:
-      - title: "About Simulato"
-        url: /about-simulato/
       - title: "About Model Based Testing"
         url: /about-mbt/
       - title: "Quick Start Guide"
