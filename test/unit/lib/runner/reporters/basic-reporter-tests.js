@@ -27,7 +27,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
       funSymbols = {
         pass: '🌴',
         fail: '🍅',
-        rerun: '⚠',
+        rerun: '🏃',
       };
 
       report = {
@@ -228,51 +228,132 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
 
       describe('for each testReport of the passed in report.testReports', function() {
         describe('if the testReport.status equals \'fail\'', function() {
-          describe('if the testReport.errorLocation property is truthy', function() {
-            it('should call console.log to print out an error report', function() {
-              report.status = 'fail';
-              report.testReports[0] = {
-                testName: 'testName',
-                status: 'fail',
-                errorLocation: {
-                  actionIndex: 0,
-                  step: 'preconditions',
-                },
-                actions: [
-                  {
-                    steps: {
-                      preconditions: {
-                        error: {
-                          name: 'ERROR NAME',
-                          message: 'ERROR MESSAGE',
-                        },
-                      },
-                    },
-                  },
-                ],
-              };
+          it('should call console.log to print out the test name and its run count', function() {
+            report.status = 'fail';
+            report.testReports[0] = {
+              testName: 'testName',
+              status: 'fail',
+              rerunCount: 0,
+              testRuns: [],
+            };
 
-              basicReporter.printReportSummary(report);
+            basicReporter.printReportSummary(report);
 
-              expect(console.log.args[6]).to.deep.equal([
-                `\u001b[31mtestName: ERROR NAME: ERROR MESSAGE\u001b[0m\n`,
-              ]);
-            });
+            expect(console.log.args[6]).to.deep.equal([
+              `\u001b[31mtestName - Ran 1 time(s)\u001b[0m`,
+            ]);
           });
 
-          describe('if the testReport.errorLocation property is falsey', function() {
-            it('should call console.log to say no report received and to check stdErr', function() {
-              report.status = 'fail';
-              report.testReports[0] = {
-                testName: 'testName',
-                status: 'fail',
-              };
+          it('should call console.log to print out an empty string', function() {
+            report.status = 'fail';
+            report.testReports[0] = {
+              testName: 'testName',
+              status: 'fail',
+              rerunCount: 0,
+              testRuns: [],
+            };
 
-              basicReporter.printReportSummary(report);
+            basicReporter.printReportSummary(report);
 
-              expect(console.log.args[6]).to.deep.equal([
-                `\x1b[31mtestName: No report received from child process check stdErr\x1b[0m\n`,
-              ]);
+            expect(console.log.args[7]).to.deep.equal([
+              ``,
+            ]);
+          });
+
+          describe('for each testRun in the current testReport', function() {
+            describe('if the testReport.errorLocation property is truthy', function() {
+              it('should call console.log to print out the run number and its error', function() {
+                report.status = 'fail';
+                report.testReports[0] = {
+                  testName: 'testName',
+                  status: 'fail',
+                  rerunCount: 0,
+                  testRuns: [{
+                    report: {
+                      errorLocation: {
+                        actionIndex: 0,
+                        step: 'preconditions',
+                      },
+                      actions: [
+                        {
+                          steps: {
+                            preconditions: {
+                              error: {
+                                name: 'ERROR NAME',
+                                message: 'ERROR MESSAGE',
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  }],
+                };
+
+                basicReporter.printReportSummary(report);
+
+                expect(console.log.args[7]).to.deep.equal([
+                  `\t\u001b[31mRun 1: ERROR NAME: ERROR MESSAGE\u001b[0m`,
+                ]);
+              });
+
+              it('should call console.log to print out action information where the error occured', function() {
+                report.status = 'fail';
+                report.testReports[0] = {
+                  testName: 'testName',
+                  status: 'fail',
+                  rerunCount: 0,
+                  testRuns: [{
+                    report: {
+                      errorLocation: {
+                        actionIndex: 0,
+                        step: 'preconditions',
+                      },
+                      actions: [
+                        {
+                          component: 'componentName',
+                          action: 'ACTION_NAME',
+                          steps: {
+                            preconditions: {
+                              error: {
+                                name: 'ERROR NAME',
+                                message: 'ERROR MESSAGE',
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  }],
+                };
+
+                basicReporter.printReportSummary(report);
+
+                expect(console.log.args[8]).to.deep.equal([
+                  `\t\t\u001b[31mAction: componentName-ACTION_NAME Step: preconditions ActionIndex: 0\u001b[0m`,
+                ]);
+              });
+            });
+
+            describe('if the testReport.errorLocation property is falsey', function() {
+              it('should call console.log to print that runs stdErr', function() {
+                report.status = 'fail';
+                report.testReports[0] = {
+                  testName: 'testName',
+                  status: 'fail',
+                  rerunCount: 0,
+                  testRuns: [{
+                    stdErr: 'some std err',
+                    report: {},
+                  }],
+                };
+
+                basicReporter.printReportSummary(report);
+
+                expect(console.log.args[7]).to.deep.equal([
+                  `\t\u001b[31mRun 1: some std err\u001b[0m`,
+                ]);
+              });
             });
           });
         });

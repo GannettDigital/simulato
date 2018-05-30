@@ -13,6 +13,16 @@ Simulato is a model based testing tool to help provide full and variable coverag
 * [Selenium Webdriver](https://www.seleniumhq.org/docs/03_webdriver.jsp)
 * [Chai Assertions](http://www.chaijs.com/api/assert/)
 
+# Prerequisites
+* Node.js version 8+
+	* Download here: https://nodejs.org/en/
+* Chrome Browser installed
+* Chromedriver installed
+	* Download here: https://sites.google.com/a/chromium.org/chromedriver/downloads
+* Code editor
+	* Visual Studio Code: https://code.visualstudio.com/
+	* Atom: https://atom.io/
+
 # Process of Simulato
 To make use of the tool, you will need to build out a suite of components to reflect your system under test. A component is a singular piece of the system you are describing in your test suite. For example, we have a basic webpage that has news articles:
 
@@ -80,7 +90,9 @@ Once created your directory should look like this:
     main-site-layout.js
     view-story-modal.js
 
-Also clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
+Once your directory is set up type `npm install` and your initial set up should be complete!
+
+Clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
 
 
 # Creating a component

@@ -50,17 +50,27 @@ This section documents utilization of the configuration file in place of CLI opt
 ### outputPath
   * The path wherein to write the generated test cases
   * Default is the current working directory
-  * Example `outputPath ./tests`
+  * Example `outputPath: ./tests`
 
 ### technique
   * The test generation technique
   * The only and required option at this point is actionFocused
-  * Example `technique actionFocused`
+  * Example `technique: actionFocused`
 
 ### actionToCover
   * The single action to generate a test to cover
   * Default is the current working directory
-  * Example `actionToCover myComponent.MY_ACTION`
+  * Example `actionToCover: myComponent.MY_ACTION`
+
+### testDelay
+  * Number of milliseconds to stagger test execution
+  * Default is `200`
+  * Example: `testDelay: 400`
+
+### rerunFailedTests
+  * Number of times to rerun failedTests
+  * Default is `0`
+  * Example: `rerunFailedTests: 2`
 
 ## Example File
     'use strict'
