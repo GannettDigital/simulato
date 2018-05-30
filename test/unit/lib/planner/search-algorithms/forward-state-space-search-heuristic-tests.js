@@ -242,7 +242,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 });
 
                 it('should call forwardStateSpaceSearch.emit with the event \'forwardStateSpaceSearch.' +
-                    'applyActionToNode\', clonedNode, and the next callback', function() {
+                    'applyEffects\', clonedNode, and the next callback', function() {
                     let node = {
                         actions: new Set([
                             'myComponent.MY_ACTION',
@@ -257,7 +257,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next(clonedNode);
 
                     expect(forwardStateSpaceSearch.emit.args[2]).to.deep.equal([
-                        'forwardStateSpaceSearch.applyActionToNode',
+                        'forwardStateSpaceSearch.applyEffects',
                         {
                             actions: new Set(),
                             path: ['myComponent.MY_ACTION'],
@@ -540,176 +540,6 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 expect(forwardStateSpaceSearch.emit.args[1]).to.deep.equal([
                     'forwardStateSpaceSearch.findGoalActions',
                 ]);
-            });
-        });
-    });
-
-    describe('_applyActionToNode', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
-        let forwardStateSpaceSearch;
-        let node;
-        let callback;
-        let sampleMap;
-        let stateObj;
-        let action;
-        let dataStore;
-
-        beforeEach(function() {
-            mockery.enable({useCleanCache: true});
-            mockery.registerAllowable(
-                '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-            );
-
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
-            };
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
-
-            forwardStateSpaceSearch = require(
-                '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-            );
-
-            sampleMap = new Map();
-            sampleMap.set('test', {
-                actions: {ACTION: {
-                    perform: sinon.stub(),
-                    effects: sinon.stub(),
-                    parameters: [{
-                        generate: sinon.stub().returns('parameter'),
-                    }],
-                }}});
-
-            stateObj = {
-                getComponentsAsMap: sinon.stub().returns(sampleMap),
-            };
-
-            dataStore = {
-                storedData: 'someData',
-            };
-
-            node = {
-                path: ['test.ACTION'],
-                state: stateObj,
-                testCase: {
-                    push: sinon.stub(),
-                },
-                dataStore: dataStore,
-            };
-            callback = sinon.stub();
-            action = node.state.getComponentsAsMap().get('test').actions.ACTION;
-        });
-
-        afterEach(function() {
-            mockery.resetCache();
-            mockery.deregisterAll();
-            mockery.disable();
-        });
-        it('should call the callback once', function() {
-            forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-            expect(callback.callCount).to.equal(1);
-        });
-        it('should call node.testCase.push once', function() {
-            let testObject =
-            {'name': 'test.ACTION',
-             'options':
-                        {'parameters':
-                            ['parameter'],
-                        },
-            };
-
-            forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-            expect(node.testCase.push.args).to.deep.equal([[testObject]]);
-        });
-        it('should assign last action to the node', function() {
-            forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-            expect(node.lastAction).to.equal('test.ACTION');
-        });
-        describe('if the parameters are an array', function() {
-            it('should call the generate function passing in node.datastore', function() {
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.parameters[0].generate.args).to.deep.equal([[
-                    dataStore,
-                ]]);
-            });
-            it('should call the generate function with the passed in this context of component', function() {
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.parameters[0].generate.thisValues).to.deep.equal([
-                    node.state.getComponentsAsMap().get('test'),
-                ]);
-            });
-            it('should call the generate function and produce "parameter"', function() {
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.effects.args[0][0]).to.deep.equal('parameter');
-            });
-            it('should call action effects with the testCaseAction.option.parameters, '
-                + 'the node.state, and the node.dataStore', function() {
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.effects.args[0]).to.deep.equal(['parameter', stateObj, dataStore]);
-            });
-            it('should call action effects with the this context of component', function() {
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.effects.thisValues).to.deep.equal([
-                    node.state.getComponentsAsMap().get('test'),
-                ]);
-            });
-            it('should throw an error if the parameters and action effects throws an error', function() {
-                let thrown = new Error('ERROR_THROWN');
-                let err;
-                action.effects.throws(thrown);
-
-                try {
-                    forwardStateSpaceSearch._applyActionToNode(node, callback);
-                } catch (error) {
-                    err = error;
-                }
-
-                expect(err).to.deep.equal(thrown);
-            });
-        });
-        describe('if the parameters are not an array', function() {
-            it('it should call action.effects with node state and node dataStore passed in', function() {
-                action.parameters = {};
-
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.effects.args[0]).to.deep.equal([stateObj, dataStore]);
-            });
-
-            it('should call action effects with the this context of component', function() {
-                action.parameters = {};
-
-                forwardStateSpaceSearch._applyActionToNode(node, callback);
-
-                expect(action.effects.thisValues).to.deep.equal([
-                    node.state.getComponentsAsMap().get('test'),
-                ]);
-            });
-            it('should throw an error if the action effects throws an error', function() {
-                let thrown = new Error('ERROR_THROWN');
-                let err;
-                action.parameters = {};
-                action.effects.throws(thrown);
-
-                try {
-                    forwardStateSpaceSearch._applyActionToNode(node, callback);
-                } catch (error) {
-                    err = error;
-                }
-
-                expect(err).to.deep.equal(thrown);
             });
         });
     });
