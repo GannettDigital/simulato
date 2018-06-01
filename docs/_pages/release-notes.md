@@ -4,6 +4,11 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 ---
 
+## 0.5.1
+
+* Tom Dale
+  * Added action identifier to basic report for test print out errors
+
 ## 0.5.0
 
 * Scott Gunther
