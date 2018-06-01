@@ -6,6 +6,7 @@
   * Change searchNode.path to an array to support same action in path
   * Factor out checking of preconditions
   * Factor out apply effects
+  * Change location of set operations and add a couple more
 
 * Brian FItzpatrick
   * Added simulato walkthrough
