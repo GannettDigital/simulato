@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.5.0
+
 * Scott Gunther
   * Change searchNode.path to an array to support same action in path
   * Factor out checking of preconditions
