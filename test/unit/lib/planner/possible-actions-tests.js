@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/search-node.js', function() {
+describe('lib/planner/possible-actions.js', function() {
     describe('on file require', function() {
         let Emitter;
         let possibleActions;
