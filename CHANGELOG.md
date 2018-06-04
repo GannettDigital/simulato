@@ -2,10 +2,18 @@
 
 ## Pending Version
 
+## 0.5.1
+
+* Tom Dale
+  * Added action identifier to basic report for test print out errors
+
+## 0.5.0
+
 * Scott Gunther
   * Change searchNode.path to an array to support same action in path
   * Factor out checking of preconditions
   * Factor out apply effects
+  * Change location of set operations and add a couple more
 
 * Brian FItzpatrick
   * Added simulato walkthrough
