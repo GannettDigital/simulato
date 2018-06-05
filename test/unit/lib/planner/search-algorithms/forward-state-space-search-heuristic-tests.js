@@ -185,7 +185,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             startNodes = [
                 {
                     allActions: new Set(['ACTION_1', 'ACTION_2']),
-                }
+                },
             ];
 
             mockery.registerMock('../../util/emitter.js', Emitter);
@@ -214,14 +214,14 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             it('should set forwardStateSpaceSearch.predeterminedGoalAction to the passed in ' +
                 'predeterminedGoalAction', function() {
                 let generator = forwardStateSpaceSearch._createPlans('component.ACTION', callback);
-    
+
                 generator.next();
                 generator.next(next);
-    
+
                 expect(forwardStateSpaceSearch.predeterminedGoalAction).to.equal('component.ACTION');
             });
         });
-        
+
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.getStartNodes\' ' +
             'and next', function() {

@@ -87,8 +87,8 @@ describe('lib/planner/start-nodes.js', function() {
                         },
                         options: {
                             myOption: 'option',
-                        }
-                    }
+                        },
+                    },
                 },
                 componentTwo: {
                     entryComponent: {
@@ -98,8 +98,8 @@ describe('lib/planner/start-nodes.js', function() {
                         },
                         options: {
                             myOption: 'option',
-                        }
-                    }
+                        },
+                    },
                 },
             };
             node = {
@@ -149,11 +149,11 @@ describe('lib/planner/start-nodes.js', function() {
                 let components = {
                     'componentOne': {},
                     'componentTwo': {},
-                }
-    
+                };
+
                 generator.next();
                 generator.next(next);
-    
+
                 expect(generator.next.bind(generator, components)).to.throw();
             });
 
@@ -162,16 +162,16 @@ describe('lib/planner/start-nodes.js', function() {
                 components = {
                     'componentOne': {},
                     'componentTwo': {},
-                }
-    
+                };
+
                 generator.next();
                 generator.next(next);
                 try {
                     generator.next(components);
-                } catch(err) {
+                } catch (err) {
 
                 }
-    
+
                 expect(SimulatoError.COMPONENT.NO_ENTRY_POINT.args).to.deep.equal([
                     [
                         'Planning failed, no entry component found',
@@ -184,7 +184,7 @@ describe('lib/planner/start-nodes.js', function() {
             it('should call startNodes.emitAsync with the event \'startNodes.createSearchNode\', and empty set, ' +
                 ' and next', function() {
                 let generator = startNodes.get(callback);
-    
+
                 generator.next();
                 generator.next(next);
                 generator.next(components);
@@ -196,9 +196,10 @@ describe('lib/planner/start-nodes.js', function() {
                 ]);
             });
 
-            it('should call node.state.createAndAddComponent with the type, name, state, and options in an object', function() {
+            it('should call node.state.createAndAddComponent with the type, name, state, and options in an ' +
+                'object', function() {
                 let generator = startNodes.get(callback);
-    
+
                 generator.next();
                 generator.next(next);
                 generator.next(components);
@@ -222,7 +223,7 @@ describe('lib/planner/start-nodes.js', function() {
 
             it('should call node.testCase.push with the type, name, state, and options in an object', function() {
                 let generator = startNodes.get(callback);
-    
+
                 generator.next();
                 generator.next(next);
                 generator.next(components);
@@ -241,7 +242,7 @@ describe('lib/planner/start-nodes.js', function() {
                             },
                         },
                     ],
-                ])
+                ]);
             });
 
             it('should calll startNodes.emitAsync with the event \'startNodes.getPossibleActions\', ' +
@@ -260,8 +261,8 @@ describe('lib/planner/start-nodes.js', function() {
                 ]);
             });
 
-            it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync with the ' +
-                'event \'startNodes.getPossibleActions\'', function() {
+            it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
+                'with the event \'startNodes.getPossibleActions\'', function() {
                 let generator = startNodes.get(callback);
                 let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
@@ -304,7 +305,7 @@ describe('lib/planner/start-nodes.js', function() {
                 expect(startNodes.emitAsync.callCount).to.equal(5);
             });
         });
-        
+
         describe('if there is one entryComponent', function() {
             it('should call startNodes.emitAsync 3 times', function() {
                 delete components.componentTwo;
