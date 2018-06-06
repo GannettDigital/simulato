@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.5.2
+
 * Tom Dale
   * Fixed a bug where the test runner would always have exit code 1 even if tests were rerun and pass
 * Scott Gunther
