@@ -89,6 +89,7 @@ describe('lib/planner/search-node.js', function() {
                     node.actions = ['MY_ACTION'];
                     node.testCase = [];
                     node.lastAction = null;
+                    node.allActions = new Set();
                     searchNode.emit.onCall(0).callsArgWith(1, 'myDataStore');
                     searchNode.emit.onCall(1).callsArgWith(2, 'myExpectedState');
 
@@ -139,6 +140,7 @@ describe('lib/planner/search-node.js', function() {
                 path: ['action1', 'action2'],
                 testCase: [{name: 'MY_ACTION'}, {name: 'MY_ACTION_2'}],
                 lastAction: 'myLastAction',
+                allActions: new Set(['AN_ACTION', 'ANOTHER_ACTION']),
             };
 
             mockery.registerMock('events', {EventEmitter});
@@ -248,6 +250,7 @@ describe('lib/planner/search-node.js', function() {
                                     property: 'value',
                                 },
                                 testCase: 'clonedTestCase',
+                                allActions: new Set(['AN_ACTION', 'ANOTHER_ACTION']),
                             },
                         ],
                     ]);

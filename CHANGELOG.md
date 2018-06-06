@@ -2,6 +2,10 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Factor out creating start nodes
+  * Refactor parts of planner with util emitter
+
 ## 0.5.1
 
 * Tom Dale
