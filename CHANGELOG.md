@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+* Tom Dale
+  * Fixed a bug where the test runner would always have exit code 1 even if tests were rerun and pass
 * Scott Gunther
   * Factor out creating start nodes
   * Refactor parts of planner with util emitter

@@ -124,7 +124,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
           basicReporter.printTestResult(report);
 
           expect(console.log.args[2]).to.deep.equal([
-            `\n\u001b[31mAction: componentName-ACTION_NAME \nStep: preconditions \nActionIndex: 0\u001b[0m`,
+            `\n\u001b[31mAction: componentName.ACTION_NAME \nStep: preconditions \nActionIndex: 0\u001b[0m`,
           ]);
         });
 
@@ -343,7 +343,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
                 basicReporter.printReportSummary(report);
 
                 expect(console.log.args[8]).to.deep.equal([
-                  `\t\t\u001b[31mAction: componentName-ACTION_NAME Step: preconditions ActionIndex: 0\u001b[0m`,
+                  `\t\t\u001b[31mAction: componentName.ACTION_NAME Step: preconditions ActionIndex: 0\u001b[0m`,
                 ]);
               });
             });
