@@ -1009,53 +1009,120 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
+            sinon.spy(myThis._dynamicAreas, 'set');
         });
 
         afterEach(function() {
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
+            myThis._dynamicAreas.set.restore();
         });
 
-        describe('if the dynamicArea does not exist', function() {
-            it('should create the dynamic area in the map with the key as the dynamic ' +
-                'area and the value a set with the component\'s instanceName', function() {
+        describe('if the dynamic area is an array', function(){
+            it('should iterate over the array to add the multiple dynamic areas', function(){
                 let component = {
                     name: 'myInstance',
                     options: {},
-                    dynamicArea: 'myDynamicArea',
+                    dynamicArea: ['areaOne','areaTwo'],
                 };
 
                 expectedState._addToDynamicArea.call(myThis, component);
-
+    
                 expect(myThis._dynamicAreas).to.deep.equal(new Map([
                     [
-                        'myDynamicArea',
-                        new Set(['myInstance']),
+                        'areaOne',
+                        new Set(['myInstance'])
                     ],
+                    [
+                        'areaTwo',
+                        new Set(['myInstance'])
+                    ]
                 ]));
             });
-        });
+            describe('if the dynamic area does not already exist', function(){
+                it('should add the dynamic area as a new set to the dynamic areas', function(){
+                    let component = {
+                        name: 'myInstance',
+                        options: {},
+                        dynamicArea: ['areaOne'],
+                    };
 
-        describe('if the dynamicArea already exists', function() {
-            it('should add the component\'s name to the set', function() {
-                myThis._dynamicAreas.set('myDynamicArea', new Set(['myFirstInstance']));
+                    expectedState._addToDynamicArea.call(myThis, component);
+        
+                    expect(myThis._dynamicAreas.set.callCount).to.equal(1);
+                });
+            })
+            describe('if the dynamic area does exist', function(){
+                it('should skip adding the dynamic area', function(){
+                    let component = {
+                        name: 'myInstance',
+                        options: {},
+                        dynamicArea: ['areaOne'],
+                    };
+                    myThis._dynamicAreas = new Map([[
+                            'areaOne',
+                            new Set(['myInstance'])
+                    ]]);
+                    sinon.spy(myThis._dynamicAreas, 'set');
+    
+                    expectedState._addToDynamicArea.call(myThis, component);
+        
+                    expect(myThis._dynamicAreas.set.callCount).to.equal(0);
+                })
+            })
+            it('should add the component name to the dynamic area', function(){
                 let component = {
-                    name: 'mySecondInstance',
+                    name: 'myInstance',
                     options: {},
-                    dynamicArea: 'myDynamicArea',
+                    dynamicArea: ['areaOne'],
                 };
 
                 expectedState._addToDynamicArea.call(myThis, component);
-
-                expect(myThis._dynamicAreas).to.deep.equal(new Map([
-                    [
-                        'myDynamicArea',
-                        new Set(['myFirstInstance', 'mySecondInstance']),
-                    ],
-                ]));
+    
+                expect(myThis._dynamicAreas.get('areaOne')).to.deep.equal(new Set(['myInstance']));
             });
-        });
+        })
+        describe('if the dynamic area is not an array', function(){
+            describe('if the dynamicArea does not exist', function() {
+                it('should create the dynamic area in the map with the key as the dynamic ' +
+                    'area and the value a set with the component\'s instanceName', function() {
+                    let component = {
+                        name: 'myInstance',
+                        options: {},
+                        dynamicArea: 'myDynamicArea',
+                    };
+    
+                    expectedState._addToDynamicArea.call(myThis, component);
+    
+                    expect(myThis._dynamicAreas).to.deep.equal(new Map([
+                        [
+                            'myDynamicArea',
+                            new Set(['myInstance']),
+                        ],
+                    ]));
+                });
+            });
+            describe('if the dynamicArea already exists', function() {
+                it('should add the component\'s name to the set', function() {
+                    myThis._dynamicAreas.set('myDynamicArea', new Set(['myFirstInstance']));
+                    let component = {
+                        name: 'mySecondInstance',
+                        options: {},
+                        dynamicArea: 'myDynamicArea',
+                    };
+    
+                    expectedState._addToDynamicArea.call(myThis, component);
+    
+                    expect(myThis._dynamicAreas).to.deep.equal(new Map([
+                        [
+                            'myDynamicArea',
+                            new Set(['myFirstInstance', 'mySecondInstance']),
+                        ],
+                    ]));
+                });
+            });
+        })
     });
 
     describe('_addChildren', function() {
@@ -1638,6 +1705,8 @@ describe('lib/util/expected-state.js', function() {
                 name: 'value',
             });
             sinon.spy(expectedState._dynamicAreas, 'get');
+            sinon.spy(expectedState._dynamicAreas, 'forEach');
+            sinon.spy(Array, 'from');
         });
 
         afterEach(function() {
@@ -1645,25 +1714,41 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
             expectedState._dynamicAreas.get.restore();
+            expectedState._dynamicAreas.forEach.restore();
+            Array.from.restore();
         });
 
-        it('should get components for a valid dynamic area', function() {
-            expectedState.clearDynamicArea(dynamicArea);
+        describe('if the dynamicArea exists', function(){
+            it('should call get with the key when clearDynamicArea is called', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+    
+                expect(expectedState._dynamicAreas.get.args[0]).to.deep.equal(['key']);
+            });
+            it('should call the Array.from function on a dynamic area array', function(){
+                expectedState.clearDynamicArea(dynamicArea);
 
-            expect(expectedState._dynamicAreas.get.args).to.deep.equal([['key']]);
-        });
-        it('should clear the specified dynamic area', function() {
-            expectedState.clearDynamicArea(dynamicArea);
+                expect(Array.from.callCount).to.equal(1);
+            })
+            it('should call dynamicAreas forEach once', function(){
+                expectedState.clearDynamicArea(dynamicArea);
+                
+                expect(expectedState._dynamicAreas.forEach.callCount).to.equal(1);                  
+            });
+            it('should have one parameter of a function', function(){
+                expectedState.clearDynamicArea(dynamicArea);
 
-            expect(expectedState.delete.args).to.deep.equal([[{name: 'value'}]]);
-        });
-        it('should skip clearing the dynamic area since there are no components', function() {
-            dynamicArea = undefined;
+                expect(expectedState._dynamicAreas.forEach.args[0][0]).to.be.a('function');
+            })
+        })
+        describe('if the dynamicArea does not exist', function(){
+            it('should skip clearing the dynamic area', function(){
+                dynamicArea = undefined;
 
-            expectedState.clearDynamicArea(dynamicArea);
+                expectedState.clearDynamicArea(dynamicArea);
 
-            expect(expectedState._dynamicAreas.get.callCount).to.equal(1);
-        });
+                expect(expectedState._dynamicAreas.forEach.callCount).to.equal(0);
+            })
+        })
     });
 
     describe('getState', function() {
