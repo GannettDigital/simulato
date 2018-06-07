@@ -55,20 +55,20 @@ This section details the different commands used in the CLI. All passed in CLI o
 * Example Usage
     * `model-based-test-tool generate -c ./components -o ./tests -t actionFocused`
 * Options
-    * `-c`, `--components` **required**
+    * `-c`, `--components`
         * Path to components
         * Example: `-c ./my-components-folder`
     * `-o`, `--outputPath`
         * The path wherein to write the generated test cases
         * Default is the current working directory
         * Example `-o ./tests` 
-    * `-t`, `--technique` **required**
-        * The test generation technique
-        * The only and required option at this point is `actionFocused`
-        * Example: `-t actionFocused`
     * `-a`, `--actionToCover`
         *  The single action to generate a test to cover
         *  Example: `-a myComponent.MY_ACTION`
     * `-f`, `--configFile`
         * Path to configFile
         * Example: `-f ./config.js`
+    * `-A`, `--plannerAlgorithm`
+        * The algorithm to use when the planner generates tests
+        * Supported algorithms: `forwardStateSpaceSearchHeuristic`
+        * Example: `-A forwardStateSpaceSearchHeuristic`

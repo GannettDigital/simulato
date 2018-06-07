@@ -30,7 +30,7 @@ program
     .option('-c, --components <componentPath>', 'the path to the components')
     .option('-o, --outputPath <path>', 'The path to write the generated test cases to')
     .option('-a, --actionToCover <action>', 'The action to generate a test for. Specfied as component.ACTION_NAME')
-    .option('-t, --technique <technique>', 'The test generation technique')
+    .option('-A, --plannerAlgorithm <algorithm>', 'The algorithm for the planner to use')
     .option('-f, --configFile <path>', 'The path to the config file')
     .action(commands.generate);
 

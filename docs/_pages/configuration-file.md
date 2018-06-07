@@ -52,11 +52,6 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is the current working directory
   * Example `outputPath: ./tests`
 
-### technique
-  * The test generation technique
-  * The only and required option at this point is actionFocused
-  * Example `technique: actionFocused`
-
 ### actionToCover
   * The single action to generate a test to cover
   * Default is the current working directory
@@ -72,6 +67,11 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `0`
   * Example: `rerunFailedTests: 2`
 
+### planner.algorithm
+  * Planner algorithm to use
+  * Supported algorithms: `forwardStateSpaceSearchHeuristic`
+  * Example: `algorithm: forwardStateSpaceSearchHeuristic`
+
 ## Example File
     'use strict'
 
@@ -82,5 +82,7 @@ This section documents utilization of the configuration file in place of CLI opt
         saucelabs: true,
         sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'},
         outputPath: './test/acceptance/tests',
-        technique: 'actionFocused',
+        planner: {
+          algorithm: `forwardStateSpaceSearchHeuristic`
+        }
     }
