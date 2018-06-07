@@ -39,6 +39,8 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
         },
         actions: [
           {
+            component: 'componentName',
+            action: 'ACTION_NAME',
             steps: {
               preconditions: {
                 error: {
@@ -115,13 +117,24 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
           ]);
         });
 
-        it('should call console.log twice', function() {
+        it('should call console.log to print out the action details', function() {
           report.status = 'fail';
           delete report.actions[0].steps.preconditions.stateCompare;
 
           basicReporter.printTestResult(report);
 
-          expect(console.log.callCount).to.equal(2);
+          expect(console.log.args[2]).to.deep.equal([
+            `\n\u001b[31mAction: componentName.ACTION_NAME \nStep: preconditions \nActionIndex: 0\u001b[0m`,
+          ]);
+        });
+
+        it('should call console.log three times', function() {
+          report.status = 'fail';
+          delete report.actions[0].steps.preconditions.stateCompare;
+
+          basicReporter.printTestResult(report);
+
+          expect(console.log.callCount).to.equal(3);
         });
 
         describe('if the failedStep has stateCompare', function() {
@@ -130,17 +143,17 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
 
             basicReporter.printTestResult(report);
 
-            expect(console.log.args[2]).to.deep.equal([
+            expect(console.log.args[3]).to.deep.equal([
               `state compare string\n`,
             ]);
           });
 
-          it('should call console.log thrice', function() {
+          it('should call console.log four times', function() {
             report.status = 'fail';
 
             basicReporter.printTestResult(report);
 
-            expect(console.log.callCount).to.equal(3);
+            expect(console.log.callCount).to.equal(4);
           });
         });
       });
@@ -330,7 +343,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
                 basicReporter.printReportSummary(report);
 
                 expect(console.log.args[8]).to.deep.equal([
-                  `\t\t\u001b[31mAction: componentName-ACTION_NAME Step: preconditions ActionIndex: 0\u001b[0m`,
+                  `\t\t\u001b[31mAction: componentName.ACTION_NAME Step: preconditions ActionIndex: 0\u001b[0m`,
                 ]);
               });
             });

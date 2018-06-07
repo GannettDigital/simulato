@@ -4,6 +4,35 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 ---
 
+## 0.5.2
+
+* Tom Dale
+  * Fixed a bug where the test runner would always have exit code 1 even if tests were rerun and pass
+* Scott Gunther
+  * Factor out creating start nodes
+  * Refactor parts of planner with util emitter
+
+## 0.5.1
+
+* Tom Dale
+  * Added action identifier to basic report for test print out errors
+
+## 0.5.0
+
+* Scott Gunther
+  * Change searchNode.path to an array to support same action in path
+  * Factor out checking of preconditions
+  * Factor out apply effects
+  * Change location of set operations and add a couple more
+
+* Brian FItzpatrick
+  * Added simulato walkthrough
+
+* Tom Dale
+  * Updated tests to print out the results as they are run
+  * Tests now always use the test runner even if 1 test
+  * Option added to automatically rerun failed tests in both config and cli
+
 ## 0.4.0
 
 * Tom Dale

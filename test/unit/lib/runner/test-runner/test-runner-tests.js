@@ -435,13 +435,28 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
     describe('when the test.on close callback is called', function() {
       describe('if the returned exitCode is truthy', function() {
-        it('should set the process.exitCode to 1', function() {
-          test.on.callsArgWith(1, 1);
+        describe('if testRunner._rerunCount is 0', function() {
+          it('should set the process.exitCode to 1', function() {
+            test.on.callsArgWith(1, 1);
+            testRunner._rerunCount = 0;
 
-          testRunner._startTest(sampleSpawnArgs, testPath);
+            testRunner._startTest(sampleSpawnArgs, testPath);
 
-          expect(process.exitCode).to.equal(1);
+            expect(process.exitCode).to.equal(1);
+          });
         });
+
+        describe('if testRunner._rerunCount is NOT 0', function() {
+          it('should keep the process.exitCode as 0', function() {
+            test.on.callsArgWith(1, 1);
+            testRunner._rerunCount = 1;
+
+            testRunner._startTest(sampleSpawnArgs, testPath);
+
+            expect(process.exitCode).to.equal(0);
+          });
+        });
+
 
         it('should add the failed tests.testPath on to testRunner._testsToRerun', function() {
           test.on.callsArgWith(1, 1);

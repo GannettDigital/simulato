@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/search-node.js', function() {
+describe('lib/planner/possible-actions.js', function() {
     describe('on file require', function() {
         let Emitter;
         let possibleActions;
@@ -15,7 +15,6 @@ describe('lib/planner/search-node.js', function() {
 
             Emitter = {
                 mixIn: function(myObject) {
-                    myObject.emit = sinon.stub();
                     myObject.runOn = sinon.stub();
                 },
             };
@@ -30,7 +29,7 @@ describe('lib/planner/search-node.js', function() {
             mockery.disable();
         });
 
-        it('should Emitter.mixin once with possibleActions as the parameter', function() {
+        it('should Emitter.mixIn once with possibleActions as the parameter', function() {
             possibleActions = require('../../../../lib/planner/possible-actions.js');
 
             expect(Emitter.mixIn.args).to.deep.equal([
@@ -75,7 +74,7 @@ describe('lib/planner/search-node.js', function() {
             };
             Emitter = {
                 mixIn: function(myObject) {
-                    myObject.emit = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
                     myObject.runOn = sinon.stub();
                 },
             };
@@ -479,7 +478,7 @@ describe('lib/planner/search-node.js', function() {
                         expect(node.dataStore.retrieveAll.args).to.deep.equal([[]]);
                     });
 
-                    it('should call possibleActions.emit once with the event \'possibleActions.runAssertions\', ' +
+                    it('should call possibleActions.emitAsync once with the event \'possibleActions.runAssertions\', ' +
                         'the state, the dataStore, preconditions, and next', function() {
                         node.state.getState.returns('myState');
                         node.dataStore.retrieveAll.returns('myDataStore');
@@ -507,7 +506,7 @@ describe('lib/planner/search-node.js', function() {
                         generator.next(next);
                         generator.throw();
 
-                        expect(possibleActions.emit.args).to.deep.equal([
+                        expect(possibleActions.emitAsync.args).to.deep.equal([
                             [
                                 'possibleActions.runAssertions',
                                 'myState',
