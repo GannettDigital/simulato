@@ -26,7 +26,7 @@ describe('lib/errors/runner/spawn-child-error.js', function() {
   });
 
   describe('on execution of the required file', function() {
-    it('should call new RunnerError with \'GOAL_NOT_FOUND\', and passed in message', function() {
+    it('should call new RunnerError with \'SPAWN_CHILD_ERROR\', and passed in message', function() {
       goalNotFound('ERROR_MESSAGE');
 
       expect(RunnerError.args).to.deep.equal([
