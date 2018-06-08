@@ -117,6 +117,11 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
         findAPortNotInUse: sinon.stub(),
       };
       callback = sinon.stub();
+      global.SimulatoError = {
+        RUNNER: {
+          CHILD_SPAWN_ERROR: sinon.stub(),
+        },
+      };
 
       mockery.registerMock('portscanner', portscanner);
 
@@ -133,6 +138,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
+      delete global.SimulatoError;
     });
 
     it('should call portscanner.findAPortNotInUse once', function() {
@@ -160,11 +166,15 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
 
     describe('when the callback for portscanner.findAPortNotInUse is called', function() {
       describe('if there was an error returned', function() {
-        it('should throw the error', function() {
+        it('should throw simulato CHILD_SPAWN_ERROR', function() {
+          let message = `Error was thrown`;
+          SimulatoError.RUNNER.CHILD_SPAWN_ERROR.throws(
+              {message}
+          );
           let err = new Error('im an error being thrown');
           portscanner.findAPortNotInUse.callsArgWith(3, err);
 
-          expect(_findPort.bind(null)).to.throw('im an error being thrown');
+          expect(_findPort.bind(null)).to.throw('Error was thrown');
         });
       });
 

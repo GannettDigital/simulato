@@ -4,7 +4,7 @@
 
 * Tom Dale
   * Added the cli/config command for debug and debugPort
-  * Child processes can be spawn with --inspect-brk
+  * Child processes can be spawned with --inspect-brk
   * Ports are auto assigned based on availability
   * Starting Port can be specified
 
