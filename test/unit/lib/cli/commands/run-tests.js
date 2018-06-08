@@ -743,9 +743,9 @@ describe('lib/cli/run.js', function() {
                     let options = {};
                     configFile.debugPort = undefined;
                     mockery.registerMock(pathLoc, configFile);
-    
+
                     run.configure(options);
-    
+
                     expect(process.env.DEBUG_PORT).to.equal(undefined);
                 });
             });
