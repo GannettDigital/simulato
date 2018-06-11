@@ -96,6 +96,8 @@ describe('lib/cli/run.js', function() {
                 before: 'script',
                 testDelay: '700',
                 rerunFailedTests: 5,
+                debug: true,
+                debugPort: 5555,
             };
 
             global.SimulatoError = {
@@ -135,6 +137,8 @@ describe('lib/cli/run.js', function() {
             delete process.env.SAUCE_ACCESS_KEY;
             delete process.env.TEST_DELAY;
             delete process.env.TEST_RERUN_COUNT;
+            delete process.env.DEBUG;
+            delete process.env.DEBUG_PORT;
             process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
@@ -663,6 +667,87 @@ describe('lib/cli/run.js', function() {
                 run.configure(options);
 
                 expect(process.env.TEST_RERUN_COUNT).to.equal(undefined);
+            });
+        });
+
+        describe('if debug is passed in by the options', function() {
+            it('should set process.env.DEBUG to true', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {
+                    debug: true,
+                };
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.DEBUG).to.equal('true');
+            });
+        });
+
+        describe('if the debug is passed in by the configFile', function() {
+            it('should set process.env.DEBUG to true', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {};
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.DEBUG).to.equal('true');
+            });
+        });
+
+        describe('if debug is not passed in with configFile or ClI', function() {
+            it('should NOT set process.env.TEST_RERUN_COUNT', function() {
+                let pathLoc = '../../../../config.js';
+                let options = {};
+                configFile.debug = undefined;
+                mockery.registerMock(pathLoc, configFile);
+
+                run.configure(options);
+
+                expect(process.env.DEBUG).to.equal(undefined);
+            });
+        });
+
+        describe('if debug is set', function() {
+            describe('if debugPort is passed in by the options', function() {
+                it('should set process.env.DEBUG_PORT to debugPort', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {
+                        debug: true,
+                        debugPort: 4444,
+                    };
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+
+                    expect(process.env.DEBUG_PORT).to.equal('4444');
+                });
+            });
+
+            describe('if the debugPort is passed in by the configFile', function() {
+                it('should set process.env.DEBUG_PORT to the configFile.debugPort', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+
+                    expect(process.env.DEBUG_PORT).to.equal('5555');
+                });
+            });
+
+            describe('if debugPort is not passed in with configFile or ClI', function() {
+                it('should NOT set process.env.DEBUG_PORT', function() {
+                    let pathLoc = '../../../../config.js';
+                    let options = {};
+                    configFile.debugPort = undefined;
+                    mockery.registerMock(pathLoc, configFile);
+
+                    run.configure(options);
+
+                    expect(process.env.DEBUG_PORT).to.equal(undefined);
+                });
             });
         });
 

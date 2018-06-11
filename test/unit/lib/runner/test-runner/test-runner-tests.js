@@ -929,6 +929,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       delete process.env.OUTPUT_PATH;
       delete process.env.SAUCE_LABS;
       delete process.env.CONFIG_FILE;
+      delete process.env.DEBUG;
+      delete process.env.TEST_DELAY;
     });
 
     it('should call testRunner.emit with the correct event with default spawnArgs and testPath', function() {
@@ -1076,6 +1078,57 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             './path/to/test',
           ],
         ]);
+      });
+    });
+
+    describe('if process.env.DEBUG is set', function() {
+      it('should call testRunner.emit with the first param \'testRunner.getDebugPort\'', function() {
+        process.env.DEBUG = 'true';
+
+        testRunner._createSpawnArgs(testPath);
+
+        expect(testRunner.emit.args[0][0]).to.deep.equal('testRunner.getDebugPort');
+      });
+
+      it('should call testRunner.emit with the second param as a function', function() {
+        process.env.DEBUG = 'true';
+
+        testRunner._createSpawnArgs(testPath);
+
+        expect(testRunner.emit.args[0][1]).to.be.a('function');
+      });
+
+      describe('when the callback sent in the event is called', function() {
+        it('should call testRunner.emit with the correct event with spawnArgs including testDelay args'
+          + 'and testPath', function() {
+          process.env.DEBUG = 'true';
+          testRunner.emit.onCall(0).callsArgWith(1, 3000);
+
+          testRunner._createSpawnArgs(testPath);
+
+          expect(testRunner.emit.args[1]).to.deep.equal([
+            'testRunner.spawnArgsCreated',
+            [
+              '--inspect-brk=3000',
+              'curDir/../../../index.js',
+              'run',
+              '-T',
+              './path/to/test',
+              '-c',
+              './path/to/components',
+            ],
+            './path/to/test',
+          ]);
+        });
+
+        it('should call testRunner.emit twice', function() {
+          process.env.DEBUG = 'true';
+          testRunner.emit.onCall(0).callsArgWith(1, 3000);
+
+          testRunner._createSpawnArgs(testPath);
+
+          expect(testRunner.emit.callCount).to.equal(2);
+        });
       });
     });
   });
