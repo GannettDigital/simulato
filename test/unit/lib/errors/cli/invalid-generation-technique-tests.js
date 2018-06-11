@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/errors/cli/invalid-generation-technique.js', function() {
+describe.only('lib/errors/cli/invalid-generation-technique.js', function() {
   let CLIError;
   let invalidGenerationTechnique;
 

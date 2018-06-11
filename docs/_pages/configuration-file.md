@@ -68,7 +68,7 @@ This section documents utilization of the configuration file in place of CLI opt
   * Example: `rerunFailedTests: 2`
 
 ### planner.algorithm
-  * Planner algorithm to use
+  * The algorithm to use when the planner generates tests
   * Supported algorithms: `forwardStateSpaceSearchHeuristic`
   * Example: `algorithm: forwardStateSpaceSearchHeuristic`
 
