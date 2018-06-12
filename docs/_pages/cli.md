@@ -15,7 +15,7 @@ This section details the different commands used in the CLI. All passed in CLI o
     * `-T`, `--testPath` **required**
         * Path to tests
         * Example: `-T ./my-test-folder`
-    * `-c`, `--components` **required**
+    * `-c`, `--componentPath` **required**
         * Path to components
         * Example: `-c ./my-components-folder`
     * `-r`, `--reporter`
@@ -63,7 +63,7 @@ This section details the different commands used in the CLI. All passed in CLI o
 * Example Usage
     * `model-based-test-tool generate -c ./components -o ./tests -t actionFocused`
 * Options
-    * `-c`, `--components` **required**
+    * `-c`, `--componentPath` **required**
         * Path to components
         * Example: `-c ./my-components-folder`
     * `-o`, `--outputPath`

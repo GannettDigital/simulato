@@ -154,40 +154,22 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(testRunner._testsRemaining).equal(2);
     });
 
-    describe('if process.env.TEST_DELAY is set to a number', function() {
-      it('should set _staggerTime to process.env.TEST_DELAY', function() {
-        testRunner.configure([]);
+    it('should set _staggerTime to process.env.TEST_DELAY', function() {
+      testRunner.configure([]);
 
-        expect(testRunner._staggerTime).equal(5);
-      });
+      expect(testRunner._staggerTime).equal(5);
     });
 
-    describe('if process.env.TEST_DELAY is NOT set to a number', function() {
-      it('should leave _staggerTime at the default', function() {
-        delete process.env.TEST_DELAY;
+    it('should set _rerunCount to process.env.TEST_RERUN_COUNT', function() {
+      testRunner.configure([]);
 
-        testRunner.configure([]);
-
-        expect(testRunner._staggerTime).equal(200);
-      });
+      expect(testRunner._rerunCount).equal(2);
     });
 
-    describe('if process.env.TEST_RERUN_COUNT is set to a number', function() {
-      it('should set _rerunCount to process.env.TEST_RERUN_COUNT', function() {
-        testRunner.configure([]);
+    it('should set ._parallelism to the passed in parallelism paramater', function() {
+      testRunner.configure(['testfiles'], 4);
 
-        expect(testRunner._rerunCount).equal(2);
-      });
-    });
-
-    describe('if process.env.TEST_RERUN_COUNT is NOT set to a number', function() {
-      it('should leave _rerunCount at the default', function() {
-        delete process.env.TEST_RERUN_COUNT;
-
-        testRunner.configure([]);
-
-        expect(testRunner._rerunCount).equal(0);
-      });
+      expect(testRunner._parallelism).to.equal(4);
     });
 
     it('should call testRunner.emit with the correct event', function() {
@@ -196,22 +178,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(testRunner.emit.args).to.deep.equal([
         ['testRunner.configured'],
       ]);
-    });
-
-    describe('if parallelism paramter is passed in && > 0', function() {
-      it('should set ._parallelism to the passed in parallelism paramater', function() {
-        testRunner.configure(['testfiles'], 4);
-
-        expect(testRunner._parallelism).to.equal(4);
-      });
-    });
-
-    describe('if no parallelism is passed in', function() {
-      it('should leave ._parallelism at the default 20', function() {
-        testRunner.configure([]);
-
-        expect(testRunner._parallelism).to.equal(20);
-      });
     });
   });
 
@@ -310,6 +276,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               key1: 'value1',
               key2: 'value2',
               USING_PARENT_TEST_RUNNER: true,
+              TEST_PATH: testPath,
             },
             stdio: [null, null, null, 'ipc'],
           },
@@ -487,6 +454,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       it('should call testRunner.emit with the correct event testRunner.testFinished, test.number, '
         + 'and testRunner._rerunCount', function() {
         test.on.callsArgWith(1, 0);
+        testRunner._rerunCount = 0;
 
         testRunner._startTest(sampleSpawnArgs, testPath);
 
@@ -710,6 +678,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         'test 16', 'test 17', 'test 18', 'test 19', 'test 20',
       ];
       sinon.spy(testRunner._testFiles, 'pop');
+      testRunner._parallelism = 20;
     });
 
     afterEach(function() {
