@@ -9,8 +9,6 @@ describe('lib/cli/run.js', function() {
         let run;
         let EventEmitter;
         let EventEmitterInstance;
-        let path;
-        let uuidv4;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -22,22 +20,13 @@ describe('lib/cli/run.js', function() {
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            sinon.spy(process, 'cwd');
-
-            path = {
-                resolve: sinon.stub(),
-                normalize: sinon.stub().returns('../../../../config.js'),
-            };
-
-            uuidv4 = sinon.stub().returns('Timestamp');
 
             mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('path', path);
-            mockery.registerMock('uuid/v4', uuidv4);
+            mockery.registerMock('uuid/v4', {});
+            mockery.registerMock('../../util/config-handler.js', {});
         });
 
         afterEach(function() {
-            process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -53,10 +42,11 @@ describe('lib/cli/run.js', function() {
         let run;
         let EventEmitter;
         let EventEmitterInstance;
-        let path;
-        let configFile;
+        let configHandler;
+        let config;
         let uuidv4;
         let sauceConfig;
+        let options;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -67,7 +57,6 @@ describe('lib/cli/run.js', function() {
                 emit: sinon.stub(),
                 on: sinon.stub(),
             };
-            sinon.spy(process, 'cwd');
 
             sauceConfig = {
                 'name': 'testName',
@@ -85,19 +74,14 @@ describe('lib/cli/run.js', function() {
                 },
             };
 
-            configFile = {
+            config = {
                 testPath: 'sanity_tests',
-                components: './test/acceptance/components',
+                componentPath: './test/acceptance/components',
                 reporter: 'testReporter',
-                saucelabs: true,
-                sauceCapabilities: sauceConfig,
-                parallelism: '',
+                parallelism: 5,
                 reportPath: 'sanity_tests',
-                before: 'script',
-                testDelay: '700',
+                testDelay: 700,
                 rerunFailedTests: 5,
-                debug: true,
-                debugPort: 5555,
             };
 
             global.SimulatoError = {
@@ -106,9 +90,12 @@ describe('lib/cli/run.js', function() {
                 },
             };
 
-            path = {
-                resolve: sinon.stub(),
-                normalize: sinon.stub().returns('../../../../config.js'),
+            configHandler = {
+                createConfig: sinon.stub().returns(config),
+            };
+
+            options = {
+                opts: sinon.stub().returns({opt1: 'some option'}),
             };
 
             uuidv4 = sinon.stub().returns('Timestamp');
@@ -116,7 +103,7 @@ describe('lib/cli/run.js', function() {
             EventEmitter.returns(EventEmitterInstance);
 
             mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('path', path);
+            mockery.registerMock('../../util/config-handler.js', configHandler);
             mockery.registerMock('uuid/v4', uuidv4);
             run = require('../../../../../lib/cli/commands/run.js');
         });
@@ -139,623 +126,215 @@ describe('lib/cli/run.js', function() {
             delete process.env.TEST_RERUN_COUNT;
             delete process.env.DEBUG;
             delete process.env.DEBUG_PORT;
-            process.cwd.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
-        describe('if options.configFile is set', function() {
-            describe('if the process is not using the parent test runner', function() {
-                it('should call path.normalize once with result of process.cwd and the path loc', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {
-                        configFile: pathLoc,
-                        testPath: 'passedFile',
-                    };
-                    mockery.registerMock(pathLoc, configFile);
 
-                    run.configure(options);
+        it('should call the passed in options.opts method once with no params', function() {
+            run.configure(options);
 
-                    expect(path.normalize.args).to.deep.equal([
-                        [`${process.cwd()}/${pathLoc}`],
-                    ]);
-                });
-            });
-            describe('if the process is using the parent test runner', function() {
-                it('should call path.normalize once with result of process.cwd and the pathloc', function() {
-                    process.env.CONFIG_FILE = '../../../../config.js';
-                    process.env.USING_PARENT_TEST_RUNNER = 'true';
-                    let options = {
-                        configFile: process.env.CONFIG_FILE,
-                    };
+            expect(options.opts.args).to.deep.equal([[]]);
+        });
 
-                    mockery.registerMock(process.env.CONFIG_FILE, configFile);
+        it('should call configHandler.createConfig once', function() {
+            run.configure(options);
 
-                    run.configure(options);
+            expect(configHandler.createConfig.callCount).to.equal(1);
+        });
 
-                    expect(run.emit.args[0][1][0]).to.equal('sanity_tests');
-                });
-            });
-            it('should use the passed in config file', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {
-                    configFile: pathLoc,
-                    testPath: 'passedFile',
-                };
-                mockery.registerMock(pathLoc, configFile);
+        it('should call configHandler.createConfig with ' +
+            'the first param as the returned object from options.opts', function() {
+            run.configure(options);
+
+            expect(configHandler.createConfig.args[0][0]).to.deep.equal({opt1: 'some option'});
+        });
+
+        it('should call configHandler.createConfig with ' +
+            'the second param as a function', function() {
+            run.configure(options);
+
+            expect(configHandler.createConfig.args[0][1]).to.be.a('function');
+        });
+
+        describe('when the configHandler.createConfig callback is called', function() {
+            it('should set the process.env.COMPONENTS_PATH to config.componentPath', function() {
+                configHandler.createConfig.callsArgWith(1, config);
 
                 run.configure(options);
 
-                expect(run.emit.args[0][1][0]).to.equal('passedFile');
+                expect(process.env.COMPONENTS_PATH).to.equal(config.componentPath);
             });
-        });
-        describe('if the options.configFile is not set', function() {
-            describe('if the process is not using the parent test runner', function() {
-                it('should call path.normalize once with result of process.cwd and the path loc', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    mockery.registerMock(pathLoc, configFile);
 
-                    run.configure(options);
-
-                    expect(path.normalize.args).to.deep.equal([
-                        [`${process.cwd()}/config.js`],
-                    ]);
-                });
-            });
-            it('should use the default configFile', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
+            it('should set the process.env.REPORTER to config.reporter', function() {
+                configHandler.createConfig.callsArgWith(1, config);
 
                 run.configure(options);
 
-                expect(run.emit.args[0][1][0]).to.equal('sanity_tests');
+                expect(process.env.REPORTER).to.equal(config.reporter);
             });
-        });
 
-        describe('if the reporter is passed in by the options', function() {
-            it('should set the process.env.REPORTER to options.reporter', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {
-                    reporter: 'reporter',
-                };
-                mockery.registerMock(pathLoc, configFile);
+            it('should set the process.env.OUTPUT_PATH to config.reportPath', function() {
+                configHandler.createConfig.callsArgWith(1, config);
 
                 run.configure(options);
 
-                expect(process.env.REPORTER).to.equal(options.reporter);
+                expect(process.env.OUTPUT_PATH).to.equal(config.reportPath);
             });
-        });
 
-        describe('if the reporter is passed in by the configFile', function() {
-            it('should set the process.env.REPORTER to configFile.reporter', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
+            it('should set the process.env.TEST_DELAY to config.testDelay', function() {
+                configHandler.createConfig.callsArgWith(1, config);
 
                 run.configure(options);
 
-                expect(process.env.REPORTER).to.equal(configFile.reporter);
+                expect(process.env.TEST_DELAY).to.equal(`${config.testDelay}`);
             });
-        });
 
-        describe('if the reporter is not passed in by configFile or CLI', function() {
-            it('should not assign process.env.REPORTER', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.reporter = undefined;
-                mockery.registerMock(pathLoc, configFile);
+            it('should set the process.env.TEST_RERUN_COUNT to config.rerunFailedTests', function() {
+                configHandler.createConfig.callsArgWith(1, config);
 
                 run.configure(options);
 
-                expect(process.env.REPORTER).to.equal(undefined);
-            });
-        });
-
-        describe('if report path is loaded from options', function() {
-            describe('if reportPath is typeof boolean', function() {
-                it('should call process.cwd twice', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {reportPath: true};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.cwd.callCount).to.equal(2);
-                });
-
-                it('should set process.env.OUTPUT_PATH to process.cwd()', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {reportPath: true};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.OUTPUT_PATH).to.equal(process.cwd());
-                });
+                expect(process.env.TEST_RERUN_COUNT).to.equal(`${config.rerunFailedTests}`);
             });
 
-            describe('if reportPath is not typeof boolean', function() {
-                it('should call path.resolve with the reportPath', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {reportPath: 'path'};
-                    delete configFile.before;
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(path.resolve.args).to.deep.equal([['path']]);
-                });
-
-                it('should set process.env.OUTPUT_PATH to the resolved path', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {reportPath: 'path'};
-                    path.resolve.onCall(0).returns('filePath');
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.OUTPUT_PATH).to.equal('filePath');
-                });
-            });
-        });
-
-        describe('if report path is loaded from configFile', function() {
-            describe('if reportPath is typeof boolean', function() {
-                it('should call process.cwd twice', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    configFile.reportPath = true;
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.cwd.callCount).to.equal(2);
-                });
-
-                it('should set process.env.OUTPUT_PATH to process.cwd()', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    configFile.reportPath = true;
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.OUTPUT_PATH).to.equal(process.cwd());
-                });
-            });
-
-            describe('if reportPath is not typeof boolean', function() {
-                it('should call path.resolve with the reportPath', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    delete configFile.before;
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(path.resolve.args).to.deep.equal([['sanity_tests']]);
-                });
-
-                it('should set process.env.OUTPUT_PATH to the resolved path', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    path.resolve.onCall(0).returns('filePath');
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.OUTPUT_PATH).to.equal('filePath');
-                });
-            });
-        });
-
-        describe('if reportPath is not set in the options or CLI', function() {
-            it('should not assign process.env.OUTPUT_PATH', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.reportPath = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.OUTPUT_PATH).to.equal(undefined);
-            });
-        });
-
-        describe('if saucelabs is passed in by options', function() {
-            describe('if saucelabs is true', function() {
-                it('should set SAUCE_LABS to true', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {saucelabs: sauceConfig};
-                    mockery.registerMock(pathLoc, configFile);
+            describe('if config.saucelabs is truthy', function() {
+                it('should set the process.env.SAUCE_LABS to config.reportPath', function() {
+                    config.saucelabs = true;
+                    configHandler.createConfig.callsArgWith(1, config);
 
                     run.configure(options);
 
                     expect(process.env.SAUCE_LABS).to.equal('true');
                 });
-                it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {saucelabs: sauceConfig};
-                    mockery.registerMock(pathLoc, configFile);
 
-                    run.configure(options);
-
-                    expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
-                });
-
-                describe('if config.sauceCapabilities is not set', function() {
-                    it('should not set the SAUCE_CAPABILITIES', function() {
-                        let pathLoc = '../../../../config.js';
-                        let options = {saucelabs: sauceConfig};
-                        mockery.registerMock(pathLoc, configFile);
-                        configFile.saucelabs = undefined;
-                        configFile.sauceCapabilities = undefined;
+                describe('if process.env.TUNNEL_IDENTIFIER is falsey', function() {
+                    it('should call uuidv4 once with no params', function() {
+                        config.saucelabs = true;
+                        configHandler.createConfig.callsArgWith(1, config);
 
                         run.configure(options);
 
-                        expect(process.env.SAUCE_CAPABILITIES).to.equal(undefined);
+                        expect(uuidv4.args).to.deep.equal([[]]);
                     });
-                });
-            });
-        });
 
-        describe('if saucelabs is passed in by configFile', function() {
-            describe('if saucelabs is true', function() {
-                it('should set SAUCE_LABS to true', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.SAUCE_LABS).to.equal('true');
-                });
-                it('should set TUNNEL_IDENTIFIER to MBTTTimestamp', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    mockery.registerMock(pathLoc, configFile);
-
-                    run.configure(options);
-
-                    expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
-                });
-                describe('if configFile contains sauce capabilities', function() {
-                    it('should set the SAUCE_CAPABILITIES env variable', function() {
-                        let pathLoc = '../../../../config.js';
-                        let options = {};
-                        mockery.registerMock(pathLoc, configFile);
+                    it('should set the process.env.TUNNEL_IDENTIFIER to MBTT + returned value of uuidv4', function() {
+                        config.saucelabs = true;
+                        configHandler.createConfig.callsArgWith(1, config);
 
                         run.configure(options);
 
-                        expect(JSON.parse(process.env.SAUCE_CAPABILITIES)).to.deep.equal(sauceConfig);
+                        expect(process.env.TUNNEL_IDENTIFIER).to.equal('MBTTTimestamp');
                     });
-                    describe('if sauce capabilities has username set', function() {
-                        it('should set the SAUCE_USERNAME', function() {
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
-                            mockery.registerMock(pathLoc, configFile);
+                });
 
-                            run.configure(options);
+                describe('if process.env.TUNNEL_IDENTIFIER is truthy', function() {
+                    it('should call NOT uuidv4', function() {
+                        config.saucelabs = true;
+                        process.env.TUNNEL_IDENTIFIER = 'someTunnelId';
+                        configHandler.createConfig.callsArgWith(1, config);
 
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).username)
-                            .to.deep.equal(process.env.SAUCE_USERNAME);
-                        });
-                    });
-                    describe('if sauce capabilities does not have username set', function() {
-                        it('should not set the SAUCE_USERNAME', function() {
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
-                            delete sauceConfig.username;
-                            mockery.registerMock(pathLoc, configFile);
+                        run.configure(options);
 
-                            run.configure(options);
-
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).username).to.deep.equal(undefined);
-                        });
-                    });
-                    describe('if sauce capabilities has accessKey set', function() {
-                        it('should set the SAUCE_ACCESS_KEY', function() {
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
-                            mockery.registerMock(pathLoc, configFile);
-
-                            run.configure(options);
-
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accessKey)
-                            .to.deep.equal(process.env.SAUCE_ACCESS_KEY);
-                        });
-                    });
-                    describe('if sauce capabilities does not have accessKey set', function() {
-                        it('should not set the SAUCE_ACCESS_KEY', function() {
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
-                            delete sauceConfig.accessKey;
-                            mockery.registerMock(pathLoc, configFile);
-
-                            run.configure(options);
-
-                            expect(JSON.parse(process.env.SAUCE_CAPABILITIES).accessKey).to.deep.equal(undefined);
-                        });
+                        expect(uuidv4.callCount).to.equal(0);
                     });
                 });
             });
-        });
 
-        describe('if saucelabs is not set in options or CLI', function() {
-            it('should leave process.env.SAUCE_LABS as undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.saucelabs = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.SAUCE_LABS).to.equal(undefined);
-            });
-
-            it('should leave process.env.TUNNEL_IDENTIFIER as undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.saucelabs = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TUNNEL_IDENTIFIER).to.equal(undefined);
-            });
-
-            it('should leave process.env.SAUCE_CAPABILITIES as undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.saucelabs = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.SAUCE_CAPABILITIES).to.equal(undefined);
-            });
-
-            it('should leave process.env.SAUCE_USERNAME as undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.saucelabs = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.SAUCE_USERNAME).to.equal(undefined);
-            });
-
-            it('should leave process.env.SAUCE_ACCESS_KEY as undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.saucelabs = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.SAUCE_ACCESS_KEY).to.equal(undefined);
-            });
-        });
-
-        describe('if before is passed in from the options', function() {
-            it('should set the before script', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {before: true};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(path.resolve.callCount).to.equal(1);
-            });
-        });
-
-        describe('if before is passed in from the configFile', function() {
-            it('should set the before script', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {before: 'beforePath'};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(path.resolve.args).to.deep.equal([['beforePath']]);
-            });
-        });
-
-        describe('if before is passed in from the configFile', function() {
-            it('should set the before script', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(path.resolve.args).to.deep.equal([['script']]);
-            });
-        });
-
-        describe('if before is not passed in with configFile or ClI', function() {
-            it('should leave the before script undefined', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.BEFORE_SCRIPT).to.equal('undefined');
-            });
-        });
-
-        describe('if testDelay is passed in by the options', function() {
-            it('should set testDelay to process.env.TEST_DELAY', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {
-                    testDelay: '500',
-                };
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_DELAY).to.equal(options.testDelay);
-            });
-        });
-
-        describe('if the testDelay is passed in by the configFile', function() {
-            it('should set testDelay to process.env.TEST_DELAY', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_DELAY).to.equal(configFile.testDelay);
-            });
-        });
-
-        describe('if testDelay is not passed in with configFile or ClI', function() {
-            it('should NOT set testDelay to process.env.TEST_DELAY', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.testDelay = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_DELAY).to.equal(undefined);
-            });
-        });
-
-        describe('if rerunFailedTests is passed in by the options', function() {
-            it('should set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {
-                    rerunFailedTests: 2,
-                };
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_RERUN_COUNT).to.equal('2');
-            });
-        });
-
-        describe('if the rerunFailedTests is passed in by the configFile', function() {
-            it('should set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_RERUN_COUNT).to.equal('5');
-            });
-        });
-
-        describe('if rerunFailedTests is not passed in with configFile or ClI', function() {
-            it('should NOT set rerunFailedTests to process.env.TEST_RERUN_COUNT', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.rerunFailedTests = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.TEST_RERUN_COUNT).to.equal(undefined);
-            });
-        });
-
-        describe('if debug is passed in by the options', function() {
-            it('should set process.env.DEBUG to true', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {
-                    debug: true,
-                };
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.DEBUG).to.equal('true');
-            });
-        });
-
-        describe('if the debug is passed in by the configFile', function() {
-            it('should set process.env.DEBUG to true', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.DEBUG).to.equal('true');
-            });
-        });
-
-        describe('if debug is not passed in with configFile or ClI', function() {
-            it('should NOT set process.env.TEST_RERUN_COUNT', function() {
-                let pathLoc = '../../../../config.js';
-                let options = {};
-                configFile.debug = undefined;
-                mockery.registerMock(pathLoc, configFile);
-
-                run.configure(options);
-
-                expect(process.env.DEBUG).to.equal(undefined);
-            });
-        });
-
-        describe('if debug is set', function() {
-            describe('if debugPort is passed in by the options', function() {
-                it('should set process.env.DEBUG_PORT to debugPort', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {
-                        debug: true,
-                        debugPort: 4444,
-                    };
-                    mockery.registerMock(pathLoc, configFile);
+            describe('if config.sauceCapabilities is truthy', function() {
+                it('should set process.env.SAUCE_CAPABILITIES to the ' +
+                    'JSON.stringified version of config.sauceCapabilities', function() {
+                    config.sauceCapabilities = sauceConfig;
+                    configHandler.createConfig.callsArgWith(1, config);
 
                     run.configure(options);
 
-                    expect(process.env.DEBUG_PORT).to.equal('4444');
+                    expect(process.env.SAUCE_CAPABILITIES).to.equal(JSON.stringify(sauceConfig));
+                });
+
+                describe('if config.sauceCapabilities has property username', function() {
+                    it('should set the process.env.SAUCE_USERNAME to that username value', function() {
+                        config.sauceCapabilities = sauceConfig;
+                        configHandler.createConfig.callsArgWith(1, config);
+
+                        run.configure(options);
+
+                        expect(process.env.SAUCE_USERNAME).to.equal(sauceConfig.username);
+                    });
+                });
+
+                describe('if config.sauceCapabilities does NOT have property username', function() {
+                    it('should not set process.env.SAUCE_USERNAME to that username value', function() {
+                        delete sauceConfig.username;
+                        config.sauceCapabilities = sauceConfig;
+                        configHandler.createConfig.callsArgWith(1, config);
+
+                        run.configure(options);
+
+                        expect(process.env.SAUCE_USERNAME).to.equal(undefined);
+                    });
+                });
+
+                describe('if config.sauceCapabilities has property accessKey', function() {
+                    it('should set the process.env.SAUCE_ACCESS_KEY to that accessKey value', function() {
+                        config.sauceCapabilities = sauceConfig;
+                        configHandler.createConfig.callsArgWith(1, config);
+
+                        run.configure(options);
+
+                        expect(process.env.SAUCE_ACCESS_KEY).to.equal(sauceConfig.accessKey);
+                    });
+                });
+
+                describe('if config.sauceCapabilities does NOT have property accessKey', function() {
+                    it('should NOT set process.env.SAUCE_ACCESS_KEY to that accessKey value', function() {
+                        delete sauceConfig.accessKey;
+                        config.sauceCapabilities = sauceConfig;
+                        configHandler.createConfig.callsArgWith(1, config);
+
+                        run.configure(options);
+
+                        expect(process.env.SAUCE_ACCESS_KEY).to.equal(undefined);
+                    });
                 });
             });
 
-            describe('if the debugPort is passed in by the configFile', function() {
-                it('should set process.env.DEBUG_PORT to the configFile.debugPort', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    mockery.registerMock(pathLoc, configFile);
+            describe('if config.before is truthy', function() {
+                it('should set the process.env.BEFORE_SCRIPT to config.before', function() {
+                    config.before = 'script';
+                    configHandler.createConfig.callsArgWith(1, config);
 
                     run.configure(options);
 
-                    expect(process.env.DEBUG_PORT).to.equal('5555');
+                    expect(process.env.BEFORE_SCRIPT).to.equal('script');
                 });
             });
 
-            describe('if debugPort is not passed in with configFile or ClI', function() {
-                it('should NOT set process.env.DEBUG_PORT', function() {
-                    let pathLoc = '../../../../config.js';
-                    let options = {};
-                    configFile.debugPort = undefined;
-                    mockery.registerMock(pathLoc, configFile);
+            describe('if config.debug is truthy', function() {
+                it('should set the process.env.DEBUG to true', function() {
+                    config.debug = true;
+                    configHandler.createConfig.callsArgWith(1, config);
 
                     run.configure(options);
 
-                    expect(process.env.DEBUG_PORT).to.equal(undefined);
+                    expect(process.env.DEBUG).to.equal('true');
+                });
+            });
+
+            describe('if config.debugPort is truthy', function() {
+                it('should set the process.env.DEBUG_PORT to true', function() {
+                    config.debugPort = 1234;
+                    configHandler.createConfig.callsArgWith(1, config);
+
+                    run.configure(options);
+
+                    expect(process.env.DEBUG_PORT).to.equal('1234');
                 });
             });
         });
 
-        it('should call the emit with run.findFiles with paths passed', function() {
-            let pathLoc = '../../../../config.js';
-            let options = {};
-            configFile.reportPath = true;
-            mockery.registerMock(pathLoc, configFile);
+        it('should call run.emit with run.findFiles and [config.testPath] as first and second param', function() {
+            configHandler.createConfig.callsArgWith(1, config);
 
             run.configure(options);
 
@@ -766,56 +345,47 @@ describe('lib/cli/run.js', function() {
                 ],
             ]);
         });
-        it('should call the emit with run.findFiles with a callback as the 3rd argument', function() {
-            let pathLoc = '../../../../config.js';
-            let options = {};
-            configFile.reportPath = true;
-            mockery.registerMock(pathLoc, configFile);
+
+        it('should call run.emit with a function as the 3rd param', function() {
+            configHandler.createConfig.callsArgWith(1, config);
 
             run.configure(options);
 
             expect(run.emit.args[0].slice(2, 3)[0]).to.be.a('function');
         });
-        describe('calls the call back of run.emit for run.findFile on the 3rd argument', function() {
-            it('should call the second emit with the arguments run.testCasesReadyToValidate and files', function() {
-                let pathLoc = '../../../../config.js';
-                let files = 'files';
-                let options = {};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-                run.emit.onCall(0).callsArgWith(2, files);
+
+        describe('when the first run.emit callback is called', function() {
+            it('should call run.emit with run.testCasesReadyToValidate and ' +
+                'returned files as first and second param', function() {
+                configHandler.createConfig.callsArgWith(1, config);
+                run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
 
                 run.configure(options);
 
-                expect(run.emit.args[1].slice(0, 2)).to.deep.equal(['run.testCasesReadyToValidate', 'files']);
+                expect(run.emit.args[1].slice(0, 2)).to.deep.equal([
+                    'run.testCasesReadyToValidate',
+                    ['file1', 'file2'],
+                ]);
             });
-            it('should call the second emit with a function for the third argument', function() {
-                let pathLoc = '../../../../config.js';
-                let files = 'files';
-                let options = {};
-                configFile.reportPath = true;
-                mockery.registerMock(pathLoc, configFile);
-                run.emit.onCall(0).callsArgWith(2, files);
+
+            it('should call run.emit with a function for the third param', function() {
+                configHandler.createConfig.callsArgWith(1, config);
+                run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
 
                 run.configure(options);
 
                 expect(run.emit.args[1].slice(2, 3)[0]).to.be.a('function');
             });
-            describe('calls the callback of run.emit for testCasesReadyToValidate on the 3rd argument', function() {
-                describe('if there are validated test cases', function() {
+
+            describe('when the second run.emit callback is called', function() {
+                describe('if there are validated test cases returned', function() {
                     describe('if the process.env.USING_PARENT_TESTRUNNER is true', function() {
                         it('should call run.emit with args '+
                             '(\'run.configuredSkipOrchestration\', configureInfo) ', function() {
-                            let files = 'files';
-                            let validTestCases = ['validTestCases'];
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
-                            configFile.reportPath = false;
-                            mockery.registerMock(pathLoc, configFile);
-                            run.emit.onCall(0).callsArgWith(2, files);
-                            run.emit.onCall(1).callsArgWith(2, validTestCases);
+                            configHandler.createConfig.callsArgWith(1, config);
+                            run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
+                            run.emit.onCall(1).callsArgWith(2, ['validTestCases']);
                             process.env.USING_PARENT_TEST_RUNNER = true;
-                            process.env.CONFIG_FILE = pathLoc;
 
                             run.configure(options);
 
@@ -823,43 +393,20 @@ describe('lib/cli/run.js', function() {
                                 'run.configuredSkipOrchestration',
                                 {
                                     command: 'execute',
+                                    parallelism: 5,
                                     testFile: 'validTestCases',
                                 },
                             ]);
                         });
-                        describe('if the process is using parent test runner', function() {
-                            it('should call run.emit with args ' +
-                                '\'run.configuredSkipOrchestration\', configureInfo', function() {
-                                let files = 'files';
-                                let validTestCases = ['Case'];
-                                let pathLoc = '../../../../config.js';
-                                let options = {};
-                                process.env.USING_PARENT_TEST_RUNNER = 'true';
-                                process.env.CONFIG_FILE = `${pathLoc}`;
-                                configFile.reportPath = false;
-                                mockery.registerMock(pathLoc, configFile);
-                                run.emit.onCall(0).callsArgWith(2, files);
-                                run.emit.onCall(1).callsArgWith(2, validTestCases);
-
-                                run.configure(options);
-
-                                expect(run.emit.args[2]).to.deep.equal(['run.configuredSkipOrchestration', {
-                                    'command': 'execute', 'testFile': 'Case'}]);
-                            });
-                        });
                     });
+
                     describe('if the process.env.USING_PARENT_TESTRUNNER is NOT true', function() {
                         it('should call run.emit with (\'run.configuredRunOrchestration\', configureInfo), ' +
                         'but also have valid test cases', function() {
-                            let files = 'files';
-                            let validTestCases = ['Case'];
-                            let pathLoc = '../../../../config.js';
-                            let options = {};
+                            configHandler.createConfig.callsArgWith(1, config);
+                            run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
+                            run.emit.onCall(1).callsArgWith(2, ['validTestCases']);
                             process.env.USING_PARENT_TEST_RUNNER = 'false';
-                            configFile.reportPath = false;
-                            mockery.registerMock(pathLoc, configFile);
-                            run.emit.onCall(0).callsArgWith(2, files);
-                            run.emit.onCall(1).callsArgWith(2, validTestCases);
 
                             run.configure(options);
 
@@ -867,25 +414,21 @@ describe('lib/cli/run.js', function() {
                                 'run.configuredRunOrchestration',
                                 {
                                     command: 'run',
-                                    parallelism: '',
-                                    testFilePaths: ['Case'],
+                                    parallelism: 5,
+                                    testFilePaths: ['validTestCases'],
                                 },
                             ]);
                         });
                     });
                 });
-                describe('if there are not validated test cases', function() {
+
+                describe('if no validated test cases are returned', function() {
                     it('should throw an error no test cases found', function() {
-                        let files = 'files';
-                        let validTestCases = '';
-                        let pathLoc = '../../../../config.js';
-                        let options = {};
+                        configHandler.createConfig.callsArgWith(1, config);
+                        run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
+                        run.emit.onCall(1).callsArgWith(2, []);
                         let message = 'No test cases were found at path';
                         SimulatoError.TEST_CASE.NO_TEST_CASES_FOUND.throws({message});
-                        configFile.reportPath = false;
-                        mockery.registerMock(pathLoc, configFile);
-                        run.emit.onCall(0).callsArgWith(2, files);
-                        run.emit.onCall(1).callsArgWith(2, validTestCases);
 
                         expect(run.configure.bind(null, options)).to.throw(message);
                     });
