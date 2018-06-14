@@ -14,6 +14,7 @@ describe('lib/errors/index.js', function() {
     let EVENT;
     let CHILD;
     let CLI;
+    let RUNNER;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -28,6 +29,7 @@ describe('lib/errors/index.js', function() {
         EVENT = sinon.stub();
         CHILD = sinon.stub();
         CLI = sinon.stub();
+        RUNNER = sinon.stub();
 
         mockery.registerMock('./element', ELEMENT);
         mockery.registerMock('./action', ACTION);
@@ -38,6 +40,7 @@ describe('lib/errors/index.js', function() {
         mockery.registerMock('./event', EVENT);
         mockery.registerMock('./child', CHILD);
         mockery.registerMock('./cli', CLI);
+        mockery.registerMock('./runner', RUNNER);
     });
 
     afterEach(function() {
@@ -46,10 +49,10 @@ describe('lib/errors/index.js', function() {
         mockery.disable();
     });
 
-    it('should export 9 items on an object', function() {
+    it('should export 10 items on an object', function() {
         let result = require('../../../../lib/errors');
 
-        expect(Object.getOwnPropertyNames(result).length).to.equal(9);
+        expect(Object.getOwnPropertyNames(result).length).to.equal(10);
     });
 
     it('should have the property \'ELEMENT\' with the value from requiring'
@@ -113,5 +116,12 @@ describe('lib/errors/index.js', function() {
       let result = require('../../../../lib/errors');
 
       expect(result.CLI).to.deep.equal(CLI);
+    });
+
+    it('should have the property \'RUNNER\' with the value from requiring'
+    + ' \'./runner\'', function() {
+      let result = require('../../../../lib/errors');
+
+      expect(result.RUNNER).to.deep.equal(RUNNER);
     });
 });

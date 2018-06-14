@@ -48,6 +48,14 @@ This section details the different commands used in the CLI. All passed in CLI o
         * Number of times to rerun failedTests
         * Default is `0`
         * Example: `-F 2`
+    * `-D`, `--debug`
+        * Adds node debugging flag to spawned child processes
+        * Default is `false`
+        * Example: `-D true`
+    * `-P`, `--debugPort`
+        * Specifies the port to start on when using `--debug`
+        * Default is `32489`
+        * Example: `-P 5072`
 
 ## generate
 * Description

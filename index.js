@@ -23,6 +23,8 @@ program
     .option('-f, --configFile <path>', 'The path to the config file')
     .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
     .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests')
+    .option('-D, --debug', 'A flag to turn on debugging when spawning child processes')
+    .option('-P, --debugPort <int>', 'Starting port for debugging when spawning child processes')
     .action(commands.run);
 
 program

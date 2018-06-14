@@ -72,6 +72,16 @@ This section documents utilization of the configuration file in place of CLI opt
   * Supported algorithms: `forwardStateSpaceSearchHeuristic`
   * Example: `algorithm: forwardStateSpaceSearchHeuristic`
 
+### debug
+  * Adds node debugging flag to spawned child processes
+  * Default is `false`
+  * Example: `debug: true`
+    
+### debugPort
+  * Specifies the port to start on when using `--debug`
+  * Default is `32489`
+  * Example: `debugPort: 5072`
+
 ## Example File
     'use strict'
 
