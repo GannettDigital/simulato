@@ -23,6 +23,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             EventEmitter.returns(EventEmitterInstance);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
         });
 
         afterEach(function() {
@@ -54,6 +55,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
         let EventEmitter;
         let EventEmitterInstance;
         let eeReportHandler;
+        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -67,23 +69,32 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             };
             EventEmitter.returns(EventEmitterInstance);
             sinon.stub(process, 'hrtime').returns([123, 456]);
+            configHandler = {
+                get: sinon.stub(),
+            };
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', configHandler);
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
         });
 
         afterEach(function() {
-            delete process.env.TEST_NAME;
             process.hrtime.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        it('should set eeReportHandler._report.testName to process.env.TEST_NAME', function() {
-            process.env.TEST_NAME = 'My Test';
+        it('should call configHandler.get once with \'testName\'', function() {
+            eeReportHandler.startReport();
+
+            expect(configHandler.get.args).to.deep.equal([['testName']]);
+        });
+
+        it('should set eeReportHandler._report.testName to the configs testName', function() {
+            configHandler.get.returns('My Test');
 
             eeReportHandler.startReport();
 
@@ -123,6 +134,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -181,6 +193,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -260,6 +273,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -325,6 +339,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -452,6 +467,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -518,6 +534,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             process.send = sinon.stub();
 
             mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/config-handler.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
