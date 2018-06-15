@@ -5,29 +5,83 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/util/config-handler.js', function() {
-  describe('createConfig', function() {
-    let _;
-    let callback;
-    let defaults;
+  describe('on file being required', function() {
     let configHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/config-handler.js');
 
-      callback = sinon.spy();
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      mockery.registerMock('lodash', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('events', {EventEmitter});
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should set the object prototype of configHandler to a new EventEmitter', function() {
+      configHandler = require('../../../../lib/util/config-handler.js');
+
+      expect(Object.getPrototypeOf(configHandler)).to.deep.equal(EventEmitterInstance);
+    });
+  });
+
+  describe('createConfig', function() {
+    let _;
+    let defaults;
+    let configHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+    let uuidv4;
+    let options;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../lib/util/config-handler.js');
 
       _ = {
         merge: sinon.stub(),
+        get: sinon.stub(),
       };
 
       defaults = {
         defaultKey: 'defaultValue',
       };
 
+      options = {
+        opts: sinon.stub().returns({cliOption: 'a cli option'}),
+        name: sinon.stub().returns('run'),
+      };
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      uuidv4 = sinon.stub();
+
       mockery.registerMock('lodash', _);
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', defaults);
+      mockery.registerMock('uuid/v4', uuidv4);
+      mockery.registerMock('events', {EventEmitter});
 
       configHandler = require('../../../../lib/util/config-handler.js');
       configHandler._getBaseConfig = sinon.stub();
@@ -44,7 +98,7 @@ describe('lib/util/config-handler.js', function() {
     });
 
     describe('if process.env.USING_PARENT_TEST_RUNNER is truthy', function() {
-      it('should freeze the returned config making it immutable', function() {
+      it('should freeze the config making it immutable', function() {
         process.env.USING_PARENT_TEST_RUNNER = 'true';
         process.env.TEST_PATH = 'a/test/path';
         process.env.PARENT_CONFIG = JSON.stringify({
@@ -52,13 +106,12 @@ describe('lib/util/config-handler.js', function() {
           key2: 'value2',
         });
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
-        expect(callback.args[0][0]).to.be.frozen;
+        expect(configHandler._config).to.be.frozen;
       });
 
-      it('should call the callback passing in the config set from ' +
-        'process.env.PARENT_CONFIG and process.env.TEST_PATH', function() {
+      it('set the config using process.env.PARENT_CONFIG, process.env.TEST_PATH', function() {
         process.env.USING_PARENT_TEST_RUNNER = 'true';
         process.env.TEST_PATH = 'a/test/path';
         process.env.PARENT_CONFIG = JSON.stringify({
@@ -66,36 +119,73 @@ describe('lib/util/config-handler.js', function() {
           key2: 'value2',
         });
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
-        expect(callback.args).to.deep.equal([[{
+        expect(configHandler._config).to.deep.equal({
           key1: 'value1',
           key2: 'value2',
           testPath: 'a/test/path',
-        }]]);
+          testName: 'path',
+        });
+      });
+
+      it('should call the passed in options.name once with no args', function() {
+        process.env.USING_PARENT_TEST_RUNNER = 'true';
+        process.env.TEST_PATH = 'a/test/path';
+        process.env.PARENT_CONFIG = JSON.stringify({
+          key1: 'value1',
+          key2: 'value2',
+        });
+
+        configHandler.createConfig(options);
+
+        expect(options.name.args).to.deep.equal([[]]);
+      });
+
+      it('should call configHandler.emit with \'configHandler.configCreated\' and '
+        + 'the passed in options.name', function() {
+        process.env.USING_PARENT_TEST_RUNNER = 'true';
+        process.env.TEST_PATH = 'a/test/path';
+        process.env.PARENT_CONFIG = JSON.stringify({
+          key1: 'value1',
+          key2: 'value2',
+        });
+
+        configHandler.createConfig(options);
+
+        expect(configHandler.emit.args).to.deep.equal([[
+          'configHandler.configCreated',
+          'run',
+        ]]);
       });
     });
 
     it('should call lodash merge passing in an empty object, and the required in defaults', function() {
-      configHandler.createConfig({}, callback);
+      configHandler.createConfig(options);
 
       expect(_.merge.args).to.deep.equal([[{}, {defaultKey: 'defaultValue'}]]);
     });
 
     it('should call configHandler._getBaseConfig with the passed in cliOptions as the first param', function() {
-      configHandler.createConfig({cliOption: 'a cli option'}, callback);
+      configHandler.createConfig(options);
 
       expect(configHandler._getBaseConfig.args[0][0]).to.deep.equal({cliOption: 'a cli option'});
     });
 
     it('should call configHandler._getBaseConfig with a function as the second param', function() {
-      configHandler.createConfig({cliOption: 'a cli option'}, callback);
+      configHandler.createConfig(options);
 
       expect(configHandler._getBaseConfig.args[0][1]).to.deep.a('function');
     });
 
+    it('should call the passed in cli.opts once with no params', function() {
+      configHandler.createConfig(options);
+
+      expect(options.opts.args).to.deep.equal([[]]);
+    });
+
     it('should call configHandler._getBaseConfig once', function() {
-      configHandler.createConfig({cliOption: 'a cli option'}, callback);
+      configHandler.createConfig(options);
 
       expect(configHandler._getBaseConfig.callCount).to.equal(1);
     });
@@ -104,7 +194,7 @@ describe('lib/util/config-handler.js', function() {
       it('should call lodash merge passing in an current config, and returned configFile object', function() {
         configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
         expect(_.merge.args[1]).to.deep.equal([
           {},
@@ -112,21 +202,29 @@ describe('lib/util/config-handler.js', function() {
         ]);
       });
 
+      it('should call the passed in cli.opts twice', function() {
+        configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
+
+        configHandler.createConfig(options);
+
+        expect(options.opts.args).to.deep.equal([[], []]);
+      });
+
       it('should call lodash merge passing in an current config, and passed in cliOptions', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
-        configHandler.createConfig({cliOption: 'a cli option value'}, callback);
+        configHandler.createConfig(options);
 
         expect(_.merge.args[2]).to.deep.equal([
           {},
-          {cliOption: 'a cli option value'},
+          {cliOption: 'a cli option'},
         ]);
       });
 
       it('should call lodash merge a total of 3 times', function() {
         configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
         expect(_.merge.callCount).to.equal(3);
       });
@@ -134,34 +232,134 @@ describe('lib/util/config-handler.js', function() {
       it('should call configHandler._resolvePaths once with the current config as its params', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
         expect(configHandler._resolvePaths.args).to.deep.equal([[{}]]);
       });
 
-      it('should set process.env.PARENT_CONFIG as the JSON stringified version of the current config', function() {
+      it('should freeze the config making it immutable', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
-        expect(process.env.PARENT_CONFIG).to.equal(JSON.stringify({}));
+        expect(configHandler._config).to.be.frozen;
       });
 
-      it('should freeze the returned config making it immutable', function() {
+      it('should call the passed in options.name once with no args', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
-        expect(callback.args[0][0]).to.be.frozen;
+        expect(options.name.args).to.deep.equal([[]]);
       });
 
-      it('should call the callback passing in the config set', function() {
+      it('should call configHandler.emit with \'configHandler.configCreated\' and '
+        + 'the passed in options.name', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
-        configHandler.createConfig({}, callback);
+        configHandler.createConfig(options);
 
-        expect(callback.args).to.deep.equal([[{}]]);
+        expect(configHandler.emit.args).to.deep.equal([[
+          'configHandler.configCreated',
+          'run',
+        ]]);
       });
+    });
+  });
+
+  describe('get', function() {
+    let configHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+    let _;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      _ = {
+        get: sinon.stub().returns('value'),
+      };
+
+      mockery.registerMock('lodash', _);
+      mockery.registerMock('path', {});
+      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('events', {EventEmitter});
+
+      configHandler = require('../../../../lib/util/config-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call lodash get once, passing the config handlers current config, ' +
+      'and the passed in property path', function() {
+      configHandler.get('property.path');
+
+      expect(_.get.args).to.deep.equal([[
+        {},
+        'property.path',
+      ]]);
+    });
+
+    it('should return the value from the call to lodash get', function() {
+      let result;
+
+      result = configHandler.get('property.path');
+
+      expect(result).to.equal('value');
+    });
+  });
+
+  describe('get all', function() {
+    let configHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
+      mockery.registerMock('lodash', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('events', {EventEmitter});
+
+      configHandler = require('../../../../lib/util/config-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should return the configHandlers current config', function() {
+      let result;
+      configHandler._config = {key: 'value'};
+
+      result = configHandler.getAll();
+
+      expect(result).to.deep.equal({key: 'value'});
     });
   });
 
@@ -169,6 +367,8 @@ describe('lib/util/config-handler.js', function() {
     let callback;
     let path;
     let configHandler;
+    let EventEmitter;
+    let EventEmitterInstance;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -180,9 +380,18 @@ describe('lib/util/config-handler.js', function() {
         normalize: sinon.stub(),
       };
 
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('events', {EventEmitter});
 
       configHandler = require('../../../../lib/util/config-handler.js');
     });
@@ -275,6 +484,8 @@ describe('lib/util/config-handler.js', function() {
     let path;
     let configHandler;
     let config;
+    let EventEmitter;
+    let EventEmitterInstance;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -291,11 +502,21 @@ describe('lib/util/config-handler.js', function() {
         testPath: './testPath',
       };
 
+      EventEmitter = sinon.stub();
+      EventEmitterInstance = {
+        emit: sinon.stub(),
+        on: sinon.stub(),
+      };
+      EventEmitter.returns(EventEmitterInstance);
+
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('events', {EventEmitter});
 
       configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler._config = config;
     });
 
     afterEach(function() {
