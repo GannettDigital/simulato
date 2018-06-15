@@ -75,7 +75,7 @@ describe('lib/util/config-handler.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      uuidv4 = sinon.stub();
+      uuidv4 = sinon.stub().returns('uniqueID');
 
       mockery.registerMock('lodash', _);
       mockery.registerMock('path', {});
@@ -219,6 +219,26 @@ describe('lib/util/config-handler.js', function() {
           {},
           {cliOption: 'a cli option'},
         ]);
+      });
+
+      describe('if configHandler.config saucelabs property is truthy', function() {
+        it('should call uuidv4 once wiht no params', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
+          configHandler._config = {saucelabs: true};
+
+          configHandler.createConfig(options);
+
+          expect(uuidv4.args).to.deep.equal([[]]);
+        });
+
+        it('set configHandler._config.tunnelIdentifier to \'MBTT\' + the returned value from uuidv4', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
+          configHandler._config = {saucelabs: true};
+
+          configHandler.createConfig(options);
+
+          expect(configHandler._config.tunnelIdentifier).to.equal('MBTTuniqueID');
+        });
       });
 
       it('should call lodash merge a total of 3 times', function() {
