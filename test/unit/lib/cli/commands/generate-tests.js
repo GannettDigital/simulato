@@ -9,7 +9,6 @@ describe('lib/cli/generate.js', function() {
         let generate;
         let EventEmitter;
         let EventEmitterInstance;
-        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -22,12 +21,8 @@ describe('lib/cli/generate.js', function() {
             };
             EventEmitter.returns(EventEmitterInstance);
 
-            configHandler = {
-                createConfig: sinon.stub(),
-            };
-
             mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('../../util/config-handler.js', configHandler);
+            mockery.registerMock('../../util/config-handler.js', {});
         });
 
         afterEach(function() {
@@ -47,8 +42,6 @@ describe('lib/cli/generate.js', function() {
         let EventEmitter;
         let EventEmitterInstance;
         let configHandler;
-        let config;
-        let options;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -61,18 +54,8 @@ describe('lib/cli/generate.js', function() {
                 on: sinon.stub(),
             };
 
-            config = {
-                componentPath: './test/acceptance/components',
-                outputPath: './test/outputPath',
-                technique: 'actionFocused',
-            };
-
-            options = {
-                opts: sinon.stub().returns({opt1: 'some option'}),
-            };
-
             configHandler = {
-                createConfig: sinon.stub(),
+                get: sinon.stub().returns('./test/acceptance/components'),
             };
 
             EventEmitter.returns(EventEmitterInstance);
@@ -83,98 +66,39 @@ describe('lib/cli/generate.js', function() {
         });
 
         afterEach(function() {
-            delete process.env.PLANNER_OUTPUT_PATH;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        it('should call the passed in options.opts method once with no params', function() {
-            generate.configure(options);
+        it('should call configHandler.get once with \'componentPath\'', function() {
+            generate.configure();
 
-            expect(options.opts.args).to.deep.equal([[]]);
+            expect(configHandler.get.args).to.deep.equal([['componentPath']]);
         });
 
-        it('should call configHandler.createConfig once', function() {
-            generate.configure(options);
+        it('should call generate.emit with \'generate.loadComponents\', ' +
+            'and the returned configs componentPath', function() {
+            generate.configure();
 
-            expect(configHandler.createConfig.callCount).to.equal(1);
+            expect(generate.emit.args[0]).to.deep.equal([
+                'generate.loadComponents',
+                './test/acceptance/components',
+            ]);
         });
 
-        it('should call configHandler.createConfig with ' +
-            'the first param as the returned object from options.opts', function() {
-            generate.configure(options);
+        it('should call generate.emit with \'generate.configured\'', function() {
+            generate.configure();
 
-            expect(configHandler.createConfig.args[0][0]).to.deep.equal({opt1: 'some option'});
+            expect(generate.emit.args[1]).to.deep.equal([
+                'generate.configured',
+            ]);
         });
 
-        it('should call configHandler.createConfig with ' +
-            'the second param as a function', function() {
-            generate.configure(options);
+        it('should call generate.emit twice', function() {
+            generate.configure();
 
-            expect(configHandler.createConfig.args[0][1]).to.be.a('function');
-        });
-
-        describe('when the configHandler.createConfig callback is called', function() {
-            it('should call generate.emit with \'generate.loadComponents\', ' +
-                'and the returned config.compoentPath', function() {
-                configHandler.createConfig.callsArgWith(1, config);
-
-                generate.configure(options);
-
-                expect(generate.emit.args[0]).to.deep.equal([
-                    'generate.loadComponents',
-                    config.componentPath,
-                ]);
-            });
-
-            it('should set process.env.PLANNER_OUTPUT_PATH to the returned config.outputPath', function() {
-                configHandler.createConfig.callsArgWith(1, config);
-
-                generate.configure(options);
-
-                expect(process.env.PLANNER_OUTPUT_PATH).to.equal(config.outputPath);
-            });
-
-            describe('if config.actionToCover is truthy', function() {
-                it('should call generate.emit with \'generate.configured\', ' +
-                    'and an object containing config.actionToCover & config.technique', function() {
-                    config.actionToCover = 'testAction';
-                    configHandler.createConfig.callsArgWith(1, config);
-
-                    generate.configure(options);
-
-                    expect(generate.emit.args[1]).to.deep.equal([
-                        'generate.configured',
-                        {
-                            actionToCover: 'testAction',
-                            technique: config.technique,
-                        },
-                    ]);
-                });
-            });
-
-            it('should call generate.emit with \'generate.configured\', ' +
-                'and an object containing config.technique', function() {
-                configHandler.createConfig.callsArgWith(1, config);
-
-                generate.configure(options);
-
-                expect(generate.emit.args[1]).to.deep.equal([
-                    'generate.configured',
-                    {
-                        technique: config.technique,
-                    },
-                ]);
-            });
-
-            it('should call generate.emit twice', function() {
-                configHandler.createConfig.callsArgWith(1, config);
-
-                generate.configure(options);
-
-                expect(generate.emit.callCount).to.equal(2);
-            });
+            expect(generate.emit.callCount).to.equal(2);
         });
     });
 });

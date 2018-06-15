@@ -5,7 +5,7 @@
 global.SimulatoError = require('./lib/errors');
 const program = require('commander');
 const packageJSON = require('./package.json');
-const commands = require('./lib/cli/commands');
+const configHandler = require('./lib/util/config-handler.js');
 const initializeEventDispatchers = require('./lib/util/initialize-event-dispatchers');
 initializeEventDispatchers();
 
@@ -25,7 +25,7 @@ program
     .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests')
     .option('-D, --debug', 'A flag to turn on debugging when spawning child processes')
     .option('-P, --debugPort <int>', 'Starting port for debugging when spawning child processes')
-    .action(commands.run);
+    .action(configHandler.createConfig);
 
 program
     .command('generate')
@@ -34,6 +34,6 @@ program
     .option('-a, --actionToCover <action>', 'The action to generate a test for. Specfied as component.ACTION_NAME')
     .option('-t, --technique <technique>', 'The test generation technique')
     .option('-f, --configFile <path>', 'The path to the config file')
-    .action(commands.generate);
+    .action(configHandler.createConfig);
 
 program.parse(process.argv);

@@ -27,6 +27,7 @@ describe('lib/cli/orchestration/before.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', {});
+            mockery.registerMock('../../util/config-handler.js', {});
         });
 
         afterEach(function() {
@@ -59,6 +60,7 @@ describe('lib/cli/orchestration/before.js', function() {
         let Saucelabs;
         let functionToRequire;
         let concurrent;
+        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -75,31 +77,63 @@ describe('lib/cli/orchestration/before.js', function() {
                 connect: sinon.stub(),
             };
 
+            configHandler = {
+                get: sinon.stub(),
+            };
+
             concurrent = sinon.stub();
-            process.env.SAUCE_LABS = 'true';
-            process.env.BEFORE_SCRIPT = 'path/to/script';
             functionToRequire = sinon.stub();
             mockery.registerMock('path/to/script', functionToRequire);
 
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', Saucelabs);
+            mockery.registerMock('../../util/config-handler.js', configHandler);
 
             before = require('../../../../../lib/cli/orchestration/before.js');
         });
 
         afterEach(function() {
-            delete process.env.BEFORE_SCRIPT;
-            delete process.env.SAUCE_LABS;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        describe('when process.env.BEFORE_SCRIPT is set', function() {
+        it('should call configHanlder.get twice', function() {
+            before.runScripts({someConfig: 'aConfigValue'});
+
+            expect(configHandler.get.callCount).to.equal(2);
+        });
+
+        it('should call configHanlder.get with \'before\'', function() {
+            before.runScripts({someConfig: 'aConfigValue'});
+
+            expect(configHandler.get.args[0]).to.deep.equal(['before']);
+        });
+
+        describe('when configHandler.get(\'before\') is truthy', function() {
+            it('should call configHanlder.get thrice', function() {
+                configHandler.get.onCall(0).returns(true);
+                configHandler.get.onCall(1).returns('path/to/script');
+
+                before.runScripts({someConfig: 'aConfigValue'});
+
+                expect(configHandler.get.callCount).to.equal(3);
+            });
+
+            it('should call configHanlder.get with \'before\'', function() {
+                configHandler.get.onCall(0).returns(true);
+                configHandler.get.onCall(1).returns('path/to/script');
+
+                before.runScripts({someConfig: 'aConfigValue'});
+
+                expect(configHandler.get.args[1]).to.deep.equal(['before']);
+            });
+
             it(`should call before.emit once with the event 'before.readyToRunFunctions' `
             + `an array containing the required sciprt, and the passed on configureInfo`, function() {
-                delete process.env.SAUCE_LABS;
+                configHandler.get.onCall(0).returns(true);
+                configHandler.get.onCall(1).returns('path/to/script');
 
                 before.runScripts({someConfig: 'aConfigValue'});
 
@@ -113,12 +147,9 @@ describe('lib/cli/orchestration/before.js', function() {
             });
         });
 
-        describe('when process.env.BEFORE_SCRIPT is NOT set', function() {
+        describe('when configHandler.get(\'before\') is falsey', function() {
             it(`should call before.emit once with the event 'before.readyToRunFunctions' `
                 + `an empty array, and the passed on configureInfo`, function() {
-                delete process.env.SAUCE_LABS;
-                delete process.env.BEFORE_SCRIPT;
-
                 before.runScripts({someConfig: 'aConfigValue'});
 
                 expect(before.emit.args).to.deep.equal([
@@ -131,9 +162,9 @@ describe('lib/cli/orchestration/before.js', function() {
             });
         });
 
-        describe('when process.env.SAUCE_LABS is set to true', function() {
+        describe('when configHandler.get(\'saucelabs\') is truthy', function() {
             it('should call Saucelabs.connect once', function() {
-                delete process.env.BEFORE_SCRIPT;
+                configHandler.get.onCall(1).returns(true);
 
                 before.runScripts({someConfig: 'aConfigValue'});
 
@@ -141,7 +172,7 @@ describe('lib/cli/orchestration/before.js', function() {
             });
 
             it('should call Saucelabs.connect passing in a callback function', function() {
-                delete process.env.BEFORE_SCRIPT;
+                configHandler.get.onCall(1).returns(true);
 
                 before.runScripts({someConfig: 'aConfigValue'});
 
@@ -151,7 +182,7 @@ describe('lib/cli/orchestration/before.js', function() {
             describe('when the callback function is called', function() {
                 describe('if an error was returned', function() {
                     it('should throw the error', function() {
-                        delete process.env.BEFORE_SCRIPT;
+                        configHandler.get.onCall(1).returns(true);
                         Saucelabs.connect.callsArgWith(0, new Error('Threw an error'));
                         let errMessage;
 
@@ -167,7 +198,7 @@ describe('lib/cli/orchestration/before.js', function() {
                 describe('if no error was returned', function() {
                     it(`should call before.emit once with the event 'before.readyToRunFunctions' `
                         + `an empty array, and the passed on configureInfo`, function() {
-                        delete process.env.BEFORE_SCRIPT;
+                        configHandler.get.onCall(1).returns(true);
                         Saucelabs.connect.callsArgWith(0, null);
 
                         before.runScripts({someConfig: 'aConfigValue'});
@@ -184,14 +215,22 @@ describe('lib/cli/orchestration/before.js', function() {
             });
         });
 
-        describe('when both process.env.BEFORE_SCRIPT and process.env.SAUCE_LABS are set', function() {
+        describe('when both configHandler.get(\'before\') and configHandler.get(\'saucelabs\') are truthy', function() {
             it('should call Saucelabs.connect once', function() {
+                configHandler.get.onCall(0).returns(true);
+                configHandler.get.onCall(1).returns('path/to/script');
+                configHandler.get.onCall(2).returns(true);
+
                 before.runScripts({someConfig: 'aConfigValue'});
 
                 expect(Saucelabs.connect.callCount).to.equal(1);
             });
 
             it('should call Saucelabs.connect passing in a callback function', function() {
+                configHandler.get.onCall(0).returns(true);
+                configHandler.get.onCall(1).returns('path/to/script');
+                configHandler.get.onCall(2).returns(true);
+
                 before.runScripts({someConfig: 'aConfigValue'});
 
                 expect(Saucelabs.connect.args[0][0]).to.be.a('function');
@@ -200,6 +239,9 @@ describe('lib/cli/orchestration/before.js', function() {
             describe('when the callback function is called', function() {
                 describe('if an error was returned', function() {
                     it('should throw the error', function() {
+                        configHandler.get.onCall(0).returns(true);
+                        configHandler.get.onCall(1).returns('path/to/script');
+                        configHandler.get.onCall(2).returns(true);
                         Saucelabs.connect.callsArgWith(0, new Error('Threw an error'));
                         let errMessage;
 
@@ -216,6 +258,9 @@ describe('lib/cli/orchestration/before.js', function() {
                     it(`should call before.emit once with the event 'before.readyToRunFunctions' `
                         + `an array containing the required sciprt, and the passed on configureInfo`, function() {
                         Saucelabs.connect.callsArgWith(0, null);
+                        configHandler.get.onCall(0).returns(true);
+                        configHandler.get.onCall(1).returns('path/to/script');
+                        configHandler.get.onCall(2).returns(true);
 
                         before.runScripts({someConfig: 'aConfigValue'});
 
@@ -264,6 +309,7 @@ describe('lib/cli/orchestration/before.js', function() {
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', Saucelabs);
+            mockery.registerMock('../../util/config-handler.js', {});
 
             before = require('../../../../../lib/cli/orchestration/before.js');
         });

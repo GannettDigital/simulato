@@ -11,6 +11,7 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
     let writeReportToDisk;
     let clock;
     let now;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -24,8 +25,13 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
         writeFileSync: sinon.stub(),
       };
 
+      configHandler = {
+        get: sinon.stub(),
+      };
+
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
+      mockery.registerMock('../../util/config-handler.js', configHandler);
 
       now = Date.now();
       clock = sinon.useFakeTimers(now);
@@ -40,25 +46,31 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
       clock.restore();
     });
 
-    describe('if process.env.OUTPUT_PATH is truthy', function() {
-      it('should call path.resolve with process.env.OUTPUT_PATH and date string test name', function() {
-        process.env.OUTPUT_PATH = './';
+    it('should call configHandler.get with \'reportPath\'', function() {
+      writeReportToDisk('test report');
+
+      expect(configHandler.get.args).to.deep.equal([['reportPath']]);
+    });
+
+    describe('if configHandler.get(\'reportPath\') is truthy', function() {
+      it('should call path.resolve with the configs reportPath and date string test name', function() {
         let report = 'test report';
+        configHandler.get.returns('./reportPath');
 
         writeReportToDisk(report);
 
         expect(path.resolve.args).to.deep.equal([
           [
-            './',
+            './reportPath',
             `${now}-test-report.json`,
           ],
         ]);
       });
 
       it('should call fs.writeFileSync with filepath and passed in report', function() {
-        process.env.OUTPUT_PATH = './';
         let report = 'test report';
         path.resolve.returns(`./${now}-test-report.json`);
+        configHandler.get.returns('./reportPath');
 
         writeReportToDisk(report);
 
@@ -71,9 +83,8 @@ describe('lib/runner/test-runner/write-report-to-disk.js', function() {
       });
     });
 
-    describe('if process.env.OUTPUT_PATH is falsey', function() {
+    describe('if configHandler.get(\'reportPath\') is falsey', function() {
       it('should not call path.resolve', function() {
-        delete process.env.OUTPUT_PATH;
         let report = 'test report';
 
         writeReportToDisk(report);
