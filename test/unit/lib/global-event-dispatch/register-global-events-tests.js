@@ -17,6 +17,8 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
     let validators;
     let dataStore;
     let registerGlobalEvents;
+    let configHandler;
+    let commands;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -72,6 +74,13 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         dataStore = {
             create: sinon.stub(),
         };
+        configHandler = {
+            on: sinon.stub(),
+        };
+        commands = {
+            run: sinon.stub(),
+            generate: sinon.stub(),
+        };
 
         mockery.registerMock('../runner/runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
         mockery.registerMock('../planner/planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
@@ -84,6 +93,8 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         mockery.registerMock('../util/oracle.js', oracle);
         mockery.registerMock('../util/validators', validators);
         mockery.registerMock('../util/data-store.js', dataStore);
+        mockery.registerMock('../util/config-handler.js', configHandler);
+        mockery.registerMock('../cli/commands', commands);
 
         registerGlobalEvents = require('../../../../lib/global-event-dispatch/register-global-events.js');
     });
@@ -118,8 +129,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
 
     describe('when the callback is called for cliEventDispatch.on with the event ' +
         'cliEventDispatch.loadComponents', function() {
-        it('should call plannerEventDispatch.emit once with the event \'planner.generateConfigured\''+
-            'and the passed in configureInfo', function() {
+        it('should call plannerEventDispatch.emit once with the event \'planner.generateConfigured\'', function() {
             cliEventDispatch.on.onCall(1).callsArgWith(1, 'myConfigureInfo');
 
             registerGlobalEvents();
@@ -127,7 +137,6 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             expect(plannerEventDispatch.emit.args).to.deep.equal([
                 [
                     'planner.generateConfigured',
-                    'myConfigureInfo',
                 ],
             ]);
         });
@@ -461,5 +470,28 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             'planner.createDataStore',
             dataStore.create,
         ]);
+    });
+
+    it('should call configHandler.on once', function() {
+        registerGlobalEvents();
+
+        expect(configHandler.on.callCount).to.equal(1);
+    });
+
+    it('should call configHandler.on with the event \'configHandler.configCreated\'', function() {
+        registerGlobalEvents();
+
+        expect(configHandler.on.args[0][0]).to.equal('configHandler.configCreated');
+    });
+
+    describe('when the callback is called for configHandler.on with the event ' +
+        'configHandler.configCreated', function() {
+        it('should call commands with the passed in command', function() {
+            configHandler.on.onCall(0).callsArgWith(1, 'run');
+
+            registerGlobalEvents();
+
+            expect(commands.run.args).to.deep.equal([[]]);
+        });
     });
 });

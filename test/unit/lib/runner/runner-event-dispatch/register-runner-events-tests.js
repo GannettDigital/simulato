@@ -11,6 +11,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
   let runnerEventDispatch;
   let writeReportToDisk;
   let reporters;
+  let debugPortHandler;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -40,11 +41,15 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
         printReportSummary: sinon.stub(),
       },
     };
+    debugPortHandler = {
+      getPort: sinon.stub(),
+    };
 
     mockery.registerMock('../test-runner/test-runner.js', testRunner);
     mockery.registerMock('../test-runner/test-report-handler.js', testReportHandler);
     mockery.registerMock('../report-to-disk', writeReportToDisk);
     mockery.registerMock('../reporters', reporters);
+    mockery.registerMock('../test-runner/debug-port-handler.js', debugPortHandler);
   });
 
   afterEach(function() {
@@ -153,13 +158,26 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
       ]);
     });
 
-    it('should call testRunner.on 5 times', function() {
+    it('should call testRunner.on with testRunner.getDebugPort'
+      + 'and debugPortHandler.getPort', function() {
       registerRunnerEvents = require('../../../../../'
         + 'lib/runner/runner-event-dispatch/register-runner-events.js');
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(testRunner.on.callCount).to.equal(5);
+      expect(testRunner.on.args[5]).to.deep.equal([
+        'testRunner.getDebugPort',
+        debugPortHandler.getPort,
+      ]);
+    });
+
+    it('should call testRunner.on 6 times', function() {
+      registerRunnerEvents = require('../../../../../'
+        + 'lib/runner/runner-event-dispatch/register-runner-events.js');
+
+      registerRunnerEvents(runnerEventDispatch);
+
+      expect(testRunner.on.callCount).to.equal(6);
     });
 
     it('should call testReportHandler.on with testReportHandler.testReportFinalized'
