@@ -79,6 +79,7 @@ describe('lib/util/expected-state.js', function() {
                 _components: new Map(),
                 _dynamicAreas: new Map(),
                 _stashedDynamicAreas: [],
+                _stashedDynamicAreasComponentsAndStates: new Map(),
                 _stashedComponents: [],
                 eventEmitter: EventEmitterInstance,
                 _dataStore: {},
@@ -124,10 +125,12 @@ describe('lib/util/expected-state.js', function() {
                     name: 'model',
                 },
                 _stashedDynamicAreas: [],
+                _stashedDynamicAreasComponentsAndStates: new Map(),
             };
             clonedExpectedState = {
                 createAndAddComponent: sinon.stub(),
                 createComponent: sinon.stub(),
+                _stashedDynamicAreasComponentsAndStates: new Map(),
                 _stashedComponents: [],
                 _stashedDynamicAreas: [],
             };
