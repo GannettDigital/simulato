@@ -69,6 +69,66 @@ describe('lib/util/emitter.js', function() {
         });
     });
 
+    describe('emit', function() {
+        let myThis;
+        let Emitter;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/emitter.js');
+
+            myThis = Object.create({
+                emit: sinon.stub(),
+            });
+
+            mockery.registerMock('events', {});
+
+            Emitter = require('../../../../lib/util/emitter.js');
+        });
+
+        afterEach(function() {
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call emit from this\' prototype once with function arguments', function() {
+            Emitter.emit.call(myThis, 'param1', 'param2');
+
+            expect(myThis.emit.args).to.deep.equal([
+                [
+                    'param1',
+                    'param2',
+                ],
+            ]);
+        });
+
+        it('should call emit from this\' prototype with the context of the current this', function() {
+            Emitter.emit.call(myThis, 'param1', 'param2');
+
+            expect(myThis.emit.thisValues).to.deep.equal([
+                myThis,
+            ]);
+        });
+
+        describe('if this._parentEmitter is truthy', function() {
+            it('should call this._parentEmitter.emit once with function arguments', function() {
+                myThis._parentEmitter = {
+                    emit: sinon.stub(),
+                };
+
+                Emitter.emit.call(myThis, 'param1', 'param2');
+
+                expect(myThis._parentEmitter.emit.args).to.deep.equal([
+                    [
+                        'param1',
+                        'param2',
+                    ],
+                ]);
+            });
+        });
+    });
+
     describe('emitAsync', function() {
         let clock;
         let myThis;
@@ -97,7 +157,7 @@ describe('lib/util/emitter.js', function() {
             mockery.disable();
         });
 
-        it('should call this.emit once with function arguments on the next tick', function() {
+        it('should call emit from this\' prototype once with function arguments on the next tick', function() {
             Emitter.emitAsync.call(myThis, 'param1', 'param2');
 
             clock.tick();
@@ -108,6 +168,35 @@ describe('lib/util/emitter.js', function() {
                     'param2',
                 ],
             ]);
+        });
+
+        it('should call this.emit from this\' prototype with the context of the current ' +
+            'this on the next tick', function() {
+            Emitter.emitAsync.call(myThis, 'param1', 'param2');
+
+            clock.tick();
+
+            expect(myThis.emit.thisValues).to.deep.equal([
+                myThis,
+            ]);
+        });
+
+        describe('if this._parentEmitter is truthy', function() {
+            it('should call this._parentEmitter.emit once with function arguments on the next tick', function() {
+                myThis._parentEmitter = {
+                    emit: sinon.stub(),
+                };
+                Emitter.emitAsync.call(myThis, 'param1', 'param2');
+
+                clock.tick();
+
+                expect(myThis._parentEmitter.emit.args).to.deep.equal([
+                    [
+                        'param1',
+                        'param2',
+                    ],
+                ]);
+            });
         });
     });
 
