@@ -110,20 +110,20 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         expect(globalEventDispatch.on.args[0][0]).to.equal('generate.configured');
     });
 
-    describe('when the callback of globalEventDispatch.on with the event '  +
+    describe('when the callback of globalEventDispatch.on with the event ' +
         '\'generate.configured\' is called', function() {
             it('should call plannerEventDispatch.emit with the event \'planner.generateConfigured\'', function() {
                 globalEventDispatch.on.onCall(0).callsArg(1);
-                
+
                 registerGlobalEvents(globalEventDispatch);
-        
+
                 expect(plannerEventDispatch.emit.args).to.deep.equal([
-                    ['planner.generateConfigured']
+                    ['planner.generateConfigured'],
                 ]);
             });
     });
 
-    it('should call globalEventDispatch.on with the event \'findFiles.search\' ' + 
+    it('should call globalEventDispatch.on with the event \'findFiles.search\' ' +
         'and findFiles.search', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -184,20 +184,20 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         expect(globalEventDispatch.on.args[3][0]).to.equal('runner.ended');
     });
 
-    describe('when the callback of globalEventDispatch.on with the event '  +
+    describe('when the callback of globalEventDispatch.on with the event ' +
         '\'runner.ended\' is called', function() {
             it('should call cliEventDispatch.emit with the event \'cli.commandFinished\'', function() {
                 globalEventDispatch.on.onCall(3).callsArg(1);
-                
+
                 registerGlobalEvents(globalEventDispatch);
-        
+
                 expect(cliEventDispatch.emit.args).to.deep.equal([
-                    ['cli.commandFinished']
+                    ['cli.commandFinished'],
                 ]);
             });
     });
 
-    it('should call globalEventDispatch.on with the event \componentHandler.configure\' ' + 
+    it('should call globalEventDispatch.on with the event \componentHandler.configure\' ' +
         'and componentHandler.configure', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -207,7 +207,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \componentHandler.getComponentActions\' ' + 
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponentActions\' ' +
         'and componentHandler.getComponentActions', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -217,7 +217,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \componentHandler.getComponents\' ' + 
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponents\' ' +
         'and componentHandler.getComponents', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -227,7 +227,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \componentHandler.getComponent\' ' + 
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponent\' ' +
         'and componentHandler.getComponent', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -237,7 +237,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \cpageStateHandler.getPageState\' ' + 
+    it('should call globalEventDispatch.on with the event \cpageStateHandler.getPageState\' ' +
         'and pageStateHandler.getPageState', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -247,7 +247,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \oracle.runDeepEqual\' ' + 
+    it('should call globalEventDispatch.on with the event \oracle.runDeepEqual\' ' +
         'and oracle.runDeepEqual', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -257,7 +257,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \oracle.runAssertions\' ' + 
+    it('should call globalEventDispatch.on with the event \oracle.runAssertions\' ' +
         'and oracle.runAssertions', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -267,7 +267,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateComponents\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateComponents\' ' +
         'and validators.validateComponents', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -277,7 +277,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateTestCases\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateTestCases\' ' +
         'and validators.validateTestCases', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -287,7 +287,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateElements\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateElements\' ' +
         'and validators.validateElements', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -297,7 +297,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateModel\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateModel\' ' +
         'and validators.validateModel', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -307,7 +307,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateActions\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateActions\' ' +
         'and validators.validateActions', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -317,7 +317,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateEvents\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateEvents\' ' +
         'and validators.validateEvents', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -327,7 +327,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \validators.validateChildren\' ' + 
+    it('should call globalEventDispatch.on with the event \validators.validateChildren\' ' +
         'and validators.validateChildren', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -337,7 +337,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \vexpectedState.create\' ' + 
+    it('should call globalEventDispatch.on with the event \vexpectedState.create\' ' +
         'and expectedState.create', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -347,7 +347,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call globalEventDispatch.on with the event \dataStore.create\' ' + 
+    it('should call globalEventDispatch.on with the event \dataStore.create\' ' +
         'and dataStore.create', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -363,7 +363,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         expect(globalEventDispatch.on.args[20][0]).to.equal('configHandler.configCreated');
     });
 
-    describe('when the callback of globalEventDispatch.on with the event '  +
+    describe('when the callback of globalEventDispatch.on with the event ' +
         '\'configHandler.configCreated\' is called', function() {
         it('should call commands with the passed in command', function() {
             globalEventDispatch.on.onCall(20).callsArgWith(1, 'run');

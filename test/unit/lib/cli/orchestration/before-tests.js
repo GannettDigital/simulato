@@ -41,7 +41,7 @@ describe('lib/cli/orchestration/before.js', function() {
 
         it('should call Emitter.mixIn once with before and the cliEventDispatch', function() {
             before = require('../../../../../lib/cli/orchestration/before.js');
-      
+
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     before,

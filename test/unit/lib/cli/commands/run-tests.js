@@ -35,7 +35,7 @@ describe('lib/cli/run.js', function() {
 
         it('should call Emitter.mixIn once with run and the cliEventDispatch', function() {
             run = require('../../../../../lib/cli/commands/run.js');
-      
+
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     run,
@@ -91,7 +91,7 @@ describe('lib/cli/run.js', function() {
             expect(configHandler.get.args).to.deep.equal([['testPath']]);
         });
 
-        it('should call run.emit with \'findFiles.search\' and [config.testPath] as first ' + 
+        it('should call run.emit with \'findFiles.search\' and [config.testPath] as first ' +
             'and second param', function() {
             run.configure();
 

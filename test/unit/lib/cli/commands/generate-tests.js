@@ -32,10 +32,10 @@ describe('lib/cli/generate.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        
+
         it('should call Emitter.mixIn once with generate and the cliEventDispatch', function() {
             generate = require('../../../../../lib/cli/commands/generate.js');
-      
+
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     generate,

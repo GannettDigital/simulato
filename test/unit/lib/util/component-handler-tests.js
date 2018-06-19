@@ -42,7 +42,7 @@ describe('lib/util/component-handler.js', function() {
             globalEventDispatch,
           ],
       ]);
-    });    
+    });
 
     it('should call componentHandler.on once', function() {
       componentHandler = require('../../../../lib/util/component-handler.js');

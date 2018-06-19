@@ -77,7 +77,7 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
     expect(cliEventDispatch.on.args[1]).to.deep.equal(
       [
         'run.configuredRunOrchestration',
-        before.runScripts
+        before.runScripts,
       ]
     );
   });

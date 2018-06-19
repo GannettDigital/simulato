@@ -38,7 +38,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
         it('should call Emitter.mixIn once with eeReportHandler and the executorEventDispatch', function() {
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
-      
+
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     eeReportHandler,

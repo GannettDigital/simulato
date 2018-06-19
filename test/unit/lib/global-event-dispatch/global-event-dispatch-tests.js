@@ -36,13 +36,13 @@ describe('lib/global-event-dispatch/global-event-dispatch.js', function() {
         [
           {
             mixedIn: true,
-          }
+          },
         ],
       ]);
     });
 
     it('should export the mixed in object', function() {
-      let result = require('../../../../lib/global-event-dispatch/global-event-dispatch.js');
+      result = require('../../../../lib/global-event-dispatch/global-event-dispatch.js');
 
       expect(result).to.deep.equal({mixedIn: true});
     });

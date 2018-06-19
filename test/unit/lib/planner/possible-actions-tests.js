@@ -77,7 +77,7 @@ describe('lib/planner/possible-actions.js', function() {
             mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', {});
 
-            possibleActions = require('../../../../lib/planner/possible-actions.js');            
+            possibleActions = require('../../../../lib/planner/possible-actions.js');
         });
 
         afterEach(function() {

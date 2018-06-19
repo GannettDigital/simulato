@@ -36,7 +36,7 @@ describe('lib/util/expected-state.js', function() {
 
         it('should call Emitter.mixIn with expectedState and globalEventDispatch', function() {
             expectedState = require('../../../../lib/util/expected-state.js');
-      
+
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     expectedState,
@@ -72,7 +72,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
             callback = sinon.spy();
         });
@@ -397,7 +397,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {});
             mockery.registerMock('lodash', _);
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._dataStore = {storedData: 'someData'};
         });
@@ -788,7 +788,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
             myThis = {
                 _state: {},
@@ -1172,7 +1172,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             component = {
                 options: {},
                 children: [],
@@ -1731,7 +1731,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1808,7 +1808,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
 
             expectedState._state = {};
@@ -1850,7 +1850,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1895,7 +1895,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1940,7 +1940,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {EventEmitter});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1982,12 +1982,12 @@ describe('lib/util/expected-state.js', function() {
                 },
             };
             sinon.spy(Emitter, 'mixIn');
-            
+
             mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
             instanceName = 'componentInstance';
             expectedState._state = {
@@ -2050,7 +2050,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', _);
             mockery.registerMock('events', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
         });
 
@@ -2151,7 +2151,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.registerMock('lodash', {});
             mockery.registerMock('events', {});
             mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
-            
+
             expectedState = require('../../../../lib/util/expected-state.js');
             stashedComponent = new Map([['key', 'value']]);
             myThis = {

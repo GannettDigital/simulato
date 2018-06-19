@@ -79,7 +79,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         expect(executorEventDispatch.on.callCount).to.equal(20);
     });
 
-    it('should call executorEventDispatch.on with the event \'executor.scheduled\' '  +
+    it('should call executorEventDispatch.on with the event \'executor.scheduled\' ' +
         'and executeTestCase.configure as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -89,7 +89,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executeTestCase.exceptionCaught\' '  +
+    it('should call executorEventDispatch.on with the event \'executeTestCase.exceptionCaught\' ' +
         'and executionEngine.errorOccurred as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -99,7 +99,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executeTestCase.errorHandled\' '  +
+    it('should call executorEventDispatch.on with the event \'executeTestCase.errorHandled\' ' +
         'and executionEngine.done as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -109,7 +109,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToSauce\' '  +
+    it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToSauce\' ' +
         'and driverHandler.inSaucelabs as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -119,7 +119,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToLocal\' '  +
+    it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToLocal\' ' +
         'and driverHandler.locally as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -129,7 +129,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executeTestCase.configured\' '  +
+    it('should call executorEventDispatch.on with the event \'executeTestCase.configured\' ' +
         'and executionEngine.configure as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -139,7 +139,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.configured\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.configured\' ' +
         'and eeReportHandler.startReport as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -149,7 +149,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.actionStarted\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.actionStarted\' ' +
         'and eeReportHandler.startAction as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -159,7 +159,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.actionFinished\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.actionFinished\' ' +
         'and eeReportHandler.endAction as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -169,7 +169,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.stepStarted\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.stepStarted\' ' +
         'and eeReportHandler.startStep as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -179,7 +179,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.stepEnded\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.stepEnded\' ' +
         'and eeReportHandler.endStep as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -189,7 +189,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.done\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.done\' ' +
         'and eeReportHandler.finalizeReport as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -199,7 +199,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.done\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.done\' ' +
         'and driverHandler.quit as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -209,7 +209,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.preconditionsReadyForVerification\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.preconditionsReadyForVerification\' ' +
         'and assertionHandler.assertPageState as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -219,7 +219,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'executionEngine.effectsReadyForVerification\' '  +
+    it('should call executorEventDispatch.on with the event \'executionEngine.effectsReadyForVerification\' ' +
         'and assertionHandler.assertExpectedPageState as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -229,7 +229,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'eeReportHandler.errorOccured\' '  +
+    it('should call executorEventDispatch.on with the event \'eeReportHandler.errorOccured\' ' +
         'and driverHandler.handleError as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -239,7 +239,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'assertionHandler.stateCheckTimedOut\' '  +
+    it('should call executorEventDispatch.on with the event \'assertionHandler.stateCheckTimedOut\' ' +
         'and stateCompare.printDifference as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -249,7 +249,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'assertionHandler.effectsVerified\' '  +
+    it('should call executorEventDispatch.on with the event \'assertionHandler.effectsVerified\' ' +
         'and executionEngine.applyEffects as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -259,7 +259,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'assertionHandler.preconditionsVerified\' '  +
+    it('should call executorEventDispatch.on with the event \'assertionHandler.preconditionsVerified\' ' +
         'and executionEngine.applyPreconditions as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
@@ -269,7 +269,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         ]);
     });
 
-    it('should call executorEventDispatch.on with the event \'stateCompare.differenceCreated\' '  +
+    it('should call executorEventDispatch.on with the event \'stateCompare.differenceCreated\' ' +
         'and eeReportHandler.appendStateCompare as parameters', function() {
         registerExecutorEvents(executorEventDispatch);
 
