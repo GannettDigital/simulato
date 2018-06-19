@@ -109,12 +109,6 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
     });
   });
 
-  // it('should call cliEventDispatch.on once', function() {
-  //   registerCliEvents(cliEventDispatch);
-
-  //   expect(cliEventDispatch.on.callCount).to.equal(1);
-  // });
-
   it('should on the fourth call of cliEventDispatch.on call with the first ' +
     'param as \'cli.commandFinished\'', function() {
     registerCliEvents(cliEventDispatch);
