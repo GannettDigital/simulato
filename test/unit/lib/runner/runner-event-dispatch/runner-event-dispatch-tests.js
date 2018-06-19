@@ -5,48 +5,50 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/runner/runner-event-dispatch/runner-event-dispatch.js', function() {
-  describe('on file being required', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+  let Emitter;
+  let globalEventDispatch;
+  let result;
 
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
+  beforeEach(function() {
+    mockery.enable({useCleanCache: true});
+    mockery.registerAllowable('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
-      };
-      EventEmitter.returns(EventEmitterInstance);
+    Emitter = {
+      mixIn(myObject) {
+        myObject.mixedIn = true;
+      },
+    };
+    sinon.spy(Emitter, 'mixIn');
+    globalEventDispatch = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
-    });
+    mockery.registerMock('../../util/emitter.js', Emitter);
+    mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
+  });
 
-    afterEach(function() {
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
+  afterEach(function() {
+    mockery.resetCache();
+    mockery.deregisterAll();
+    mockery.disable();
+  });
 
-    it('should call EventEmitter once', function() {
+  describe('when the file is required', function() {
+    it('should call Emitter.mixIn once with an the object to be mixed and the globalEventDispatch', function() {
       require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
 
-      expect(EventEmitter.callCount).to.equal(1);
+      expect(Emitter.mixIn.args).to.deep.equal([
+        [
+          {
+            mixedIn: true,
+          },
+          globalEventDispatch,
+        ],
+      ]);
     });
 
-    it('should call EventEmitter with the keyword \'new\'', function() {
-      require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
+    it('should export the mixed in object', function() {
+      result = require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
 
-      expect(EventEmitter.calledWithNew()).to.equal(true);
-    });
-
-    it('should export result of the call the EventEmitter', function() {
-      EventEmitter.returns({events: ['eventOne', 'eventTwo']});
-
-      let result = require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
-
-      expect(result).to.deep.equal({events: ['eventOne', 'eventTwo']});
+      expect(result).to.deep.equal({mixedIn: true});
     });
   });
 });

@@ -7,21 +7,24 @@ const expect = require('chai').expect;
 describe('lib/util/component-handler.js', function() {
   describe('on file being required', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
+    let globalEventDispatch;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
+      globalEventDispatch = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
     });
 
     afterEach(function() {
@@ -30,11 +33,16 @@ describe('lib/util/component-handler.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of componentHandler to a new EventEmitter', function() {
+    it('should call Emitter.mixIn with componentHandler and globalEventDispatch', function() {
       componentHandler = require('../../../../lib/util/component-handler.js');
 
-      expect(Object.getPrototypeOf(componentHandler)).to.deep.equal(EventEmitterInstance);
-    });
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+            componentHandler,
+            globalEventDispatch,
+          ],
+      ]);
+    });    
 
     it('should call componentHandler.on once', function() {
       componentHandler = require('../../../../lib/util/component-handler.js');
@@ -55,24 +63,25 @@ describe('lib/util/component-handler.js', function() {
 
   describe('getComponent', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       callback = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       componentHandler = require('../../../../lib/util/component-handler.js');
       componentHandler._components = {
@@ -110,24 +119,25 @@ describe('lib/util/component-handler.js', function() {
 
   describe('getComponents', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       callback = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       componentHandler = require('../../../../lib/util/component-handler.js');
       componentHandler._components = {
@@ -159,24 +169,25 @@ describe('lib/util/component-handler.js', function() {
 
   describe('getComponentActions', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       callback = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       componentHandler = require('../../../../lib/util/component-handler.js');
       componentHandler._components = {
@@ -226,8 +237,7 @@ describe('lib/util/component-handler.js', function() {
 
   describe('_loadComponents', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let paths;
     let comp1;
     let comp2;
@@ -236,12 +246,13 @@ describe('lib/util/component-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       paths = [
         'path/to/comp1',
@@ -260,9 +271,10 @@ describe('lib/util/component-handler.js', function() {
         },
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('path/to/comp1', comp1);
       mockery.registerMock('path/to/comp2', comp2);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       componentHandler = require('../../../../lib/util/component-handler.js');
     });
@@ -300,20 +312,20 @@ describe('lib/util/component-handler.js', function() {
 
   describe('configure', function() {
     let componentHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let path;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/component-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       global.SimulatoError = {
         COMPONENT: {
@@ -323,7 +335,8 @@ describe('lib/util/component-handler.js', function() {
 
       path = 'path/to/files';
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       componentHandler = require('../../../../lib/util/component-handler.js');
     });
@@ -341,12 +354,12 @@ describe('lib/util/component-handler.js', function() {
       expect(componentHandler.emit.callCount).to.equal(1);
     });
 
-    it(`should call componentHandler.emit with the event 'componentHandler.findFiles' `
+    it(`should call componentHandler.emit with the event 'findFiles.search' `
       + `and the passed in path inside an array`, function() {
       componentHandler.configure(path);
 
       expect(componentHandler.emit.args[0].splice(0, 2)).to.deep.equal([
-        'componentHandler.findFiles', ['path/to/files'],
+        'findFiles.search', ['path/to/files'],
       ]);
     });
 
@@ -366,14 +379,14 @@ describe('lib/util/component-handler.js', function() {
           expect(componentHandler.emit.callCount).to.equal(2);
         });
 
-        it(`should call componentHandler.emit with the event 'componentHandler.filesReadyToValidate' `
+        it(`should call componentHandler.emit with the event 'validators.validateComponents' `
           + `and the passed in path inside an array`, function() {
           componentHandler.emit.onCall(0).callsArgWith(2, ['path/to/file']);
 
           componentHandler.configure(path);
 
           expect(componentHandler.emit.args[1].splice(0, 2)).to.deep.equal([
-            'componentHandler.filesReadyToValidate', ['path/to/file'],
+            'validators.validateComponents', ['path/to/file'],
           ]);
         });
 
@@ -385,7 +398,7 @@ describe('lib/util/component-handler.js', function() {
           expect(componentHandler.emit.args[1].splice(2, 1)[0]).to.be.a('function');
         });
 
-        describe('when the componentHandler.filesReadyToValidate event callback is called', function() {
+        describe('when the validators.validateComponents event callback is called', function() {
           it(`should call componentHandler.emit thrice`, function() {
             componentHandler.emit.onCall(0).callsArgWith(2, ['path/to/file']);
             componentHandler.emit.onCall(1).callsArgWith(2, ['path/to/validated/file']);

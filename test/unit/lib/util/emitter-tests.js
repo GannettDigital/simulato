@@ -81,9 +81,9 @@ describe('lib/util/emitter.js', function() {
             clock = sinon.useFakeTimers({
                 toFake: ['nextTick'],
             });
-            myThis = {
+            myThis = Object.create({
                 emit: sinon.stub(),
-            };
+            });
 
             mockery.registerMock('events', {});
 
