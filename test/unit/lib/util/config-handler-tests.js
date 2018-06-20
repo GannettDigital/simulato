@@ -608,7 +608,6 @@ describe('lib/util/config-handler.js', function() {
       config = {
         componentPath: './componentPath',
         outputPath: './outputPath',
-        reportPath: './reportPath',
         testPath: './testPath',
       };
 
@@ -637,10 +636,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.disable();
     });
 
-    it('should call path.resolve 4 times', function() {
+    it('should call path.resolve 3 times', function() {
       configHandler._resolvePaths(config);
 
-      expect(path.resolve.callCount).to.equal(4);
+      expect(path.resolve.callCount).to.equal(3);
     });
 
     it('should call path.resolve with config.componentPath', function() {
@@ -671,41 +670,54 @@ describe('lib/util/config-handler.js', function() {
       expect(config.outputPath).to.equal('resolved/outputPath');
     });
 
-    it('should call path.resolve with config.reportPath', function() {
-      configHandler._resolvePaths(config);
-
-      expect(path.resolve.args[2]).to.deep.equal(['./reportPath']);
-    });
-
-    it('should set the passed in config.reportPath to the returned resolve value', function() {
-      path.resolve.onCall(2).returns('resolved/reportPath');
-
-      configHandler._resolvePaths(config);
-
-      expect(config.reportPath).to.equal('resolved/reportPath');
-    });
-
     it('should call path.resolve with config.testPath', function() {
       configHandler._resolvePaths(config);
 
-      expect(path.resolve.args[3]).to.deep.equal(['./testPath']);
+      expect(path.resolve.args[2]).to.deep.equal(['./testPath']);
     });
 
     it('should set the passed in config.testPath to the returned resolve value', function() {
-      path.resolve.onCall(3).returns('resolved/testPath');
+      path.resolve.onCall(2).returns('resolved/testPath');
 
       configHandler._resolvePaths(config);
 
       expect(config.testPath).to.equal('resolved/testPath');
     });
 
+    describe('if config.reportPath is truthy', function() {
+      it('should call path.resolve 4 times', function() {
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(path.resolve.callCount).to.equal(4);
+      });
+
+      it('should call path.resolve with config.reportPath', function() {
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(path.resolve.args[3]).to.deep.equal(['./reportPath']);
+      });
+
+      it('should set the passed in config.reportPath to the returned resolve value', function() {
+        path.resolve.onCall(3).returns('resolved/reportPath');
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(config.reportPath).to.equal('resolved/reportPath');
+      });
+    });
+
     describe('if config.before is truthy', function() {
-      it('should call path.resolve 5 times', function() {
+      it('should call path.resolve 4 times', function() {
         config.before = './beforePath';
 
         configHandler._resolvePaths(config);
 
-        expect(path.resolve.callCount).to.equal(5);
+        expect(path.resolve.callCount).to.equal(4);
       });
 
       it('should call path.resolve with config.before', function() {
@@ -713,12 +725,12 @@ describe('lib/util/config-handler.js', function() {
 
         configHandler._resolvePaths(config);
 
-        expect(path.resolve.args[4]).to.deep.equal(['./beforePath']);
+        expect(path.resolve.args[3]).to.deep.equal(['./beforePath']);
       });
 
       it('should set the passed in config.before to the returned resolve value', function() {
         config.before = './beforePath';
-        path.resolve.onCall(4).returns('resolved/beforePath');
+        path.resolve.onCall(3).returns('resolved/beforePath');
 
         configHandler._resolvePaths(config);
 
