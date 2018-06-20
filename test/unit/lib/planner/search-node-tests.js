@@ -6,8 +6,7 @@ const expect = require('chai').expect;
 
 describe('lib/planner/search-node.js', function() {
     describe('create', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let callback;
         let searchNode;
 
@@ -15,16 +14,17 @@ describe('lib/planner/search-node.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/planner/search-node.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             callback = sinon.stub();
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', {});
 
             searchNode = require('../../../../lib/planner/search-node.js');
         });
@@ -44,13 +44,13 @@ describe('lib/planner/search-node.js', function() {
             expect(Object.getPrototypeOf(callback.args[0][1])).to.deep.equal(searchNode);
         });
 
-        it('should searchNode.emit with the event \'searchNode.createDataStore\'', function() {
+        it('should searchNode.emit with the event \'dataStore.create\'', function() {
             searchNode.create([], callback);
 
-            expect(searchNode.emit.args[0][0]).to.equal('searchNode.createDataStore');
+            expect(searchNode.emit.args[0][0]).to.equal('dataStore.create');
         });
 
-        describe('when the callback is called for the event \'searchNode.createDataStore\'', function() {
+        describe('when the callback is called for the event \'dataStore.create\'', function() {
             it('should set myNode.dataStore to the passed in dataStore', function() {
                 searchNode.emit.onCall(0).callsArgWith(1, 'myDataStore');
                 searchNode.emit.onCall(1).callsArgWith(2, 'myExpectedState');
@@ -60,14 +60,14 @@ describe('lib/planner/search-node.js', function() {
                 expect(callback.args[0][1].dataStore).to.equal('myDataStore');
             });
 
-            it('should searchNode.emit with the event \'searchNode.createExpectedState\', and the ' +
+            it('should searchNode.emit with the event \'expectedState.create\', and the ' +
                 'passed in dataStore', function() {
                 searchNode.emit.onCall(0).callsArgWith(1, 'myDataStore');
 
                 searchNode.create([], callback);
 
                 expect(searchNode.emit.args[1].slice(0, 2)).to.deep.equal([
-                    'searchNode.createExpectedState',
+                    'expectedState.create',
                     'myDataStore',
                 ]);
             });
@@ -80,7 +80,7 @@ describe('lib/planner/search-node.js', function() {
                 expect(searchNode.emit.callCount).to.equal(2);
             });
 
-            describe('when the callback is called for the event \'searchNode.createExpectedState\'', function() {
+            describe('when the callback is called for the event \'expectedState.create\'', function() {
                 it('should call the callback once with null and a node the specified properties', function() {
                     let node = Object.create(searchNode);
                     node.dataStore = 'myDataStore';
@@ -107,8 +107,7 @@ describe('lib/planner/search-node.js', function() {
     });
 
     describe('clone', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let _;
         let callback;
         let node;
@@ -118,12 +117,12 @@ describe('lib/planner/search-node.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/planner/search-node.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             callback = sinon.stub();
             _ = {
                 cloneDeep: sinon.stub(),
@@ -143,8 +142,9 @@ describe('lib/planner/search-node.js', function() {
                 allActions: new Set(['AN_ACTION', 'ANOTHER_ACTION']),
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('lodash', _);
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', {});
 
             searchNode = require('../../../../lib/planner/search-node.js');
         });

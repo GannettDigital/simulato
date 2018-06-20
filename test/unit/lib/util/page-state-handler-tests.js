@@ -7,23 +7,25 @@ const expect = require('chai').expect;
 describe('lib/util/page-state-handler.js', function() {
   describe('on file being required', function() {
     let pageStateHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
+    let globalEventDispatch;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', {});
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
     });
 
     afterEach(function() {
@@ -32,10 +34,15 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of pageStateHandler to a new EventEmitter', function() {
+    it('should call Emitter.mixIn with pageStateHandler and globalEventDispatch', function() {
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
 
-      expect(Object.getPrototypeOf(pageStateHandler)).to.deep.equal(EventEmitterInstance);
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+            pageStateHandler,
+            globalEventDispatch,
+          ],
+      ]);
     });
 
     it('should call pageStateHandler.on 3 times', function() {
@@ -76,8 +83,7 @@ describe('lib/util/page-state-handler.js', function() {
   });
 
   describe('getPageState', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let pageStateHandler;
     let callback;
 
@@ -85,18 +91,20 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-          emit: sinon.stub(),
-          on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       callback = sinon.spy();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', {});
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
     });
@@ -134,8 +142,7 @@ describe('lib/util/page-state-handler.js', function() {
   });
 
   describe('_getComponentState', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let pageStateHandler;
     let getElementData;
     let component;
@@ -145,12 +152,13 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-          emit: sinon.stub(),
-          on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       getElementData = sinon.stub();
 
@@ -172,9 +180,10 @@ describe('lib/util/page-state-handler.js', function() {
         state2: 'someOtherData',
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', getElementData);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
     });
@@ -215,8 +224,7 @@ describe('lib/util/page-state-handler.js', function() {
   });
 
   describe('_aggregatePageState', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let pageStateHandler;
     let model;
     let data;
@@ -227,12 +235,13 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-          emit: sinon.stub(),
-          on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       model = {
         someModel: 'ofSomething',
@@ -249,9 +258,10 @@ describe('lib/util/page-state-handler.js', function() {
         callback: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', {});
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
     });
@@ -307,8 +317,7 @@ describe('lib/util/page-state-handler.js', function() {
   });
 
   describe('_createComponentModel', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let pageStateHandler;
     let data;
     let _;
@@ -320,12 +329,13 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-          emit: sinon.stub(),
-          on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       data = {
         data: 'someData',
@@ -346,9 +356,10 @@ describe('lib/util/page-state-handler.js', function() {
       };
       callback = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', _);
       mockery.registerMock('./get-element-data.js', {});
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
     });

@@ -7,6 +7,7 @@ const expect = require('chai').expect;
 describe('lib/executor/assertion-handler.js', function() {
     describe('on file being required', function() {
         let Emitter;
+        let executorEventDispatch;
         let assertionHandler;
 
         beforeEach(function() {
@@ -22,8 +23,10 @@ describe('lib/executor/assertion-handler.js', function() {
                 },
             };
             sinon.spy(Emitter, 'mixIn');
+            executorEventDispatch = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
         });
 
         afterEach(function() {
@@ -32,12 +35,13 @@ describe('lib/executor/assertion-handler.js', function() {
             mockery.disable();
         });
 
-        it('should call Emitter.mixIn with the assertionHandler', function() {
+        it('should call Emitter.mixIn with the assertionHandler and executorEventDispatch', function() {
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     assertionHandler,
+                    executorEventDispatch,
                 ],
             ]);
         });
@@ -186,6 +190,7 @@ describe('lib/executor/assertion-handler.js', function() {
             clock = sinon.useFakeTimers(381);
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
         });
@@ -296,6 +301,7 @@ describe('lib/executor/assertion-handler.js', function() {
             };
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -440,6 +446,7 @@ describe('lib/executor/assertion-handler.js', function() {
             next = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -463,7 +470,7 @@ describe('lib/executor/assertion-handler.js', function() {
             generator.next(next);
         });
 
-        it('should call assertionHandler.emitAsync with the event \'assertionHandler.getPageState\', ' +
+        it('should call assertionHandler.emitAsync with the event \'pageStateHandler.getPageState\', ' +
             'the components, and next', function() {
             assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
             let generator = assertionHandler._getAndCheckPageState();
@@ -472,7 +479,7 @@ describe('lib/executor/assertion-handler.js', function() {
             generator.next(next);
 
             expect(assertionHandler.emitAsync.args[0]).to.deep.equal([
-                'assertionHandler.getPageState',
+                'pageStateHandler.getPageState',
                 'myComponents',
                 next,
             ]);
@@ -504,7 +511,7 @@ describe('lib/executor/assertion-handler.js', function() {
             expect(assertionHandler._pageState).to.deep.equal({name: 'model'});
         });
 
-        it('should call assertionHandler.emitAsync with the event \'assertionHandler.runAssertions\', ' +
+        it('should call assertionHandler.emitAsync with the event \'oracle.runAssertions\', ' +
             'assertionHandler._pageState, the preconditions, and next', function() {
             assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
             let generator = assertionHandler._getAndCheckPageState();
@@ -515,7 +522,7 @@ describe('lib/executor/assertion-handler.js', function() {
             generator.next('myPreconditions');
 
             expect(assertionHandler.emitAsync.args[2]).to.deep.equal([
-                'assertionHandler.runAssertions',
+                'oracle.runAssertions',
                 {name: 'model'},
                 {data: 'myData'},
                 'myPreconditions',
@@ -523,7 +530,7 @@ describe('lib/executor/assertion-handler.js', function() {
             ]);
         });
 
-        describe('when the yield with the event \'assertionHandler.runAssertions\' throws', function() {
+        describe('when the yield with the event \'oracle.runAssertions\' throws', function() {
             it('should call assertionHandler.emit once with the event \'assertionHandler.preconditionsFailed\' ' +
                 'and the thrown error', function() {
                 assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
@@ -585,6 +592,7 @@ describe('lib/executor/assertion-handler.js', function() {
             clock = sinon.useFakeTimers(381);
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
         });
@@ -683,6 +691,7 @@ describe('lib/executor/assertion-handler.js', function() {
             };
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -796,6 +805,7 @@ describe('lib/executor/assertion-handler.js', function() {
             next = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -811,7 +821,7 @@ describe('lib/executor/assertion-handler.js', function() {
             mockery.disable();
         });
 
-        it('should call assertionHandler.emitAsync with with the event \'assertionHandler.getPageState\', ' +
+        it('should call assertionHandler.emitAsync with with the event \'pageStateHandler.getPageState\', ' +
             'assertionHandler._components, and next', function() {
             assertionHandler._components = new Map([['name', 'myComponent']]);
             let generator = assertionHandler._getAndCheckExpectedPageState();
@@ -820,7 +830,7 @@ describe('lib/executor/assertion-handler.js', function() {
             generator.next(next);
 
             expect(assertionHandler.emitAsync.args[0]).to.deep.equal([
-                'assertionHandler.getPageState',
+                'pageStateHandler.getPageState',
                 new Map([['name', 'myComponent']]),
                 next,
             ]);
@@ -846,7 +856,7 @@ describe('lib/executor/assertion-handler.js', function() {
             expect(assertionHandler._clonedExpectedState.getState.args).to.deep.equal([[]]);
         });
 
-        it('should call assertionHandler.emit with the event \'assertionHandler.runDeepEqual\', ' +
+        it('should call assertionHandler.emit with the event \'oracle.runDeepEqual\', ' +
             'assertionHandler._pageState, the state, and next', function() {
             assertionHandler._clonedExpectedState.getState.returns('myState');
             let generator = assertionHandler._getAndCheckExpectedPageState();
@@ -856,7 +866,7 @@ describe('lib/executor/assertion-handler.js', function() {
             generator.next({name: 'state'});
 
             expect(assertionHandler.emitAsync.args[1]).to.deep.equal([
-                'assertionHandler.runDeepEqual',
+                'oracle.runDeepEqual',
                 {name: 'state'},
                 'myState',
                 next,
@@ -873,7 +883,7 @@ describe('lib/executor/assertion-handler.js', function() {
             expect(assertionHandler.emitAsync.callCount).to.equal(2);
         });
 
-        describe('when the yield with the event \'assertionHandler.runDeepEqual\' throws', function() {
+        describe('when the yield with the event \'oracle.runDeepEqual\' throws', function() {
             it('should call assertionHandler.emit with the event \'assertionHandler.effectsFailed\'', function() {
                 let generator = assertionHandler._getAndCheckExpectedPageState();
 
@@ -899,7 +909,7 @@ describe('lib/executor/assertion-handler.js', function() {
             });
         });
 
-        describe('when the yield with the event \'assertionHandler.runDeepEqual\' does not throw', function() {
+        describe('when the yield with the event \'oracle.runDeepEqual\' does not throw', function() {
             it('should set assertionHandler._expectedState._pageState to equal ' +
                 'assertionHandler._pageState', function() {
                     let generator = assertionHandler._getAndCheckExpectedPageState();
@@ -964,6 +974,7 @@ describe('lib/executor/assertion-handler.js', function() {
             };
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -1109,6 +1120,7 @@ describe('lib/executor/assertion-handler.js', function() {
             callback = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 
@@ -1254,6 +1266,7 @@ describe('lib/executor/assertion-handler.js', function() {
             };
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             assertionHandler = require('../../../../lib/executor/assertion-handler.js');
 

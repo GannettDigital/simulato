@@ -6,8 +6,8 @@ const expect = require('chai').expect;
 
 describe('lib/executor/execution-engine/execution-engine-report-handler.js', function() {
     describe('on file being required', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
+        let executorEventDispatch;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -15,15 +15,18 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            executorEventDispatch = sinon.stub();
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
         });
 
         afterEach(function() {
@@ -32,11 +35,16 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.disable();
         });
 
-        it('should set the object prototype of eeReportHandler to a new EventEmitter', function() {
+        it('should call Emitter.mixIn once with eeReportHandler and the executorEventDispatch', function() {
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            expect(Object.getPrototypeOf(eeReportHandler)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    eeReportHandler,
+                    executorEventDispatch,
+                ],
+            ]);
         });
 
         it('should call eeReportHandler.on with the event \'eeReportHandler.errorOccured\' and the ' +
@@ -52,8 +60,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('startReport', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
         let configHandler;
 
@@ -62,19 +69,22 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+
             sinon.stub(process, 'hrtime').returns([123, 456]);
             configHandler = {
                 get: sinon.stub(),
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', configHandler);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -115,8 +125,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('startAction', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -124,17 +133,19 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -174,8 +185,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('endAction', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -183,17 +193,19 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -254,8 +266,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('startStep', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -263,17 +274,19 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -320,8 +333,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('endStep', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -329,17 +341,19 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -448,8 +462,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('appendStateCompare', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -457,17 +470,19 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             sinon.stub(process, 'hrtime').returns([123, 456]);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
@@ -515,8 +530,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
 
     describe('finalizeReport', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let eeReportHandler;
 
         beforeEach(function() {
@@ -524,17 +538,20 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
             mockery.registerAllowable(
                 '../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+
             sinon.stub(process, 'hrtime').returns([123, 456]);
             process.send = sinon.stub();
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             eeReportHandler =
                 require('../../../../../lib/executor/execution-engine/execution-engine-report-handler.js');

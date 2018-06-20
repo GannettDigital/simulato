@@ -7,25 +7,28 @@ const expect = require('chai').expect;
 describe('lib/util/config-handler.js', function() {
   describe('on file being required', function() {
     let configHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
+    let globalEventDispatch;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/config-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
+      globalEventDispatch = sinon.stub();
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
     });
 
     afterEach(function() {
@@ -34,10 +37,15 @@ describe('lib/util/config-handler.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of configHandler to a new EventEmitter', function() {
+    it('should call Emitter.mixIn with configHandler and globalEventDispatch', function() {
       configHandler = require('../../../../lib/util/config-handler.js');
 
-      expect(Object.getPrototypeOf(configHandler)).to.deep.equal(EventEmitterInstance);
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+            configHandler,
+            globalEventDispatch,
+          ],
+      ]);
     });
   });
 
@@ -45,8 +53,7 @@ describe('lib/util/config-handler.js', function() {
     let _;
     let defaults;
     let configHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let uuidv4;
     let options;
 
@@ -68,12 +75,13 @@ describe('lib/util/config-handler.js', function() {
         name: sinon.stub().returns('run'),
       };
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       uuidv4 = sinon.stub().returns('uniqueID');
 
@@ -81,7 +89,8 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', defaults);
       mockery.registerMock('uuid/v4', uuidv4);
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       configHandler = require('../../../../lib/util/config-handler.js');
       configHandler._getBaseConfig = sinon.stub();
@@ -289,20 +298,20 @@ describe('lib/util/config-handler.js', function() {
 
   describe('get', function() {
     let configHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let _;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/config-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         get: sinon.stub().returns('value'),
@@ -312,7 +321,8 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       configHandler = require('../../../../lib/util/config-handler.js');
     });
@@ -344,25 +354,26 @@ describe('lib/util/config-handler.js', function() {
 
   describe('get all', function() {
     let configHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/config-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       configHandler = require('../../../../lib/util/config-handler.js');
     });
@@ -387,8 +398,7 @@ describe('lib/util/config-handler.js', function() {
     let callback;
     let path;
     let configHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -400,18 +410,20 @@ describe('lib/util/config-handler.js', function() {
         normalize: sinon.stub(),
       };
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       configHandler = require('../../../../lib/util/config-handler.js');
     });
@@ -504,8 +516,7 @@ describe('lib/util/config-handler.js', function() {
     let path;
     let configHandler;
     let config;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -522,18 +533,20 @@ describe('lib/util/config-handler.js', function() {
         testPath: './testPath',
       };
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('./emitter.js', Emitter);
+      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       configHandler = require('../../../../lib/util/config-handler.js');
       configHandler._config = config;

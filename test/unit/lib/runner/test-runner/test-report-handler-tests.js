@@ -6,21 +6,25 @@ const expect = require('chai').expect;
 
 describe('lib/runner/test-runner/test-report-handler.js', function() {
   describe('on file being required', function() {
+    let Emitter;
+    let runnerEventDispatch;
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
+      runnerEventDispatch = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
     });
 
     afterEach(function() {
@@ -29,31 +33,40 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of printOutput to a new EventEmitter', function() {
-      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    it('should call Emitter.mixIn with testReportHandler and runnerEventDispatch', function() {
+      testReportHandler = require(
+        '../../../../../lib/runner/test-runner/test-report-handler.js'
+      );
 
-      expect(Object.getPrototypeOf(testReportHandler)).to.deep.equal(EventEmitterInstance);
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+            testReportHandler,
+            runnerEventDispatch,
+          ],
+      ]);
     });
   });
 
   describe('startReportHandler', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       sinon.stub(process, 'hrtime').returns([0, 0]);
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -80,20 +93,22 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('createTestReport', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -153,20 +168,22 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('appendTestSrdErr', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -193,20 +210,22 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('appendTestReport', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -239,20 +258,22 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('finalizeTestReport', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -366,22 +387,24 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('finalizeReport', function() {
     let testReportHandler;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       sinon.stub(process, 'hrtime').returns([4, 54321]);
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });

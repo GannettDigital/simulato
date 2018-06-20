@@ -15,10 +15,10 @@ describe('lib/util/defaults.js', function() {
     mockery.disable();
   });
 
-  it('should export 9 items on an object', function() {
+  it('should export 8 items on an object', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
-    expect(Object.getOwnPropertyNames(defaults).length).to.equal(9);
+    expect(Object.getOwnPropertyNames(defaults).length).to.equal(8);
   });
 
   it('should have the property \'componentPath\' with the default value', function() {
@@ -37,12 +37,6 @@ describe('lib/util/defaults.js', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
     expect(defaults.testPath).to.equal(`${process.cwd()}/tests`);
-  });
-
-  it('should have the property \'reportPath\' with the default value', function() {
-    let defaults = require('../../../../lib/util/defaults.js');
-
-    expect(defaults.reportPath).to.equal(`${process.cwd()}/reports`);
   });
 
   it('should have the property \'technique\' with the default value', function() {

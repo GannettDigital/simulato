@@ -6,9 +6,9 @@ const expect = require('chai').expect;
 
 describe('lib/planner/test-generation-techniques/action-focused-technique.js', function() {
     describe('on file being required', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let actionFocusedTechnique;
+        let plannerEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -16,15 +16,18 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
                 '../../../../../lib/planner/test-generatorion-techniques/action-focused-technique.js'
             );
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            plannerEventDispatch = sinon.stub();
 
             mockery.registerMock('../../util/set-operations.js', {});
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
         });
 
         afterEach(function() {
@@ -33,12 +36,17 @@ describe('lib/planner/test-generation-techniques/action-focused-technique.js', f
             mockery.disable();
         });
 
-        it('should set the object prototype of executionEngine to a new EventEmitter', function() {
+        it('should call Emitter.mixIn with actionFocusedTechnique and plannerEventDispatch', function() {
             actionFocusedTechnique = require(
                 '../../../../../lib/planner/test-generatorion-techniques/action-focused-technique.js'
             );
 
-            expect(Object.getPrototypeOf(actionFocusedTechnique)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    actionFocusedTechnique,
+                    plannerEventDispatch,
+                ],
+            ]);
         });
 
         it('should call actionFocusedTechnique.on once', function() {

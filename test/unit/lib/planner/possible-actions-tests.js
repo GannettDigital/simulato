@@ -8,6 +8,7 @@ describe('lib/planner/possible-actions.js', function() {
     describe('on file require', function() {
         let Emitter;
         let possibleActions;
+        let plannerEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -15,12 +16,14 @@ describe('lib/planner/possible-actions.js', function() {
 
             Emitter = {
                 mixIn: function(myObject) {
-                    myObject.runOn = sinon.stub();
+                    myObject.emitAsync = sinon.stub();
                 },
             };
             sinon.spy(Emitter, 'mixIn');
+            plannerEventDispatch = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
         });
 
         afterEach(function() {
@@ -29,22 +32,13 @@ describe('lib/planner/possible-actions.js', function() {
             mockery.disable();
         });
 
-        it('should Emitter.mixIn once with possibleActions as the parameter', function() {
+        it('should Emitter.mixIn once with possibleActions and plannerEventDispatch the parameters', function() {
             possibleActions = require('../../../../lib/planner/possible-actions.js');
 
             expect(Emitter.mixIn.args).to.deep.equal([
-                [possibleActions],
-            ]);
-        });
-
-        it('should call possibleActions.runOn once with the event \'possibleActions.get\' ' +
-            'and possibleActions.get', function() {
-            possibleActions = require('../../../../lib/planner/possible-actions.js');
-
-            expect(possibleActions.runOn.args).to.deep.equal([
                 [
-                    'possibleActions.get',
-                    possibleActions.get,
+                    possibleActions,
+                    plannerEventDispatch,
                 ],
             ]);
         });
@@ -81,6 +75,7 @@ describe('lib/planner/possible-actions.js', function() {
             sinon.spy(Emitter, 'mixIn');
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', {});
 
             possibleActions = require('../../../../lib/planner/possible-actions.js');
         });
@@ -478,7 +473,7 @@ describe('lib/planner/possible-actions.js', function() {
                         expect(node.dataStore.retrieveAll.args).to.deep.equal([[]]);
                     });
 
-                    it('should call possibleActions.emitAsync once with the event \'possibleActions.runAssertions\', ' +
+                    it('should call possibleActions.emitAsync once with the event \'oracle.runAssertions\', ' +
                         'the state, the dataStore, preconditions, and next', function() {
                         node.state.getState.returns('myState');
                         node.dataStore.retrieveAll.returns('myDataStore');
@@ -508,7 +503,7 @@ describe('lib/planner/possible-actions.js', function() {
 
                         expect(possibleActions.emitAsync.args).to.deep.equal([
                             [
-                                'possibleActions.runAssertions',
+                                'oracle.runAssertions',
                                 'myState',
                                 'myDataStore',
                                 'myPreconditions',

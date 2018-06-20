@@ -6,23 +6,25 @@ const expect = require('chai').expect;
 
 describe('lib/cli/run.js', function() {
     describe('on file being required', function() {
+        let Emitter;
+        let cliEventDispatch;
         let run;
-        let EventEmitter;
-        let EventEmitterInstance;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/cli/commands/run.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            cliEventDispatch = sinon.stub();
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', cliEventDispatch);
         });
 
         afterEach(function() {
@@ -31,27 +33,32 @@ describe('lib/cli/run.js', function() {
             mockery.disable();
         });
 
-        it('should set the object prototype of run to a new EventEmitter', function() {
+        it('should call Emitter.mixIn once with run and the cliEventDispatch', function() {
             run = require('../../../../../lib/cli/commands/run.js');
 
-            expect(Object.getPrototypeOf(run)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    run,
+                    cliEventDispatch,
+                ],
+            ]);
         });
     });
     describe('configure', function() {
         let run;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/cli/commands/run.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
 
             global.SimulatoError = {
                 TEST_CASE: {
@@ -63,10 +70,10 @@ describe('lib/cli/run.js', function() {
                 get: sinon.stub().returns('sanity_tests'),
             };
 
-            EventEmitter.returns(EventEmitterInstance);
-
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', configHandler);
+            mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
+
             run = require('../../../../../lib/cli/commands/run.js');
         });
 
@@ -84,11 +91,12 @@ describe('lib/cli/run.js', function() {
             expect(configHandler.get.args).to.deep.equal([['testPath']]);
         });
 
-        it('should call run.emit with run.findFiles and [config.testPath] as first and second param', function() {
+        it('should call run.emit with \'findFiles.search\' and [config.testPath] as first ' +
+            'and second param', function() {
             run.configure();
 
             expect(run.emit.args[0].slice(0, 2)).to.deep.equal([
-                'run.findFiles',
+                'findFiles.search',
                 [
                     'sanity_tests',
                 ],
@@ -102,14 +110,14 @@ describe('lib/cli/run.js', function() {
         });
 
         describe('when the first run.emit callback is called', function() {
-            it('should call run.emit with run.testCasesReadyToValidate and ' +
+            it('should call run.emit with \'validators.validateTestCases\' and ' +
                 'returned files as first and second param', function() {
                 run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
 
                 run.configure();
 
                 expect(run.emit.args[1].slice(0, 2)).to.deep.equal([
-                    'run.testCasesReadyToValidate',
+                    'validators.validateTestCases',
                     ['file1', 'file2'],
                 ]);
             });

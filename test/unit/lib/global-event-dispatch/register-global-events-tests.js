@@ -17,8 +17,8 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
     let validators;
     let dataStore;
     let registerGlobalEvents;
-    let configHandler;
     let commands;
+    let globalEventDispatch;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -26,29 +26,23 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
 
         runnerEventDispatch = {
             emit: sinon.stub(),
-            on: sinon.stub(),
         };
         plannerEventDispatch = {
             emit: sinon.stub(),
-            on: sinon.stub(),
         };
         executeEventDispatch = {
             emit: sinon.stub(),
-            on: sinon.stub(),
         };
         cliEventDispatch = {
             emit: sinon.stub(),
-            on: sinon.stub(),
         };
         componentHandler = {
-            on: sinon.stub(),
             configure: sinon.stub(),
             getComponent: sinon.stub(),
             getComponents: sinon.stub(),
             getComponentActions: sinon.stub(),
         };
         pageStateHandler = {
-            on: sinon.stub(),
             getPageState: sinon.stub(),
         };
         expectedState = {
@@ -74,12 +68,12 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         dataStore = {
             create: sinon.stub(),
         };
-        configHandler = {
-            on: sinon.stub(),
-        };
         commands = {
             run: sinon.stub(),
             generate: sinon.stub(),
+        };
+        globalEventDispatch = {
+            on: sinon.stub(),
         };
 
         mockery.registerMock('../runner/runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
@@ -93,7 +87,6 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         mockery.registerMock('../util/oracle.js', oracle);
         mockery.registerMock('../util/validators', validators);
         mockery.registerMock('../util/data-store.js', dataStore);
-        mockery.registerMock('../util/config-handler.js', configHandler);
         mockery.registerMock('../cli/commands', commands);
 
         registerGlobalEvents = require('../../../../lib/global-event-dispatch/register-global-events.js');
@@ -105,63 +98,43 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         mockery.disable();
     });
 
-    it('should call cliEventDispatch.on 5 times', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on 21 times', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(cliEventDispatch.on.callCount).to.equal(5);
+        expect(globalEventDispatch.on.callCount).to.equal(21);
     });
 
-    it('should call cliEventDispatch.on with the event \'cli.loadComponents\'' +
-        'and componentHandler.configure', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \'generate.configured\'', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(cliEventDispatch.on.args[0]).to.deep.equal([
-            'cli.loadComponents',
-            componentHandler.configure,
+        expect(globalEventDispatch.on.args[0][0]).to.equal('generate.configured');
+    });
+
+    describe('when the callback of globalEventDispatch.on with the event ' +
+        '\'generate.configured\' is called', function() {
+            it('should call plannerEventDispatch.emit with the event \'planner.generateConfigured\'', function() {
+                globalEventDispatch.on.onCall(0).callsArg(1);
+
+                registerGlobalEvents(globalEventDispatch);
+
+                expect(plannerEventDispatch.emit.args).to.deep.equal([
+                    ['planner.generateConfigured'],
+                ]);
+            });
+    });
+
+    it('should call globalEventDispatch.on with the event \'findFiles.search\' ' +
+        'and findFiles.search', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[1]).to.deep.equal([
+            'findFiles.search',
+            findFiles.search,
         ]);
     });
 
-    it('should call cliEventDispatch.on with the event \'cli.generateConfigured\'', function() {
-        registerGlobalEvents();
-
-        expect(cliEventDispatch.on.args[1][0]).to.equal('cli.generateConfigured');
-    });
-
-    describe('when the callback is called for cliEventDispatch.on with the event ' +
-        'cliEventDispatch.loadComponents', function() {
-        it('should call plannerEventDispatch.emit once with the event \'planner.generateConfigured\'', function() {
-            cliEventDispatch.on.onCall(1).callsArgWith(1, 'myConfigureInfo');
-
-            registerGlobalEvents();
-
-            expect(plannerEventDispatch.emit.args).to.deep.equal([
-                [
-                    'planner.generateConfigured',
-                ],
-            ]);
-        });
-    });
-
-    it('should call cliEventDispatch.on with the event \'cli.findFiles\'', function() {
-        registerGlobalEvents();
-
-        expect(cliEventDispatch.on.args[2][0]).to.equal('cli.findFiles');
-    });
-
-    it('should call cliEventDispatch.on with the event \'cli.testCasesReadyToValidate\'', function() {
-        registerGlobalEvents();
-
-        expect(cliEventDispatch.on.args[3][0]).to.equal('cli.testCasesReadyToValidate');
-    });
-
-    it('should call cliEventDispatch.on with the event \'cli.configured\'', function() {
-        registerGlobalEvents();
-
-        expect(cliEventDispatch.on.args[4][0]).to.equal('cli.configured');
-    });
-
-    describe('when the callback is called for cliEventDispatch.on with the event ' +
-        'cliEventDispatch.configured', function() {
+    describe('when the callback is called for globalEventDispatch.on with the event ' +
+        'cli.configured', function() {
         describe('if configureInfo.command equals the string \'execute\'', function() {
             it('should call executeEventDispatch.emit once with the event \'executor.scheduled\''+
                 'and the passed in configureInfo.testFile', function() {
@@ -169,9 +142,9 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
                     command: 'execute',
                     testFile: 'myTestFile',
                 };
-                cliEventDispatch.on.onCall(4).callsArgWith(1, configureInfo);
+                globalEventDispatch.on.onCall(2).callsArgWith(1, configureInfo);
 
-                registerGlobalEvents();
+                registerGlobalEvents(globalEventDispatch);
 
                 expect(executeEventDispatch.emit.args).to.deep.equal([
                     [
@@ -190,9 +163,9 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
                     testFilePaths: ['myTestFile', 'myTestFile2'],
                     parallelism: 5,
                 };
-                cliEventDispatch.on.onCall(4).callsArgWith(1, configureInfo);
+                globalEventDispatch.on.onCall(2).callsArgWith(1, configureInfo);
 
-                registerGlobalEvents();
+                registerGlobalEvents(globalEventDispatch);
 
                 expect(runnerEventDispatch.emit.args).to.deep.equal([
                     [
@@ -205,291 +178,197 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         });
     });
 
-    it('should call runnerEventDispatch.on once', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \'runner.ended\'', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(runnerEventDispatch.on.callCount).to.equal(1);
+        expect(globalEventDispatch.on.args[3][0]).to.equal('runner.ended');
     });
 
-    it('should call runnerEventDispatch.on with the event \'runner.ended\'', function() {
-        registerGlobalEvents();
+    describe('when the callback of globalEventDispatch.on with the event ' +
+        '\'runner.ended\' is called', function() {
+            it('should call cliEventDispatch.emit with the event \'cli.commandFinished\'', function() {
+                globalEventDispatch.on.onCall(3).callsArg(1);
 
-        expect(runnerEventDispatch.on.args[0][0]).to.equal('runner.ended');
+                registerGlobalEvents(globalEventDispatch);
+
+                expect(cliEventDispatch.emit.args).to.deep.equal([
+                    ['cli.commandFinished'],
+                ]);
+            });
     });
 
-    describe('when the callback is called for runnerEventDispatch.on with the event ' +
-        'runner.ended', function() {
-        it('should call cliEventDispatch.emit once with the event \'cli.commandFinished\'', function() {
-            runnerEventDispatch.on.onCall(0).callsArg(1);
-
-            registerGlobalEvents();
-
-            expect(cliEventDispatch.emit.args).to.deep.equal([
-                [
-                    'cli.commandFinished',
-                ],
-            ]);
-        });
-    });
-
-    it('should call executeEventDispatch.on 7 times', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.callCount).to.equal(7);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.loadComponents\'' +
+    it('should call globalEventDispatch.on with the event \componentHandler.configure\' ' +
         'and componentHandler.configure', function() {
-        registerGlobalEvents();
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(executeEventDispatch.on.args[0]).to.deep.equal([
-            'executor.loadComponents',
+        expect(globalEventDispatch.on.args[4]).to.deep.equal([
+            'componentHandler.configure',
             componentHandler.configure,
         ]);
     });
 
-    it('should call executeEventDispatch.on with the event \'executor.getComponents\'' +
-        'and componentHandler.getComponents', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[1]).to.deep.equal([
-            'executor.getComponents',
-            componentHandler.getComponents,
-        ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.createExpectedState\'' +
-        'and expectedState.create', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[2]).to.deep.equal([
-            'executor.createExpectedState',
-            expectedState.create,
-        ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.createDataStore\'' +
-        'and dataStore.create', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[3]).to.deep.equal([
-            'executor.createDataStore',
-            dataStore.create,
-        ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.getPageState\'' +
-        'and pageStateHandler.getPageState', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[4]).to.deep.equal([
-            'executor.getPageState',
-            pageStateHandler.getPageState,
-        ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.runAssertions\'' +
-        'and oracle.runAssertions', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[5]).to.deep.equal([
-            'executor.runAssertions',
-            oracle.runAssertions,
-        ]);
-    });
-
-    it('should call executeEventDispatch.on with the event \'executor.runDeepEqual\'' +
-        'and oracle.deepEqual', function() {
-        registerGlobalEvents();
-
-        expect(executeEventDispatch.on.args[6]).to.deep.equal([
-            'executor.runDeepEqual',
-            oracle.deepEqual,
-        ]);
-    });
-
-    it('should call componentHandler.on 2 times', function() {
-        registerGlobalEvents();
-
-        expect(componentHandler.on.callCount).to.equal(2);
-    });
-
-    it('should call componentHandler.on with the event \'componentHandler.findFiles\'' +
-        'and findFiles', function() {
-        registerGlobalEvents();
-
-        expect(componentHandler.on.args[0]).to.deep.equal([
-            'componentHandler.findFiles',
-            findFiles.search,
-        ]);
-    });
-
-    it('should call componentHandler.on with the event \'componentHandler.filesReadyToValidate\'' +
-        'and validators.validateComponents', function() {
-        registerGlobalEvents();
-
-        expect(componentHandler.on.args[1]).to.deep.equal([
-            'componentHandler.filesReadyToValidate',
-            validators.validateComponents,
-        ]);
-    });
-
-    it('should call pageStateHandler.on 1 times', function() {
-        registerGlobalEvents();
-
-        expect(pageStateHandler.on.callCount).to.equal(1);
-    });
-
-    it('should call pageStateHandler.on with the event \'pageStateHandler.getComponents\'' +
-        'and componentHandler.getComponents', function() {
-        registerGlobalEvents();
-
-        expect(pageStateHandler.on.args[0]).to.deep.equal([
-            'pageStateHandler.getComponents',
-            componentHandler.getComponents,
-        ]);
-    });
-
-    it('should call expectedState.on 6 times', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.callCount).to.equal(6);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.getComponent\'' +
-        'and componentHandler.getComponent', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[0]).to.deep.equal([
-            'expectedState.getComponent',
-            componentHandler.getComponent,
-        ]);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.elementReceived\'' +
-        'and validators.validateElements', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[1]).to.deep.equal([
-            'expectedState.elementsReceived',
-            validators.validateElements,
-        ]);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.modelReceived\'' +
-        'and validators.validateModel', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[2]).to.deep.equal([
-            'expectedState.modelReceived',
-            validators.validateModel,
-        ]);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.eventsReceived\'' +
-        'and validators.validateEvents', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[3]).to.deep.equal([
-            'expectedState.eventsReceived',
-            validators.validateEvents,
-        ]);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.childrenReceived\'' +
-        'and validators.validateChildren', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[4]).to.deep.equal([
-            'expectedState.childrenReceived',
-            validators.validateChildren,
-        ]);
-    });
-
-    it('should call expectedState.on with the event \'expectedState.actionsReceived\'' +
-        'and validators.validateActions', function() {
-        registerGlobalEvents();
-
-        expect(expectedState.on.args[5]).to.deep.equal([
-            'expectedState.actionsReceived',
-            validators.validateActions,
-        ]);
-    });
-
-    it('should call plannerEventDispatch.on 5 times', function() {
-        registerGlobalEvents();
-
-        expect(plannerEventDispatch.on.callCount).to.equal(5);
-    });
-
-    it('should call plannerEventDispatch.on with the event \'plannerEventDispatch.getComponentActions\'' +
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponentActions\' ' +
         'and componentHandler.getComponentActions', function() {
-        registerGlobalEvents();
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(plannerEventDispatch.on.args[0]).to.deep.equal([
-            'planner.getComponentActions',
+        expect(globalEventDispatch.on.args[5]).to.deep.equal([
+            'componentHandler.getComponentActions',
             componentHandler.getComponentActions,
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'plannerEventDispatch.getComponents\'' +
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponents\' ' +
         'and componentHandler.getComponents', function() {
-        registerGlobalEvents();
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(plannerEventDispatch.on.args[1]).to.deep.equal([
-            'planner.getComponents',
+        expect(globalEventDispatch.on.args[6]).to.deep.equal([
+            'componentHandler.getComponents',
             componentHandler.getComponents,
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'plannerEventDispatch.createExpectedState\'' +
-        'and expectedState.create', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \componentHandler.getComponent\' ' +
+        'and componentHandler.getComponent', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(plannerEventDispatch.on.args[2]).to.deep.equal([
-            'planner.createExpectedState',
-            expectedState.create,
+        expect(globalEventDispatch.on.args[7]).to.deep.equal([
+            'componentHandler.getComponent',
+            componentHandler.getComponent,
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'plannerEventDispatch.runAssertions\'' +
-        'and oracle.runAssertions', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \cpageStateHandler.getPageState\' ' +
+        'and pageStateHandler.getPageState', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(plannerEventDispatch.on.args[3]).to.deep.equal([
-            'planner.runAssertions',
+        expect(globalEventDispatch.on.args[8]).to.deep.equal([
+            'pageStateHandler.getPageState',
+            pageStateHandler.getPageState,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \oracle.runDeepEqual\' ' +
+        'and oracle.runDeepEqual', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[9]).to.deep.equal([
+            'oracle.runDeepEqual',
+            oracle.deepEqual,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \oracle.runAssertions\' ' +
+        'and oracle.runAssertions', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[10]).to.deep.equal([
+            'oracle.runAssertions',
             oracle.runAssertions,
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'plannerEventDispatch.createDataStore\'' +
-        'and dataStore.create', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \validators.validateComponents\' ' +
+        'and validators.validateComponents', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(plannerEventDispatch.on.args[4]).to.deep.equal([
-            'planner.createDataStore',
+        expect(globalEventDispatch.on.args[11]).to.deep.equal([
+            'validators.validateComponents',
+            validators.validateComponents,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateTestCases\' ' +
+        'and validators.validateTestCases', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[12]).to.deep.equal([
+            'validators.validateTestCases',
+            validators.validateTestCases,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateElements\' ' +
+        'and validators.validateElements', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[13]).to.deep.equal([
+            'validators.validateElements',
+            validators.validateElements,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateModel\' ' +
+        'and validators.validateModel', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[14]).to.deep.equal([
+            'validators.validateModel',
+            validators.validateModel,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateActions\' ' +
+        'and validators.validateActions', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[15]).to.deep.equal([
+            'validators.validateActions',
+            validators.validateActions,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateEvents\' ' +
+        'and validators.validateEvents', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[16]).to.deep.equal([
+            'validators.validateEvents',
+            validators.validateEvents,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \validators.validateChildren\' ' +
+        'and validators.validateChildren', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[17]).to.deep.equal([
+            'validators.validateChildren',
+            validators.validateChildren,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \vexpectedState.create\' ' +
+        'and expectedState.create', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[18]).to.deep.equal([
+            'expectedState.create',
+            expectedState.create,
+        ]);
+    });
+
+    it('should call globalEventDispatch.on with the event \dataStore.create\' ' +
+        'and dataStore.create', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[19]).to.deep.equal([
+            'dataStore.create',
             dataStore.create,
         ]);
     });
 
-    it('should call configHandler.on once', function() {
-        registerGlobalEvents();
+    it('should call globalEventDispatch.on with the event \'configHandler.configCreated\'', function() {
+        registerGlobalEvents(globalEventDispatch);
 
-        expect(configHandler.on.callCount).to.equal(1);
+        expect(globalEventDispatch.on.args[20][0]).to.equal('configHandler.configCreated');
     });
 
-    it('should call configHandler.on with the event \'configHandler.configCreated\'', function() {
-        registerGlobalEvents();
-
-        expect(configHandler.on.args[0][0]).to.equal('configHandler.configCreated');
-    });
-
-    describe('when the callback is called for configHandler.on with the event ' +
-        'configHandler.configCreated', function() {
+    describe('when the callback of globalEventDispatch.on with the event ' +
+        '\'configHandler.configCreated\' is called', function() {
         it('should call commands with the passed in command', function() {
-            configHandler.on.onCall(0).callsArgWith(1, 'run');
+            globalEventDispatch.on.onCall(20).callsArgWith(1, 'run');
 
-            registerGlobalEvents();
+            registerGlobalEvents(globalEventDispatch);
 
             expect(commands.run.args).to.deep.equal([[]]);
         });

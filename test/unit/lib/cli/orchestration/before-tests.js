@@ -7,27 +7,30 @@ const expect = require('chai').expect;
 describe('lib/cli/orchestration/before.js', function() {
     describe('on file being required', function() {
         let before;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let concurrent;
+        let cliEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/cli/orchestration/before.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            cliEventDispatch = sinon.stub();
 
             concurrent = sinon.stub();
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', {});
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', cliEventDispatch);
         });
 
         afterEach(function() {
@@ -36,10 +39,15 @@ describe('lib/cli/orchestration/before.js', function() {
             mockery.disable();
         });
 
-        it('should set the object prototype of before to a new EventEmitter', function() {
+        it('should call Emitter.mixIn once with before and the cliEventDispatch', function() {
             before = require('../../../../../lib/cli/orchestration/before.js');
 
-            expect(Object.getPrototypeOf(before)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    before,
+                    cliEventDispatch,
+                ],
+            ]);
         });
 
         it(`should call before.on once passing in the event 'before.readyToRunFunctions` +
@@ -55,8 +63,7 @@ describe('lib/cli/orchestration/before.js', function() {
 
     describe('runScripts', function() {
         let before;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let Saucelabs;
         let functionToRequire;
         let concurrent;
@@ -66,12 +73,13 @@ describe('lib/cli/orchestration/before.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/cli/orchestration/before.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             Saucelabs = {
                 connect: sinon.stub(),
@@ -85,10 +93,11 @@ describe('lib/cli/orchestration/before.js', function() {
             functionToRequire = sinon.stub();
             mockery.registerMock('path/to/script', functionToRequire);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', Saucelabs);
             mockery.registerMock('../../util/config-handler.js', configHandler);
+            mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
 
             before = require('../../../../../lib/cli/orchestration/before.js');
         });
@@ -279,8 +288,7 @@ describe('lib/cli/orchestration/before.js', function() {
 
     describe('_runFunctions', function() {
         let before;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let Saucelabs;
         let functionToRequire;
         let concurrent;
@@ -289,12 +297,14 @@ describe('lib/cli/orchestration/before.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../../lib/cli/orchestration/before.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             Saucelabs = {
                 connect: sinon.stub(),
@@ -306,10 +316,11 @@ describe('lib/cli/orchestration/before.js', function() {
             functionToRequire = sinon.stub();
             mockery.registerMock('path/to/script', functionToRequire);
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('palinode', {concurrent});
             mockery.registerMock('../../util/saucelabs.js', Saucelabs);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
 
             before = require('../../../../../lib/cli/orchestration/before.js');
         });
