@@ -7,6 +7,7 @@ const expect = require('chai').expect;
 describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js', function() {
     describe('on file require', function() {
         let Emitter;
+        let plannerEventDispatch;
         let forwardStateSpaceSearch;
 
         beforeEach(function() {
@@ -24,9 +25,11 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 },
             };
             sinon.spy(Emitter, 'mixIn');
+            plannerEventDispatch = sinon.stub();
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
         });
 
         afterEach(function() {
@@ -35,13 +38,17 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             mockery.disable();
         });
 
-        it('should Emitter.mixIn once with startNodes as the parameter', function() {
+        it('should Emitter.mixIn once with forwardStateSpaceSearch and plannerEventDispatch ' +
+            'as parameters', function() {
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             );
 
             expect(Emitter.mixIn.args).to.deep.equal([
-                [forwardStateSpaceSearch],
+                [
+                    forwardStateSpaceSearch,
+                    plannerEventDispatch,
+                ],
             ]);
         });
 
@@ -195,6 +202,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', configHandler);
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -239,7 +247,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
 
-        it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.getStartNodes\' ' +
+        it('should call forwardStateSpaceSearch.emitAsync with the event \'startNodes.get\' ' +
             'and next', function() {
             let generator = forwardStateSpaceSearch._createPlans(callback);
 
@@ -247,7 +255,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             generator.next(next);
 
             expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
-                'forwardStateSpaceSearch.getStartNodes',
+                'startNodes.get',
                 next,
             ]);
         });
@@ -378,6 +386,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -463,6 +472,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -621,8 +631,8 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     ]);
                 });
 
-                it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
-                    'getPossibleActions\', clonedNode, and the next callback', function() {
+                it('should call forwardStateSpaceSearch.emitAsync with the event \'possibleActions.' +
+                    'get\', clonedNode, and the next callback', function() {
                     let node = {
                         actions: new Set([
                             'myComponent.MY_ACTION',
@@ -638,7 +648,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                     generator.next();
 
                     expect(forwardStateSpaceSearch.emitAsync.args[3]).to.deep.equal([
-                        'forwardStateSpaceSearch.getPossibleActions',
+                        'possibleActions.get',
                         {
                             actions: new Set(),
                             path: ['myComponent.MY_ACTION'],
@@ -925,6 +935,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -1136,6 +1147,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -1295,6 +1307,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -1531,6 +1544,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
@@ -1672,6 +1686,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
             mockery.registerMock('../../util/emitter.js', Emitter);
             mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
                 '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
