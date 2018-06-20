@@ -39,10 +39,10 @@ describe('lib/util/defaults.js', function() {
     expect(defaults.testPath).to.equal(`${process.cwd()}/tests`);
   });
 
-  it('should have the property \'reportPath\' with the default value', function() {
+  it('should have the property \'configFile\' with the default value', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
-    expect(defaults.reportPath).to.equal(`${process.cwd()}/reports`);
+    expect(defaults.configFile).to.equal(`${process.cwd()}/simulato-config.js`);
   });
 
   it('should have the property \'technique\' with the default value', function() {

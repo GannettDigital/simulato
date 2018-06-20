@@ -4,7 +4,7 @@
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
-    "sim": "./index.js"
+    "simulato": "./index.js"
   },
   "scripts": {
     "test": "npm run unit-test",

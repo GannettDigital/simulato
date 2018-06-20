@@ -265,24 +265,67 @@ describe('lib/util/config-handler.js', function() {
         expect(configHandler._config).to.be.frozen;
       });
 
-      it('should call the passed in options.name once with no args', function() {
+      it('should call configHandler.emit with \'configHandler.readyToValidate\' the config, '
+        + 'the requried in configFile, and the passed in clioptions', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
         configHandler.createConfig(options);
 
-        expect(options.name.args).to.deep.equal([[]]);
+        expect(configHandler.emit.args[0].slice(0, -1)).to.deep.equal([
+          'configHandler.readyToValidate',
+          {},
+          {},
+          options,
+        ]);
       });
 
-      it('should call configHandler.emit with \'configHandler.configCreated\' and '
-        + 'the passed in options.name', function() {
+      it('should call configHandler.emit with a callback as the 5th param', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
         configHandler.createConfig(options);
 
-        expect(configHandler.emit.args).to.deep.equal([[
-          'configHandler.configCreated',
-          'run',
-        ]]);
+        expect(configHandler.emit.args[0][4]).to.be.a('function');
+      });
+
+      it('should call configHandler.emit once', function() {
+        configHandler._getBaseConfig.callsArgWith(1, {});
+
+        configHandler.createConfig(options);
+
+        expect(configHandler.emit.callCount).to.equal(1);
+      });
+
+      describe('when the configHandler.emit \'readyToValidate\' callback is called', function() {
+        it('should call the passed in options.name once with no args', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(options.name.args).to.deep.equal([[]]);
+        });
+
+        it('should call configHandler.emit with \'configHandler.configCreated\' and '
+          + 'the passed in options.name', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(configHandler.emit.args[1]).to.deep.equal([
+            'configHandler.configCreated',
+            'run',
+          ]);
+        });
+
+        it('should call configHandler.emit twice', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(configHandler.emit.callCount).to.equal(2);
+        });
       });
     });
   });
@@ -389,6 +432,7 @@ describe('lib/util/config-handler.js', function() {
     let configHandler;
     let EventEmitter;
     let EventEmitterInstance;
+    let defaults;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -400,6 +444,16 @@ describe('lib/util/config-handler.js', function() {
         normalize: sinon.stub(),
       };
 
+      defaults = {
+        configFile: `${process.cwd()}/simulato-config.js`,
+      };
+
+      global.SimulatoError = {
+        CONFIG: {
+          TYPE_ERROR: sinon.stub(),
+        },
+      };
+
       EventEmitter = sinon.stub();
       EventEmitterInstance = {
         emit: sinon.stub(),
@@ -409,7 +463,7 @@ describe('lib/util/config-handler.js', function() {
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
-      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('./defaults.js', defaults);
       mockery.registerMock('uuid/v4', {});
       mockery.registerMock('events', {EventEmitter});
 
@@ -417,6 +471,7 @@ describe('lib/util/config-handler.js', function() {
     });
 
     afterEach(function() {
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -450,21 +505,19 @@ describe('lib/util/config-handler.js', function() {
 
     describe('if the passed in cliOptions.configFile is falsey', function() {
       it('should call path.normalize once with process.cwd() and \'/config.js\'', function() {
-        let requirePath = `${process.cwd()}/config.js`;
-        path.normalize.onCall(0).returns(requirePath);
-        mockery.registerMock(requirePath, {key: 'required from default path'});
+        path.normalize.onCall(0).returns(defaults.configFile);
+        mockery.registerMock(defaults.configFile, {key: 'required from default path'});
 
         configHandler._getBaseConfig({}, callback);
 
         expect(path.normalize.args).to.deep.equal([[
-          requirePath,
+          defaults.configFile,
         ]]);
       });
 
       it('should call the passed in callback with the config returned from default path', function() {
-        let requirePath = `${process.cwd()}/config.js`;
-        path.normalize.onCall(0).returns(requirePath);
-        mockery.registerMock(requirePath, {key: 'required from default path'});
+        path.normalize.onCall(0).returns(defaults.configFile);
+        mockery.registerMock(defaults.configFile, {key: 'required from default path'});
 
         configHandler._getBaseConfig({}, callback);
 
@@ -476,9 +529,8 @@ describe('lib/util/config-handler.js', function() {
       describe('if requiring in the default path throws an error', function() {
         describe('if the error.code is \'MODULE_NOT_FOUND\'', function() {
           it('should call the passed in callback with an empty object', function() {
-            let requirePath = `${process.cwd()}/config.js`;
-            mockery.registerAllowable(requirePath);
-            path.normalize.onCall(0).returns(requirePath);
+            mockery.registerAllowable(defaults.configFile);
+            path.normalize.onCall(0).returns(defaults.configFile);
 
             configHandler._getBaseConfig({}, callback);
 
@@ -495,6 +547,33 @@ describe('lib/util/config-handler.js', function() {
 
             expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw('path must be a string');
           });
+        });
+      });
+    });
+
+    describe('if configFile that was required in is not an Object', function() {
+      describe('if the config was specified from the cli', function() {
+        it('should throw simulato CONFIG TYPE_ERROR stating config specified from cli was not an object', function() {
+          let requirePath = `${process.cwd()}/path/to/config`;
+          path.normalize.onCall(0).returns(requirePath);
+          mockery.registerMock(requirePath, []);
+          let message = 'Simulato Error';
+          SimulatoError.CONFIG.TYPE_ERROR.throws({message});
+
+          expect(configHandler._getBaseConfig.bind(null, {configFile: 'path/to/config'}, callback)).to.throw(message);
+        });
+      });
+
+      describe('if the config was from the default path', function() {
+        it('should throw simulato CONFIG TYPE_ERROR stating config'
+          + ' from the default path was not an object', function() {
+          let requirePath = `${process.cwd()}/simulato-config.js`;
+          path.normalize.onCall(0).returns(requirePath);
+          mockery.registerMock(requirePath, []);
+          let message = 'Simulato Error';
+          SimulatoError.CONFIG.TYPE_ERROR.throws({message});
+
+          expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw(message);
         });
       });
     });

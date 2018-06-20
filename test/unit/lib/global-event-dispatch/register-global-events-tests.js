@@ -70,6 +70,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             validateEvents: sinon.stub(),
             validateChildren: sinon.stub(),
             validateActions: sinon.stub(),
+            validateConfig: sinon.stub(),
         };
         dataStore = {
             create: sinon.stub(),
@@ -472,10 +473,10 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
-    it('should call configHandler.on once', function() {
+    it('should call configHandler.on twice', function() {
         registerGlobalEvents();
 
-        expect(configHandler.on.callCount).to.equal(1);
+        expect(configHandler.on.callCount).to.equal(2);
     });
 
     it('should call configHandler.on with the event \'configHandler.configCreated\'', function() {
@@ -493,5 +494,15 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
 
             expect(commands.run.args).to.deep.equal([[]]);
         });
+    });
+
+    it('should call configHandler.on with the event \'configHandler.readyToValidate\''
+        + ' and validators.validateConfig', function() {
+        registerGlobalEvents();
+
+        expect(configHandler.on.args[1]).to.deep.equal([
+            'configHandler.readyToValidate',
+            validators.validateConfig,
+        ]);
     });
 });
