@@ -63,11 +63,7 @@ This section details the different commands used in the CLI. All passed in CLI o
 * Example Usage
     * `model-based-test-tool generate -c ./components -o ./tests -t actionFocused`
 * Options
-<<<<<<< HEAD
-    * `-c`, `--components`
-=======
     * `-c`, `--componentPath` **required**
->>>>>>> origin/issue-116
         * Path to components
         * Example: `-c ./my-components-folder`
     * `-o`, `--outputPath`

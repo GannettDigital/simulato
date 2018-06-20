@@ -15,10 +15,10 @@ describe('lib/util/defaults.js', function() {
     mockery.disable();
   });
 
-  it('should export 8 items on an object', function() {
+  it('should export 9 items on an object', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
-    expect(Object.getOwnPropertyNames(defaults).length).to.equal(8);
+    expect(Object.getOwnPropertyNames(defaults).length).to.equal(9);
   });
 
   it('should have the property \'componentPath\' with the default value', function() {
@@ -67,5 +67,11 @@ describe('lib/util/defaults.js', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
     expect(defaults.rerunFailedTests).to.equal(0);
+  });
+
+  it('should have the property \'plannerAlgorithm\' with the default value', function() {
+    let defaults = require('../../../../lib/util/defaults.js');
+
+    expect(defaults.plannerAlgorithm).to.equal('forwardStateSpaceSearchHeuristic');
   });
 });

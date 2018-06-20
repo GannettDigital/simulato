@@ -6,17 +6,18 @@ const expect = require('chai').expect;
 
 describe('lib/errors/cli/index.js', function() {
   let INVALID_COMPONENT_PATH;
-  let INVALID_GENERATION_TECHNIQUE;
+  let INVALID_PLANNER_ALGORITHM;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../../lib/errors/cli');
 
     INVALID_COMPONENT_PATH = sinon.stub();
-    INVALID_GENERATION_TECHNIQUE = sinon.stub();
+    INVALID_PLANNER_ALGORITHM = sinon.stub();
 
     mockery.registerMock('./invalid-component-path.js', INVALID_COMPONENT_PATH);
-    mockery.registerMock('./invalid-generation-technique.js', INVALID_GENERATION_TECHNIQUE);
+    mockery.registerMock('./invalid-planner-algorithm.js', INVALID_PLANNER_ALGORITHM);
+
   });
 
   afterEach(function() {
@@ -38,10 +39,10 @@ describe('lib/errors/cli/index.js', function() {
     expect(result.INVALID_COMPONENT_PATH).to.deep.equal(INVALID_COMPONENT_PATH);
   });
 
-  it('should have the property \'INVALID_GENERATION_TECHNIQUE\' with the value from requiring'
-    + ' \'./invalid-generation-technique.js\'', function() {
+  it('should have the property \'INVALID_PLANNER_ALGORITHM\' with the value from requiring'
+    + ' \'./invalid-planner-algorithm.js\'', function() {
     let result = require('../../../../../lib/errors/cli');
 
-    expect(result.INVALID_GENERATION_TECHNIQUE).to.deep.equal(INVALID_GENERATION_TECHNIQUE);
+    expect(result.INVALID_PLANNER_ALGORITHM).to.deep.equal(INVALID_PLANNER_ALGORITHM);
   });
 });

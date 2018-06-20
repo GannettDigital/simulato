@@ -5,8 +5,6 @@ module.exports = {
     componentPath: './test/acceptance/components',
     reportPath: './test/acceptance/tests',
     outputPath: './test/acceptance/tests',
-    planner: {
-        algorithm: 'forwardStateSpaceSearchHeuristic',
-    },
+    plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
     rerunFailedTests: 1,
 };

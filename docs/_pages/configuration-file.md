@@ -67,7 +67,7 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `0`
   * Example: `rerunFailedTests: 2`
 
-### planner.algorithm
+### plannerAlgorithm
   * The algorithm to use when the planner generates tests
   * Supported algorithms: `forwardStateSpaceSearchHeuristic`
   * Example: `algorithm: forwardStateSpaceSearchHeuristic`
@@ -92,7 +92,5 @@ This section documents utilization of the configuration file in place of CLI opt
         saucelabs: true,
         sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'},
         outputPath: './test/acceptance/tests',
-        planner: {
-          algorithm: `forwardStateSpaceSearchHeuristic`
-        }
+        plannerAlgorithm: `forwardStateSpaceSearchHeuristic`
     }
