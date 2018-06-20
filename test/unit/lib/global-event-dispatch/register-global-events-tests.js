@@ -64,6 +64,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
             validateEvents: sinon.stub(),
             validateChildren: sinon.stub(),
             validateActions: sinon.stub(),
+            validateConfig: sinon.stub(),
         };
         dataStore = {
             create: sinon.stub(),
@@ -98,10 +99,10 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         mockery.disable();
     });
 
-    it('should call globalEventDispatch.on 21 times', function() {
+    it('should call globalEventDispatch.on 22 times', function() {
         registerGlobalEvents(globalEventDispatch);
 
-        expect(globalEventDispatch.on.callCount).to.equal(21);
+        expect(globalEventDispatch.on.callCount).to.equal(22);
     });
 
     it('should call globalEventDispatch.on with the event \'generate.configured\'', function() {
@@ -357,6 +358,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
         ]);
     });
 
+
     it('should call globalEventDispatch.on with the event \'configHandler.configCreated\'', function() {
         registerGlobalEvents(globalEventDispatch);
 
@@ -372,5 +374,15 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
 
             expect(commands.run.args).to.deep.equal([[]]);
         });
+    });
+
+    it('should call globalEventDispatch.on with the event \'configHandler.readyToValidate\''
+        + ' and validators.validateConfig', function() {
+        registerGlobalEvents(globalEventDispatch);
+
+        expect(globalEventDispatch.on.args[21]).to.deep.equal([
+            'configHandler.readyToValidate',
+            validators.validateConfig,
+        ]);
     });
 });

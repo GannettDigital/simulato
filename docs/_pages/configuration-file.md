@@ -12,9 +12,9 @@ This section documents utilization of the configuration file in place of CLI opt
   * Path to tests
   * Example: `testPath: ./my-test-folder`
 
-### components
+### componentPath
   * Path to components
-  * Example: `components: /my-components-folder`
+  * Example: `componentPath: /my-components-folder`
 
 ### reporter
   * Specify a reporter to use. Either `basic` or `teamcity` 
@@ -87,7 +87,7 @@ This section documents utilization of the configuration file in place of CLI opt
 
     module.exports = {
         testPath: './test/acceptance/tests',
-        components: './test/acceptance/components',
+        componentPath: './test/acceptance/components',
         reportPath: './test/acceptance/tests',
         saucelabs: true,
         sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'},

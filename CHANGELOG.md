@@ -7,6 +7,15 @@
   * Child processes can be spawned with --inspect-brk
   * Ports are auto assigned based on availability
   * Starting Port can be specified
+  * Added new config scheme
+    * cli/config/default propertys are all merged to one config
+    * config is processed once at start, and availble throughout the program
+    * config is validated on creation
+
+* Scott Gunther
+  * Added parent event emiiters
+    * Events bubble up
+  * Updated files to use new event emitters
 
 ## 0.5.2
 
