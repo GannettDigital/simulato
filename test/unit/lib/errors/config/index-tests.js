@@ -28,10 +28,10 @@ describe('lib/errors/config/index.js', function() {
         mockery.disable();
     });
 
-    it('should export 3 items on an object', function() {
+    it('should export 2 items on an object', function() {
         let result = require('../../../../../lib/errors/config');
 
-        expect(Object.getOwnPropertyNames(result).length).to.equal(3);
+        expect(Object.getOwnPropertyNames(result).length).to.equal(2);
     });
 
     it('should have the property \'TYPE_ERROR\' with the value from requiring'
@@ -46,12 +46,5 @@ describe('lib/errors/config/index.js', function() {
       let result = require('../../../../../lib/errors/config');
 
       expect(result.INVALID_PROPERTY).to.deep.equal(INVALID_PROPERTY);
-    });
-
-    it('should have the property \'INVALID_PATH\' with the value from requiring'
-      + ' \'./invalid-path.js\'', function() {
-      let result = require('../../../../../lib/errors/config');
-
-      expect(result.INVALID_PATH).to.deep.equal(INVALID_PATH);
     });
 });
