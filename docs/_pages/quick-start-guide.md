@@ -94,7 +94,7 @@ Once created your directory should look like this:
 
 Once your directory is set up type `npm install` and your initial set up should be complete!
 
-Clone the repo [here](https://www.npmjs.com/package/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
+Clone the repo [here](https://github.com/GannettDigital/simulato-test-site) and follow the directions to get the test site up and running as this is what you will be modeling against!
 
 
 # Creating a component

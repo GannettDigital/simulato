@@ -8,6 +8,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
   describe('getPort', function() {
     let debugPortHandler;
     let callback;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -15,7 +16,12 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
 
       callback = sinon.stub();
 
+      configHandler = {
+        get: sinon.stub(),
+      };
+
       mockery.registerMock('portscanner', {});
+      mockery.registerMock('../../util/config-handler.js', configHandler);
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
       debugPortHandler._findPort = sinon.stub();
@@ -39,9 +45,17 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
     });
 
     describe('if debugPortHandler._startPort is not set', function() {
-      describe('if process.env.DEBUG_PORT is an int', function() {
-        it('should set ._currentPort to proces.env.DEBUG_PORT', function() {
-          process.env.DEBUG_PORT = 2121;
+      it('should call configHandler.get with \'debugPort\'', function() {
+        delete debugPortHandler._startPort;
+
+        debugPortHandler.getPort(callback);
+
+        expect(configHandler.get.args).to.deep.equal([['debugPort']]);
+      });
+
+      describe('if the config contains debugPort', function() {
+        it('should set ._currentPort to the configs debugPort', function() {
+          configHandler.get.returns(2121);
           delete debugPortHandler._startPort;
 
           debugPortHandler.getPort(callback);
@@ -49,8 +63,8 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
           expect(debugPortHandler._currentPort).to.equal(2121);
         });
 
-        it('should set ._startPort to proces.env.DEBUG_PORT', function() {
-          process.env.DEBUG_PORT = 2121;
+        it('should set ._startPort to the configs debugPort', function() {
+          configHandler.get.returns(2121);
           delete debugPortHandler._startPort;
 
           debugPortHandler.getPort(callback);
@@ -124,6 +138,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       };
 
       mockery.registerMock('portscanner', portscanner);
+      mockery.registerMock('../../util/config-handler.js', {});
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
       debugPortHandler._portsToGet = [callback];
@@ -243,6 +258,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       callback = sinon.stub();
 
       mockery.registerMock('portscanner', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
     });

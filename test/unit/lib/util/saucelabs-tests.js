@@ -9,6 +9,7 @@ describe('lib/util/saucelabs', function() {
     let saucelabs;
     let sauceConnectLauncher;
     let callback;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -17,12 +18,15 @@ describe('lib/util/saucelabs', function() {
       sauceConnectLauncher = sinon.stub();
       callback = sinon.stub();
       sinon.spy(console, 'log');
+      configHandler = {
+        get: sinon.stub(),
+      };
 
       process.env.SAUCE_USERNAME = 'sauceUsername',
       process.env.SAUCE_ACCESS_KEY = 'sauceAccessKey',
-      process.env.TUNNEL_IDENTIFIER = 'tunnelIdentifier',
 
       mockery.registerMock('sauce-connect-launcher', sauceConnectLauncher);
+      mockery.registerMock('./config-handler.js', configHandler);
 
       saucelabs = require('../../../../lib/util/saucelabs.js');
     });
@@ -30,11 +34,24 @@ describe('lib/util/saucelabs', function() {
     afterEach(function() {
       delete process.env.SAUCE_USERNAME;
       delete process.env.SAUCE_ACCESS_KEY;
-      delete process.env.TUNNEL_IDENTIFIER;
       console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
+    });
+
+    it('should call console.log to say sauce connect tunnel is connecting', function() {
+      saucelabs.connect(callback);
+
+      expect(console.log.args[0]).to.deep.equal([
+        'Creating sauce connect tunnel...',
+      ]);
+    });
+
+    it('should call console.log once', function() {
+      saucelabs.connect(callback);
+
+      expect(console.log.callCount).to.equal(1);
     });
 
     it('should call sauceConnectLauncher once', function() {
@@ -43,16 +60,79 @@ describe('lib/util/saucelabs', function() {
       expect(sauceConnectLauncher.callCount).to.equal(1);
     });
 
+    it('should call configHandler.get 3 times', function() {
+      saucelabs.connect(callback);
+
+      expect(configHandler.get.callCount).to.equal(3);
+    });
+
+    it('should call configHandler.get with sauceCapabilities.username', function() {
+      saucelabs.connect(callback);
+
+      expect(configHandler.get.args[0]).to.deep.equal(['sauceCapabilities.username']);
+    });
+
+    it('should call configHandler.get with sauceCapabilities.accesskey', function() {
+      saucelabs.connect(callback);
+
+      expect(configHandler.get.args[1]).to.deep.equal(['sauceCapabilities.accesskey']);
+    });
+
+    it('should call configHandler.get with tunnelIdentifier', function() {
+      saucelabs.connect(callback);
+
+      expect(configHandler.get.args[2]).to.deep.equal(['tunnelIdentifier']);
+    });
+
     it('should call sauceConnectLauncher with an object as the first argument containing '
-    + 'username, accessKey, and tunnelIdentifier equal to their respective process.env varibles', function() {
+    + 'username, accessKey, and tunnelIdentifier equal to their respective config values', function() {
+      configHandler.get.onCall(0).returns('configUsername');
+      configHandler.get.onCall(1).returns('configAccessKey');
+      configHandler.get.onCall(2).returns('tunnelIdentifier');
+
       saucelabs.connect(callback);
 
       expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
-        username: 'sauceUsername',
-        accessKey: 'sauceAccessKey',
+        username: 'configUsername',
+        accessKey: 'configAccessKey',
         tunnelIdentifier: 'tunnelIdentifier',
       });
     });
+
+    describe('if the config sauceCapabilities.username is falsey', function() {
+      it('should call sauceConnectLauncher with an object as the first argument containing '
+      + 'username from process.env', function() {
+        configHandler.get.onCall(0).returns(undefined);
+        configHandler.get.onCall(1).returns('configAccessKey');
+        configHandler.get.onCall(2).returns('tunnelIdentifier');
+
+        saucelabs.connect(callback);
+
+        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
+          username: 'sauceUsername',
+          accessKey: 'configAccessKey',
+          tunnelIdentifier: 'tunnelIdentifier',
+        });
+      });
+    });
+
+    describe('if the config sauceCapabilities.accessKey is falsey', function() {
+      it('should call sauceConnectLauncher with an object as the first argument containing '
+      + 'accessKey from process.env', function() {
+        configHandler.get.onCall(0).returns('configUsername');
+        configHandler.get.onCall(1).returns(undefined);
+        configHandler.get.onCall(2).returns('tunnelIdentifier');
+
+        saucelabs.connect(callback);
+
+        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
+          username: 'configUsername',
+          accessKey: 'sauceAccessKey',
+          tunnelIdentifier: 'tunnelIdentifier',
+        });
+      });
+    });
+
 
     it('should call sauceConnectLauncher with a callback function as second argument', function() {
       saucelabs.connect(callback);
@@ -75,14 +155,22 @@ describe('lib/util/saucelabs', function() {
       });
 
       describe('if no error was passed back', function() {
+        it('should call console.log twice', function() {
+          sauceConnectLauncher.callsArgWith(1, null, {});
+
+          saucelabs.connect(callback);
+
+          expect(console.log.callCount).to.equal(2);
+        });
+
         it(`should call console.log with 'Sauce Connect process connected'`, function() {
           sauceConnectLauncher.callsArgWith(1, null, {});
 
           saucelabs.connect(callback);
 
-          expect(console.log.args).to.deep.equal([[
+          expect(console.log.args[1]).to.deep.equal([
             'Sauce Connect process connected',
-          ]]);
+          ]);
         });
 
         it('should set sauceLabs._sauceConnectProcess to the passed back sauceConnectProcess', function() {
@@ -114,6 +202,7 @@ describe('lib/util/saucelabs', function() {
       sinon.spy(console, 'log');
 
       mockery.registerMock('sauce-connect-launcher', {});
+      mockery.registerMock('./config-handler.js', {});
 
       saucelabs = require('../../../../lib/util/saucelabs.js');
       saucelabs._sauceConnectProcess = {
@@ -126,6 +215,20 @@ describe('lib/util/saucelabs', function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
+    });
+
+    it(`should call console.log with 'Closing sauce connect tunnel...'`, function() {
+      saucelabs.close();
+
+      expect(console.log.args[0]).to.deep.equal([
+        'Closing sauce connect tunnel...',
+      ]);
+    });
+
+    it('should call console.log once', function() {
+      saucelabs.close();
+
+      expect(console.log.callCount).to.equal(1);
     });
 
     it('should call saucelabs._sauceConnectProcess.close once', function() {
@@ -146,9 +249,17 @@ describe('lib/util/saucelabs', function() {
 
         saucelabs.close();
 
-        expect(console.log.args).to.deep.equal([[
+        expect(console.log.args[1]).to.deep.equal([
           'Sauce Connect process closed',
-        ]]);
+        ]);
+      });
+
+      it('should call console.log twice', function() {
+        saucelabs._sauceConnectProcess.close.callsArg(0);
+
+        saucelabs.close();
+
+        expect(console.log.callCount).to.equal(2);
       });
     });
   });

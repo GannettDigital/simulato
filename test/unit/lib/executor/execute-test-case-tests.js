@@ -6,23 +6,27 @@ const expect = require('chai').expect;
 
 describe('lib/executor/execute-test-case.js', function() {
     describe('on file being required', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executeTestCase;
+        let executorEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            executorEventDispatch = sinon.stub();
 
             mockery.registerMock('selenium-webdriver', {});
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('../util/config-handler.js', {});
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
         });
 
         afterEach(function() {
@@ -31,40 +35,51 @@ describe('lib/executor/execute-test-case.js', function() {
             mockery.disable();
         });
 
-        it('should set the object prototype of assertionHandler to a new EventEmitter', function() {
+        it('should call Emitter.mixIn with executeTestCase and executorEventDispatch', function() {
             executeTestCase = require('../../../../lib/executor/execute-test-case.js');
 
-            expect(Object.getPrototypeOf(executeTestCase)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    executeTestCase,
+                    executorEventDispatch,
+                ],
+            ]);
         });
     });
 
     describe('configure', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let testPath;
         let webdriver;
         let executeTestCase;
+        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
 
             testPath = '/tests/my-test-case.js';
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             webdriver = {
                 By: sinon.stub(),
                 until: sinon.stub(),
             };
             sinon.stub(process, 'on');
+            configHandler = {
+                get: sinon.stub(),
+            };
 
             mockery.registerMock('selenium-webdriver', webdriver);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('/tests/my-test-case.js', 'testCase');
+            mockery.registerMock('../util/config-handler.js', configHandler);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             executeTestCase = require('../../../../lib/executor/execute-test-case.js');
         });
@@ -72,8 +87,6 @@ describe('lib/executor/execute-test-case.js', function() {
         afterEach(function() {
             delete global.By;
             delete global.until;
-            delete process.env.TEST_NAME;
-            delete process.env.SAUCE_LABS;
 
             process.exitCode = 0;
             process.on.restore();
@@ -128,13 +141,6 @@ describe('lib/executor/execute-test-case.js', function() {
             });
         });
 
-        it('should process.env.TEST_NAME to \'my-test-case.js\' if the path is ' +
-            '\'/tests/my-test-case.js\'', function() {
-            executeTestCase.configure(testPath);
-
-            expect(process.env.TEST_NAME).to.equal('my-test-case.js');
-        });
-
         it('should set global.By to webdriver.By', function() {
             executeTestCase.configure(testPath);
 
@@ -153,20 +159,40 @@ describe('lib/executor/execute-test-case.js', function() {
             expect(executeTestCase.emit.callCount).to.equal(3);
         });
 
-        it('should call executeTestCase.emit with the event \'executeTestCase.loadComponents\' ' +
-            'and process.env.COMPONENTS_PATH as parmeters', function() {
-            process.env.COMPONENTS_PATH = '/my/components';
+        it('should call configHandler.get twice', function() {
+            executeTestCase.configure(testPath);
+
+            expect(configHandler.get.callCount).to.equal(2);
+        });
+
+        it('should call configHandler.get with \'componentPath\'', function() {
+            executeTestCase.configure(testPath);
+
+            expect(configHandler.get.args[0]).to.deep.equal(['componentPath']);
+        });
+
+        it('should call executeTestCase.emit with the event \'componentHandler.configure\' ' +
+            'and configs componentPath as parmeters', function() {
+            configHandler.get.returns('/my/components');
+
             executeTestCase.configure(testPath);
 
             expect(executeTestCase.emit.args[0]).to.deep.equal([
-                'executeTestCase.loadComponents',
+                'componentHandler.configure',
                 '/my/components',
             ]);
         });
 
-        describe('if process.env.SAUCE_LABS equals the string \'true\'', function() {
+        it('should call configHandler.get with \'saucelabs\'', function() {
+            executeTestCase.configure(testPath);
+
+            expect(configHandler.get.args[1]).to.deep.equal(['saucelabs']);
+        });
+
+        describe('if configHandler.get(\'saucelabs\') is truthy', function() {
             it('should call executeTestCase.emit with the event \'executeTestCase.driverSetToSauce\'', function() {
-                process.env.SAUCE_LABS = 'true';
+                configHandler.get.returns(true);
+
                 executeTestCase.configure(testPath);
 
                 expect(executeTestCase.emit.args[1]).to.deep.equal([
@@ -175,7 +201,7 @@ describe('lib/executor/execute-test-case.js', function() {
             });
         });
 
-        describe('if process.env.SAUCE_LABS is not the string \'true\'', function() {
+        describe('iff configHandler.get(\'saucelabs\') is falsey', function() {
             it('should call executeTestCase.emit with the event \'executeTestCase.driverSetToLocal\'', function() {
                 executeTestCase.configure(testPath);
 
