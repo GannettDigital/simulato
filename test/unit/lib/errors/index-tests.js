@@ -13,6 +13,8 @@ describe('lib/errors/index.js', function() {
     let TEST_CASE;
     let EVENT;
     let CHILD;
+    let CLI;
+    let RUNNER;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -26,6 +28,8 @@ describe('lib/errors/index.js', function() {
         TEST_CASE = sinon.stub();
         EVENT = sinon.stub();
         CHILD = sinon.stub();
+        CLI = sinon.stub();
+        RUNNER = sinon.stub();
 
         mockery.registerMock('./element', ELEMENT);
         mockery.registerMock('./action', ACTION);
@@ -35,6 +39,8 @@ describe('lib/errors/index.js', function() {
         mockery.registerMock('./test-case', TEST_CASE);
         mockery.registerMock('./event', EVENT);
         mockery.registerMock('./child', CHILD);
+        mockery.registerMock('./cli', CLI);
+        mockery.registerMock('./runner', RUNNER);
     });
 
     afterEach(function() {
@@ -43,10 +49,10 @@ describe('lib/errors/index.js', function() {
         mockery.disable();
     });
 
-    it('should export 8 items on an object', function() {
+    it('should export 10 items on an object', function() {
         let result = require('../../../../lib/errors');
 
-        expect(Object.getOwnPropertyNames(result).length).to.equal(8);
+        expect(Object.getOwnPropertyNames(result).length).to.equal(10);
     });
 
     it('should have the property \'ELEMENT\' with the value from requiring'
@@ -103,5 +109,19 @@ describe('lib/errors/index.js', function() {
       let result = require('../../../../lib/errors');
 
       expect(result.CHILD).to.deep.equal(CHILD);
+    });
+
+    it('should have the property \'CLI\' with the value from requiring'
+    + ' \'./cli\'', function() {
+      let result = require('../../../../lib/errors');
+
+      expect(result.CLI).to.deep.equal(CLI);
+    });
+
+    it('should have the property \'RUNNER\' with the value from requiring'
+    + ' \'./runner\'', function() {
+      let result = require('../../../../lib/errors');
+
+      expect(result.RUNNER).to.deep.equal(RUNNER);
     });
 });

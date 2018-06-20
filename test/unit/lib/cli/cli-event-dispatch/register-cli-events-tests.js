@@ -98,14 +98,13 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
   });
 
   describe('when the second call of generate.on callback is called', function() {
-    it('should call cliEventDispath.emit with the first param \'cli.generateConfigured\' '
-    + 'and the second param as the returned info', function() {
-      generate.on.onCall(1).callsArgWith(1, {some: 'info'});
+    it('should call cliEventDispath.emit with \'cli.generateConfigured\'', function() {
+      generate.on.onCall(1).callsArgWith(1);
 
       registerCliEvents(cliEventDispatch);
 
       expect(cliEventDispatch.emit.args).to.deep.equal([[
-        'cli.generateConfigured', {some: 'info'},
+        'cli.generateConfigured',
       ]]);
     });
   });

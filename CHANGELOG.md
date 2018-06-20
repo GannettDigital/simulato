@@ -2,6 +2,12 @@
 
 ## Pending Version
 
+* Tom Dale
+  * Added the cli/config command for debug and debugPort
+  * Child processes can be spawned with --inspect-brk
+  * Ports are auto assigned based on availability
+  * Starting Port can be specified
+
 ## 0.5.2
 
 * Tom Dale

@@ -16,6 +16,7 @@ describe('lib/executor/driver-handler.js', function() {
 
             mockery.registerMock('selenium-webdriver', {});
             mockery.registerMock('saucelabs', Saucelabs);
+            mockery.registerMock('../util/config-handler.js', {});
         });
 
         afterEach(function() {
@@ -24,20 +25,6 @@ describe('lib/executor/driver-handler.js', function() {
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
-        });
-
-        it('should call Saucelabs once with an object with the sauce username and password', function() {
-            process.env.SAUCE_USERNAME = 'sauceUsername';
-            process.env.SAUCE_ACCESS_KEY = 'sauceAccessKey';
-
-            require('../../../../lib/executor/driver-handler.js');
-
-            expect(Saucelabs.args).to.deep.equal([
-                [{
-                    username: 'sauceUsername',
-                    password: 'sauceAccessKey',
-                }],
-            ]);
         });
     });
 
@@ -63,6 +50,7 @@ describe('lib/executor/driver-handler.js', function() {
 
             mockery.registerMock('selenium-webdriver', webdriver);
             mockery.registerMock('saucelabs', sinon.stub());
+            mockery.registerMock('../util/config-handler.js', {});
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
         });
@@ -108,6 +96,7 @@ describe('lib/executor/driver-handler.js', function() {
 
             mockery.registerMock('selenium-webdriver', {});
             mockery.registerMock('saucelabs', sinon.stub());
+            mockery.registerMock('../util/config-handler.js', {});
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
         });
@@ -166,6 +155,7 @@ describe('lib/executor/driver-handler.js', function() {
         let webdriver;
         let webdriverBuilder;
         let driverHandler;
+        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -183,69 +173,88 @@ describe('lib/executor/driver-handler.js', function() {
             webdriverBuilder.withCapabilities.returns(webdriverBuilder);
             webdriverBuilder.usingServer.returns(webdriverBuilder);
             webdriverBuilder.build.returns('myDriver');
-            process.env.TEST_NAME = 'my-test.json';
             process.env.SAUCE_USERNAME = 'sauceUsername';
             process.env.SAUCE_ACCESS_KEY = 'sauceAccessKey';
-            process.env.BUILD_NUMBER = 'buildNumber';
-            process.env.RELEASE_VERSION = 'releaseVersion';
-            process.env.COMMIT_HASH = 'commitHash';
-            process.env.NODE_ENV = 'test';
-            process.env.TUNNEL_IDENTIFIER = 'mbtt-tunnel';
+            configHandler = {
+                get: sinon.stub(),
+            };
 
             mockery.registerMock('selenium-webdriver', webdriver);
             mockery.registerMock('saucelabs', sinon.stub());
+            mockery.registerMock('../util/config-handler.js', configHandler);
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
         });
 
         afterEach(function() {
             delete global.driver;
-            delete process.env.TEST_NAME;
             delete process.env.SAUCE_USERNAME;
             delete process.env.SAUCE_ACCESS_KEY;
-            delete process.env.BUILD_NUMBER;
-            delete process.env.RELEASE_VERSION;
-            delete process.env.COMMIT_HASH;
-            delete process.env.NODE_ENV;
-            delete process.env.TUNNEL_IDENTIFIER;
-            delete process.env.SAUCE_CAPABILITIES;
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
         });
 
-        describe('if process.env.SAUCE_CAPABILITIES is set', function() {
-            it('should call navigateToAndModifyObject once', function() {
-                process.env.SAUCE_CAPABILITIES =`{"mySauceConfig": "myConfig"}`;
+        it('should call configHandler.get 7 times', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.callCount).to.equal(7);
+        });
+
+        it('should call configHandler.get with \'testName\'', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.args[0]).to.deep.equal(['testName']);
+        });
+
+        it('should call configHandler.get with \'sauceCapabilities.username\'', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.args[1]).to.deep.equal(['sauceCapabilities.username']);
+        });
+
+        it('should call configHandler.get with \'sauceCapabilities.accesskey\'', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.args[2]).to.deep.equal(['sauceCapabilities.accesskey']);
+        });
+
+        it('should call configHandler.get with \'tunnelIdentifier\'', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.args[3]).to.deep.equal(['tunnelIdentifier']);
+        });
+
+        it('should call configHandler.get with \'sauceCapabilities\'', function() {
+            driverHandler.inSaucelabs();
+
+            expect(configHandler.get.args[4]).to.deep.equal(['sauceCapabilities']);
+        });
+
+        describe('if configHandler.get(\'sauceCapabilities\') is truthy', function() {
+            it('should call navigateToAndModifyObject once with ' +
+                'config sauceCapabilities and default capabilities', function() {
+                configHandler.get.onCall(0).returns('testName');
+                configHandler.get.onCall(1).returns('sauceUsername');
+                configHandler.get.onCall(2).returns('sauceAccesskey');
+                configHandler.get.onCall(3).returns('tunnelIdentifier');
+                configHandler.get.onCall(4).returns({mySauceConfig: 'myConfig'});
+                configHandler.get.onCall(5).returns({mySauceConfig: 'myConfig'});
                 driverHandler._navigateToAndModifyObject = sinon.stub();
 
                 driverHandler.inSaucelabs();
 
-                expect(driverHandler._navigateToAndModifyObject.callCount).to.equal(1);
-            });
-        });
-
-        describe('if process.env.SAUCE_CAPABILITIES is not set', function() {
-            it('should call webdriver.withCapabailities once with the capabilities' +
-                'as the predefined object', function() {
-                driverHandler.inSaucelabs();
-
-                expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                expect(driverHandler._navigateToAndModifyObject.args).to.deep.equal([
                     [
+                        {mySauceConfig: 'myConfig'},
                         {
-                            'name': 'my-test.json',
+                            'name': 'testName',
                             'browserName': 'chrome',
                             'platform': 'Windows 10',
                             'version': '63.0',
                             'username': 'sauceUsername',
-                            'accessKey': 'sauceAccessKey',
-                            'tunnel-identifier': 'mbtt-tunnel',
-                            'customData': {
-                                build: 'buildNumber',
-                                release: 'releaseVersion',
-                                commithash: 'commitHash',
-                                environment: 'test',
-                            },
+                            'accessKey': 'sauceAccesskey',
+                            'tunnel-identifier': 'tunnelIdentifier',
                         },
                     ],
                 ]);
@@ -258,11 +267,37 @@ describe('lib/executor/driver-handler.js', function() {
             expect(webdriver.Builder.args).to.deep.equal([[]]);
         });
 
+        it('should call webdriver.withCapabailities once with the capabilities', function() {
+            configHandler.get.onCall(0).returns('testName');
+            configHandler.get.onCall(1).returns('sauceUsername');
+            configHandler.get.onCall(2).returns('sauceAccesskey');
+            configHandler.get.onCall(3).returns('tunnelIdentifier');
+
+            driverHandler.inSaucelabs();
+
+            expect(webdriverBuilder.withCapabilities.args).to.deep.equal([
+                [
+                    {
+                        'name': 'testName',
+                        'browserName': 'chrome',
+                        'platform': 'Windows 10',
+                        'version': '63.0',
+                        'username': 'sauceUsername',
+                        'accessKey': 'sauceAccesskey',
+                        'tunnel-identifier': 'tunnelIdentifier',
+                    },
+                ],
+            ]);
+        });
+
         it('should call webdriverBuilder.usingServer once with the url', function() {
+            configHandler.get.onCall(5).returns('sauceUsername');
+            configHandler.get.onCall(6).returns('sauceAccesskey');
+
             driverHandler.inSaucelabs();
 
             expect(webdriverBuilder.usingServer.args).to.deep.equal([
-                ['http://sauceUsername:sauceAccessKey@ondemand.saucelabs.com:80/wd/hub'],
+                ['http://sauceUsername:sauceAccesskey@ondemand.saucelabs.com:80/wd/hub'],
             ]);
         });
 
@@ -288,6 +323,7 @@ describe('lib/executor/driver-handler.js', function() {
 
             mockery.registerMock('selenium-webdriver', {});
             mockery.registerMock('saucelabs', sinon.stub());
+            mockery.registerMock('../util/config-handler.js', {});
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
         });
@@ -309,6 +345,7 @@ describe('lib/executor/driver-handler.js', function() {
         let Saucelabs;
         let saucelabsApi;
         let driverHandler;
+        let configHandler;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -324,18 +361,60 @@ describe('lib/executor/driver-handler.js', function() {
             };
             Saucelabs = sinon.stub().returns(saucelabsApi);
             driver.getSession.returns(driver);
+            configHandler = {
+                get: sinon.stub(),
+            };
+            sinon.stub(process, 'exit');
 
             mockery.registerMock('selenium-webdriver', {});
             mockery.registerMock('saucelabs', Saucelabs);
+            mockery.registerMock('../util/config-handler.js', configHandler);
 
             driverHandler = require('../../../../lib/executor/driver-handler.js');
         });
 
         afterEach(function() {
             delete global.driver;
+            delete process.env.SAUCE_USERNAME;
+            delete process.env.SAUCE_ACCESS_KEY;
+            process.exit.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
+        });
+
+        describe('if the config sauceCapabilities has the username property', function() {
+            it('should call Saucelabs once with an object containing ' +
+                'username from config and password from env', function() {
+                configHandler.get.onCall(0).returns('configUsername');
+                process.env.SAUCE_ACCESS_KEY = 'sauceAccessKey';
+
+                driverHandler.quit();
+
+                expect(Saucelabs.args).to.deep.equal([
+                    [{
+                        username: 'configUsername',
+                        password: 'sauceAccessKey',
+                    }],
+                ]);
+            });
+        });
+
+        describe('if the config sauceCapabilities has the accesskey property', function() {
+            it('should call Saucelabs once with an object containing ' +
+                'username from env and password from config', function() {
+                configHandler.get.onCall(1).returns('configAccesskey');
+                process.env.SAUCE_USERNAME = 'sauceUsername';
+
+                driverHandler.quit();
+
+                expect(Saucelabs.args).to.deep.equal([
+                    [{
+                        username: 'sauceUsername',
+                        password: 'configAccesskey',
+                    }],
+                ]);
+            });
         });
 
         it('should call driver.getSession once with no parameters', function() {
@@ -344,7 +423,7 @@ describe('lib/executor/driver-handler.js', function() {
             expect(driver.getSession.args).to.deep.equal([[]]);
         });
 
-        describe('when the driver.getSession().then callback is called', function() {
+        describe('when the driver.getSession().then resolve callback is called', function() {
             it('should set driver.sessionID the passed in session.id_', function() {
                 driver.then.callsArgWith(0, {id_: 'mySessionId'});
 
@@ -383,6 +462,16 @@ describe('lib/executor/driver-handler.js', function() {
 
                     expect(driver.quit.args).to.deep.equal([[]]);
                 });
+            });
+        });
+
+        describe('when the driver.getSession().then reject callback is called', function() {
+            it('should call proces.exit with the exit code of 1', function() {
+                driver.then.callsArgWith(1, new Error('error!!'));
+
+                driverHandler.quit();
+
+                expect(process.exit.args).to.deep.equal([[1]]);
             });
         });
     });

@@ -72,6 +72,16 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `0`
   * Example: `rerunFailedTests: 2`
 
+### debug
+  * Adds node debugging flag to spawned child processes
+  * Default is `false`
+  * Example: `debug: true`
+    
+### debugPort
+  * Specifies the port to start on when using `--debug`
+  * Default is `32489`
+  * Example: `debugPort: 5072`
+
 ## Example File
     'use strict'
 

@@ -25,6 +25,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('../../util/config-handler.js', {});
     });
 
     afterEach(function() {
@@ -96,6 +97,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     let testRunner;
     let EventEmitter;
     let EventEmitterInstance;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -108,22 +110,22 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
-      sinon.stub(process, 'hrtime').returns([0, 0]);
+      configHandler = {
+        get: sinon.stub(),
+      };
 
-      process.env.TEST_DELAY = 5;
-      process.env.TEST_RERUN_COUNT = 2;
+      sinon.stub(process, 'hrtime').returns([0, 0]);
 
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('../../util/config-handler.js', configHandler);
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
 
     afterEach(function() {
-      delete process.env.TEST_DELAY;
-      delete process.env.TEST_RERUN_COUNT;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -154,41 +156,41 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(testRunner._testsRemaining).equal(2);
     });
 
-    describe('if process.env.TEST_DELAY is set to a number', function() {
-      it('should set _staggerTime to process.env.TEST_DELAY', function() {
-        testRunner.configure([]);
+    it('should call configHandler.get 3 times with ' +
+      '\'testDely\' \'rerunFailedTests\' \'parallelism\'', function() {
+      testRunner.configure(['testfiles']);
 
-        expect(testRunner._staggerTime).equal(5);
-      });
+      expect(configHandler.get.args).to.deep.equal([
+        ['testDelay'],
+        ['rerunFailedTests'],
+        ['parallelism'],
+      ]);
     });
 
-    describe('if process.env.TEST_DELAY is NOT set to a number', function() {
-      it('should leave _staggerTime at the default', function() {
-        delete process.env.TEST_DELAY;
+    it('should set _staggerTime to configHandler.get testDelay returned value', function() {
+      configHandler.get.returns(5);
 
-        testRunner.configure([]);
+      testRunner.configure([]);
 
-        expect(testRunner._staggerTime).equal(200);
-      });
+      expect(testRunner._staggerTime).equal(5);
     });
 
-    describe('if process.env.TEST_RERUN_COUNT is set to a number', function() {
-      it('should set _rerunCount to process.env.TEST_RERUN_COUNT', function() {
-        testRunner.configure([]);
+    it('should set _rerunCount to configHandler.get rerunFailedTests returned value', function() {
+      configHandler.get.returns(2);
 
-        expect(testRunner._rerunCount).equal(2);
-      });
+      testRunner.configure([]);
+
+      expect(testRunner._rerunCount).equal(2);
     });
 
-    describe('if process.env.TEST_RERUN_COUNT is NOT set to a number', function() {
-      it('should leave _rerunCount at the default', function() {
-        delete process.env.TEST_RERUN_COUNT;
+    it('should set ._parallelism to configHandler.get parallelism returned value', function() {
+      configHandler.get.returns(4);
 
-        testRunner.configure([]);
+      testRunner.configure(['testfiles']);
 
-        expect(testRunner._rerunCount).equal(0);
-      });
+      expect(testRunner._parallelism).to.equal(4);
     });
+
 
     it('should call testRunner.emit with the correct event', function() {
       testRunner.configure([]);
@@ -196,22 +198,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(testRunner.emit.args).to.deep.equal([
         ['testRunner.configured'],
       ]);
-    });
-
-    describe('if parallelism paramter is passed in && > 0', function() {
-      it('should set ._parallelism to the passed in parallelism paramater', function() {
-        testRunner.configure(['testfiles'], 4);
-
-        expect(testRunner._parallelism).to.equal(4);
-      });
-    });
-
-    describe('if no parallelism is passed in', function() {
-      it('should leave ._parallelism at the default 20', function() {
-        testRunner.configure([]);
-
-        expect(testRunner._parallelism).to.equal(20);
-      });
     });
   });
 
@@ -224,6 +210,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     let sampleSpawnArgs;
     let test;
     let testPath;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -235,6 +222,10 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         on: sinon.stub(),
       };
       EventEmitter.returns(EventEmitterInstance);
+
+      configHandler = {
+        getAll: sinon.stub().returns({configProp: 'configVal'}),
+      };
 
       test = {
         on: sinon.stub(),
@@ -273,6 +264,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.registerMock('child_process', childProcess);
       mockery.registerMock('process', process);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('../../util/config-handler.js', configHandler);
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -290,6 +282,12 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       expect(_.cloneDeep.args).to.deep.equal([
         [process.env],
       ]);
+    });
+
+    it('should call configHandler.getAll once with no params', function() {
+      testRunner._startTest(sampleSpawnArgs, testPath);
+
+      expect(configHandler.getAll.args).to.deep.equal([[]]);
     });
 
     it('should call childProcess.spawn,"node", passed in spawnArgs, and options object', function() {
@@ -310,6 +308,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
               key1: 'value1',
               key2: 'value2',
               USING_PARENT_TEST_RUNNER: true,
+              TEST_PATH: testPath,
+              PARENT_CONFIG: '{\"configProp\":\"configVal\"}',
             },
             stdio: [null, null, null, 'ipc'],
           },
@@ -487,6 +487,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       it('should call testRunner.emit with the correct event testRunner.testFinished, test.number, '
         + 'and testRunner._rerunCount', function() {
         test.on.callsArgWith(1, 0);
+        testRunner._rerunCount = 0;
 
         testRunner._startTest(sampleSpawnArgs, testPath);
 
@@ -626,6 +627,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -701,6 +703,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
       testRunner._testFiles = [
@@ -710,6 +713,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         'test 16', 'test 17', 'test 18', 'test 19', 'test 20',
       ];
       sinon.spy(testRunner._testFiles, 'pop');
+      testRunner._parallelism = 20;
     });
 
     afterEach(function() {
@@ -893,6 +897,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     let EventEmitterInstance;
     let path;
     let testPath;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -903,7 +908,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       };
       path.resolve.returns('curDir/../../../index.js');
 
-      process.env.COMPONENTS_PATH = './path/to/components';
       testPath = './path/to/test';
 
       EventEmitter = sinon.stub();
@@ -913,10 +917,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       };
       EventEmitter.returns(EventEmitterInstance);
 
+      configHandler = {
+        get: sinon.stub(),
+      };
+
       mockery.registerMock('events', {EventEmitter});
       mockery.registerMock('path', path);
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('../../util/config-handler.js', configHandler);
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -925,10 +934,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
-      delete process.env.REPORTER;
-      delete process.env.OUTPUT_PATH;
-      delete process.env.SAUCE_LABS;
-      delete process.env.CONFIG_FILE;
     });
 
     it('should call testRunner.emit with the correct event with default spawnArgs and testPath', function() {
@@ -940,142 +945,62 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           [
             'curDir/../../../index.js',
             'run',
-            '-T',
-            './path/to/test',
-            '-c',
-            './path/to/components',
           ],
           './path/to/test',
         ],
       ]);
     });
 
-    describe('if process.env.REPORTER is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including reporter args '
-        + 'and testPath', function() {
-        process.env.REPORTER = 'reporterType';
+    it('should call configHandler.get once to get the debug property', function() {
+      testRunner._createSpawnArgs(testPath);
 
-        testRunner._createSpawnArgs(testPath);
-
-        expect(testRunner.emit.args).to.deep.equal([
-          [
-            'testRunner.spawnArgsCreated',
-            [
-              'curDir/../../../index.js',
-              'run',
-              '-T',
-              './path/to/test',
-              '-c',
-              './path/to/components',
-              '-r',
-              'reporterType',
-            ],
-            './path/to/test',
-          ],
-        ]);
-      });
+      expect(configHandler.get.args).to.deep.equal([['debug']]);
     });
 
-    describe('if process.env.OUTPUT_PATH is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including output_path args '
-        + 'and testPath', function() {
-        process.env.OUTPUT_PATH = './output/path';
+    describe('if config.debug is truthy', function() {
+      it('should call testRunner.emit with the first param \'testRunner.getDebugPort\'', function() {
+        configHandler.get.returns(true);
 
         testRunner._createSpawnArgs(testPath);
 
-        expect(testRunner.emit.args).to.deep.equal([
-          [
-            'testRunner.spawnArgsCreated',
-            [
-              'curDir/../../../index.js',
-              'run',
-              '-T',
-              './path/to/test',
-              '-c',
-              './path/to/components',
-              '-R',
-              './output/path',
-            ],
-            './path/to/test',
-          ],
-        ]);
+        expect(testRunner.emit.args[0][0]).to.deep.equal('testRunner.getDebugPort');
       });
-    });
 
-    describe('if process.env.SAUCE_LABS is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args '
-        + 'and testPath', function() {
-        process.env.SAUCE_LABS = true;
+      it('should call testRunner.emit with the second param as a function', function() {
+        configHandler.get.returns(true);
 
         testRunner._createSpawnArgs(testPath);
 
-        expect(testRunner.emit.args).to.deep.equal([
-          [
-            'testRunner.spawnArgsCreated',
-            [
-              'curDir/../../../index.js',
-              'run',
-              '-T',
-              './path/to/test',
-              '-c',
-              './path/to/components',
-              '-s',
-            ],
-            './path/to/test',
-          ],
-        ]);
+        expect(testRunner.emit.args[0][1]).to.be.a('function');
       });
-    });
 
-    describe('if process.env.CONFIG_FILE is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including saucelabs args '
-        + 'and testPath', function() {
-        process.env.CONFIG_FILE = 'pathToConfig';
+      describe('when the callback sent in the event is called', function() {
+        it('should call testRunner.emit with the correct event with spawnArgs including testDelay args'
+          + 'and testPath', function() {
+          testRunner.emit.onCall(0).callsArgWith(1, 3000);
+          configHandler.get.returns(true);
 
-        testRunner._createSpawnArgs(testPath);
+          testRunner._createSpawnArgs(testPath);
 
-        expect(testRunner.emit.args).to.deep.equal([
-          [
+          expect(testRunner.emit.args[1]).to.deep.equal([
             'testRunner.spawnArgsCreated',
             [
+              '--inspect-brk=3000',
               'curDir/../../../index.js',
               'run',
-              '-T',
-              './path/to/test',
-              '-c',
-              './path/to/components',
-              '-f',
-              'pathToConfig',
             ],
             './path/to/test',
-          ],
-        ]);
-      });
-    });
+          ]);
+        });
 
-    describe('if process.env.TEST_DELAY is set', function() {
-      it('should call testRunner.emit with the correct event with spawnArgs including testDelay args'
-        + 'and testPath', function() {
-        process.env.TEST_DELAY = '500';
+        it('should call testRunner.emit twice', function() {
+          configHandler.get.returns(true);
+          testRunner.emit.onCall(0).callsArgWith(1, 3000);
 
-        testRunner._createSpawnArgs(testPath);
+          testRunner._createSpawnArgs(testPath);
 
-        expect(testRunner.emit.args).to.deep.equal([
-          [
-            'testRunner.spawnArgsCreated',
-            [
-              'curDir/../../../index.js',
-              'run',
-              '-T',
-              './path/to/test',
-              '-c',
-              './path/to/components',
-              '-d',
-              '500',
-            ],
-            './path/to/test',
-          ],
-        ]);
+          expect(testRunner.emit.callCount).to.equal(2);
+        });
       });
     });
   });

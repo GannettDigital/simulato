@@ -8,6 +8,7 @@ describe('lib/cli/orchestration/after.js', function() {
   let after;
   let Saucelabs;
   let concurrent;
+  let configHandler;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -18,19 +19,21 @@ describe('lib/cli/orchestration/after.js', function() {
     };
 
     concurrent = sinon.stub();
-    process.env.SAUCE_LABS = 'true';
+    configHandler = {
+      get: sinon.stub(),
+    };
 
     sinon.stub(process, 'exit');
     sinon.spy(console, 'log');
 
     mockery.registerMock('palinode', {concurrent});
     mockery.registerMock('../../util/saucelabs.js', Saucelabs);
+    mockery.registerMock('../../util/config-handler.js', configHandler);
 
     after = require('../../../../../lib/cli/orchestration/after.js');
   });
 
   afterEach(function() {
-    delete process.env.SAUCE_LABS;
     process.exit.restore();
     console.log.restore();
     mockery.resetCache();
@@ -38,20 +41,32 @@ describe('lib/cli/orchestration/after.js', function() {
     mockery.disable();
   });
 
-  describe('If process.env.SAUCE_LABS is set to true', function() {
+  it('should call configHandler.get once with \'saucelabs\'', function() {
+    after();
+
+    expect(configHandler.get.args).to.deep.equal([['saucelabs']]);
+  });
+
+  describe('when config.get(\'saucelabs\') is truthy', function() {
     it('should call concurrent once', function() {
+      configHandler.get.returns(true);
+
       after();
 
       expect(concurrent.callCount).to.equal(1);
     });
 
     it('should call concurrent with an array containing Saucelabs.close as the first argument', function() {
+      configHandler.get.returns(true);
+
       after();
 
       expect(concurrent.args[0][0]).to.deep.equal([Saucelabs.close]);
     });
 
     it('should call concurrent with a callback function as the second argument', function() {
+      configHandler.get.returns(true);
+
       after();
 
       expect(concurrent.args[0][1]).to.deep.be.a('function');
@@ -62,6 +77,7 @@ describe('lib/cli/orchestration/after.js', function() {
         it('should call console.log the error returned', function() {
           let error = new Error('error from concurrent');
           concurrent.callsArgWith(1, error);
+          configHandler.get.returns(true);
 
           after();
 
@@ -70,6 +86,7 @@ describe('lib/cli/orchestration/after.js', function() {
         it('should call process.exit with error code 1', function() {
           let error = new Error('error from concurrent');
           concurrent.callsArgWith(1, error);
+          configHandler.get.returns(true);
 
           after();
 
@@ -80,6 +97,7 @@ describe('lib/cli/orchestration/after.js', function() {
       describe('if no error is returned', function() {
         it('should not call process.exit', function() {
           concurrent.callsArgWith(1, null);
+          configHandler.get.returns(true);
 
           after();
 

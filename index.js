@@ -5,7 +5,7 @@
 global.SimulatoError = require('./lib/errors');
 const program = require('commander');
 const packageJSON = require('./package.json');
-const commands = require('./lib/cli/commands');
+const configHandler = require('./lib/util/config-handler.js');
 const initializeEventDispatchers = require('./lib/util/initialize-event-dispatchers');
 initializeEventDispatchers();
 
@@ -14,7 +14,7 @@ program.version(packageJSON.version);
 program
     .command('run')
     .option('-T, --testPath <testPath>', 'Path to tests')
-    .option('-c, --components <componentPath>', 'Path to components')
+    .option('-c, --componentPath <componentPath>', 'Path to components')
     .option('-r, --reporter [reporter]', 'Specify a reporter to use')
     .option('-s, --saucelabs', 'Run tests in the saucelabs')
     .option('-p, --parallelism <parallelism>', 'Amount of tests to run in parallel', Number.parseInt)
@@ -23,15 +23,17 @@ program
     .option('-f, --configFile <path>', 'The path to the config file')
     .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
     .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests')
-    .action(commands.run);
+    .option('-D, --debug', 'A flag to turn on debugging when spawning child processes')
+    .option('-P, --debugPort <int>', 'Starting port for debugging when spawning child processes')
+    .action(configHandler.createConfig);
 
 program
     .command('generate')
-    .option('-c, --components <componentPath>', 'the path to the components')
+    .option('-c, --componentPath <componentPath>', 'the path to the components')
     .option('-o, --outputPath <path>', 'The path to write the generated test cases to')
     .option('-a, --actionToCover <action>', 'The action to generate a test for. Specfied as component.ACTION_NAME')
     .option('-t, --technique <technique>', 'The test generation technique')
     .option('-f, --configFile <path>', 'The path to the config file')
-    .action(commands.generate);
+    .action(configHandler.createConfig);
 
 program.parse(process.argv);
