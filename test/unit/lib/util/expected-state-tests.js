@@ -2392,11 +2392,43 @@ describe('lib/util/expected-state.js', function() {
                 .to.equal(componentState);
             });
         });
-        it('should stash the components and state for a particular dynamic area', function() {
-            expect(true).to.equal(false);
-        });
         it('should clear the dynamic area that was stashed', function() {
-            expect(true).to.equal(false);
+            let component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+            let componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            myThis.getComponent = sinon.stub().returns(component);
+            myThis._state = {
+                componentType: componentState,
+            };
+            myThis._stashedDynamicAreasComponentsAndStates = new Map();
+            myThis.clearDynamicArea = sinon.stub();
+
+            let componentsMap = new Map();
+            let statesMap = new Map();
+
+            componentsMap.set('instanceName', component);
+            statesMap.set('instanceName', componentState);
+            myThis._dynamicAreas.set('testDynamicArea', {
+                components: componentsMap,
+                states: statesMap,
+            });
+
+            expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis.clearDynamicArea.args[0][0]).to.equal('testDynamicArea');
         });
     });
 
@@ -2594,6 +2626,7 @@ describe('lib/util/expected-state.js', function() {
     describe('retrieveDynamicArea', function() {
         let EventEmitter;
         let EventEmitterInstance;
+        let expectedState;
         let myThis;
         let stashedComponent;
 
@@ -2626,11 +2659,6 @@ describe('lib/util/expected-state.js', function() {
                     removeAllListeners: sinon.stub(),
                 },
             };
-
-            sinon.spy(stashedComponent, 'values');
-            sinon.spy(myThis._stashedStates, 'pop');
-            sinon.spy(myThis._stashedComponents, 'pop');
-            sinon.spy(myThis._stashedDynamicAreas, 'pop');
         });
 
         afterEach(function() {
@@ -2638,19 +2666,86 @@ describe('lib/util/expected-state.js', function() {
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
-            stashedComponent.values.restore();
-            myThis._stashedStates.pop.restore();
-            myThis._stashedComponents.pop.restore();
-            myThis._stashedDynamicAreas.pop.restore();
         });
 
         describe('for each component in the stashed dynamic area components', function() {
             it('should add the component to the expected state along with the state', function() {
-                expect(true).to.be(false);
+                let component = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    elements: sinon.stub().returns(['myElements']),
+                    model: sinon.stub().returns({model: 'modelValue'}),
+                    actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                    options: {option1: 'someOption'},
+                };
+                let componentState = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    options: {
+                        option1: 'someOption',
+                    },
+                };
+
+                myThis.getComponent = sinon.stub().returns(component);
+                myThis._state = {
+                    componentType: componentState,
+                };
+                myThis._stashedDynamicAreasComponentsAndStates = new Map();
+                myThis.addComponent = sinon.stub();
+
+                let componentsMap = new Map();
+                let statesMap = new Map();
+
+                componentsMap.set('instanceName', component);
+                statesMap.set('instanceName', componentState);
+                myThis._stashedDynamicAreasComponentsAndStates.set('testDynamicArea', {
+                    components: componentsMap,
+                    states: statesMap,
+                });
+
+                expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+                expect(myThis.addComponent.callCount).to.equal(1);
             });
         });
         it('should delete the retrieved dynamic area components and states', function() {
-            expect(true).to.be(false);
+            let component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+            let componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            myThis.getComponent = sinon.stub().returns(component);
+            myThis._state = {
+                componentType: componentState,
+            };
+            myThis._stashedDynamicAreasComponentsAndStates = new Map();
+            myThis.addComponent = sinon.stub();
+            myThis._stashedDynamicAreasComponentsAndStates.delete = sinon.stub();
+
+            let componentsMap = new Map();
+            let statesMap = new Map();
+
+            componentsMap.set('instanceName', component);
+            statesMap.set('instanceName', componentState);
+            myThis._stashedDynamicAreasComponentsAndStates.set('testDynamicArea', {
+                components: componentsMap,
+                states: statesMap,
+            });
+
+            expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis._stashedDynamicAreasComponentsAndStates.delete.callCount).to.equal(1);
         });
     });
 });
