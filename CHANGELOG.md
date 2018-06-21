@@ -16,6 +16,7 @@
   * Added parent event emiiters
     * Events bubble up
   * Updated files to use new event emitters
+  * Fix clear dynamic area bug where components aren't deleted from expected state
 
 ## 0.5.2
 
