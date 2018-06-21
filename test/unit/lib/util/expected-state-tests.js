@@ -1712,6 +1712,7 @@ describe('lib/util/expected-state.js', function() {
         let EventEmitterInstance;
         let expectedState;
         let dynamicArea;
+        let dynamicArea2;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -1737,14 +1738,20 @@ describe('lib/util/expected-state.js', function() {
                 expectedState = value;
             });
             dynamicArea = 'key';
+            dynamicArea2 = 'key2';
             expectedState.delete = sinon.stub();
             expectedState._dynamicAreas.set(dynamicArea, new Set());
-            expectedState._dynamicAreas.get(dynamicArea).add({
-                name: 'value',
-            });
+            expectedState._dynamicAreas.set(dynamicArea2, new Set());
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent3');
             sinon.spy(expectedState._dynamicAreas, 'get');
             sinon.spy(expectedState._dynamicAreas, 'forEach');
             sinon.spy(Array, 'from');
+            expectedState.delete = sinon.stub();
         });
 
         afterEach(function() {
@@ -1776,6 +1783,24 @@ describe('lib/util/expected-state.js', function() {
                 expectedState.clearDynamicArea(dynamicArea);
 
                 expect(expectedState._dynamicAreas.forEach.args[0][0]).to.be.a('function');
+            });
+            it('should reduce the cleared dynamic area to an empty set', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key')).to.deep.equal(new Set());
+            });
+            it('should delete components of a cleared dynamic area from other dynamic areas', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key2')).to.deep.equal(new Set(['someComponent3']));
+            });
+            it('should call this.delete for each component in the dynamic area', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState.delete.args).to.deep.equal([
+                    ['someComponent'],
+                    ['someComponent2'],
+                ]);
             });
         });
         describe('if the dynamicArea does not exist', function() {
