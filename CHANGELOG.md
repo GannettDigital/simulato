@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.6.0
+
 * Tom Dale
   * Added the cli/config command for debug and debugPort
   * Child processes can be spawned with --inspect-brk
@@ -17,6 +19,9 @@
     * Events bubble up
   * Updated files to use new event emitters
   * Fix clear dynamic area bug where components aren't deleted from expected state
+
+* Brian Fitzpatrick
+  * Added ability to add mutiple dynamic areas to a single component
 
 ## 0.5.2
 
