@@ -8,6 +8,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     describe('on file being required', function() {
         let Emitter;
         let executionEngine;
+        let executorEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -22,8 +23,10 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 },
             };
             sinon.spy(Emitter, 'mixIn');
+            executorEventDispatch = sinon.stub();
 
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
         });
 
         afterEach(function() {
@@ -33,12 +36,13 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         });
 
 
-        it('should call Emitter.mixIn with the executionEngine', function() {
+        it('should call Emitter.mixIn with the executionEngine and the executorEventDispatch', function() {
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
             expect(Emitter.mixIn.args).to.deep.equal([
                 [
                     executionEngine,
+                    executorEventDispatch,
                 ],
             ]);
         });
@@ -158,6 +162,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             sinon.spy(testCaseActions, 'shift');
 
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
         });
@@ -181,13 +186,13 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             ]);
         });
 
-        it('should call exeuctionEngine.emitAsync once with the event \'executionEngine.createDataStore\'', function() {
+        it('should call exeuctionEngine.emitAsync once with the event \'dataStore.create\'', function() {
             executionEngine.configure();
 
-            expect(executionEngine.emitAsync.args[0][0]).to.equal('executionEngine.createDataStore');
+            expect(executionEngine.emitAsync.args[0][0]).to.equal('dataStore.create');
         });
 
-        describe('when the callback for the event \'executionEngine.createDataStore\' is called', function() {
+        describe('when the callback for the event \'dataStore.create\' is called', function() {
             it('should set executionEngine._dataStore to the passed in dataStore', function() {
                 executionEngine.emitAsync.onCall(0).callsArgWith(1, 'myDataStore');
 
@@ -196,19 +201,19 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                 expect(executionEngine._dataStore).to.equal('myDataStore');
             });
 
-            it('should call emitAsync with the event \'executionEngine.createExpectedState\'' +
+            it('should call emitAsync with the event \'expectedState.create\'' +
                 'and the passed in dataStore', function() {
                 executionEngine.emitAsync.onCall(0).callsArgWith(1, 'myDataStore');
 
                 executionEngine.configure();
 
                 expect(executionEngine.emitAsync.args[1].slice(0, 2)).to.deep.equal([
-                    'executionEngine.createExpectedState',
+                    'expectedState.create',
                     'myDataStore',
                 ]);
             });
 
-            describe('when the callback for the event \'executionEngine.createExpectedState\' is called', function() {
+            describe('when the callback for the event \'expectedState.create\' is called', function() {
                 it('should call executionEngine._actionList.shift once', function() {
                     executionEngine.emitAsync.onCall(0).callsArgWith(1, '');
                     executionEngine.emitAsync.onCall(1).callsArgWith(2, expectedState);
@@ -295,6 +300,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -458,6 +464,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             componentMap = new Map();
             myComponent = {name: 'testName'};
@@ -828,6 +835,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -954,6 +962,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1090,6 +1099,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1158,6 +1168,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
 
@@ -1221,6 +1232,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             };
             sinon.spy(Emitter, 'mixIn');
             mockery.registerMock('../../util/emitter.js', Emitter);
+            mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
             executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
         });

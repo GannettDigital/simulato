@@ -7,25 +7,28 @@ const expect = require('chai').expect;
 describe('lib/runner/test-runner/test-runner.js', function() {
   describe('on file being required', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
+    let runnerEventDispatch;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
+      runnerEventDispatch = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
     });
 
     afterEach(function() {
@@ -34,10 +37,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of printOutput to a new EventEmitter', function() {
+    it('should call Emitter.mixIn with testRunner and runnerEventDispatch', function() {
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
 
-      expect(Object.getPrototypeOf(testRunner)).to.deep.equal(EventEmitterInstance);
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+            testRunner,
+            runnerEventDispatch,
+          ],
+      ]);
     });
 
     it('should call testRunner.on with testRunner.configured and testRunner._scheduleTests', function() {
@@ -95,20 +103,20 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
   describe('configure', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       configHandler = {
         get: sinon.stub(),
@@ -116,11 +124,12 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       sinon.stub(process, 'hrtime').returns([0, 0]);
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -203,8 +212,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
   describe('_startTest', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let childProcess;
     let _;
     let sampleSpawnArgs;
@@ -216,12 +224,13 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       configHandler = {
         getAll: sinon.stub().returns({configProp: 'configVal'}),
@@ -259,12 +268,13 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       testPath = 'dir/subDir/1527008636080-simulato-1_4.json';
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', childProcess);
       mockery.registerMock('process', process);
       mockery.registerMock('lodash', _);
       mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -609,25 +619,26 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
   describe('_configureRerun', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });
@@ -681,29 +692,30 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
   describe('_scheduleTests', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let clock;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       clock = sinon.useFakeTimers(700);
       sinon.spy(clock, 'setTimeout');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', {});
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
       testRunner._testFiles = [
@@ -893,8 +905,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
   describe('_createSpawnArgs', function() {
     let testRunner;
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let path;
     let testPath;
     let configHandler;
@@ -910,22 +921,24 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       testPath = './path/to/test';
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       configHandler = {
         get: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('path', path);
       mockery.registerMock('child_process', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
 
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
     });

@@ -1,10 +1,10 @@
 {
   "name": "simulato",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
-    "sim": "./index.js"
+    "simulato": "./index.js"
   },
   "scripts": {
     "test": "npm run unit-test",
@@ -28,23 +28,23 @@
   "homepage": "https://github.com/GannettDigital/simulato#readme",
   "dependencies": {
     "chai": "^4.1.2",
-    "commander": "^2.15.0",
-    "lodash": "^4.17.5",
+    "commander": "^2.15.1",
+    "lodash": "^4.17.10",
     "palinode": "0.0.7",
     "portscanner": "2.2.0",
-    "sauce-connect-launcher": "^1.2.3",
-    "saucelabs": "^1.4.0",
+    "sauce-connect-launcher": "^1.2.4",
+    "saucelabs": "^1.5.0",
     "selenium-webdriver": "^3.6.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
     "istanbul": "^0.4.5",
-    "mocha": "^5.0.4",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mockery": "^2.1.0",
-    "sinon": "^4.4.4",
-    "simulato-test-site": "^1.0.2"
+    "simulato-test-site": "^1.0.2",
+    "sinon": "^6.0.0"
   }
 }

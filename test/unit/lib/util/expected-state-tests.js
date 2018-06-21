@@ -7,22 +7,25 @@ const expect = require('chai').expect;
 describe('lib/util/expected-state.js', function() {
     describe('on file being required', function() {
         let expectedState;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
+        let globalEventDispatch;
 
         beforeEach(function() {
           mockery.enable({useCleanCache: true});
           mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-          EventEmitter = sinon.stub();
-          EventEmitterInstance = {
-            emit: sinon.stub(),
-            on: sinon.stub(),
+          Emitter = {
+            mixIn: function(myObject) {
+                myObject.emit = sinon.stub();
+            },
           };
-          EventEmitter.returns(EventEmitterInstance);
+          sinon.spy(Emitter, 'mixIn');
+          globalEventDispatch = sinon.stub();
 
-          mockery.registerMock('events', {EventEmitter});
+          mockery.registerMock('./emitter.js', Emitter);
           mockery.registerMock('lodash', {});
+          mockery.registerMock('events', {});
+          mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
         });
 
         afterEach(function() {
@@ -31,14 +34,20 @@ describe('lib/util/expected-state.js', function() {
           mockery.disable();
         });
 
-        it('should set the object prototype of expectedState to a new EventEmitter', function() {
-          expectedState = require('../../../../lib/util/expected-state.js');
+        it('should call Emitter.mixIn with expectedState and globalEventDispatch', function() {
+            expectedState = require('../../../../lib/util/expected-state.js');
 
-          expect(Object.getPrototypeOf(expectedState)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    expectedState,
+                    globalEventDispatch,
+                ],
+            ]);
         });
     });
 
     describe('create', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -48,14 +57,22 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+
+            EventEmitterInstance = sinon.stub();
+            EventEmitter = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             callback = sinon.spy();
         });
@@ -94,8 +111,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clone', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let callback;
         let myThis;
@@ -106,12 +122,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             _ = {
                 cloneDeep: sinon.stub(),
@@ -135,8 +151,10 @@ describe('lib/util/expected-state.js', function() {
                 _stashedDynamicAreas: [],
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            mockery.registerMock('events', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -448,8 +466,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('createComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let component;
         let errorCalled;
@@ -460,12 +477,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
@@ -492,8 +509,11 @@ describe('lib/util/expected-state.js', function() {
                 get: sinon.stub(),
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._dataStore = {storedData: 'someData'};
         });
@@ -537,14 +557,14 @@ describe('lib/util/expected-state.js', function() {
             expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
         });
 
-        it('should call expectedState.emit with the event expectedState.getComponent'
+        it('should call expectedState.emit with the event componentHandler.getComponent'
             + ' with the passed in componentConfig.type as first 2 params', function() {
             expectedState.emit = sinon.stub();
 
             expectedState.createComponent(componentConfig);
 
             expect(expectedState.emit.args[0].slice(0, 2)).to.deep.equal([
-                'expectedState.getComponent', 'componentType',
+                'componentHandler.getComponent', 'componentType',
             ]);
         });
 
@@ -650,14 +670,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.elements).to.deep.equal(['myElements']);
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.elementsRecieved', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateElements', ` +
                 `the newComponents.elements the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[1]).to.deep.equal([
-                    'expectedState.elementsReceived',
+                    'validators.validateElements',
                     ['myElements'],
                     'instanceName',
                     'componentType',
@@ -680,14 +700,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.model).to.deep.equal({model: 'modelValue'});
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.modelReceived', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateModel', ` +
             `the newComponents.model the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[2]).to.deep.equal([
-                    'expectedState.modelReceived',
+                    'validators.validateModel',
                     {model: 'modelValue'},
                     'instanceName',
                     'componentType',
@@ -710,14 +730,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.actions).to.deep.equal({ACTION_1: 'someAction'});
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.actionsReceived', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateActions', ` +
                 `the newComponents.actions the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[3]).to.deep.equal([
-                    'expectedState.actionsReceived',
+                    'validators.validateActions',
                     {ACTION_1: 'someAction'},
                     'instanceName',
                     'componentType',
@@ -769,7 +789,7 @@ describe('lib/util/expected-state.js', function() {
                     expect(newComponent.events).to.equal('myEvents');
                 });
 
-                it(`should call ExepectedState.emit with the event 'expectedState.eventsReceived', ` +
+                it(`should call ExepectedState.emit with the event 'validators.validateEvents', ` +
                     `the newComponents.events the newComponent.name and the newComponent.type`, function() {
                     let events = sinon.stub().returns('myEvents');
                     component.events = events;
@@ -778,7 +798,7 @@ describe('lib/util/expected-state.js', function() {
                     expectedState.createComponent(componentConfig);
 
                     expect(expectedState.emit.args[4]).to.deep.equal([
-                        'expectedState.eventsReceived',
+                        'validators.validateEvents',
                         'myEvents',
                         'instanceName',
                         'componentType',
@@ -823,7 +843,7 @@ describe('lib/util/expected-state.js', function() {
                     expect(newComponent.children).to.equal('myChildren');
                 });
 
-                it('should call ExpectedState.emit with the event \'expectedState.childrenReceived\', ' +
+                it('should call ExpectedState.emit with the event \'validators.validateChildren\', ' +
                     'newComponent.children, name, and componentType', function() {
                     let children = sinon.stub().returns('myChildren');
                     component.children = children;
@@ -832,7 +852,7 @@ describe('lib/util/expected-state.js', function() {
                     expectedState.createComponent(componentConfig);
 
                     expect(expectedState.emit.args[4]).to.deep.equal([
-                        'expectedState.childrenReceived',
+                        'validators.validateChildren',
                         'myChildren',
                         'instanceName',
                         'componentType',
@@ -864,8 +884,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('addComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let component;
         let state;
         let expectedState;
@@ -875,14 +894,17 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             myThis = {
                 _state: {},
@@ -1103,8 +1125,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_addToDynamicArea', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1112,17 +1133,19 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 _dynamicAreas: new Map(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             sinon.spy(myThis._dynamicAreas, 'set');
@@ -1242,8 +1265,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_addChildren', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let component;
         let expectedState;
         let myThis;
@@ -1252,18 +1274,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 createComponent: sinon.stub(),
                 addComponent: sinon.stub(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             component = {
                 options: {},
                 children: [],
@@ -1407,8 +1432,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_registerEvents', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1416,19 +1440,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 eventEmitter: {
                     on: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1493,8 +1519,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_deregisterEvents', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1502,19 +1527,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 eventEmitter: {
                     removeListener: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1580,22 +1607,23 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('createAndAddComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState.createComponent = sinon.stub();
@@ -1638,8 +1666,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('delete', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let myThis;
         let expectedState;
 
@@ -1647,11 +1674,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 getComponent: sinon.stub(),
                 _deregisterEvents: sinon.stub(),
@@ -1660,9 +1688,10 @@ describe('lib/util/expected-state.js', function() {
                 },
                 _state: sinon.stub(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._components = new Map();
@@ -1735,8 +1764,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clear', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1744,11 +1772,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 _components: {
                     clear: sinon.stub(),
@@ -1760,9 +1789,10 @@ describe('lib/util/expected-state.js', function() {
                     removeAllListeners: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1793,36 +1823,51 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clearDynamicArea', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
         let dynamicArea;
+        let dynamicArea2;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             dynamicArea = 'key';
+            dynamicArea2 = 'key2';
             expectedState.delete = sinon.stub();
             expectedState._dynamicAreas.set(dynamicArea, new Set());
-            expectedState._dynamicAreas.get(dynamicArea).add({
-                name: 'value',
-            });
+            expectedState._dynamicAreas.set(dynamicArea2, new Set());
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent3');
             sinon.spy(expectedState._dynamicAreas, 'get');
             sinon.spy(expectedState._dynamicAreas, 'forEach');
             sinon.spy(Array, 'from');
+            expectedState.delete = sinon.stub();
         });
 
         afterEach(function() {
@@ -1855,6 +1900,24 @@ describe('lib/util/expected-state.js', function() {
 
                 expect(expectedState._dynamicAreas.forEach.args[0][0]).to.be.a('function');
             });
+            it('should reduce the cleared dynamic area to an empty set', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key')).to.deep.equal(new Set());
+            });
+            it('should delete components of a cleared dynamic area from other dynamic areas', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key2')).to.deep.equal(new Set(['someComponent3']));
+            });
+            it('should call this.delete for each component in the dynamic area', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState.delete.args).to.deep.equal([
+                    ['someComponent'],
+                    ['someComponent2'],
+                ]);
+            });
         });
         describe('if the dynamicArea does not exist', function() {
             it('should skip clearing the dynamic area', function() {
@@ -1868,22 +1931,25 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getState', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
 
             expectedState._state = {};
@@ -1902,6 +1968,7 @@ describe('lib/util/expected-state.js', function() {
         });
     });
     describe('getComponent', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1910,14 +1977,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1939,6 +2013,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getComponents', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1947,14 +2022,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1976,6 +2058,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getComponentsAsMap', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1984,14 +2067,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -2018,8 +2108,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('modify', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let instanceName;
         let callback;
         let expectedState;
@@ -2028,14 +2117,18 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             instanceName = 'componentInstance';
             expectedState._state = {
@@ -2059,8 +2152,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('stash', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
         let _;
@@ -2069,12 +2161,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-
+            sinon.spy(Emitter, 'mixIn');
             _ = {
                 cloneDeep: sinon.stub().returns({key: 'value'}),
             };
@@ -2095,9 +2187,11 @@ describe('lib/util/expected-state.js', function() {
             sinon.spy(myThis._stashedComponents, 'push');
             sinon.spy(myThis._stashedDynamicAreas, 'push');
 
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', _);
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
         });
 
@@ -2307,8 +2401,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('pop', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
         let stashedComponent;
@@ -2317,20 +2410,23 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             stashedComponent = new Map([['key', 'value']]);
             myThis = {
