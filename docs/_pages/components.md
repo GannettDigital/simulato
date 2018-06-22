@@ -27,7 +27,7 @@ This section details the different sections of a component
         * `children`
             * The computed children from executing the children function
         * `dynamicArea`
-            * The dynamicArea given to the component upon creation
+            * The dynamicArea given to the component upon creation, a given component can have more than one dynamic area
         * `getFromPage(key)`
             * Gets a value from the current model of the page
             * Parameters

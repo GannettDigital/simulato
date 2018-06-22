@@ -2269,13 +2269,24 @@ describe('lib/util/expected-state.js', function() {
     describe('stashDynamicArea', function() {
         let EventEmitter;
         let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
         let stashedComponent;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
-            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+            mockery.registerAllowable('../../../../lib/util/expected-state.js'); Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
 
             EventEmitter = sinon.stub();
             EventEmitterInstance = {
@@ -2283,15 +2294,7 @@ describe('lib/util/expected-state.js', function() {
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            global.SimulatoError = {
-                ACTION: {
-                    EXPECTED_STATE_ERROR: sinon.stub(),
-                },
-            };
 
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {});
-            expectedState = require('../../../../lib/util/expected-state.js');
             stashedComponent = new Map([['key', 'value']]);
             myThis = {
                 _stashedStates: [{key: 'value'}],
@@ -2626,6 +2629,7 @@ describe('lib/util/expected-state.js', function() {
     describe('retrieveDynamicArea', function() {
         let EventEmitter;
         let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
         let stashedComponent;
@@ -2634,17 +2638,24 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
+
             EventEmitter = sinon.stub();
             EventEmitterInstance = {
                 emit: sinon.stub(),
                 on: sinon.stub(),
             };
             EventEmitter.returns(EventEmitterInstance);
-            global.SimulatoError = {
-                ACTION: {
-                    EXPECTED_STATE_ERROR: sinon.stub(),
-                },
-            };
 
             let component = {
                 type: 'componentType',
@@ -2663,9 +2674,6 @@ describe('lib/util/expected-state.js', function() {
                 },
             };
 
-            mockery.registerMock('events', {EventEmitter});
-            mockery.registerMock('lodash', {});
-            expectedState = require('../../../../lib/util/expected-state.js');
             stashedComponent = new Map([['key', 'value']]);
             myThis = {
                 _stashedStates: [{key: 'value'}],
@@ -2674,6 +2682,7 @@ describe('lib/util/expected-state.js', function() {
                 _state: {componentType: componentState},
                 _stashedDynamicAreasComponentsAndStates: new Map(),
                 _registerEvents: sinon.stub(),
+                _addToDynamicArea: sinon.stub(),
                 eventEmitter: {
                     removeAllListeners: sinon.stub(),
                 },
