@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/planner/test-planner.js', function() {
+describe('lib/planner/test-planner.js', function() {
     describe('on file require', function() {
         let Emitter;
         let testPlanner;

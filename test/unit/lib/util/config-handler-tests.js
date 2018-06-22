@@ -274,24 +274,67 @@ describe('lib/util/config-handler.js', function() {
         expect(configHandler._config).to.be.frozen;
       });
 
-      it('should call the passed in options.name once with no args', function() {
+      it('should call configHandler.emit with \'configHandler.readyToValidate\' the config, '
+        + 'the requried in configFile, and the passed in clioptions', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
         configHandler.createConfig(options);
 
-        expect(options.name.args).to.deep.equal([[]]);
+        expect(configHandler.emit.args[0].slice(0, -1)).to.deep.equal([
+          'configHandler.readyToValidate',
+          {},
+          {},
+          options,
+        ]);
       });
 
-      it('should call configHandler.emit with \'configHandler.configCreated\' and '
-        + 'the passed in options.name', function() {
+      it('should call configHandler.emit with a callback as the 5th param', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
         configHandler.createConfig(options);
 
-        expect(configHandler.emit.args).to.deep.equal([[
-          'configHandler.configCreated',
-          'run',
-        ]]);
+        expect(configHandler.emit.args[0][4]).to.be.a('function');
+      });
+
+      it('should call configHandler.emit once', function() {
+        configHandler._getBaseConfig.callsArgWith(1, {});
+
+        configHandler.createConfig(options);
+
+        expect(configHandler.emit.callCount).to.equal(1);
+      });
+
+      describe('when the configHandler.emit \'readyToValidate\' callback is called', function() {
+        it('should call the passed in options.name once with no args', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(options.name.args).to.deep.equal([[]]);
+        });
+
+        it('should call configHandler.emit with \'configHandler.configCreated\' and '
+          + 'the passed in options.name', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(configHandler.emit.args[1]).to.deep.equal([
+            'configHandler.configCreated',
+            'run',
+          ]);
+        });
+
+        it('should call configHandler.emit twice', function() {
+          configHandler._getBaseConfig.callsArgWith(1, {});
+          configHandler.emit.onCall(0).callsArg(4);
+
+          configHandler.createConfig(options);
+
+          expect(configHandler.emit.callCount).to.equal(2);
+        });
       });
     });
   });
@@ -398,6 +441,7 @@ describe('lib/util/config-handler.js', function() {
     let callback;
     let path;
     let configHandler;
+    let defaults;
     let Emitter;
 
     beforeEach(function() {
@@ -410,6 +454,16 @@ describe('lib/util/config-handler.js', function() {
         normalize: sinon.stub(),
       };
 
+      defaults = {
+        configFile: `${process.cwd()}/simulato-config.js`,
+      };
+
+      global.SimulatoError = {
+        CONFIG: {
+          TYPE_ERROR: sinon.stub(),
+        },
+      };
+
       Emitter = {
         mixIn: function(myObject) {
             myObject.on = sinon.stub();
@@ -420,7 +474,7 @@ describe('lib/util/config-handler.js', function() {
 
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
-      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('./defaults.js', defaults);
       mockery.registerMock('uuid/v4', {});
       mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
@@ -429,6 +483,7 @@ describe('lib/util/config-handler.js', function() {
     });
 
     afterEach(function() {
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
@@ -462,21 +517,19 @@ describe('lib/util/config-handler.js', function() {
 
     describe('if the passed in cliOptions.configFile is falsey', function() {
       it('should call path.normalize once with process.cwd() and \'/config.js\'', function() {
-        let requirePath = `${process.cwd()}/config.js`;
-        path.normalize.onCall(0).returns(requirePath);
-        mockery.registerMock(requirePath, {key: 'required from default path'});
+        path.normalize.onCall(0).returns(defaults.configFile);
+        mockery.registerMock(defaults.configFile, {key: 'required from default path'});
 
         configHandler._getBaseConfig({}, callback);
 
         expect(path.normalize.args).to.deep.equal([[
-          requirePath,
+          defaults.configFile,
         ]]);
       });
 
       it('should call the passed in callback with the config returned from default path', function() {
-        let requirePath = `${process.cwd()}/config.js`;
-        path.normalize.onCall(0).returns(requirePath);
-        mockery.registerMock(requirePath, {key: 'required from default path'});
+        path.normalize.onCall(0).returns(defaults.configFile);
+        mockery.registerMock(defaults.configFile, {key: 'required from default path'});
 
         configHandler._getBaseConfig({}, callback);
 
@@ -488,9 +541,8 @@ describe('lib/util/config-handler.js', function() {
       describe('if requiring in the default path throws an error', function() {
         describe('if the error.code is \'MODULE_NOT_FOUND\'', function() {
           it('should call the passed in callback with an empty object', function() {
-            let requirePath = `${process.cwd()}/config.js`;
-            mockery.registerAllowable(requirePath);
-            path.normalize.onCall(0).returns(requirePath);
+            mockery.registerAllowable(defaults.configFile);
+            path.normalize.onCall(0).returns(defaults.configFile);
 
             configHandler._getBaseConfig({}, callback);
 
@@ -507,6 +559,33 @@ describe('lib/util/config-handler.js', function() {
 
             expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw('path must be a string');
           });
+        });
+      });
+    });
+
+    describe('if configFile that was required in is not an Object', function() {
+      describe('if the config was specified from the cli', function() {
+        it('should throw simulato CONFIG TYPE_ERROR stating config specified from cli was not an object', function() {
+          let requirePath = `${process.cwd()}/path/to/config`;
+          path.normalize.onCall(0).returns(requirePath);
+          mockery.registerMock(requirePath, []);
+          let message = 'Simulato Error';
+          SimulatoError.CONFIG.TYPE_ERROR.throws({message});
+
+          expect(configHandler._getBaseConfig.bind(null, {configFile: 'path/to/config'}, callback)).to.throw(message);
+        });
+      });
+
+      describe('if the config was from the default path', function() {
+        it('should throw simulato CONFIG TYPE_ERROR stating config'
+          + ' from the default path was not an object', function() {
+          let requirePath = `${process.cwd()}/simulato-config.js`;
+          path.normalize.onCall(0).returns(requirePath);
+          mockery.registerMock(requirePath, []);
+          let message = 'Simulato Error';
+          SimulatoError.CONFIG.TYPE_ERROR.throws({message});
+
+          expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw(message);
         });
       });
     });
@@ -529,7 +608,6 @@ describe('lib/util/config-handler.js', function() {
       config = {
         componentPath: './componentPath',
         outputPath: './outputPath',
-        reportPath: './reportPath',
         testPath: './testPath',
       };
 
@@ -558,10 +636,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.disable();
     });
 
-    it('should call path.resolve 4 times', function() {
+    it('should call path.resolve 3 times', function() {
       configHandler._resolvePaths(config);
 
-      expect(path.resolve.callCount).to.equal(4);
+      expect(path.resolve.callCount).to.equal(3);
     });
 
     it('should call path.resolve with config.componentPath', function() {
@@ -592,41 +670,54 @@ describe('lib/util/config-handler.js', function() {
       expect(config.outputPath).to.equal('resolved/outputPath');
     });
 
-    it('should call path.resolve with config.reportPath', function() {
-      configHandler._resolvePaths(config);
-
-      expect(path.resolve.args[2]).to.deep.equal(['./reportPath']);
-    });
-
-    it('should set the passed in config.reportPath to the returned resolve value', function() {
-      path.resolve.onCall(2).returns('resolved/reportPath');
-
-      configHandler._resolvePaths(config);
-
-      expect(config.reportPath).to.equal('resolved/reportPath');
-    });
-
     it('should call path.resolve with config.testPath', function() {
       configHandler._resolvePaths(config);
 
-      expect(path.resolve.args[3]).to.deep.equal(['./testPath']);
+      expect(path.resolve.args[2]).to.deep.equal(['./testPath']);
     });
 
     it('should set the passed in config.testPath to the returned resolve value', function() {
-      path.resolve.onCall(3).returns('resolved/testPath');
+      path.resolve.onCall(2).returns('resolved/testPath');
 
       configHandler._resolvePaths(config);
 
       expect(config.testPath).to.equal('resolved/testPath');
     });
 
+    describe('if config.reportPath is truthy', function() {
+      it('should call path.resolve 4 times', function() {
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(path.resolve.callCount).to.equal(4);
+      });
+
+      it('should call path.resolve with config.reportPath', function() {
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(path.resolve.args[3]).to.deep.equal(['./reportPath']);
+      });
+
+      it('should set the passed in config.reportPath to the returned resolve value', function() {
+        path.resolve.onCall(3).returns('resolved/reportPath');
+        config.reportPath = './reportPath';
+
+        configHandler._resolvePaths(config);
+
+        expect(config.reportPath).to.equal('resolved/reportPath');
+      });
+    });
+
     describe('if config.before is truthy', function() {
-      it('should call path.resolve 5 times', function() {
+      it('should call path.resolve 4 times', function() {
         config.before = './beforePath';
 
         configHandler._resolvePaths(config);
 
-        expect(path.resolve.callCount).to.equal(5);
+        expect(path.resolve.callCount).to.equal(4);
       });
 
       it('should call path.resolve with config.before', function() {
@@ -634,12 +725,12 @@ describe('lib/util/config-handler.js', function() {
 
         configHandler._resolvePaths(config);
 
-        expect(path.resolve.args[4]).to.deep.equal(['./beforePath']);
+        expect(path.resolve.args[3]).to.deep.equal(['./beforePath']);
       });
 
       it('should set the passed in config.before to the returned resolve value', function() {
         config.before = './beforePath';
-        path.resolve.onCall(4).returns('resolved/beforePath');
+        path.resolve.onCall(3).returns('resolved/beforePath');
 
         configHandler._resolvePaths(config);
 
