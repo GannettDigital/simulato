@@ -21,10 +21,10 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../../lib/planner/planner-event-dispatch/register-planner-events.js');
 
-    actionCoverage =  {
+    actionCoverage = {
         calculate: sinon.stub(),
     };
-    testPlanner =  {
+    testPlanner = {
         generateTests: sinon.stub(),
     };
     writePlansToDisk = sinon.stub();
@@ -79,17 +79,17 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         expect(plannerEventDispatch.runOn.callCount).to.equal(3);
     });
 
-    it('should call plannerEventDispatch.on with the event \'planner.generateConfigured\' ' + 
+    it('should call plannerEventDispatch.on with the event \'planner.generateConfigured\' ' +
         'and testPlanner.generateTests as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
         expect(plannerEventDispatch.on.args[0]).to.deep.equal([
             'planner.generateConfigured',
-            testPlanner.generateTests
+            testPlanner.generateTests,
         ]);
     });
 
-    it('should call plannerEventDispatch.runOn with the event \'testPlanner.createPlans\' ' + 
+    it('should call plannerEventDispatch.runOn with the event \'testPlanner.createPlans\' ' +
         'and  as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -99,7 +99,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'testPlanner.reduceToMinimumSetOfPlans\' ' + 
+    it('should call plannerEventDispatch.on with the event \'testPlanner.reduceToMinimumSetOfPlans\' ' +
         'and reduceToMinimumSetOfPlans as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -109,7 +109,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' + 
+    it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' +
         'and writePlansToDisk as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -119,7 +119,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' + 
+    it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' +
         'and  as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -139,7 +139,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'forwardStateSpaceSearch.applyEffects\' ' + 
+    it('should call plannerEventDispatch.on with the event \'forwardStateSpaceSearch.applyEffects\' ' +
         'and applyEffects as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -149,7 +149,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.runOn with the event \'startNodes.get\' ' + 
+    it('should call plannerEventDispatch.runOn with the event \'startNodes.get\' ' +
         'and startNodes.get as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -159,7 +159,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.on with the event \'searchNode.create\' ' + 
+    it('should call plannerEventDispatch.on with the event \'searchNode.create\' ' +
         'and searchNode.create as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 
@@ -169,7 +169,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         ]);
     });
 
-    it('should call plannerEventDispatch.runOn with the event \'possibleActions.get\' ' + 
+    it('should call plannerEventDispatch.runOn with the event \'possibleActions.get\' ' +
         'and possibleActions.get as parameter', function() {
         registerPlannerEvents(plannerEventDispatch);
 

@@ -17,7 +17,6 @@ describe('lib/errors/cli/index.js', function() {
 
     mockery.registerMock('./invalid-component-path.js', INVALID_COMPONENT_PATH);
     mockery.registerMock('./invalid-planner-algorithm.js', INVALID_PLANNER_ALGORITHM);
-
   });
 
   afterEach(function() {
