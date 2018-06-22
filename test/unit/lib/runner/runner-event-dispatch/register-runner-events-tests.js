@@ -9,7 +9,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
   let testRunner;
   let testReportHandler;
   let runnerEventDispatch;
-  let writeReportToDisk;
+  let writers;
   let reporters;
   let debugPortHandler;
 
@@ -30,8 +30,8 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
       on: sinon.stub(),
       emit: sinon.stub(),
     };
-    writeReportToDisk = {
-      json: sinon.stub(),
+    writers = {
+      JSON: sinon.stub(),
     };
     reporters = {
       basic: {
@@ -45,7 +45,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
     mockery.registerMock('../test-runner/test-runner.js', testRunner);
     mockery.registerMock('../test-runner/test-report-handler.js', testReportHandler);
-    mockery.registerMock('../report-to-disk', writeReportToDisk);
+    mockery.registerMock('../writers', writers);
     mockery.registerMock('../reporters', reporters);
     mockery.registerMock('../test-runner/debug-port-handler.js', debugPortHandler);
   });
@@ -179,46 +179,112 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
       ]);
     });
 
-    it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportFinalized\' ' +
-      'and reporters.basic.printTestResult as parameters', function() {
+    it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportReadyToPrint\' ' +
+      'as the first parameter', function() {
       registerRunnerEvents = require(
         '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(runnerEventDispatch.on.args[8]).to.deep.equal([
-        'testReportHandler.testReportFinalized',
-        reporters.basic.printTestResult,
-      ]);
+      expect(runnerEventDispatch.on.args[8][0]).to.equal(
+        'testReportHandler.testReportReadyToPrint'
+      );
     });
 
-    it('should call runnerEventDispatch.on with the event \'testReportHandler.reportFinalized\' ' +
-      'and writeReportToDisk.json as parameters', function() {
+    it('should call runnerEventDispatch.on with a callback function as second param', function() {
       registerRunnerEvents = require(
         '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(runnerEventDispatch.on.args[9]).to.deep.equal([
-        'testReportHandler.reportFinalized',
-        writeReportToDisk.json,
-      ]);
+      expect(runnerEventDispatch.on.args[8][1]).to.be.a('function');
     });
 
-    it('should call runnerEventDispatch.on with the event \'testReportHandler.reportFinalized\' ' +
-      'and reporters.basic.printReportSummary as parameters', function() {
+    describe('when the callback function is called', function() {
+      it('should call the passed in reporter printTestResult method with the passed in report', function() {
+        registerRunnerEvents = require(
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+        );
+        runnerEventDispatch.on.onCall(8).callsArgWith(1, 'basic', {report: 'value'});
+
+        registerRunnerEvents(runnerEventDispatch);
+
+        expect(reporters.basic.printTestResult.args).to.deep.equal([[{report: 'value'}]]);
+      });
+    });
+
+    it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportSummaryReadyToPrint\' ' +
+      'as the first parameter', function() {
       registerRunnerEvents = require(
         '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
-      expect(runnerEventDispatch.on.args[10]).to.deep.equal([
-        'testReportHandler.reportFinalized',
-        reporters.basic.printReportSummary,
-      ]);
+      expect(runnerEventDispatch.on.args[9][0]).to.equal(
+        'testReportHandler.testReportSummaryReadyToPrint'
+      );
+    });
+
+    it('should call runnerEventDispatch.on with a callback function as second param', function() {
+      registerRunnerEvents = require(
+        '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+      );
+
+      registerRunnerEvents(runnerEventDispatch);
+
+      expect(runnerEventDispatch.on.args[9][1]).to.be.a('function');
+    });
+
+    describe('when the callback function is called', function() {
+      it('should call the passed in reporter printReportSummary method with the passed in report', function() {
+        registerRunnerEvents = require(
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+        );
+        runnerEventDispatch.on.onCall(9).callsArgWith(1, 'basic', {report: 'value'});
+
+        registerRunnerEvents(runnerEventDispatch);
+
+        expect(reporters.basic.printReportSummary.args).to.deep.equal([[{report: 'value'}]]);
+      });
+    });
+
+    it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportSummaryReadyToWrite\' ' +
+      'as the first parameter', function() {
+      registerRunnerEvents = require(
+        '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+      );
+
+      registerRunnerEvents(runnerEventDispatch);
+
+      expect(runnerEventDispatch.on.args[10][0]).to.equal(
+        'testReportHandler.testReportSummaryReadyToWrite'
+      );
+    });
+
+    it('should call runnerEventDispatch.on with a callback function as second param', function() {
+      registerRunnerEvents = require(
+        '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+      );
+
+      registerRunnerEvents(runnerEventDispatch);
+
+      expect(runnerEventDispatch.on.args[10][1]).to.be.a('function');
+    });
+
+    describe('when the callback function is called', function() {
+      it('should call the passed in writers with the passed in report', function() {
+        registerRunnerEvents = require(
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+        );
+        runnerEventDispatch.on.onCall(10).callsArgWith(1, 'JSON', {report: 'value'});
+
+        registerRunnerEvents(runnerEventDispatch);
+
+        expect(writers.JSON.args).to.deep.equal([[{report: 'value'}]]);
+      });
     });
 
     it('should call runnerEventDispatch.on with the event \'testReportHandler.reportFinalized\'', function() {

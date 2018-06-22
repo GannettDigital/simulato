@@ -25,6 +25,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
+      mockery.registerMock('../../util/config-handler.js', {});
     });
 
     afterEach(function() {
@@ -67,6 +68,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -109,6 +111,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -184,6 +187,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -226,6 +230,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -274,8 +279,10 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+      testReportHandler._handleTestReport = sinon.stub();
     });
 
     afterEach(function() {
@@ -365,8 +372,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
-    it('should call testReportHandler.emit with the event \'testReportHandler.testReportFinalized\' '
-      + 'and the report of the passed in testNumber most recent testRun', function() {
+    it('should call _handleTestReport with the report of the passed in testNumber most recent testRun', function() {
       testReportHandler._report.testReports[0] = {
         rerunCount: 0,
         testRuns: [
@@ -378,8 +384,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       testReportHandler.finalizeTestReport(0);
 
-      expect(testReportHandler.emit.args).to.deep.equal([[
-        'testReportHandler.testReportFinalized',
+      expect(testReportHandler._handleTestReport.args).to.deep.equal([[
         'report',
       ]]);
     });
@@ -405,8 +410,10 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+      testReportHandler._handleTestReportSummary = sinon.stub();
     });
 
     afterEach(function() {
@@ -429,43 +436,200 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
     });
 
     describe('if testReportHandler._failedTestCount is 0', function() {
-      it('should call testReportHandler.emit with the event\'testReportHandler.reportFinalized\' and '
-        + 'and testReportHandler._report with the report having status of \'pass\'', function() {
+      it('should set the testReportHandler._report.status to \'pass\'', function() {
         testReportHandler.finalizeReport();
 
-        expect(testReportHandler.emit.args).to.deep.equal([
-          [
-            'testReportHandler.reportFinalized',
-            {
-              failedTestCount: 0,
-              status: 'pass',
-              testCount: 0,
-              testReports: [],
-              time: [4, 54321],
-            },
-          ],
-        ]);
+        expect(testReportHandler._report.status).to.equal('pass');
       });
     });
 
-    it('should call testReportHandler.emit with the event\'testReportHandler.reportFinalized\' and '
-      + 'and testReportHandler._report', function() {
-      testReportHandler._report.failedTestCount = 1;
+    describe('if testReportHandler._failedTestCount is not 0', function() {
+      it('should keep the testReportHandler._report.status to \'fail\'', function() {
+        testReportHandler._report.failedTestCount = 1;
 
+        testReportHandler.finalizeReport();
+
+        expect(testReportHandler._report.status).to.equal('fail');
+      });
+    });
+
+    it('should call testReportHandler._handleTestReportSummary once with no params', function() {
+      testReportHandler.finalizeReport();
+
+      expect(testReportHandler._handleTestReportSummary.args).to.deep.equal([[]]);
+    });
+
+    it('should call testReportHandler.emit with the event\'testReportHandler.reportFinalized\'', function() {
       testReportHandler.finalizeReport();
 
       expect(testReportHandler.emit.args).to.deep.equal([
         [
           'testReportHandler.reportFinalized',
-          {
-            failedTestCount: 1,
-            status: 'fail',
-            testCount: 0,
-            testReports: [],
-            time: [4, 54321],
-          },
         ],
       ]);
+    });
+  });
+
+  describe('_handleTestReport', function() {
+    let testReportHandler;
+    let Emitter;
+    let configHandler;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+
+      configHandler = {
+        get: sinon.stub(),
+      };
+
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', configHandler);
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call configHandler.get once with the \'reporter\'', function() {
+      testReportHandler._handleTestReport({report: 'value'});
+
+      expect(configHandler.get.args).to.deep.equal([['reporter']]);
+    });
+
+    describe('if configHandler.get returns \'basic\'', function() {
+      it('should call testReportHandler.emit with the event \'testReportHandler.testReportReadyToPrint\'' +
+        ' \'basic\', and the report', function() {
+        configHandler.get.returns('basic');
+
+        testReportHandler._handleTestReport({report: 'value'});
+
+        expect(testReportHandler.emit.args).to.deep.equal([
+          [
+            'testReportHandler.testReportReadyToPrint',
+            'basic',
+            {report: 'value'},
+          ],
+        ]);
+      });
+    });
+  });
+
+  describe('_handleTestReportSummary', function() {
+    let testReportHandler;
+    let Emitter;
+    let configHandler;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+
+      configHandler = {
+        get: sinon.stub(),
+      };
+
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config-handler.js', configHandler);
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call configHandler.get twice', function() {
+      testReportHandler._handleTestReportSummary();
+
+      expect(configHandler.get.callCount).to.equal(2);
+    });
+
+    it('should configHandler.get with \'reporter\'', function() {
+      testReportHandler._handleTestReportSummary();
+
+      expect(configHandler.get.args[0]).to.deep.equal(['reporter']);
+    });
+
+    describe('if configHandler.get returns \'basic\'', function() {
+      it('should call testReportHandler.emit with the event \'testReportHandler.testReportReadyToPrint\'' +
+        ' \'basic\', and the ._report', function() {
+        configHandler.get.returns('basic');
+
+        testReportHandler._handleTestReportSummary();
+
+        expect(testReportHandler.emit.args).to.deep.equal([
+          [
+            'testReportHandler.testReportSummaryReadyToPrint',
+            'basic',
+            testReportHandler._report,
+          ],
+        ]);
+      });
+    });
+
+    it('should call configHandler.get with  \'reportPath\'', function() {
+      testReportHandler._handleTestReportSummary();
+
+      expect(configHandler.get.args[1]).to.deep.equal(['reportPath']);
+    });
+
+    describe('if configHandler.get(\'reportPath\') returns a value', function() {
+      it('should call configHandler.get a total of 3 times', function() {
+        configHandler.get.returns(true);
+
+        testReportHandler._handleTestReportSummary();
+
+        expect(configHandler.get.callCount).to.equal(3);
+      });
+
+      it('should call configHandler.get with \'reportFormat\'', function() {
+        configHandler.get.returns(true);
+
+        testReportHandler._handleTestReportSummary();
+
+        expect(configHandler.get.args[2]).to.deep.equal(['reportFormat']);
+      });
+
+      describe('if configHandler.get(\'reportFormat\') reutnrs \'JSON\'', function() {
+        it('should call testReportHandler.emit with the event \'testReportHandler.testReportReadyToPrint\'' +
+          ' \'basic\', and the report', function() {
+          configHandler.get.returns('JSON');
+
+          testReportHandler._handleTestReportSummary();
+
+          expect(testReportHandler.emit.args).to.deep.equal([
+            [
+              'testReportHandler.testReportSummaryReadyToWrite',
+              'JSON',
+              testReportHandler._report,
+            ],
+          ]);
+        });
+      });
     });
   });
 });

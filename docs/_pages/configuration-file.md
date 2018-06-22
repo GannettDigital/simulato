@@ -10,16 +10,17 @@ This section documents utilization of the configuration file in place of CLI opt
 
 ### testPath
   * Path to tests
-  * Example: `testPath: ./my-test-folder`
+  * Example: `testPath: './my-test-folder'`
 
 ### componentPath
   * Path to components
-  * Example: `componentPath: /my-components-folder`
+  * Example: `componentPath: '/my-components-folder'`
 
 ### reporter
-  * Specify a reporter to use. Either `basic` or `teamcity` 
+  * Specify a reporter to use.
   * Default is `basic`
-  * Example: `reporter: teamcity`
+  * Values Allowed: `basic`
+  * Example: `reporter: 'basic'`
     
 ### saucelabs
   * Flag for running tests in saucelabs. A sauce tunnel will be started
@@ -40,27 +41,33 @@ This section documents utilization of the configuration file in place of CLI opt
 
 ### reportPath
   * The parth wherein to write the test report
-  * Example: `reportPath: ./my-reports`
+  * Example: `reportPath: './my-reports'`
+
+### reportFormat
+  * The format in which to write the test reports in
+  * Default is `JSON`
+  * Values Allowed: `JSON`
+  * Example: `reportFormat: 'JSON'`
 
 ### before
   * The path to a before script run before the test suite
   * Must be a valid JavaScript file that exports a single function
-  * Example: `before: my-before-script.js`
+  * Example: `before: './scripts/my-before-script.js'`
 
 ### outputPath
   * The path wherein to write the generated test cases
   * Default is the current working directory
-  * Example `outputPath: ./tests`
+  * Example `outputPath: './tests'`
 
 ### technique
   * The test generation technique
   * The only and required option at this point is actionFocused
-  * Example `technique: actionFocused`
+  * Example `technique: 'actionFocused'`
 
 ### actionToCover
   * The single action to generate a test to cover
   * Default is the current working directory
-  * Example `actionToCover: myComponent.MY_ACTION`
+  * Example `actionToCover: 'myComponent.MY_ACTION'`
 
 ### testDelay
   * Number of milliseconds to stagger test execution

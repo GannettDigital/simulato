@@ -4,12 +4,12 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/runner/report-to-disk/index.js', function() {
+describe('lib/runner/writers/index.js', function() {
   let json;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
-    mockery.registerAllowable('../../../../../lib/runner/report-to-disk');
+    mockery.registerAllowable('../../../../../lib/runner/writers');
 
     json = sinon.stub();
 
@@ -23,15 +23,15 @@ describe('lib/runner/report-to-disk/index.js', function() {
   });
 
   it('should export 1 item on an object', function() {
-    let result = require('../../../../../lib/runner/report-to-disk');
+    let result = require('../../../../../lib/runner/writers');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(1);
   });
 
-  it('should have the property \'json\' with the value from requiring'
+  it('should have the property \'JSON\' with the value from requiring'
     + ' \'./write-json-to-disk.js\'', function() {
-    let result = require('../../../../../lib/runner/report-to-disk');
+    let result = require('../../../../../lib/runner/writers');
 
-    expect(result.json).to.deep.equal(json);
+    expect(result.JSON).to.deep.equal(json);
   });
 });
