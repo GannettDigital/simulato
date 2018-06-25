@@ -4,19 +4,19 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/errors/cli/invalid-generation-technique.js', function() {
+describe('lib/errors/cli/invalid-planner-algorithm.js', function() {
   let CLIError;
-  let invalidGenerationTechnique;
+  let invalidComponentPath;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
-    mockery.registerAllowable('../../../../../lib/errors/cli/invalid-generation-technique.js');
+    mockery.registerAllowable('../../../../../lib/errors/cli/invalid-planner-algorithm.js');
 
     CLIError = sinon.stub();
 
     mockery.registerMock('./cli-error.js', CLIError);
 
-    invalidGenerationTechnique = require('../../../../../lib/errors/cli/invalid-generation-technique.js');
+    invalidComponentPath = require('../../../../../lib/errors/cli/invalid-planner-algorithm.js');
   });
 
   afterEach(function() {
@@ -26,18 +26,18 @@ describe('lib/errors/cli/invalid-generation-technique.js', function() {
   });
 
   describe('on execution of the required file', function() {
-    it('should call new CLIError with \'INVALID_GENERATION_TECHNIQUE\', and passed in code and message', function() {
-      invalidGenerationTechnique('ERROR_CODE', 'ERROR_MESSAGE');
+    it('should call new CLIError with \'INVALID_PLANNER_ALGORITHM\', and passed in code and message', function() {
+      invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(CLIError.args).to.deep.equal([
-        ['INVALID_GENERATION_TECHNIQUE', 'ERROR_CODE', 'ERROR_MESSAGE'],
+        ['INVALID_PLANNER_ALGORITHM', 'ERROR_CODE', 'ERROR_MESSAGE'],
       ]);
     });
 
     it('should return new CLIError', function() {
       let result;
 
-      result = invalidGenerationTechnique('ERROR_CODE', 'ERROR_MESSAGE');
+      result = invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CLIError);
     });

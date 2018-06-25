@@ -174,7 +174,7 @@ describe('lib/planner/start-nodes.js', function() {
         });
 
         describe('for each entry component', function() {
-            it('should call startNodes.emitAsync with the event \'startNodes.createSearchNode\', and empty set, ' +
+            it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
                 ' and next', function() {
                 let generator = startNodes.get(callback);
 
@@ -183,7 +183,7 @@ describe('lib/planner/start-nodes.js', function() {
                 generator.next(components);
 
                 expect(startNodes.emitAsync.args[1]).to.deep.equal([
-                    'startNodes.createSearchNode',
+                    'searchNode.create',
                     new Set(),
                     next,
                 ]);
