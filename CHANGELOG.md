@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Brian Fitzpatrick
+  * Added popping and pushing components/states by dynamic areas
+
 ## 0.6.0
 
 * Tom Dale
