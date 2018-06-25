@@ -75,9 +75,7 @@ module.exports = {
   testPath: 'tests',
   components: 'components',
   outputPath: 'tests',
-  planner: {
-    algorithm: 'forwardStateSpaceSearchHeuristic',
-  },
+  plannerAlgorithm: `forwardStateSpaceSearchHeuristic`,
 };
 ```
 
