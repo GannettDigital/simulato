@@ -2686,6 +2686,7 @@ describe('lib/util/expected-state.js', function() {
                 eventEmitter: {
                     removeAllListeners: sinon.stub(),
                 },
+                clearDynamicArea: sinon.stub(),
                 getComponent: sinon.stub().returns(component),
                 addComponent: sinon.stub(),
             };
@@ -2720,6 +2721,11 @@ describe('lib/util/expected-state.js', function() {
             expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
 
             expect(myThis._stashedDynamicAreasComponentsAndStates.delete.callCount).to.equal(1);
+        });
+        it('should call clear dynamic area on the dynamic area before the rest of the function runs', function() {
+            expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis.clearDynamicArea.args).to.deep.equal([['testDynamicArea']]);
         });
     });
 });
