@@ -45,12 +45,6 @@ describe('lib/util/defaults.js', function() {
     expect(defaults.configFile).to.equal(`${process.cwd()}/simulato-config.js`);
   });
 
-  it('should have the property \'technique\' with the default value', function() {
-    let defaults = require('../../../../lib/util/defaults.js');
-
-    expect(defaults.technique).to.equal('actionFocused');
-  });
-
   it('should have the property \'reporter\' with the default value', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
@@ -73,5 +67,11 @@ describe('lib/util/defaults.js', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
     expect(defaults.rerunFailedTests).to.equal(0);
+  });
+
+  it('should have the property \'plannerAlgorithm\' with the default value', function() {
+    let defaults = require('../../../../lib/util/defaults.js');
+
+    expect(defaults.plannerAlgorithm).to.equal('forwardStateSpaceSearchHeuristic');
   });
 });

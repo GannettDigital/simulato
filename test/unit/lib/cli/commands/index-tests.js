@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/cli/index.js', function() {
+describe('lib/cli/commands/index.js', function() {
     let run;
     let generate;
 
