@@ -614,9 +614,9 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
         expect(configHandler.get.args[2]).to.deep.equal(['reportFormat']);
       });
 
-      describe('if configHandler.get(\'reportFormat\') reutnrs \'JSON\'', function() {
-        it('should call testReportHandler.emit with the event \'testReportHandler.testReportReadyToPrint\'' +
-          ' \'basic\', and the report', function() {
+      describe('if configHandler.get(\'reportFormat\') returns \'JSON\'', function() {
+        it('should call testReportHandler.emit with the event \'testReportHandler.testReportSummaryReadyToWrite\'' +
+          ' \'JSON\', and the report', function() {
           configHandler.get.returns('JSON');
 
           testReportHandler._handleTestReportSummary();

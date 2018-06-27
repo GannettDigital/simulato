@@ -14,7 +14,7 @@ This section documents utilization of the configuration file in place of CLI opt
 
 ### componentPath
   * Path to components
-  * Example: `componentPath: '/my-components-folder'`
+  * Example: `componentPath: './my-components-folder'`
 
 ### reporter
   * Specify a reporter to use.

@@ -256,6 +256,7 @@ describe('lib/util/validators/validate-config.js', function() {
     });
 
     afterEach(function() {
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
