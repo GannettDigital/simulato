@@ -297,11 +297,18 @@ describe('lib/util/validators/validate-config.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/util/validators/validate-config.js');
 
+      global.SimulatoError = {
+        CONFIG: {
+          INVALID_VALUE: sinon.stub().throws({message: 'invalid value'}),
+        },
+      };
+
       validateConfig = require('../../../../../lib/util/validators/validate-config.js');
       validateConfig._getOrigin = sinon.stub();
     });
 
     afterEach(function() {
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
