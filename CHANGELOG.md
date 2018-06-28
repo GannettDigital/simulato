@@ -5,6 +5,15 @@
 * Brian Fitzpatrick
   * Added popping and pushing components/states by dynamic areas
 
+* Tom Dale
+  * Added ability to specify report formats
+    * Supported flags: 'JSON'
+    * Defaults to JSON
+  * Added ability for test runner to use reporter flag
+    * Supported flags: 'basic'
+    * Defaults to basic
+
+
 ## 0.6.0
 
 * Tom Dale

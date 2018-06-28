@@ -7,7 +7,7 @@ const expect = require('chai').expect;
 describe('lib/errors/config/index.js', function() {
     let TYPE_ERROR;
     let INVALID_PROPERTY;
-    let INVALID_PATH;
+    let INVALID_VALUE;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -15,11 +15,11 @@ describe('lib/errors/config/index.js', function() {
 
         TYPE_ERROR = sinon.stub();
         INVALID_PROPERTY = sinon.stub();
-        INVALID_PATH = sinon.stub();
+        INVALID_VALUE = sinon.stub();
 
         mockery.registerMock('./type-error.js', TYPE_ERROR);
         mockery.registerMock('./invalid-property.js', INVALID_PROPERTY);
-        mockery.registerMock('./invalid-path.js', INVALID_PATH);
+        mockery.registerMock('./invalid-value.js', INVALID_VALUE);
     });
 
     afterEach(function() {
@@ -28,10 +28,10 @@ describe('lib/errors/config/index.js', function() {
         mockery.disable();
     });
 
-    it('should export 2 items on an object', function() {
+    it('should export 3 items on an object', function() {
         let result = require('../../../../../lib/errors/config');
 
-        expect(Object.getOwnPropertyNames(result).length).to.equal(2);
+        expect(Object.getOwnPropertyNames(result).length).to.equal(3);
     });
 
     it('should have the property \'TYPE_ERROR\' with the value from requiring'
@@ -47,4 +47,11 @@ describe('lib/errors/config/index.js', function() {
 
       expect(result.INVALID_PROPERTY).to.deep.equal(INVALID_PROPERTY);
     });
+
+    it('should have the property \'INVALID_VALUE\' with the value from requiring'
+    + ' \'./invalid-property.js\'', function() {
+    let result = require('../../../../../lib/errors/config');
+
+    expect(result.INVALID_VALUE).to.deep.equal(INVALID_VALUE);
+  });
 });
