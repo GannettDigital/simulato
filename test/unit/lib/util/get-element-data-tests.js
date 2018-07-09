@@ -264,6 +264,18 @@ describe('lib/util/get-element-data.js', function() {
         });
       });
 
+      describe('if there is an array with 0 elements passed in', function() {
+        it('should return an empy array', function() {
+          let elements = [];
+          getElementDataFunctions.extractNameAndValue = sinon.stub();
+          getElementDataFunctions.isDisplayed = sinon.stub();
+
+          let result = getElementDataFunctions.getElementInfo(elements);
+
+          expect(result).to.deep.equal([]);
+        });
+      });
+
       describe('if mutiple elements are passed in', function() {
         describe('for each element in the passed in elemenets', function() {
           it('should call extractNameAndValue passing in the element.attributes', function() {
