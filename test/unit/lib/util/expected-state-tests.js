@@ -153,7 +153,7 @@ describe('lib/util/expected-state.js', function() {
                 _cloneAndAddComponents: sinon.stub(),
                 _cloneStashedComponents: sinon.stub(),
                 _cloneStashedDynamicAreas: sinon.stub(),
-                _cloneStashedDynamicAreasComponentsAndStates: sinon.stub()
+                _cloneStashedDynamicAreasComponentsAndStates: sinon.stub(),
             };
 
             mockery.registerMock('./emitter.js', Emitter);
@@ -240,7 +240,9 @@ describe('lib/util/expected-state.js', function() {
 
                     expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal([myThis._components,myThis._state]);
+                    expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
+                        [myThis._components, myThis._state]
+                    );
                 });
             });
 
@@ -260,7 +262,7 @@ describe('lib/util/expected-state.js', function() {
                     myThis._stashedComponents = [stashedComponents];
                     clonedExpectedState.createComponent.returns({});
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    myThis._cloneStashedComponents = sinon.stub()
+                    myThis._cloneStashedComponents = sinon.stub();
 
                     expectedState.clone.call(myThis, {}, callback);
 
@@ -297,7 +299,6 @@ describe('lib/util/expected-state.js', function() {
                     clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
                     clonedExpectedState._cloneStashedComponents = sinon.stub();
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    let expectedMap = new Map([['createdComponent', {name: 'createdComponent'}]]);
 
                     expectedState.clone.call(myThis, {}, callback);
 
@@ -341,8 +342,6 @@ describe('lib/util/expected-state.js', function() {
         let Emitter;
         let expectedState;
         let component;
-        let errorCalled;
-        let componentConfig;
         let myThis;
         let _;
 
@@ -372,7 +371,7 @@ describe('lib/util/expected-state.js', function() {
             };
 
             myThis = {
-                createComponent : sinon.stub(),
+                createComponent: sinon.stub(),
             };
 
             componentConfig = {
@@ -403,19 +402,17 @@ describe('lib/util/expected-state.js', function() {
             mockery.disable();
         });
 
-        it('should call clonedeep with the component options', function(){            
+        it('should call clonedeep with the component options', function() {
             expectedState._cloneComponent.call(myThis, component);
 
             expect(_.cloneDeep.args[0][0]).to.deep.equal({option1: 'someOption'});
-        })
+        });
     });
 
     describe('_cloneAndAddComponents', function() {
         let Emitter;
         let expectedState;
         let component;
-        let errorCalled;
-        let componentConfig;
         let myThis;
         let componentState;
         let componentMap;
@@ -452,9 +449,9 @@ describe('lib/util/expected-state.js', function() {
                     option1: 'someOption',
                 },
             };
-          
+
             myThis = {
-                createAndAddComponent : sinon.stub(),
+                createAndAddComponent: sinon.stub(),
             };
 
             componentConfig = {
@@ -487,21 +484,18 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should call clone deep with the state and options', function(){            
+        it('should call clone deep with the state and options', function() {
             expectedState._cloneAndAddComponents.call(myThis, componentMap, componentState);
 
-            expect(_.cloneDeep.args).to.deep.equal([['componentType'], [{"option1": "someOption"}]]);
-        })
+            expect(_.cloneDeep.args).to.deep.equal([['componentType'], [{'option1': 'someOption'}]]);
+        });
     });
 
     describe('_cloneStashedComponents', function() {
         let Emitter;
         let expectedState;
         let component;
-        let errorCalled;
-        let componentConfig;
         let myThis;
-        let componentState;
         let componentMap;
         let stashedCompMap;
         let _;
@@ -530,9 +524,9 @@ describe('lib/util/expected-state.js', function() {
                 actions: sinon.stub().returns({ACTION_1: 'someAction'}),
                 options: {option1: 'someOption'},
             };
-          
+
             myThis = {
-                _stashedComponents :
+                _stashedComponents:
                 {
                     push: sinon.stub(),
                 },
@@ -561,11 +555,11 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should push the cloned stashedComponents as a component map', function(){            
+        it('should push the cloned stashedComponents as a component map', function() {
             expectedState._cloneStashedComponents.call(myThis, stashedCompMap);
 
             expect(myThis._stashedComponents.push.args[0]).to.deep.equal([componentMap]);
-        })
+        });
     });
 
     describe('_cloneStashedDynamicArea', function() {
@@ -601,9 +595,9 @@ describe('lib/util/expected-state.js', function() {
                 actions: sinon.stub().returns({ACTION_1: 'someAction'}),
                 options: {option1: 'someOption'},
             };
-          
+
             myThis = {
-                _stashedDynamicAreas :
+                _stashedDynamicAreas:
                 {
                     push: sinon.stub(),
                 },
@@ -629,14 +623,14 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should call stashedDynamicArea push with the dynamic area to be stashed', function(){            
+        it('should call stashedDynamicArea push with the dynamic area to be stashed', function() {
             expectedState._cloneStashedDynamicAreas.call(myThis, stashedDynamicAreas);
 
             expect(myThis._stashedDynamicAreas.push.args[0]).to.deep.equal(stashedDynamicAreas);
-        })
+        });
     });
 
-    describe('_cloneStashedDynamicAreasComponentsAndStates', function(){
+    describe('_cloneStashedDynamicAreasComponentsAndStates', function() {
         let Emitter;
         let expectedState;
         let component;
@@ -691,11 +685,11 @@ describe('lib/util/expected-state.js', function() {
             });
 
             myThis = {
-                _stashedDynamicAreasComponentsAndStates :
+                _stashedDynamicAreasComponentsAndStates:
                 {
                     set: sinon.stub(),
                 },
-                _cloneComponent : sinon.stub().returns(component),
+                _cloneComponent: sinon.stub().returns(component),
             };
 
             _ = {
@@ -718,17 +712,18 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should call stashedDynamicArea push with the dynamic area to be stashed', function(){            
-            expectedState._cloneStashedDynamicAreasComponentsAndStates.call(myThis, stashedDynamicAreasComponentsAndStates);
+        it('should call stashedDynamicArea push with the dynamic area to be stashed', function() {
+            expectedState._cloneStashedDynamicAreasComponentsAndStates
+                .call(myThis, stashedDynamicAreasComponentsAndStates);
 
             expect(myThis._stashedDynamicAreasComponentsAndStates.set.args[0]).to.deep.equal(
-                ['instanceName', 
+                ['instanceName',
                     {
-                        "components" : componentMap, 
-                        "states" : stateMap
-                    }
+                        'components': componentMap,
+                        'states': stateMap,
+                    },
                 ]);
-        })
+        });
     });
 
     describe('createComponent', function() {
@@ -2609,7 +2604,7 @@ describe('lib/util/expected-state.js', function() {
 
                 componentsMap.set('instanceName', [component]);
                 statesMap.set('instanceName', componentState);
-                myThis._dynamicAreas.set('testDynamicArea',[component.name]);
+                myThis._dynamicAreas.set('testDynamicArea', [component.name]);
 
                 expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
 
@@ -2646,7 +2641,7 @@ describe('lib/util/expected-state.js', function() {
 
                 componentsMap.set('instanceName', [component]);
                 statesMap.set('instanceName', componentState);
-                myThis._dynamicAreas.set('testDynamicArea',[component.name]);
+                myThis._dynamicAreas.set('testDynamicArea', [component.name]);
 
                 expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
 
@@ -2684,10 +2679,10 @@ describe('lib/util/expected-state.js', function() {
             let componentsMap = new Map();
             let statesMap = new Map();
 
-            
+
             componentsMap.set('instanceName', [component]);
             statesMap.set('instanceName', componentState);
-            myThis._dynamicAreas.set('testDynamicArea',[component.name]);
+            myThis._dynamicAreas.set('testDynamicArea', [component.name]);
 
             expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
 
