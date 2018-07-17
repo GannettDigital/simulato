@@ -75,6 +75,7 @@ This section documents functions for the expected state used throughout the tool
 ### stash()
   * Stash the current state (can be popped later)
 
+
 ### pop()
   * Pops the most recent stashed state
 
@@ -83,6 +84,12 @@ This section documents functions for the expected state used throughout the tool
     * Parameters
       * `dynamicArea` **required**
         * A string denoting the dynamic area you wish to stash
+
+### isDynamicAreaStashed(dynamicArea)
+  * Checks if the passed dynamic area is stashed
+    * Parameters
+      * `dynamicArea` **required**
+        * A string denoting the dynamic area you wish to check
 
 ### retrieveDynamicArea(dynamicArea)
   * Retrieves the components and states from a stashed dynamic area

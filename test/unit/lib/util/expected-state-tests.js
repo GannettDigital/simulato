@@ -2714,7 +2714,7 @@ describe('lib/util/expected-state.js', function() {
             mockery.deregisterAll();
             mockery.disable();
         });
-        it('should check if the stashedDynamicAreasComponentsAndStates has the dynamic area', function(){
+        it('should check if the stashedDynamicAreasComponentsAndStates has the dynamic area', function() {
             expectedState.isDynamicAreaStashed.call(myThis, 'testDynamicArea');
 
             expect(myThis._stashedDynamicAreasComponentsAndStates.has.args[0][0]).to.equal('testDynamicArea');
@@ -2978,7 +2978,7 @@ describe('lib/util/expected-state.js', function() {
                 addComponent: sinon.stub(),
             };
             myThis._stashedDynamicAreasComponentsAndStates.delete = sinon.stub();
-            
+
             let componentsMap = new Map();
             let statesMap = new Map();
 
