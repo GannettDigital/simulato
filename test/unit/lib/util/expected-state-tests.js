@@ -374,13 +374,6 @@ describe('lib/util/expected-state.js', function() {
                 createComponent: sinon.stub(),
             };
 
-            componentConfig = {
-                type: 'componentType',
-                name: 'instanceName',
-                options: {
-                    option1: 'someOption',
-                },
-            };
             _ = {
                 get: sinon.stub(),
                 cloneDeep: sinon.stub(),
@@ -454,13 +447,6 @@ describe('lib/util/expected-state.js', function() {
                 createAndAddComponent: sinon.stub(),
             };
 
-            componentConfig = {
-                type: 'componentType',
-                name: 'instanceName',
-                options: {
-                    option1: 'someOption',
-                },
-            };
             _ = {
                 get: sinon.stub(),
                 cloneDeep: sinon.stub(),
