@@ -2676,6 +2676,51 @@ describe('lib/util/expected-state.js', function() {
         });
     });
 
+    describe('isDynamicAreaStashed', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let Emitter;
+        let expectedState;
+        let myThis;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js'); Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            myThis = {};
+            myThis._stashedDynamicAreasComponentsAndStates = new Map();
+            myThis._stashedDynamicAreasComponentsAndStates.has = sinon.stub();
+        });
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should check if the stashedDynamicAreasComponentsAndStates has the dynamic area', function(){
+            expectedState.isDynamicAreaStashed.call(myThis, 'testDynamicArea');
+
+            expect(myThis._stashedDynamicAreasComponentsAndStates.has.args[0][0]).to.equal('testDynamicArea');
+        });
+    });
+
     describe('pop', function() {
         let Emitter;
         let expectedState;
@@ -2933,9 +2978,15 @@ describe('lib/util/expected-state.js', function() {
                 addComponent: sinon.stub(),
             };
             myThis._stashedDynamicAreasComponentsAndStates.delete = sinon.stub();
-
+            
             let componentsMap = new Map();
             let statesMap = new Map();
+
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
 
             componentsMap.set('instanceName', component);
             statesMap.set('instanceName', componentState);
@@ -2958,6 +3009,15 @@ describe('lib/util/expected-state.js', function() {
 
                 expect(myThis.addComponent.callCount).to.equal(1);
             });
+        });
+        it('should throw an error if the passed in dynamic area is not stashed', function() {
+            let message = 'The dynamic area testDynamicArea is not stashed.';
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
+                {message}
+            );
+            myThis.isDynamicAreaStashed = sinon.stub().returns(false);
+
+            expect(expectedState.retrieveDynamicArea.bind(myThis, 'testDynamicArea')).to.throw(message);
         });
         it('should delete the retrieved dynamic area components and states', function() {
             expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
