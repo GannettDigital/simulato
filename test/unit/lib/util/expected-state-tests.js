@@ -207,8 +207,7 @@ describe('lib/util/expected-state.js', function() {
                 });
             });
 
-            describe('for each component in the expectedState being cloned', function() {
-                it('should call _.deepClone with that components state', function() {
+            it('should call _.deepClone with that components state', function() {
                     myThis._components.set('key', {name: 'test'});
                     myThis._state = {'key': {name: 'test'}};
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
@@ -216,34 +215,33 @@ describe('lib/util/expected-state.js', function() {
                     expectedState.clone.call(myThis, {}, callback);
 
                     expect(_.cloneDeep.args[1]).to.deep.equal([[{name: 'test'}]]);
-                });
+            });
 
-                it('should call _.deepClone with that components options', function() {
-                    myThis._components.set('key', {name: 'test'});
-                    myThis._state = {'key': {name: 'test'}};
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call _.deepClone with that components options', function() {
+                myThis._components.set('key', {name: 'test'});
+                myThis._state = {'key': {name: 'test'}};
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[1]).to.deep.equal([[{name: 'test'}]]);
-                });
+                expect(_.cloneDeep.args[1]).to.deep.equal([[{name: 'test'}]]);
+            });
 
-                it('should call createAndAddComponent with an object containing: ' +
-                    'component.type, component.name, componentState, and componentOptions', function() {
-                    myThis._components.set(
-                        'key',
-                        {type: 'componentName', name: 'instanceName', dynamicArea: 'myDynamicArea'}
-                    );
-                    myThis._state = {type: 'componentName', name: 'instanceName'};
-                    myThis._cloneAndAddComponents = sinon.stub();
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call createAndAddComponent with an object containing: ' +
+                'component.type, component.name, componentState, and componentOptions', function() {
+                myThis._components.set(
+                    'key',
+                    {type: 'componentName', name: 'instanceName', dynamicArea: 'myDynamicArea'}
+                );
+                myThis._state = {type: 'componentName', name: 'instanceName'};
+                myThis._cloneAndAddComponents = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
-                        [myThis._components, myThis._state]
-                    );
-                });
+                expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
+                    [myThis._components, myThis._state]
+                );
             });
 
             it('should call _.cloneDeep with the stashedComponents of the expectedState being cloned', function() {
@@ -255,77 +253,73 @@ describe('lib/util/expected-state.js', function() {
                 expect(_.cloneDeep.args[1]).to.deep.equal([['stashedState1', 'stashedState2']]);
             });
 
-            describe('for each stashed component in the expectedState.stashedComponents being cloned', function() {
-                it('should call _cloneStashedComponents with stashed components', function() {
-                    let stashedComponents = new Map();
-                    stashedComponents.set('key', {name: 'stashed1', options: {option1: 'option1'}});
-                    myThis._stashedComponents = [stashedComponents];
-                    clonedExpectedState.createComponent.returns({});
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    myThis._cloneStashedComponents = sinon.stub();
+            it('should call _cloneStashedComponents with stashed components', function() {
+                let stashedComponents = new Map();
+                stashedComponents.set('key', {name: 'stashed1', options: {option1: 'option1'}});
+                myThis._stashedComponents = [stashedComponents];
+                clonedExpectedState.createComponent.returns({});
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+                myThis._cloneStashedComponents = sinon.stub();
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
-                });
-
-                it('should call clonedState._cloneAndAddComponent with a component', function() {
-                    let components = new Map();
-                    components.set(
-                        'component1',
-                        {
-                            type: 'componentName',
-                            name: 'comp1',
-                            options: {option1: 'option1'},
-                            dynamicArea: 'myDynamicArea',
-                        }
-                    );
-                    myThis._components = [components];
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    _.cloneDeep.onCall(2).returns('myComponentOptions');
-                    myThis._cloneAndAddComponents = sinon.stub();
-
-                    expectedState.clone.call(myThis, {}, callback);
-
-                    expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal([[components], undefined]);
-                });
-                it('should call clonedState._cloneStashedComponents with the new map of components', function() {
-                    let stashedComponents = new Map();
-                    stashedComponents.set(
-                        'stashed1',
-                        {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
-                    );
-                    myThis._stashedComponents = [stashedComponents];
-                    clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
-                    clonedExpectedState._cloneStashedComponents = sinon.stub();
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-
-                    expectedState.clone.call(myThis, {}, callback);
-
-                    expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
-                });
+                expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
             });
 
-            describe('for each stashed dynamicArea in this._stashedDynamicAreas', function() {
-                it('should call clonedState._cloneStashedDynamicArea with an identical dynamicArea map', function() {
-                    myThis._stashedDynamicAreas = [
-                        new Map([
-                            ['dynamicArea1', new Set(['name1', 'name2'])],
-                            ['dynamicArea2', new Set(['name3', 'name4'])],
-                        ]),
-                    ];
-                    clonedExpectedState._cloneStashedDynamicAreas = sinon.stub();
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call clonedState._cloneAndAddComponent with a component', function() {
+                let components = new Map();
+                components.set(
+                    'component1',
+                    {
+                        type: 'componentName',
+                        name: 'comp1',
+                        options: {option1: 'option1'},
+                        dynamicArea: 'myDynamicArea',
+                    }
+                );
+                myThis._components = [components];
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+                _.cloneDeep.onCall(2).returns('myComponentOptions');
+                myThis._cloneAndAddComponents = sinon.stub();
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState._cloneStashedDynamicAreas.args[0][0]).to.deep.equal([
-                        new Map([
-                            ['dynamicArea1', new Set(['name1', 'name2'])],
-                            ['dynamicArea2', new Set(['name3', 'name4'])],
-                        ]),
-                    ]);
-                });
+                expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal([[components], undefined]);
+            });
+            it('should call clonedState._cloneStashedComponents with the new map of components', function() {
+                let stashedComponents = new Map();
+                stashedComponents.set(
+                    'stashed1',
+                    {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
+                );
+                myThis._stashedComponents = [stashedComponents];
+                clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
+                clonedExpectedState._cloneStashedComponents = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
+            });
+
+            it('should call clonedState._cloneStashedDynamicArea with an identical dynamicArea map', function() {
+                myThis._stashedDynamicAreas = [
+                    new Map([
+                        ['dynamicArea1', new Set(['name1', 'name2'])],
+                        ['dynamicArea2', new Set(['name3', 'name4'])],
+                    ]),
+                ];
+                clonedExpectedState._cloneStashedDynamicAreas = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(clonedExpectedState._cloneStashedDynamicAreas.args[0][0]).to.deep.equal([
+                    new Map([
+                        ['dynamicArea1', new Set(['name1', 'name2'])],
+                        ['dynamicArea2', new Set(['name3', 'name4'])],
+                    ]),
+                ]);
             });
 
             it('should call the callback once with the clonedState', function() {
@@ -2637,6 +2631,13 @@ describe('lib/util/expected-state.js', function() {
                 expect(compVal)
                 .to.equal(componentState);
             });
+        });
+        it('should do nothing if the dynamicArea passed in is invalid', function() {
+            myThis.clearDynamicArea = sinon.stub();
+
+            expectedState.stashDynamicArea.call(myThis, undefined);
+
+            expect(myThis.clearDynamicArea.callCount).to.equal(0);
         });
         it('should clear the dynamic area that was stashed', function() {
             let component = {

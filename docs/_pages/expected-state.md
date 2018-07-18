@@ -75,7 +75,6 @@ This section documents functions for the expected state used throughout the tool
 ### stash()
   * Stash the current state (can be popped later)
 
-
 ### pop()
   * Pops the most recent stashed state
 

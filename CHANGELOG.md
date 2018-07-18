@@ -13,7 +13,6 @@
     * Supported flags: 'basic'
     * Defaults to basic
 
-
 ## 0.6.0
 
 * Tom Dale
