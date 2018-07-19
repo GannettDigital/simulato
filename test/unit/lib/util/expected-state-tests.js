@@ -2548,6 +2548,11 @@ describe('lib/util/expected-state.js', function() {
                 _dynamicAreas: new Map(),
                 _clearDynamicArea: sinon.stub,
             };
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
         });
 
         afterEach(function() {
@@ -2632,12 +2637,11 @@ describe('lib/util/expected-state.js', function() {
                 .to.equal(componentState);
             });
         });
-        it('should do nothing if the dynamicArea passed in is invalid', function() {
-            myThis.clearDynamicArea = sinon.stub();
+        it('should do throw an error if the dynamicArea passed in is invalid', function() {
+            let error = new Error('My Error');
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(error);
 
-            expectedState.stashDynamicArea.call(myThis, undefined);
-
-            expect(myThis.clearDynamicArea.callCount).to.equal(0);
+            expect(expectedState.stashDynamicArea.bind(myThis, undefined)).to.throw('My Error');
         });
         it('should clear the dynamic area that was stashed', function() {
             let component = {
