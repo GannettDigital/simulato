@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.6.1
+
+* Brian Fitzpatrick
+  * Added popping and pushing components/states by dynamic areas
+
 * Tom Dale
   * Added ability to specify report formats
     * Supported flags: 'JSON'

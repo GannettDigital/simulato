@@ -78,6 +78,25 @@ This section documents functions for the expected state used throughout the tool
 ### pop()
   * Pops the most recent stashed state
 
+### stashDynamicArea(dynamicArea)
+  * Stashes the components and states of the passed dynamic area
+    * Parameters
+      * `dynamicArea` **required**
+        * A string denoting the dynamic area you wish to stash
+
+### isDynamicAreaStashed(dynamicArea)
+  * Checks if the passed dynamic area is stashed
+    * Parameters
+      * `dynamicArea` **required**
+        * A string denoting the dynamic area you wish to check
+
+### retrieveDynamicArea(dynamicArea)
+  * Retrieves the components and states from a stashed dynamic area
+  * Adds the retrieved components back to the dynamic area
+    * Parameters
+      * `dynamicArea` **required**
+        * A String denoting the dynamic area you wish to retrieve
+
 ## eventEmitter
   * An event emitter instance wherein the events returned from the `events` function are registered
   * Use this emitter to emit events to other components
