@@ -78,7 +78,7 @@ This section will go into the details of names for your component's type, as wel
 
 ### Component Type
 
-Component type values should reflect directly back to the html they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in Pascal case, similar to how you would name a class or constructor in an object oriented language.
+Component type values should reflect directly back to the html they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language.
 
 For example:
 
@@ -150,7 +150,79 @@ Continue moving up the the folder structure until you can satisfy creating a uni
 
 ### Component Name
 
-Similar to the component type, the name should be 
+As a standard, names should be written in camelCase, to distinguish them from type. Similar to the component type being related to the HTML file, a given component's name should be related to that component's type. 
+
+When a component, and therefore a view, is only used once for the system the name can simply be the component's type, but in camelCase.
+
+For example:
+
+```
+- app
+- views
+  - home-page.html
+  - profile.html
+  - login-page.html
+- components
+  - home-page.model.js
+  - profile.model.js
+  - login-page.model.js
+app.js
+package.json
+```
+
+When looking this file structure, with its 3 views and its 3 accompanying models, if each view was only used once in that system the components could have the following names.
+
+`name: 'homePage'`
+`name: 'profile'`
+`name: 'loginPage'`
+
+These names would be very similar to the component's type which would be `HomePage`, `Profile`, and `LoginPage` respectively.
+
+When looking at a more modern approach to front end design, many views are reusable and called throughout a system multiple times.  Just like type, we want the names to be unique so we can get a good grasp of where they belong in the system.  Usually when a view is reusable they are called within other views, when this is the case the standard is to call them as children, which we will detail in the next section. 
+
+However, reusable views don't have to be called within other views, a specific view could be part of multiple routes, or just loaded in tandem with other views. When this is the case we want to have a clear naming convention so we know where the view is being used, and has a different name when the view is called elsewhere.
+
+For Example:
+
+```
+- app
+- views
+  - actionbar.html
+  - home-page.html
+  - profile-page.html
+- components
+  - actionbar.model.js
+  - home-page.model.js
+  - profile-page.model.js
+app.js
+package.json
+```
+
+Let's say the view `actionbar.html` is called with `home-page.html` and a separate instance of `actionbar.html` is called with `profile-page.html`.  We will assume that `actionbar.html` behaves different when loaded either `home-page.html` or `profile-page.html`. By making this assumption we know we need to create and add the actionbar component to the expected state twice, once for profile and once for home, if they were the same action bar that was just static on the page, we would only ever add it once and would not have to worry about this specific naming situation.
+
+Currently, following the standards the type for `actionbar.model.js` would be `type: 'Actionbar'`.  When we call `expectedState.createAndAddComponent()`, we want to differentiate which views actionbar this is.
+
+When creating the home page's actionbar:
+
+```
+expectedState.createAndAddComponent({
+  type: 'Actionbar',
+  name: 'homePageActionbar',
+  state: { ... }
+});
+```
+
+When creating the profile page's actionbar
+
+```
+expectedState.createAndAddComponent({
+  type: 'Actionbar',
+  name: 'profilePageActionbar',
+  state: { ... }
+});
+```
+
+Naming the components this way will allow the user to quickly identify during test generation and execution which actionbar state/actions we are currently caring about.  This naming style matches very closely with the children naming conventions that we will talk about next.
 
 ### Children Names
 
@@ -161,6 +233,8 @@ Similar to the component type, the name should be
 ## Actions
 
 ## Events
+
+## Expected State
 
 ## Reusable Components
 
