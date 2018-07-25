@@ -80,14 +80,14 @@ This section will go into the details of names for your component's type, as wel
 
 Component type values should reflect directly back to the html they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language.
 
-For example:
+Example:
 
 If the component is modeling a file `home-page.html`
 The type for that component should be `type: 'HomePage'`.
 
 In the case where multiple components comprise the same view, types should follow the naming you used for the files, following the standards in the `File Structure` section of this document.
 
-For example: 
+Example: 
 
 ```
 - components
@@ -104,7 +104,7 @@ For example:
 
 Many times when looking at a html file structure, files will have simple names such as `actionbar.html` or `index.html`. This would end up having multiple components with the same `type`, which isn't allowed in Simulato.  In this situation prepending the folder names allows to create unique `type` values, as multiple files of the same name are not allowed in a folder.
 
-For example:
+Example:
 
 System File Structure
 
@@ -154,7 +154,7 @@ As a standard, names should be written in camelCase, to distinguish them from ty
 
 When a component, and therefore a view, is only used once for the system the name can simply be the component's type, but in camelCase.
 
-For example:
+Example:
 
 ```
 - app
@@ -182,7 +182,7 @@ When looking at a more modern approach to front end design, many views are reusa
 
 However, reusable views don't have to be called within other views, a specific view could be part of multiple routes, or just loaded in tandem with other views. When this is the case we want to have a clear naming convention so we know where the view is being used, and has a different name when the view is called elsewhere.
 
-For Example:
+Example:
 
 ```
 - app
@@ -222,13 +222,168 @@ expectedState.createAndAddComponent({
 });
 ```
 
-Naming the components this way will allow the user to quickly identify during test generation and execution which actionbar state/actions we are currently caring about.  This naming style matches very closely with the children naming conventions that we will talk about next.
+This naming style matches very closely with the children naming conventions that we will talk about next.
 
 ### Children Names
+
+This section will specifically go over the best naming practices for children, the standards for the rest of children in the `children` section below.
+
+When adding children into a component, they are normally a reusable type component being added. When this is the case the standard is to prepend the the current component's name to the name you would normally name a base component (following the standard above).  Naming the components this way will allow the user to quickly identify during test generation and execution which actionbar state/actions we are currently caring about.
+
+Example:
+
+Let's say a home page view calls a text input view, this view is somewhere else in the system and has a corresponding component already created. Inside the home page component we would see the following
+
+```
+type: 'HomePage',
+elements () {
+  return [ ... ];
+},
+model () {
+  return { ... };
+},
+actions () {
+  return { ... }
+},
+children () {
+  return [ ... ];
+}
+```
+
+The home page model has `type: 'HomePage'`, and following standards the name should be `name: 'homePage'`.
+We want to add the TextInput component into the children section of the model. Assuming it has the `type: 'TextInput'`, we would want to prepend our current name `homePage` to the name we would give TextInput, `textInput`.  However since we do not specifically know what name will be given to any given component when it's added to the expected state, we want to avoid prepending any hard coded values. The components `this` context comes in to help out (specifics about `this` can be found [here](#this)). Inside the `this` context we have access to the name property, that is the name this component was given during its creation. Using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), we can easily create a name for the child using the prepended components name.
+
+Remember to keep the standard of using camelCase, creating the following child:
+
+```
+children () {
+  return [
+    {
+      type: 'TextInput',
+      name: `${this.name}TextInput`,
+      state: { ... }
+    }
+  ];
+}
+```
+
+In our specific example it will create the name `homePageTextInput`.  It's important to use the this context to create the children name, as many times in a hierarchical view structure, a child can go on to its own children components, which in turn could make more children components. By always prepending `${this.name}` it will allow each child to have unique names, and correspond back to the parent component that originally created them.
+
+Example:
+
+Lets again assume we have our home page view, however this time it calls a Form as well as the TextInput. We have the following form component, which in itself calls a TextInput.
+
+```
+type: 'Form',
+elements () {
+  return [ ... ];
+},
+model () {
+  return { ... };
+},
+actions () {
+  return { ... }
+},
+children () {
+  return [
+    {
+      type: 'TextInput',
+      name: `${this.name}TextInput`,
+      state: { ... }
+    }
+  ];
+}
+```
+
+We will call the Form component in our home page:
+
+```
+type: 'HomePage',
+elements () {
+  return [ ... ];
+},
+model () {
+  return { ... };
+},
+actions () {
+  return { ... }
+},
+children () {
+  return [
+    {
+      type: 'TextInput',
+      name: `${this.name}TextInput`,
+      state: { ... }
+    },
+    {
+      type: 'Form',
+      name: `${this.name}Form`,
+      state: { ... }
+    }
+  ];
+}
+```
+
+This will create the Form component with the name `homePageForm`, as well as the TextInput component with the name `homePageTextInput`. In addition the newly created Form component will create its child, TextInput. Because of always using `this.name` when creating our children, the Form's TextInput will have the name `homePageFormTextInput`.
+
+This example shows two important concepts:
+
+One, if we were hard coding the name for TextInput inside homepage it would technically work assuming home page was only ever added to the expected state once.  However, the TextInput child inside form, if harded coded to `homePageFormTextInput` would only work for the home page child, if this form was added in any other component, lets' say `profilePage`, we wouldn't want the profile page to create a form, that creates a Textinput to have the name `homePageFormTextInput`, but rather `profilePageFormTextInput`. 
+
+Two, if names are hard coded we could easily end up accidentally adding two components of the same name to the expected state. Following with the `TextInput` example, if the names were always just `textInput`, when the form's TextInput was added both the home page's TextInput and form's TextInput would have the same name.
+
+Sometimes just prepending `this.name` isn't enough to create a unique name. Lets say our Form component is a form that asks for a users first and last name.  Each field in the form is a basic TextInput component that can be added as children. This means the form component will have two children of `type: 'TextInput'`.  We cannot just give both the name `${this.name}TextInput` as we would run into the problem of two components added to the expected state with the same name. To solve this issue we can add some context about the text input into the name.  This context doesn't have a hard standard, but use your best judgement to keep it simple and clear. 
+
+Example: 
+
+Let's assume the form has two inputs, First Name, and Last name, solution to our unique naming problem is simply adding FirstName and LastName into the components name.
+
+```
+type: 'Form',
+elements () {
+  return [ ... ];
+},
+model () {
+  return { ... };
+},
+actions () {
+  return { ... }
+},
+children () {
+  return [
+    {
+      type: 'TextInput',
+      name: `${this.name}FirstNameTextInput`,
+      state: { ... }
+    },
+    {
+      type: 'TextInput',
+      name: `${this.name}LastNameTextInput`,
+      state: { ... }
+    }
+  ];
+}
+```
+
+If this form was still being called by our home page component, the final names would be `homePageFormFirstNameTextInput` and `homePageFormLastNameTextInput`.  While using this name convention names can start to get long if children create children create children, it will ensure there are unique names and they are grouped together.
+
+At some point, continuing to prepend `this.name` to component's name may lose its value.  Either the name has gone to long and is hard to understand, or you went through a certain section of your UI far enough you are on a new unique page.  It is ok to remove the `this.name` of part of a component at some point and start over with a new base name. Many times these base names are used when a new view is navigated two, and isn't rendered as part of a parent view.
+
+For example, let's assume we have a login page component, which calls our form component with the two text inputs. After I fill out the forms text inputs, a button on the login page becomes enabled that I can then click. If clicking the button navigates us to our home page, that is, the effects of clicking the submit button navigates me to home page.  Inside the effects for that action, I want to add the `HomePage` component to the expected state.  If I were to follow the guide above, it would have the name `loginPageHomePage` which isn't very valuable for a name.  That is, I wouldn't gain value propagating `this.name` through to the home page component. Instead when adding the `HomePage` component to the expected state, I can just give it the name `homePage`.
+
+As a rule of thumb, propagate `this.name` down through children, but when adding in 'base' view components, start with a fresh name.
+
+## This Context
+
+## Entry Components
 
 ## Elements
 
 ## Model
+
+## Children
+
+With the growing popularity of reusable components, many sites are set up with a hierarchical view tree. A home page could call mutiple views such as the left sidebar, or the top actionbar, which in turn those views could call numerous links and buttons. To continue with out standard of mimicing the html structure with our components as closly as possible, children can be added into a component. 
 
 ## Actions
 
