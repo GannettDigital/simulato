@@ -148,6 +148,26 @@ The types from top to bottom would be the following
 
 Continue moving up the the folder structure until you can satisfy creating a unique `type` value.
 
+As you create components, you might want to create some that don't follow exactly with the system under test.  Maybe you see a pattern of views using plain html text inputs, or a checkboxes frequently. Instead of having to model them in each view, you want to create a reusable component you can just call as a child to reduce model development time.  There is also your entry component, the component that navigates into your system (usually just one). For these types of models, that don't relate one to one with a view of the system, they should be placed in folders outside file structure you are copying, but still under the components folder.
+
+```
+- components
+  - views
+    - home
+      index.model.js
+      actionbar.model.js
+    - profile
+      index.model.js
+      actionbar.model.js
+    - login
+      index.model.js
+  - entry
+    - entryComponent.model.js
+  - base-html
+    - textInput.model.js
+    - checkBox.model.js
+```
+
 ### Component Name
 
 As a standard, names should be written in camelCase, to distinguish them from type. Similar to the component type being related to the HTML file, a given component's name should be related to that component's type. 
@@ -373,9 +393,55 @@ For example, let's assume we have a login page component, which calls our form c
 
 As a rule of thumb, propagate `this.name` down through children, but when adding in 'base' view components, start with a fresh name.
 
-## This Context
-
 ## Entry Components
+
+Normally all components added to the expected state happens during action effects, or as children, but the first component needs to be added into the state automatically so Simulato knows where to start test generation and execution.  To run Simulato tests, at least one entry component is needed. This component contains a specific property tells Simulato it is an entry component.
+
+The type for component can be as simple as 'Entry' if you only have one entry component, or something more specific as needed.
+
+Example: 
+
+```
+type: 'NavigateToSite',
+entryComponent: {
+    name: 'navigateToSite',
+    state: {}
+},
+elements () {
+  return [];
+},
+model () {
+  return {};
+},
+actions () {
+  return {
+    NAVIGATE_TO_SITE: {
+      perform (callback) {
+        driver.get('http://www.siteUnderTest.com')
+          .then(callback, callback)
+      },
+      effects (expectedState) {
+        expectedState.clear();
+        expectedState.createAndAddComponent({
+          type: 'LoginPage',
+          name: 'loginPage',
+          state: { ... }
+        });
+      }
+    }
+  }
+}
+```
+
+As seen above, when an entry component is created the entryComponent property is added to the component. This simply gives it the name it should be created with, as well as the state it should expect. For most entry components the elements and model will simply return an empty array and object, which will me the entryComponent.state will be an empty object.  The reason they are empty is there is nothing we currently expect to be present in the UI, nothing that needs to be modeled, we are simply making an action with no preconditions, that opens the browser and navigate to a page.  Note that even though the elements and model returns an empty array and object, they can not be removed from the component as all components need a type, elements, model, and actions property.
+
+Inside the effects of our navigation we call expectedState.clear(), this will removed the entry component itself from the expected state that simulato automatically added, if we fail to call expectedState.clear() this component will be part of the expected state for the entire test run.
+
+## this Context
+
+`this` context in javascript behaves slightly differently then other languages and can be read about [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this).  Inside simulato, when a component is created to be put into the expected state it will call `Object.create()` passing in the base component that is module.exported from a component file. It then sets some properties to the newly created component based on the values passed in during creation. These values are: `type`, `name`, `options`, and `dynamicarea`. It will then run the following functions in order: elements(), model(), actions(), events(), children().  As these functions are part of the newly created components object, the `this` context inside each of those functions is the component itself. This provides you access to the `name`, `type`, `options`, and `dynamicArea` properties of the component. Since the functions run in a specific order, you are able to see `this.elements` inside the model, but you would be unable to see `this.actions` inside the model. Children is specifically run last in order for you leverage events if needed.
+
+### this.Options
 
 ## Elements
 
