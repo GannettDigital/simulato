@@ -1,52 +1,20 @@
 'use strict';
 
 module.exports = {
-  type: 'MainSiteLayout',
+  type: 'NewsSourceTab',
   elements() {
     return [
-      {
-        name: 'headerRow',
-        selector: {
-          type: 'getElementById',
-          value: 'siteHeader',
-        },
-      },
-      {
-        name: 'storyButton',
-        selector: {
-          type: 'getElementById',
-          value: 'createStoryButton',
-        }
-      },
-      {
-        name: ''
-      }
     ];
-
+    
   },
   model() {
     return {
-      displayed: 'headerRow.isDisplayed',
-      createStoryButton: 'storyButton.isDisplayed'
     };
   },
   actions() {
-    return {
-      CLICK_CREATE_STORY_BUTTON:
-      {
-        preconditions(){
-
-        },
-        perform(callback){
-
-        },
-        effects(expectedState){
-          
-        }
-      }
-    };
+    return {};
   },
-  children(expectedState, dataStore) {
+  chidlren(){
     return [
       {
         type: 'NewsArticle',
@@ -90,6 +58,6 @@ module.exports = {
           newsArticleId: 'article2',
         },
       },
-    ];
-  },
+    ]
+  }
 };
