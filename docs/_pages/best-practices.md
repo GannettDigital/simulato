@@ -441,7 +441,17 @@ Inside the effects of our navigation we call expectedState.clear(), this will re
 
 `this` context in javascript behaves slightly differently then other languages and can be read about [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this).  Inside simulato, when a component is created to be put into the expected state it will call `Object.create()` passing in the base component that is module.exported from a component file. It then sets some properties to the newly created component based on the values passed in during creation. These values are: `type`, `name`, `options`, and `dynamicarea`. It will then run the following functions in order: elements(), model(), actions(), events(), children().  As these functions are part of the newly created components object, the `this` context inside each of those functions is the component itself. This provides you access to the `name`, `type`, `options`, and `dynamicArea` properties of the component. Since the functions run in a specific order, you are able to see `this.elements` inside the model, but you would be unable to see `this.actions` inside the model. Children is specifically run last in order for you leverage events if needed.
 
+`this.name`, `this.options`, and `this.dynamicarea` and the 3 important values that can be leveraged while creating logic for either creating components, or adding effects in your components. `this.name` should be used when wanting to modify yourself with `expectedState.modify(this.name, (component) => { ... })`, as well as used with all the naming standards stated above.  `this.dynamicarea` is useful when creating and adding components and wanting to know which dynamicarea's the current component has. Note: When creating children the parent component's dynamic areas are auto assigned to the child, however when creating and adding, or specifically specify dynamic areas to a child will only use provided dynamic areas. More of this will be covered in the dynamic area section. `this.options` is detailed below.
+
 ### this.Options
+
+`this.options` is the object passed in by a user when an component is created and added to the expected state. If no options are provided, a empty object is provided to the `this` context. The options object is provided to the end user as a place to pass in anything they find useful for the component they are creating.  Some common use casses are provided below.
+
+Passing in a selector value for a reusable component:
+
+Passing in data to be used in an action:
+
+Passing in flags to control logic inside the component:
 
 ## Elements
 
