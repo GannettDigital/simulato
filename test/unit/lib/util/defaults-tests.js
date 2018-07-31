@@ -15,10 +15,10 @@ describe('lib/util/defaults.js', function() {
     mockery.disable();
   });
 
-  it('should export 9 items on an object', function() {
+  it('should export 10 items on an object', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
-    expect(Object.getOwnPropertyNames(defaults).length).to.equal(9);
+    expect(Object.getOwnPropertyNames(defaults).length).to.equal(10);
   });
 
   it('should have the property \'componentPath\' with the default value', function() {
@@ -39,22 +39,22 @@ describe('lib/util/defaults.js', function() {
     expect(defaults.testPath).to.equal(`${process.cwd()}/tests`);
   });
 
-  it('should have the property \'reportPath\' with the default value', function() {
+  it('should have the property \'configFile\' with the default value', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
-    expect(defaults.reportPath).to.equal(`${process.cwd()}/reports`);
-  });
-
-  it('should have the property \'technique\' with the default value', function() {
-    let defaults = require('../../../../lib/util/defaults.js');
-
-    expect(defaults.technique).to.equal('actionFocused');
+    expect(defaults.configFile).to.equal(`${process.cwd()}/simulato-config.js`);
   });
 
   it('should have the property \'reporter\' with the default value', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
     expect(defaults.reporter).to.equal('basic');
+  });
+
+  it('should have the property \'reportFormat\' with the default value', function() {
+    let defaults = require('../../../../lib/util/defaults.js');
+
+    expect(defaults.reportFormat).to.equal('JSON');
   });
 
   it('should have the property \'parallelism\' with the default value', function() {
@@ -73,5 +73,11 @@ describe('lib/util/defaults.js', function() {
     let defaults = require('../../../../lib/util/defaults.js');
 
     expect(defaults.rerunFailedTests).to.equal(0);
+  });
+
+  it('should have the property \'plannerAlgorithm\' with the default value', function() {
+    let defaults = require('../../../../lib/util/defaults.js');
+
+    expect(defaults.plannerAlgorithm).to.equal('forwardStateSpaceSearchHeuristic');
   });
 });

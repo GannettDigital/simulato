@@ -66,7 +66,7 @@ Create a directory for your project. Within, include the directories 'tests' and
 }
 ```
 
-You will also need a file named config.js with the following:
+You will also need a file named simulato-config.js with the following:
 
 ```js
 'use strict';
@@ -75,14 +75,14 @@ module.exports = {
   testPath: 'tests',
   components: 'components',
   outputPath: 'tests',
-  technique: 'actionFocused',
+  plannerAlgorithm: `forwardStateSpaceSearchHeuristic`,
 };
 ```
 
 
 Once created your directory should look like this:
 
-  config.js
+  simulato-config.js
   package.json
   - tests
   - components

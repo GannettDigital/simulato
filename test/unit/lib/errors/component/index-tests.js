@@ -35,7 +35,7 @@ describe('lib/errors/component/index.js', function() {
   });
 
   it('should export 5 items on an object', function() {
-    let result = require('../../../../../lib/errors/component');
+    let result = require('../../../../../lib/errors/component/index.js');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(5);
   });

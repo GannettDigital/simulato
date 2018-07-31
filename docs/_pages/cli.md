@@ -19,9 +19,10 @@ This section details the different commands used in the CLI. All passed in CLI o
         * Path to components
         * Example: `-c ./my-components-folder`
     * `-r`, `--reporter`
-        * Specify a reporter to use. Either `basic` or `teamcity` 
+        * Specify a reporter to use
         * Default is `basic`
-        * Example: `-r teamcity`
+        * Values Allowed: `basic`
+        * Example: `-r basic`
     * `-s`, `--saucelabs`
         * Flag for running tests in saucelabs. A sauce tunnel will be started
         * Must have `SAUCE_USERNAME` AND `SAUCE_ACCESS_KEY` specified
@@ -33,6 +34,11 @@ This section details the different commands used in the CLI. All passed in CLI o
     * `-R`, `--reportPath`
         * The path wherein to write the test report
         * Example: `-o ./my-reports`
+    * `-J`, `--reportFormat`
+        * The format in which to write the test reports in
+        * Default is `JSON`
+        * Values Allowed: `JSON`
+        * Example: `-J JSON`
     * `-b`, `--before`
         * The path to a before script run before the test suite
         * Must be a valid JavaScript file that exports a single function
@@ -70,13 +76,13 @@ This section details the different commands used in the CLI. All passed in CLI o
         * The path wherein to write the generated test cases
         * Default is the current working directory
         * Example `-o ./tests` 
-    * `-t`, `--technique` **required**
-        * The test generation technique
-        * The only and required option at this point is `actionFocused`
-        * Example: `-t actionFocused`
     * `-a`, `--actionToCover`
         *  The single action to generate a test to cover
         *  Example: `-a myComponent.MY_ACTION`
     * `-f`, `--configFile`
         * Path to configFile
         * Example: `-f ./config.js`
+    * `-A`, `--plannerAlgorithm`
+        * The algorithm to use when the planner generates tests
+        * Supported algorithms: `forwardStateSpaceSearchHeuristic`
+        * Example: `-A forwardStateSpaceSearchHeuristic`

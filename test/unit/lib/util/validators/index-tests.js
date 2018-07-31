@@ -12,6 +12,7 @@ describe('lib/util/validators/index.js', function() {
     let validateEvents;
     let validateChildren;
     let validateActions;
+    let validateConfig;
 
     beforeEach(function() {
         mockery.enable({useCleanCache: true});
@@ -28,6 +29,9 @@ describe('lib/util/validators/index.js', function() {
         validateActions = {
             validate: sinon.stub(),
         };
+        validateConfig = {
+            validate: sinon.stub(),
+        };
 
         mockery.registerMock('./validate-elements.js', validateElements);
         mockery.registerMock('./validate-model.js', validateModel);
@@ -36,6 +40,7 @@ describe('lib/util/validators/index.js', function() {
         mockery.registerMock('./validate-events.js', validateEvents);
         mockery.registerMock('./validate-children.js', validateChildren);
         mockery.registerMock('./validate-actions.js', validateActions);
+        mockery.registerMock('./validate-config.js', validateConfig);
     });
 
     afterEach(function() {
@@ -44,10 +49,10 @@ describe('lib/util/validators/index.js', function() {
         mockery.disable();
     });
 
-    it('should export 7 items on an object', function() {
+    it('should export 8 items on an object', function() {
         let result = require('../../../../../lib/util/validators/index.js');
 
-        expect(Object.getOwnPropertyNames(result).length).to.equal(7);
+        expect(Object.getOwnPropertyNames(result).length).to.equal(8);
     });
 
     it('should have the property \'validateElements\' with the value from requiring'
@@ -97,5 +102,12 @@ describe('lib/util/validators/index.js', function() {
         let result = require('../../../../../lib/util/validators/index.js');
 
         expect(result.validateActions).to.deep.equal(validateActions.validate);
+    });
+
+    it('should have the property \'validateConfig\' with the value from requiring'
+        + ' \'./validate-config.js\'.validate', function() {
+        let result = require('../../../../../lib/util/validators/index.js');
+
+        expect(result.validateConfig).to.deep.equal(validateConfig.validate);
     });
 });

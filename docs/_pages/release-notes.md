@@ -4,6 +4,39 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 ---
 
+## 0.6.1
+
+* Brian Fitzpatrick
+  * Added popping and pushing components/states by dynamic areas
+
+* Tom Dale
+  * Added ability to specify report formats
+    * Supported flags: 'JSON'
+    * Defaults to JSON
+  * Added ability for test runner to use reporter flag
+    * Supported flags: 'basic'
+    * Defaults to basic
+
+## 0.6.0
+
+* Tom Dale
+  * Added the cli/config command for debug and debugPort
+  * Child processes can be spawned with --inspect-brk
+  * Ports are auto assigned based on availability
+  * Starting Port can be specified
+  * Added new config scheme
+    * cli/config/default propertys are all merged to one config
+    * config is processed once at start, and availble throughout the program
+    * config is validated on creation
+
+* Scott Gunther
+  * Added parent event emiiters
+    * Events bubble up
+  * Updated files to use new event emitters
+
+* Brian Fitzpatrick
+  * Added ability to add mutiple dynamic areas to a single component
+
 ## 0.5.2
 
 * Tom Dale

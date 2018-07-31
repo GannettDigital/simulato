@@ -19,6 +19,7 @@ program
     .option('-s, --saucelabs', 'Run tests in the saucelabs')
     .option('-p, --parallelism <parallelism>', 'Amount of tests to run in parallel', Number.parseInt)
     .option('-R, --reportPath [path]', 'The path to write the test result report to')
+    .option('-J, --reportFormat <type>', 'The format in which to write the test reports in')
     .option('-b, --before <path>', 'The path to the before script')
     .option('-f, --configFile <path>', 'The path to the config file')
     .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
@@ -32,7 +33,7 @@ program
     .option('-c, --componentPath <componentPath>', 'the path to the components')
     .option('-o, --outputPath <path>', 'The path to write the generated test cases to')
     .option('-a, --actionToCover <action>', 'The action to generate a test for. Specfied as component.ACTION_NAME')
-    .option('-t, --technique <technique>', 'The test generation technique')
+    .option('-A, --plannerAlgorithm <algorithm>', 'The algorithm for the planner to use')
     .option('-f, --configFile <path>', 'The path to the config file')
     .action(configHandler.createConfig);
 

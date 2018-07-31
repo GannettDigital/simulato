@@ -8,6 +8,7 @@ describe('lib/planner/start-nodes.js', function() {
     describe('on file require', function() {
         let Emitter;
         let startNodes;
+        let plannerEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
@@ -16,12 +17,13 @@ describe('lib/planner/start-nodes.js', function() {
             Emitter = {
                 mixIn: function(myObject) {
                     myObject.emitAsync = sinon.stub();
-                    myObject.runOn = sinon.stub();
                 },
             };
             sinon.spy(Emitter, 'mixIn');
+            plannerEventDispatch = sinon.stub();
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
         });
 
         afterEach(function() {
@@ -30,22 +32,13 @@ describe('lib/planner/start-nodes.js', function() {
             mockery.disable();
         });
 
-        it('should Emitter.mixIn once with startNodes as the parameter', function() {
+        it('should Emitter.mixIn once with startNodes and plannerEventDispatch as parameters', function() {
             startNodes = require('../../../../lib/planner/start-nodes.js');
 
             expect(Emitter.mixIn.args).to.deep.equal([
-                [startNodes],
-            ]);
-        });
-
-        it('should call startNodes.runOn once with the event \'startNodes.get\' ' +
-            'and startNodes.get', function() {
-            startNodes = require('../../../../lib/planner/start-nodes.js');
-
-            expect(startNodes.runOn.args).to.deep.equal([
                 [
-                    'startNodes.get',
-                    startNodes.get,
+                    startNodes,
+                    plannerEventDispatch,
                 ],
             ]);
         });
@@ -67,7 +60,6 @@ describe('lib/planner/start-nodes.js', function() {
             Emitter = {
                 mixIn: function(myObject) {
                     myObject.emitAsync = sinon.stub();
-                    myObject.runOn = sinon.stub();
                 },
             };
             sinon.spy(Emitter, 'mixIn');
@@ -120,6 +112,7 @@ describe('lib/planner/start-nodes.js', function() {
             };
 
             mockery.registerMock('../util/emitter.js', Emitter);
+            mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', {});
 
             startNodes = require('../../../../lib/planner/start-nodes.js');
         });
@@ -131,14 +124,14 @@ describe('lib/planner/start-nodes.js', function() {
             mockery.disable();
         });
 
-        it('should call startNodes.emitAsync with the event \'startNodes.getComponents\' and next', function() {
+        it('should call startNodes.emitAsync with the event \'componentHandler.getComponents\' and next', function() {
             let generator = startNodes.get(callback);
 
             generator.next();
             generator.next(next);
 
             expect(startNodes.emitAsync.args[0]).to.deep.equal([
-                'startNodes.getComponents',
+                'componentHandler.getComponents',
                 next,
             ]);
         });
@@ -181,7 +174,7 @@ describe('lib/planner/start-nodes.js', function() {
         });
 
         describe('for each entry component', function() {
-            it('should call startNodes.emitAsync with the event \'startNodes.createSearchNode\', and empty set, ' +
+            it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
                 ' and next', function() {
                 let generator = startNodes.get(callback);
 
@@ -190,7 +183,7 @@ describe('lib/planner/start-nodes.js', function() {
                 generator.next(components);
 
                 expect(startNodes.emitAsync.args[1]).to.deep.equal([
-                    'startNodes.createSearchNode',
+                    'searchNode.create',
                     new Set(),
                     next,
                 ]);
@@ -245,7 +238,7 @@ describe('lib/planner/start-nodes.js', function() {
                 ]);
             });
 
-            it('should calll startNodes.emitAsync with the event \'startNodes.getPossibleActions\', ' +
+            it('should calll startNodes.emitAsync with the event \'possibleActions.get\', ' +
                 ' node, and next', function() {
                 let generator = startNodes.get(callback);
 
@@ -255,14 +248,14 @@ describe('lib/planner/start-nodes.js', function() {
                 generator.next(node);
 
                 expect(startNodes.emitAsync.args[2]).to.deep.equal([
-                    'startNodes.getPossibleActions',
+                    'possibleActions.get',
                     node,
                     next,
                 ]);
             });
 
             it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
-                'with the event \'startNodes.getPossibleActions\'', function() {
+                'with the event \'possibleActions.get\'', function() {
                 let generator = startNodes.get(callback);
                 let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
@@ -276,7 +269,7 @@ describe('lib/planner/start-nodes.js', function() {
             });
 
             it('should set node.allActions to the returned allActions from yielding to startNodes.emitAsync with the ' +
-                'event \'startNodes.getPossibleActions\'', function() {
+                'event \'possibleActions.get\'', function() {
                 let generator = startNodes.get(callback);
                 let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
 

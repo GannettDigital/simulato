@@ -6,23 +6,25 @@ const expect = require('chai').expect;
 
 describe('lib/executor/state-compare.js', function() {
   describe('on file being required', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
+    let executorEventDispatch;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
     });
 
     afterEach(function() {
@@ -31,10 +33,15 @@ describe('lib/executor/state-compare.js', function() {
       mockery.disable();
     });
 
-    it('should set the object prototype of stateCompare to a new EventEmitter', function() {
+    it('should call Emitter.mixIn with stateCompare and executorEventDispatch', function() {
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
-      expect(Object.getPrototypeOf(stateCompare)).to.deep.equal(EventEmitterInstance);
+      expect(Emitter.mixIn.args).to.deep.equal([
+          [
+              stateCompare,
+              executorEventDispatch,
+          ],
+      ]);
     });
 
     it('should call stateCompare.on with stateCompare.findDrifference and stateCompare._findDrifference', function() {
@@ -161,8 +168,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('printDifference', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let samplePageState;
     let sampleExpectedState;
@@ -200,15 +206,18 @@ describe('lib/executor/state-compare.js', function() {
         },
       };
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
+
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -339,8 +348,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_findDifference', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let _;
     let callback;
@@ -351,12 +359,13 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         transform: sinon.stub(),
@@ -388,8 +397,9 @@ describe('lib/executor/state-compare.js', function() {
         },
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -492,8 +502,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printKeys', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let sampleDifference;
 
@@ -501,12 +510,13 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       sampleDifference = {
         key1: 'value1',
@@ -514,8 +524,9 @@ describe('lib/executor/state-compare.js', function() {
 
       sampleDifference.hasOwnProperty = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -552,8 +563,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printKey', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let _;
 
@@ -561,19 +571,21 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -715,8 +727,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_handleDifferenceArrayValue', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let _;
 
@@ -724,19 +735,21 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -891,8 +904,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_handleDifferenceObjectValue', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let _;
 
@@ -900,19 +912,21 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -1064,8 +1078,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printChild', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
     let baseString;
@@ -1075,19 +1088,21 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -1267,8 +1282,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printStartOfArray', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
 
@@ -1276,15 +1290,17 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
@@ -1339,8 +1355,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printArrayElements', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
 
@@ -1348,17 +1363,19 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       colorFunc = sinon.stub();
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -1383,8 +1400,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printEndOfArray', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
 
@@ -1392,18 +1408,20 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
       stateCompare._indent = sinon.stub();
@@ -1448,8 +1466,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printStartOfObject', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
 
@@ -1457,15 +1474,17 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
       stateCompare._indent = sinon.stub();
@@ -1528,8 +1547,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printObjectKeyValues', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
     let sampleObject;
@@ -1538,12 +1556,13 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       colorFunc = sinon.stub();
 
@@ -1553,8 +1572,9 @@ describe('lib/executor/state-compare.js', function() {
         hasOwnProperty: sinon.stub(),
       };
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -1592,8 +1612,7 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printEndOfObject', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
     let colorFunc;
 
@@ -1601,18 +1620,20 @@ describe('lib/executor/state-compare.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
       stateCompare._indent = sinon.stub();
@@ -1657,23 +1678,24 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_indent', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -1708,23 +1730,24 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printRed', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });
@@ -1745,23 +1768,24 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printGreen', function() {
-    let EventEmitter;
-    let EventEmitterInstance;
+    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/state-compare.js');
 
-      EventEmitter = sinon.stub();
-      EventEmitterInstance = {
-        emit: sinon.stub(),
-        on: sinon.stub(),
+      Emitter = {
+        mixIn: function(myObject) {
+            myObject.on = sinon.stub();
+            myObject.emit = sinon.stub();
+        },
       };
-      EventEmitter.returns(EventEmitterInstance);
+      sinon.spy(Emitter, 'mixIn');
 
-      mockery.registerMock('events', {EventEmitter});
+      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       stateCompare = require('../../../../lib/executor/state-compare.js');
     });

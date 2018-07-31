@@ -6,24 +6,27 @@ const expect = require('chai').expect;
 
 describe('lib/executor/execute-test-case.js', function() {
     describe('on file being required', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let executeTestCase;
+        let executorEventDispatch;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
+            executorEventDispatch = sinon.stub();
 
             mockery.registerMock('selenium-webdriver', {});
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('../util/config-handler.js', {});
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
         });
 
         afterEach(function() {
@@ -32,16 +35,20 @@ describe('lib/executor/execute-test-case.js', function() {
             mockery.disable();
         });
 
-        it('should set the object prototype of assertionHandler to a new EventEmitter', function() {
+        it('should call Emitter.mixIn with executeTestCase and executorEventDispatch', function() {
             executeTestCase = require('../../../../lib/executor/execute-test-case.js');
 
-            expect(Object.getPrototypeOf(executeTestCase)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    executeTestCase,
+                    executorEventDispatch,
+                ],
+            ]);
         });
     });
 
     describe('configure', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let testPath;
         let webdriver;
         let executeTestCase;
@@ -52,12 +59,13 @@ describe('lib/executor/execute-test-case.js', function() {
             mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
 
             testPath = '/tests/my-test-case.js';
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.on = sinon.stub();
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             webdriver = {
                 By: sinon.stub(),
                 until: sinon.stub(),
@@ -68,9 +76,10 @@ describe('lib/executor/execute-test-case.js', function() {
             };
 
             mockery.registerMock('selenium-webdriver', webdriver);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../util/emitter.js', Emitter);
             mockery.registerMock('/tests/my-test-case.js', 'testCase');
             mockery.registerMock('../util/config-handler.js', configHandler);
+            mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
             executeTestCase = require('../../../../lib/executor/execute-test-case.js');
         });
@@ -162,14 +171,14 @@ describe('lib/executor/execute-test-case.js', function() {
             expect(configHandler.get.args[0]).to.deep.equal(['componentPath']);
         });
 
-        it('should call executeTestCase.emit with the event \'executeTestCase.loadComponents\' ' +
+        it('should call executeTestCase.emit with the event \'componentHandler.configure\' ' +
             'and configs componentPath as parmeters', function() {
             configHandler.get.returns('/my/components');
 
             executeTestCase.configure(testPath);
 
             expect(executeTestCase.emit.args[0]).to.deep.equal([
-                'executeTestCase.loadComponents',
+                'componentHandler.configure',
                 '/my/components',
             ]);
         });

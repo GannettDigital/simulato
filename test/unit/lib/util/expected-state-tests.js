@@ -7,22 +7,25 @@ const expect = require('chai').expect;
 describe('lib/util/expected-state.js', function() {
     describe('on file being required', function() {
         let expectedState;
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
+        let globalEventDispatch;
 
         beforeEach(function() {
           mockery.enable({useCleanCache: true});
           mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-          EventEmitter = sinon.stub();
-          EventEmitterInstance = {
-            emit: sinon.stub(),
-            on: sinon.stub(),
+          Emitter = {
+            mixIn: function(myObject) {
+                myObject.emit = sinon.stub();
+            },
           };
-          EventEmitter.returns(EventEmitterInstance);
+          sinon.spy(Emitter, 'mixIn');
+          globalEventDispatch = sinon.stub();
 
-          mockery.registerMock('events', {EventEmitter});
+          mockery.registerMock('./emitter.js', Emitter);
           mockery.registerMock('lodash', {});
+          mockery.registerMock('events', {});
+          mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
         });
 
         afterEach(function() {
@@ -31,14 +34,20 @@ describe('lib/util/expected-state.js', function() {
           mockery.disable();
         });
 
-        it('should set the object prototype of expectedState to a new EventEmitter', function() {
-          expectedState = require('../../../../lib/util/expected-state.js');
+        it('should call Emitter.mixIn with expectedState and globalEventDispatch', function() {
+            expectedState = require('../../../../lib/util/expected-state.js');
 
-          expect(Object.getPrototypeOf(expectedState)).to.deep.equal(EventEmitterInstance);
+            expect(Emitter.mixIn.args).to.deep.equal([
+                [
+                    expectedState,
+                    globalEventDispatch,
+                ],
+            ]);
         });
     });
 
     describe('create', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -48,14 +57,22 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+
+            EventEmitterInstance = sinon.stub();
+            EventEmitter = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             callback = sinon.spy();
         });
@@ -79,6 +96,7 @@ describe('lib/util/expected-state.js', function() {
                 _components: new Map(),
                 _dynamicAreas: new Map(),
                 _stashedDynamicAreas: [],
+                _stashedDynamicAreasComponentsAndStates: new Map(),
                 _stashedComponents: [],
                 eventEmitter: EventEmitterInstance,
                 _dataStore: {},
@@ -93,8 +111,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clone', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let callback;
         let myThis;
@@ -105,12 +122,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
 
             _ = {
                 cloneDeep: sinon.stub(),
@@ -120,20 +137,29 @@ describe('lib/util/expected-state.js', function() {
                 create: sinon.stub(),
                 _components: new Map(),
                 _stashedComponents: [],
+                _stashedStates: [{name: 'test'}],
                 _pageState: {
                     name: 'model',
                 },
                 _stashedDynamicAreas: [],
+                _stashedDynamicAreasComponentsAndStates: new Map(),
             };
             clonedExpectedState = {
                 createAndAddComponent: sinon.stub(),
                 createComponent: sinon.stub(),
+                _stashedDynamicAreasComponentsAndStates: new Map(),
                 _stashedComponents: [],
                 _stashedDynamicAreas: [],
+                _cloneAndAddComponents: sinon.stub(),
+                _cloneStashedComponents: sinon.stub(),
+                _cloneStashedDynamicAreas: sinon.stub(),
+                _cloneStashedDynamicAreasComponentsAndStates: sinon.stub(),
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            mockery.registerMock('events', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -181,53 +207,41 @@ describe('lib/util/expected-state.js', function() {
                 });
             });
 
-            describe('for each component in the expectedState being cloned', function() {
-                it('should call _.deepClone with that components state', function() {
+            it('should call _.deepClone with that components state', function() {
                     myThis._components.set('key', {name: 'test'});
                     myThis._state = {'key': {name: 'test'}};
                     myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
                     expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[1]).to.deep.equal([{name: 'test'}]);
-                });
+                    expect(_.cloneDeep.args[1]).to.deep.equal([[{name: 'test'}]]);
+            });
 
-                it('should call _.deepClone with that components options', function() {
-                    myThis._components.set('key', {name: 'test', options: {option1: 'option1'}});
-                    myThis._state = {'key': {name: 'test'}};
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call _.deepClone with that components options', function() {
+                myThis._components.set('key', {name: 'test'});
+                myThis._state = {'key': {name: 'test'}};
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
-                });
+                expect(_.cloneDeep.args[1]).to.deep.equal([[{name: 'test'}]]);
+            });
 
-                it('should call createAndAddComponent with an object containing: ' +
-                    'component.type, component.name, componentState, and componentOptions', function() {
-                    myThis._components.set(
-                        'key',
-                        {type: 'componentName', name: 'instanceName', dynamicArea: 'myDynamicArea'}
-                    );
-                    myThis._state = {type: 'componentName', name: 'instanceName'};
-                    _.cloneDeep.onCall(1).returns('myComponentState');
-                    _.cloneDeep.onCall(2).returns('myComponentOptions');
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call createAndAddComponent with an object containing: ' +
+                'component.type, component.name, componentState, and componentOptions', function() {
+                myThis._components.set(
+                    'key',
+                    {type: 'componentName', name: 'instanceName', dynamicArea: 'myDynamicArea'}
+                );
+                myThis._state = {type: 'componentName', name: 'instanceName'};
+                myThis._cloneAndAddComponents = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState.createAndAddComponent.args).to.deep.equal(
-                        [
-                            [{
-                                type: 'componentName',
-                                name: 'instanceName',
-                                state: 'myComponentState',
-                                options: 'myComponentOptions',
-                                dynamicArea: 'myDynamicArea',
-                                cloning: true,
-                            }],
-                        ]
-                    );
-                });
+                expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
+                    [myThis._components, myThis._state]
+                );
             });
 
             it('should call _.cloneDeep with the stashedComponents of the expectedState being cloned', function() {
@@ -239,86 +253,73 @@ describe('lib/util/expected-state.js', function() {
                 expect(_.cloneDeep.args[1]).to.deep.equal([['stashedState1', 'stashedState2']]);
             });
 
-            describe('for each stashed component in the expectedState.stashedComponents being cloned', function() {
-                it('should call _.cloneDeep with the stashed components options', function() {
-                    let stashedComponents = new Map();
-                    stashedComponents.set('key', {name: 'stashed1', options: {option1: 'option1'}});
-                    myThis._stashedComponents = [stashedComponents];
-                    clonedExpectedState.createComponent.returns({});
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call _cloneStashedComponents with stashed components', function() {
+                let stashedComponents = new Map();
+                stashedComponents.set('key', {name: 'stashed1', options: {option1: 'option1'}});
+                myThis._stashedComponents = [stashedComponents];
+                clonedExpectedState.createComponent.returns({});
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+                myThis._cloneStashedComponents = sinon.stub();
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(_.cloneDeep.args[2]).to.deep.equal([{option1: 'option1'}]);
-                });
-
-                it('should call clonedState.createComponent with and object containing'
-                    + 'component.type, name, and componentOptions', function() {
-                    let stashedComponents = new Map();
-                    stashedComponents.set(
-                        'stashed1',
-                        {
-                            type: 'componentName',
-                            name: 'stashed1',
-                            options: {option1: 'option1'},
-                            dynamicArea: 'myDynamicArea',
-                        }
-                    );
-                    myThis._stashedComponents = [stashedComponents];
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    clonedExpectedState.createComponent.returns({});
-                    _.cloneDeep.onCall(2).returns('myComponentOptions');
-
-                    expectedState.clone.call(myThis, {}, callback);
-
-                    expect(clonedExpectedState.createComponent.args).to.deep.equal([
-                        [{
-                            type: 'componentName',
-                            name: 'stashed1',
-                            options: 'myComponentOptions',
-                            dynamicArea: 'myDynamicArea',
-                        }],
-                    ]);
-                });
-                it('should call clonedState._stashedComponents.push with the new map of components', function() {
-                    let stashedComponents = new Map();
-                    stashedComponents.set(
-                        'stashed1',
-                        {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
-                    );
-                    myThis._stashedComponents = [stashedComponents];
-                    clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
-                    clonedExpectedState._stashedComponents = {
-                        push: sinon.stub(),
-                    };
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-                    let expectedMap = new Map([['createdComponent', {name: 'createdComponent'}]]);
-
-                    expectedState.clone.call(myThis, {}, callback);
-
-                    expect(clonedExpectedState._stashedComponents.push.args).to.deep.equal([[expectedMap]]);
-                });
+                expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
             });
 
-            describe('for each stashed dynamicArea in this._stashedDynamicAreas', function() {
-                it('should call clonedState._stashedDynamicArea.push with an identical dynamicArea map', function() {
-                    myThis._stashedDynamicAreas = [
-                        new Map([
-                            ['dynamicArea1', new Set(['name1', 'name2'])],
-                            ['dynamicArea2', new Set(['name3', 'name4'])],
-                        ]),
-                    ];
-                    myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+            it('should call clonedState._cloneAndAddComponent with a component', function() {
+                let components = new Map();
+                components.set(
+                    'component1',
+                    {
+                        type: 'componentName',
+                        name: 'comp1',
+                        options: {option1: 'option1'},
+                        dynamicArea: 'myDynamicArea',
+                    }
+                );
+                myThis._components = [components];
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+                _.cloneDeep.onCall(2).returns('myComponentOptions');
+                myThis._cloneAndAddComponents = sinon.stub();
 
-                    expectedState.clone.call(myThis, {}, callback);
+                expectedState.clone.call(myThis, {}, callback);
 
-                    expect(clonedExpectedState._stashedDynamicAreas).to.deep.equal([
-                        new Map([
-                            ['dynamicArea1', new Set(['name1', 'name2'])],
-                            ['dynamicArea2', new Set(['name3', 'name4'])],
-                        ]),
-                    ]);
-                });
+                expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal([[components], undefined]);
+            });
+            it('should call clonedState._cloneStashedComponents with the new map of components', function() {
+                let stashedComponents = new Map();
+                stashedComponents.set(
+                    'stashed1',
+                    {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
+                );
+                myThis._stashedComponents = [stashedComponents];
+                clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
+                clonedExpectedState._cloneStashedComponents = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(clonedExpectedState._cloneStashedComponents.args[0]).to.deep.equal([[stashedComponents]]);
+            });
+
+            it('should call clonedState._cloneStashedDynamicArea with an identical dynamicArea map', function() {
+                myThis._stashedDynamicAreas = [
+                    new Map([
+                        ['dynamicArea1', new Set(['name1', 'name2'])],
+                        ['dynamicArea2', new Set(['name3', 'name4'])],
+                    ]),
+                ];
+                clonedExpectedState._cloneStashedDynamicAreas = sinon.stub();
+                myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+
+                expectedState.clone.call(myThis, {}, callback);
+
+                expect(clonedExpectedState._cloneStashedDynamicAreas.args[0][0]).to.deep.equal([
+                    new Map([
+                        ['dynamicArea1', new Set(['name1', 'name2'])],
+                        ['dynamicArea2', new Set(['name3', 'name4'])],
+                    ]),
+                ]);
             });
 
             it('should call the callback once with the clonedState', function() {
@@ -331,9 +332,382 @@ describe('lib/util/expected-state.js', function() {
         });
     });
 
+    describe('_cloneComponent', function() {
+        let Emitter;
+        let expectedState;
+        let component;
+        let myThis;
+        let _;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+
+            myThis = {
+                createComponent: sinon.stub(),
+            };
+
+            _ = {
+                get: sinon.stub(),
+                cloneDeep: sinon.stub(),
+            };
+
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
+            mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
+            expectedState = require('../../../../lib/util/expected-state.js');
+            expectedState._dataStore = {storedData: 'someData'};
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        it('should call clonedeep with the component options', function() {
+            expectedState._cloneComponent.call(myThis, component);
+
+            expect(_.cloneDeep.args[0][0]).to.deep.equal({option1: 'someOption'});
+        });
+    });
+
+    describe('_cloneAndAddComponents', function() {
+        let Emitter;
+        let expectedState;
+        let component;
+        let myThis;
+        let componentState;
+        let componentMap;
+        let _;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+            componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            myThis = {
+                createAndAddComponent: sinon.stub(),
+            };
+
+            _ = {
+                get: sinon.stub(),
+                cloneDeep: sinon.stub(),
+            };
+
+            componentMap = new Map();
+            componentMap.set('type', component);
+
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
+            mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
+            expectedState = require('../../../../lib/util/expected-state.js');
+            expectedState._dataStore = {storedData: 'someData'};
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should call clone deep with the state and options', function() {
+            expectedState._cloneAndAddComponents.call(myThis, componentMap, componentState);
+
+            expect(_.cloneDeep.args).to.deep.equal([['componentType'], [{'option1': 'someOption'}]]);
+        });
+    });
+
+    describe('_cloneStashedComponents', function() {
+        let Emitter;
+        let expectedState;
+        let component;
+        let myThis;
+        let componentMap;
+        let stashedCompMap;
+        let _;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+
+            myThis = {
+                _stashedComponents:
+                {
+                    push: sinon.stub(),
+                },
+                _cloneComponent: sinon.stub().returns(component),
+                _cloneStashedComponents: sinon.stub(),
+            };
+
+
+            componentMap = new Map();
+            componentMap.set('instanceName', component);
+
+            stashedCompMap = [componentMap];
+
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
+            mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
+            expectedState = require('../../../../lib/util/expected-state.js');
+            expectedState._dataStore = {storedData: 'someData'};
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should push the cloned stashedComponents as a component map', function() {
+            expectedState._cloneStashedComponents.call(myThis, stashedCompMap);
+
+            expect(myThis._stashedComponents.push.args[0]).to.deep.equal([componentMap]);
+        });
+    });
+
+    describe('_cloneStashedDynamicArea', function() {
+        let Emitter;
+        let expectedState;
+        let component;
+        let myThis;
+        let componentMap;
+        let stashedDynamicAreas;
+        let _;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+
+            myThis = {
+                _stashedDynamicAreas:
+                {
+                    push: sinon.stub(),
+                },
+            };
+
+            componentMap = new Map();
+            componentMap.set('instanceName', new Set([component]));
+
+            stashedDynamicAreas = [componentMap];
+
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
+            mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
+            expectedState = require('../../../../lib/util/expected-state.js');
+            expectedState._dataStore = {storedData: 'someData'};
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should call stashedDynamicArea push with the dynamic area to be stashed', function() {
+            expectedState._cloneStashedDynamicAreas.call(myThis, stashedDynamicAreas);
+
+            expect(myThis._stashedDynamicAreas.push.args[0]).to.deep.equal(stashedDynamicAreas);
+        });
+    });
+
+    describe('_cloneStashedDynamicAreasComponentsAndStates', function() {
+        let Emitter;
+        let expectedState;
+        let component;
+        let myThis;
+        let componentMap;
+        let stateMap;
+        let stashedDynamicAreasComponentsAndStates;
+        let _;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+
+            let componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            componentMap = new Map();
+            componentMap.set('instanceName', component);
+            stateMap = new Map();
+            stateMap.set('instanceName', componentState);
+
+            stashedDynamicAreasComponentsAndStates = new Map();
+            stashedDynamicAreasComponentsAndStates.set('instanceName', {
+                components: componentMap,
+                states: stateMap,
+            });
+
+            myThis = {
+                _stashedDynamicAreasComponentsAndStates:
+                {
+                    set: sinon.stub(),
+                },
+                _cloneComponent: sinon.stub().returns(component),
+            };
+
+            _ = {
+                get: sinon.stub(),
+                cloneDeep: sinon.stub().onFirstCall().returns(componentState),
+            };
+
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
+            mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
+            expectedState = require('../../../../lib/util/expected-state.js');
+            expectedState._dataStore = {storedData: 'someData'};
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should call stashedDynamicArea push with the dynamic area to be stashed', function() {
+            expectedState._cloneStashedDynamicAreasComponentsAndStates
+                .call(myThis, stashedDynamicAreasComponentsAndStates);
+
+            expect(myThis._stashedDynamicAreasComponentsAndStates.set.args[0]).to.deep.equal(
+                ['instanceName',
+                    {
+                        'components': componentMap,
+                        'states': stateMap,
+                    },
+                ]);
+        });
+    });
+
     describe('createComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let component;
         let errorCalled;
@@ -344,12 +718,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
@@ -376,8 +750,11 @@ describe('lib/util/expected-state.js', function() {
                 get: sinon.stub(),
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', _);
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._dataStore = {storedData: 'someData'};
         });
@@ -421,14 +798,14 @@ describe('lib/util/expected-state.js', function() {
             expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
         });
 
-        it('should call expectedState.emit with the event expectedState.getComponent'
+        it('should call expectedState.emit with the event componentHandler.getComponent'
             + ' with the passed in componentConfig.type as first 2 params', function() {
             expectedState.emit = sinon.stub();
 
             expectedState.createComponent(componentConfig);
 
             expect(expectedState.emit.args[0].slice(0, 2)).to.deep.equal([
-                'expectedState.getComponent', 'componentType',
+                'componentHandler.getComponent', 'componentType',
             ]);
         });
 
@@ -534,14 +911,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.elements).to.deep.equal(['myElements']);
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.elementsRecieved', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateElements', ` +
                 `the newComponents.elements the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[1]).to.deep.equal([
-                    'expectedState.elementsReceived',
+                    'validators.validateElements',
                     ['myElements'],
                     'instanceName',
                     'componentType',
@@ -564,14 +941,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.model).to.deep.equal({model: 'modelValue'});
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.modelReceived', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateModel', ` +
             `the newComponents.model the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[2]).to.deep.equal([
-                    'expectedState.modelReceived',
+                    'validators.validateModel',
                     {model: 'modelValue'},
                     'instanceName',
                     'componentType',
@@ -594,14 +971,14 @@ describe('lib/util/expected-state.js', function() {
                 expect(newComponent.actions).to.deep.equal({ACTION_1: 'someAction'});
             });
 
-            it(`should call ExepectedState.emit with the event 'expectedState.actionsReceived', ` +
+            it(`should call ExepectedState.emit with the event 'validators.validateActions', ` +
                 `the newComponents.actions the newComponent.name and the newComponent.type`, function() {
                 expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
                 expectedState.createComponent(componentConfig);
 
                 expect(expectedState.emit.args[3]).to.deep.equal([
-                    'expectedState.actionsReceived',
+                    'validators.validateActions',
                     {ACTION_1: 'someAction'},
                     'instanceName',
                     'componentType',
@@ -653,7 +1030,7 @@ describe('lib/util/expected-state.js', function() {
                     expect(newComponent.events).to.equal('myEvents');
                 });
 
-                it(`should call ExepectedState.emit with the event 'expectedState.eventsReceived', ` +
+                it(`should call ExepectedState.emit with the event 'validators.validateEvents', ` +
                     `the newComponents.events the newComponent.name and the newComponent.type`, function() {
                     let events = sinon.stub().returns('myEvents');
                     component.events = events;
@@ -662,7 +1039,7 @@ describe('lib/util/expected-state.js', function() {
                     expectedState.createComponent(componentConfig);
 
                     expect(expectedState.emit.args[4]).to.deep.equal([
-                        'expectedState.eventsReceived',
+                        'validators.validateEvents',
                         'myEvents',
                         'instanceName',
                         'componentType',
@@ -707,7 +1084,7 @@ describe('lib/util/expected-state.js', function() {
                     expect(newComponent.children).to.equal('myChildren');
                 });
 
-                it('should call ExpectedState.emit with the event \'expectedState.childrenReceived\', ' +
+                it('should call ExpectedState.emit with the event \'validators.validateChildren\', ' +
                     'newComponent.children, name, and componentType', function() {
                     let children = sinon.stub().returns('myChildren');
                     component.children = children;
@@ -716,7 +1093,7 @@ describe('lib/util/expected-state.js', function() {
                     expectedState.createComponent(componentConfig);
 
                     expect(expectedState.emit.args[4]).to.deep.equal([
-                        'expectedState.childrenReceived',
+                        'validators.validateChildren',
                         'myChildren',
                         'instanceName',
                         'componentType',
@@ -748,8 +1125,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('addComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let component;
         let state;
         let expectedState;
@@ -759,14 +1135,17 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             myThis = {
                 _state: {},
@@ -987,8 +1366,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_addToDynamicArea', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -996,17 +1374,19 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 _dynamicAreas: new Map(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             sinon.spy(myThis._dynamicAreas, 'set');
@@ -1126,8 +1506,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_addChildren', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let component;
         let expectedState;
         let myThis;
@@ -1136,18 +1515,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 createComponent: sinon.stub(),
                 addComponent: sinon.stub(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('events', {});
             mockery.registerMock('lodash', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             component = {
                 options: {},
                 children: [],
@@ -1291,8 +1673,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_registerEvents', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1300,19 +1681,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 eventEmitter: {
                     on: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1377,8 +1760,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('_deregisterEvents', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1386,19 +1768,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 eventEmitter: {
                     removeListener: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1464,22 +1848,23 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('createAndAddComponent', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState.createComponent = sinon.stub();
@@ -1522,8 +1907,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('delete', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let myThis;
         let expectedState;
 
@@ -1531,11 +1915,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 getComponent: sinon.stub(),
                 _deregisterEvents: sinon.stub(),
@@ -1544,9 +1929,10 @@ describe('lib/util/expected-state.js', function() {
                 },
                 _state: sinon.stub(),
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
             expectedState._components = new Map();
@@ -1619,8 +2005,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clear', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
 
@@ -1628,11 +2013,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
             myThis = {
                 _components: {
                     clear: sinon.stub(),
@@ -1644,9 +2030,10 @@ describe('lib/util/expected-state.js', function() {
                     removeAllListeners: sinon.stub(),
                 },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
             expectedState = require('../../../../lib/util/expected-state.js');
         });
@@ -1677,36 +2064,51 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('clearDynamicArea', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
         let dynamicArea;
+        let dynamicArea2;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
             });
             dynamicArea = 'key';
+            dynamicArea2 = 'key2';
             expectedState.delete = sinon.stub();
             expectedState._dynamicAreas.set(dynamicArea, new Set());
-            expectedState._dynamicAreas.get(dynamicArea).add({
-                name: 'value',
-            });
+            expectedState._dynamicAreas.set(dynamicArea2, new Set());
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent2');
+            expectedState._dynamicAreas.get(dynamicArea2).add('someComponent3');
             sinon.spy(expectedState._dynamicAreas, 'get');
             sinon.spy(expectedState._dynamicAreas, 'forEach');
             sinon.spy(Array, 'from');
+            expectedState.delete = sinon.stub();
         });
 
         afterEach(function() {
@@ -1739,6 +2141,24 @@ describe('lib/util/expected-state.js', function() {
 
                 expect(expectedState._dynamicAreas.forEach.args[0][0]).to.be.a('function');
             });
+            it('should reduce the cleared dynamic area to an empty set', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key')).to.deep.equal(new Set());
+            });
+            it('should delete components of a cleared dynamic area from other dynamic areas', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState._dynamicAreas.get('key2')).to.deep.equal(new Set(['someComponent3']));
+            });
+            it('should call this.delete for each component in the dynamic area', function() {
+                expectedState.clearDynamicArea(dynamicArea);
+
+                expect(expectedState.delete.args).to.deep.equal([
+                    ['someComponent'],
+                    ['someComponent2'],
+                ]);
+            });
         });
         describe('if the dynamicArea does not exist', function() {
             it('should skip clearing the dynamic area', function() {
@@ -1752,22 +2172,25 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getState', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
 
         beforeEach(function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
 
             expectedState._state = {};
@@ -1786,6 +2209,7 @@ describe('lib/util/expected-state.js', function() {
         });
     });
     describe('getComponent', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1794,14 +2218,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1823,6 +2254,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getComponents', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1831,14 +2263,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1860,6 +2299,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('getComponentsAsMap', function() {
+        let Emitter;
         let EventEmitter;
         let EventEmitterInstance;
         let expectedState;
@@ -1868,14 +2308,21 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
+            sinon.spy(Emitter, 'mixIn');
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = sinon.stub();
             EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             let expectedStateConstructor = require('../../../../lib/util/expected-state.js');
             expectedStateConstructor.create({}, function(value) {
                 expectedState = value;
@@ -1902,8 +2349,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('modify', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let instanceName;
         let callback;
         let expectedState;
@@ -1912,14 +2358,18 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            sinon.spy(Emitter, 'mixIn');
+
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             instanceName = 'componentInstance';
             expectedState._state = {
@@ -1943,8 +2393,7 @@ describe('lib/util/expected-state.js', function() {
     });
 
     describe('stash', function() {
-        let EventEmitter;
-        let EventEmitterInstance;
+        let Emitter;
         let expectedState;
         let myThis;
         let _;
@@ -1953,12 +2402,12 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-
+            sinon.spy(Emitter, 'mixIn');
             _ = {
                 cloneDeep: sinon.stub().returns({key: 'value'}),
             };
@@ -1979,9 +2428,11 @@ describe('lib/util/expected-state.js', function() {
             sinon.spy(myThis._stashedComponents, 'push');
             sinon.spy(myThis._stashedDynamicAreas, 'push');
 
-            EventEmitter.returns(EventEmitterInstance);
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', _);
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
         });
 
@@ -2056,9 +2507,227 @@ describe('lib/util/expected-state.js', function() {
         });
     });
 
-    describe('pop', function() {
+    describe('stashDynamicArea', function() {
         let EventEmitter;
         let EventEmitterInstance;
+        let Emitter;
+        let expectedState;
+        let myThis;
+        let stashedComponent;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js'); Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            stashedComponent = new Map([['key', 'value']]);
+            myThis = {
+                _stashedStates: [{key: 'value'}],
+                _stashedComponents: [stashedComponent],
+                _stashedDynamicAreas: [],
+                _registerEvents: sinon.stub(),
+                eventEmitter: {
+                    removeAllListeners: sinon.stub(),
+                },
+                _dynamicAreas: new Map(),
+                _clearDynamicArea: sinon.stub,
+            };
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        describe('for each dynamicArea', function() {
+            it('should stash the dynamic area components', function() {
+                let component = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    elements: sinon.stub().returns(['myElements']),
+                    model: sinon.stub().returns({model: 'modelValue'}),
+                    actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                    options: {option1: 'someOption'},
+                };
+                let componentState = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    options: {
+                        option1: 'someOption',
+                    },
+                };
+                myThis.getComponent = sinon.stub().returns(component);
+                myThis._state = {};
+                myThis._stashedDynamicAreasComponentsAndStates = new Map();
+                myThis.clearDynamicArea = sinon.stub();
+
+                let componentsMap = new Map();
+                let statesMap = new Map();
+
+                componentsMap.set('instanceName', [component]);
+                statesMap.set('instanceName', componentState);
+                myThis._dynamicAreas.set('testDynamicArea', [component.name]);
+
+                expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
+
+                expect(myThis._stashedDynamicAreasComponentsAndStates.get('testDynamicArea')
+                .components.get('instanceName'))
+                .to.equal(component);
+            });
+            it('should stash the dynamic area states', function() {
+                let component = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    elements: sinon.stub().returns(['myElements']),
+                    model: sinon.stub().returns({model: 'modelValue'}),
+                    actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                    options: {option1: 'someOption'},
+                };
+                let componentState = {
+                    type: 'componentType',
+                    name: 'instanceName',
+                    options: {
+                        option1: 'someOption',
+                    },
+                };
+
+                myThis.getComponent = sinon.stub().returns(component);
+                myThis._state = {
+                    'instanceName': componentState,
+                };
+                myThis._stashedDynamicAreasComponentsAndStates = new Map();
+                myThis.clearDynamicArea = sinon.stub();
+
+                let componentsMap = new Map();
+                let statesMap = new Map();
+
+                componentsMap.set('instanceName', [component]);
+                statesMap.set('instanceName', componentState);
+                myThis._dynamicAreas.set('testDynamicArea', [component.name]);
+
+                expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
+
+                let compVal = myThis._stashedDynamicAreasComponentsAndStates.get('testDynamicArea')
+                .states.get('instanceName');
+
+                expect(compVal)
+                .to.equal(componentState);
+            });
+        });
+        it('should do throw an error if the dynamicArea passed in is invalid', function() {
+            let error = new Error('My Error');
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(error);
+
+            expect(expectedState.stashDynamicArea.bind(myThis, undefined)).to.throw('My Error');
+        });
+        it('should clear the dynamic area that was stashed', function() {
+            let component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+            let componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            myThis.getComponent = sinon.stub().returns(component);
+            myThis._state = {
+                componentType: componentState,
+            };
+            myThis._stashedDynamicAreasComponentsAndStates = new Map();
+            myThis.clearDynamicArea = sinon.stub();
+
+            let componentsMap = new Map();
+            let statesMap = new Map();
+
+
+            componentsMap.set('instanceName', [component]);
+            statesMap.set('instanceName', componentState);
+            myThis._dynamicAreas.set('testDynamicArea', [component.name]);
+
+            expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis.clearDynamicArea.args[0][0]).to.equal('testDynamicArea');
+        });
+    });
+
+    describe('isDynamicAreaStashed', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let Emitter;
+        let expectedState;
+        let myThis;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js'); Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            myThis = {};
+            myThis._stashedDynamicAreasComponentsAndStates = new Map();
+            myThis._stashedDynamicAreasComponentsAndStates.has = sinon.stub();
+        });
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+        it('should check if the stashedDynamicAreasComponentsAndStates has the dynamic area', function() {
+            expectedState.isDynamicAreaStashed.call(myThis, 'testDynamicArea');
+
+            expect(myThis._stashedDynamicAreasComponentsAndStates.has.args[0][0]).to.equal('testDynamicArea');
+        });
+    });
+
+    describe('pop', function() {
+        let Emitter;
         let expectedState;
         let myThis;
         let stashedComponent;
@@ -2067,20 +2736,23 @@ describe('lib/util/expected-state.js', function() {
             mockery.enable({useCleanCache: true});
             mockery.registerAllowable('../../../../lib/util/expected-state.js');
 
-            EventEmitter = sinon.stub();
-            EventEmitterInstance = {
-                emit: sinon.stub(),
-                on: sinon.stub(),
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
             };
-            EventEmitter.returns(EventEmitterInstance);
+            sinon.spy(Emitter, 'mixIn');
             global.SimulatoError = {
                 ACTION: {
                     EXPECTED_STATE_ERROR: sinon.stub(),
                 },
             };
 
-            mockery.registerMock('events', {EventEmitter});
+            mockery.registerMock('./emitter.js', Emitter);
             mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+
             expectedState = require('../../../../lib/util/expected-state.js');
             stashedComponent = new Map([['key', 'value']]);
             myThis = {
@@ -2243,6 +2915,124 @@ describe('lib/util/expected-state.js', function() {
             expect(myThis._registerEvents.thisValues).to.deep.equal([
                 myThis,
             ]);
+        });
+    });
+    describe('retrieveDynamicArea', function() {
+        let EventEmitter;
+        let EventEmitterInstance;
+        let Emitter;
+        let expectedState;
+        let myThis;
+        let stashedComponent;
+
+        beforeEach(function() {
+            mockery.enable({useCleanCache: true});
+            mockery.registerAllowable('../../../../lib/util/expected-state.js');
+
+            Emitter = {
+                mixIn: function(myObject) {
+                    myObject.emit = sinon.stub();
+                },
+            };
+            sinon.spy(Emitter, 'mixIn');
+            mockery.registerMock('./emitter.js', Emitter);
+            mockery.registerMock('lodash', {});
+            mockery.registerMock('events', {});
+            mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+            expectedState = require('../../../../lib/util/expected-state.js');
+
+            EventEmitter = sinon.stub();
+            EventEmitterInstance = {
+                emit: sinon.stub(),
+                on: sinon.stub(),
+            };
+            EventEmitter.returns(EventEmitterInstance);
+
+            let component = {
+                type: 'componentType',
+                name: 'instanceName',
+                elements: sinon.stub().returns(['myElements']),
+                model: sinon.stub().returns({model: 'modelValue'}),
+                actions: sinon.stub().returns({ACTION_1: 'someAction'}),
+                options: {option1: 'someOption'},
+            };
+
+            let componentState = {
+                type: 'componentType',
+                name: 'instanceName',
+                options: {
+                    option1: 'someOption',
+                },
+            };
+
+            stashedComponent = new Map([['key', 'value']]);
+            myThis = {
+                _stashedStates: [{key: 'value'}],
+                _stashedComponents: [stashedComponent],
+                _stashedDynamicAreas: [],
+                _state: {componentType: componentState},
+                _stashedDynamicAreasComponentsAndStates: new Map(),
+                _registerEvents: sinon.stub(),
+                isDynamicAreaStashed: sinon.stub(),
+                _addToDynamicArea: sinon.stub(),
+                eventEmitter: {
+                    removeAllListeners: sinon.stub(),
+                },
+                clearDynamicArea: sinon.stub(),
+                getComponent: sinon.stub().returns(component),
+                addComponent: sinon.stub(),
+            };
+            myThis._stashedDynamicAreasComponentsAndStates.delete = sinon.stub();
+
+            let componentsMap = new Map();
+            let statesMap = new Map();
+
+            global.SimulatoError = {
+                ACTION: {
+                    EXPECTED_STATE_ERROR: sinon.stub(),
+                },
+            };
+
+            componentsMap.set('instanceName', component);
+            statesMap.set('instanceName', componentState);
+            myThis._stashedDynamicAreasComponentsAndStates.set('testDynamicArea', {
+                components: componentsMap,
+                states: statesMap,
+            });
+        });
+
+        afterEach(function() {
+            delete global.SimulatoError;
+            mockery.resetCache();
+            mockery.deregisterAll();
+            mockery.disable();
+        });
+
+        describe('for each component in the stashed dynamic area components', function() {
+            it('should add the component to the expected state along with the state', function() {
+                expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+                expect(myThis.addComponent.callCount).to.equal(1);
+            });
+        });
+        it('should throw an error if the passed in dynamic area is not stashed', function() {
+            let message = 'The dynamic area testDynamicArea is not stashed.';
+            SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
+                {message}
+            );
+            myThis.isDynamicAreaStashed = sinon.stub().returns(false);
+
+            expect(expectedState.retrieveDynamicArea.bind(myThis, 'testDynamicArea')).to.throw(message);
+        });
+        it('should delete the retrieved dynamic area components and states', function() {
+            expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis._stashedDynamicAreasComponentsAndStates.delete.callCount).to.equal(1);
+        });
+        it('should call clear dynamic area on the dynamic area before the rest of the function runs', function() {
+            expectedState.retrieveDynamicArea.call(myThis, 'testDynamicArea');
+
+            expect(myThis.clearDynamicArea.args).to.deep.equal([['testDynamicArea']]);
         });
     });
 });
