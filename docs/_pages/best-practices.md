@@ -726,13 +726,207 @@ Remember, options can have whatever a user needs it. If that is a String, a Bool
 
 ## Elements
 
+The elements section is used to describe what things we care about on the page, and more specifically how selenium can find them.  We previously went over using `this.options` for making selectorss more dynamic, so this section will just cover good practices when creating selectors.
+
+The number one golden rule for selectors is to always use ids when possible. If you have control over the html you are modeling add id's to the elements you care about. Query selectors are brittle, and any change to the html page can break a query selector. Always, always, always prioritize ids when possible.
+
+That being said, there are many times you require in 3rd party libraries, or dont have the control of the html and query selectors are the best you are able to do.  When this is this case try to make as stable as a selector as you are able. For example, there is a sidebar with 3 links, each link is an anchor tag that is a direct child of a div with the id `sidebarId`. If the second link was the "active" link, and was given the class `active`, if I were to just open up chrome, have it tell me the selector it could give me a selector such as `'#sidebarId > a.active'`. At that given point in time, that it is selector, however if I click a different link it will not longer refer to the 2nd link.  A more stable querySelector would be `'#sidebarId > a:nth-child(2)'`, this will always refer to the second a tag even if it has the active class or not.
+
+It's good practice to only add elements you care about, that is, the elements used in the model section of the component. While a view may have 50 different html tags we could put in our elements, if only 5 are ones we care about for our model, those are the only 5 we should add to this section. While selenium will only actively grab data about the elements you put in the model (which costs execution time), it is a waste of your time to have selectors created for every single part of a view if we don't care about them all. In addition, all names must be unique inside a single component.
+
 ## Model
+
+If the elements section can be thought of how we tell selenium where to get the elements, the model can be thought of as what things we care about for that element. Built into selenium the following data is retrieved for each element in the elements section: 
+
+`attributes`:  An object, each key on the object being an attribute present on the element, with the value of that key as the value for the attribute. Example: `<div hidden="true"></div>`. The attributes of this element would be `{hidden: 'true'}`.
+
+`name`: Name provided by the creator of the elements section, remember each element has a name and selector, this is that provided name.
+
+`disabled`:  Commonly used disabled attribute, put here for convenience rather than having to go through the attributes object.
+
+`innerHTML`: innerHtml property of the element.
+
+`innerText`: innerText property of the element.
+
+`hidden`: hidden property of the element.
+
+`value`: value property of the element.
+
+`webElement`: webElement provided by Selenium. Contains all data, and used as a backup if there is some data needed not easily provided by Simulato.
+
+`isDisplayed`: Custom displayed function created for Simulato, a simplified version of the one default in Selenium. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page.
+
+Using this aggregated element data we can create a component with a model section modeling out the parts we care about. We should only model out parts of the system we are directly concerned with, each property we add to a model is more we have to manage in our expectedState.
+
+For most use cases, `disabled`, `innerText`, `value`, and `isDisplayed` will cover the information you need to get from a webpage. When using `attributes` or `webElement`, a function will have to be used inside the model to get the information out that you need. A common use case would be to have a element class be part of your model, as seen in the example below.
+
+Example:
+
+Going back to our `TextInput`, let's assume a class can be added to the element `locked`. If the text input has the `locked` class, we will be unable to delete the text inside that input. Our previous version of `TextInput` had both the `ENTER_TEXT` and `DELETE_TEXT` action, with `DELETE_TEXT` preconditions checking if the input was displayed, as well as had some text. We know need to check if has the `locked` class as a precondition.
+
+Previous TextInput:
+
+```
+type: 'TextInput',
+elements () {
+  return [
+    {
+      name: 'inputField',
+      selector: {
+        type: 'getElementById',
+        value: this.options.id
+      }
+    }
+  ];
+},
+model () {
+  return {
+    displayed: 'inputField.isDisplayed',
+    value: 'inputField.value'
+  };
+},
+actions () {
+  const actions = {
+    ENTER_TEXT: {
+      parameters: [
+        {
+          name: 'text',
+          generate () {
+            return this.options.text;
+          }
+        }
+      ],
+      preconditions () {
+        return [
+          ['isTrue', `pageState.${this.name}.displayed`]
+        ];
+      },
+      perform (text, callback) {
+        driver.findElement(By.id(this.options.id))
+          .sendKeys(text)
+          .then(callback, callback);
+      },
+      effects (text, expectedState) {
+        expectedState.modify(this.name, (input) => {
+          input.value = text;
+        });
+      }
+    }
+  };
+
+  if (this.options.deleteText) {
+    actions.DELETE_TEXT = {
+      preconditions () {
+        return [
+          ['isTrue', `pageState.${this.name}.displayed`],
+          ['isNotEmpty', `pageState.${this.name}.value`]
+        ];
+      },
+      perform (callback) {
+        driver.findElement(By.id(this.options.id))
+          .clear()
+          .then(callback, callback);
+      },
+      effects (expectedState) {
+        expectedState.modify(this.name, (input) => {
+          input.value = '';
+        });
+      }
+    }
+  }
+
+  return actions;
+}
+```
+
+First we will go into the model section, and add in the `locked` property we care about. To do this we will need to use the attribute `class`, which contains the string inside the `class` attribute of an element.
+
+`<input type="text" class="locked">`
+
+```
+elements () {
+  return [
+    {
+      name: 'inputField',
+      selector: {
+        type: 'getElementById',
+        value: this.options.id
+      }
+    }
+  ];
+},
+model () {
+  return {
+    displayed: 'inputField.isDisplayed',
+    value: 'inputField.value',
+    locked (elements) {
+      let classString = elements.inputField.attributes.class;
+      if (classString.indexOf('locked') !== -1) {
+        return true;
+      }
+      return false;
+    }
+  };
+},
+```
+
+When declaring a property on the model as a function (as seen above), the elements object is automatically passed in by Simulato. The elements object has a property for each element created in the elements section, with they key of the name you created. Accessing that element will provide you access to the properties described above.  When looking at the class attribute in html, it's value will be a string of all class names. For our example we check the string for the class we care about, evaluating to true or false accordingly.  We can now modify our `DELETE_TEXT` action to use the `locked` property of the model.
+
+```
+actions.DELETE_TEXT = {
+  preconditions () {
+    return [
+      ['isTrue', `pageState.${this.name}.displayed`],
+      ['isNotEmpty', `pageState.${this.name}.value`],
+      ['isFalse', `pageState.${this.name}.locked`]
+    ];
+  },
+  perform (callback) {
+    driver.findElement(By.id(this.options.id))
+      .clear()
+      .then(callback, callback);
+  },
+  effects (expectedState) {
+    expectedState.modify(this.name, (input) => {
+      input.value = '';
+    });
+  }
+}
+```
+## Actions
 
 ## Children
 
-With the growing popularity of reusable components, many sites are set up with a hierarchical view tree. A home page could call multiple views such as the left sidebar, or the top actionbar, which in turn those views could call numerous links and buttons. To continue without standard of mimicking the html structure with our components as closely as possible, children can be added into a component. 
+With the growing popularity of reusable components for front end design, many sites are set up with a hierarchical view tree. A home page could call multiple views such as the left sidebar, or the top actionbar, which in turn those views could call numerous links and buttons. Continuing with our standard of mimicking the html structure with our components as closely as possible, we want to create these sub views as children inside the component for the main view.
 
-## Actions
+Example:
+
+We have a view, `home-page.html`. We will assume that view will call 2 other views directly from the html of the home page view. It calls `actionbar.html` as well as `home-sidenav.html`.  To create our `HomePage` children section, we would want to add 2 children, one for `Actionbar` and one for `HomeSidenav`. The children section of our `HomePage` component would be as follows:
+
+```
+type: 'HomePage',
+elements() { ... },
+model() { ... },
+actions() { ... },
+children() {
+  return [
+    {
+      type: 'Actionbar`,
+      name: `${this.name}Actionbar`,
+      state: { ... }
+    },
+    {
+      type: 'HomeSidenav`,
+      name: `homeSidenav`,
+      state: { ... } 
+    }
+  ];
+}
+```
+
+As seen above, this returns 2 children inside the `HomePage` component. This matches the home page view, and its always best practice to match html we are modeling.  This shows two different styles of naming, as stated above in the naming section. As a quick recap, assuming `ActionBar` is a reused component we name the child `${this.name}Actionbar`, this way we know it will be the home pages actionbar. However for `HomeSidenav`, it's a one time view, only `HomePage` calls `homeSidenav`, because of this we can give it a name that doesn't use `this.name`, however using `this.name` is still valid.  When creating the children, placing them in the order the html file calls them makes it easy to scan an html, along with a component and quickly identify what each child represents.
+
+Another common use case for children is when a certain html view has common html elements such as `<button>`, `<input type="text">`, or `<a>`. To avoid having to create an element section, model section, and action section for each use in a view, we can create a reusable component that we can add as children.  A detailed example of this can be found in the `Reusable Component` section of this documentation.
 
 ## Events
 
