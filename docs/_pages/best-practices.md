@@ -466,7 +466,7 @@ children () {
   return [
     {
       type: 'TextInput',
-      name: `firstNameTextInput`,
+      name: 'firstNameTextInput',
       state: { ... },
       options: {
         id: '<some id value here>'
@@ -474,7 +474,7 @@ children () {
     },
     {
       type: 'TextInput',
-      name: `lastNameTextInput`,
+      name: 'lastNameTextInput',
       state: { ... },
       options: {
         id: '<some other id value here>'
@@ -593,7 +593,7 @@ children () {
   return [
     {
       type: 'TextInput',
-      name: `firstNameTextInput`,
+      name: 'firstNameTextInput',
       state: {
         displayed: true,
         input: ''
@@ -605,7 +605,7 @@ children () {
     },
     {
       type: 'TextInput',
-      name: `lastNameTextInput`,
+      name: 'lastNameTextInput',
       state: {
         displayed: true,
         input: ''
@@ -695,7 +695,7 @@ children () {
   return [
     {
       type: 'TextInput',
-      name: `firstNameTextInput`,
+      name: 'firstNameTextInput',
       state: {
         displayed: true,
         input: ''
@@ -707,7 +707,7 @@ children () {
     },
     {
       type: 'TextInput',
-      name: `lastNameTextInput`,
+      name: 'lastNameTextInput',
       state: {
         displayed: true,
         input: ''
@@ -921,7 +921,7 @@ Example:
 Let's say we have a page with 2 checkboxes, checkbox1, and checkbox2. Both checkboxes are part of a component as seen below.
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [
     {
@@ -966,10 +966,10 @@ actions () { ... }
 When creating actions I want to have 2 actions for each checkbox, CHECK and UNCHECK. Just as they sound one action will check the box, the second will uncheck.  When creating preconditions we want to think of what is the bare minimum required to be able to perform that action.  Lets focus on one action, CHECK_CHECKBOX1. As part of our model we know we could use if the container is displayed, if checkbox1 is displayed as well as its checked property, and if checkbox2 is displayed and it's checked property. Because all of this is available to us we could make the follow preconditions
 
 ```
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.displayed` ],
           [ 'isTrue', `pageState.${this.name}.checkbox1.displayed` ],
@@ -978,8 +978,8 @@ actions() {
           [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     }
   };
 }
@@ -987,18 +987,18 @@ actions() {
 Looking at these preconditions, we are saying we can only perform CHECK_CHECKBOX1 if the checkboxContainer is displayed (which we assigned to displayed property of the model), and both checkbox1 and checkbox2 are displayed, and neither box is checked.  Since these are checkboxes and not radio buttons we will assume the status of checxkbox2 has no relevance to checkbox one, and we can easily remove the 2 preconditions regarding checkbox2 in our action for checkbox1.
 
 ```
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.displayed` ],
           [ 'isTrue', `pageState.${this.name}.checkbox1.displayed` ],
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     }
   };
 }
@@ -1007,16 +1007,16 @@ actions() {
 This leaves us with 3 preconditions to perform CHECK_CHECKBOX1.  To follow the standard of distilling the preconditions down to the bare minimum we need to meet the requirement, if our checkbox is never NOT displayed when this component is part of the state, and the container is never NOT displayed, we don't need to add these as preconditions as they are not relevant.
 
 ```
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     }
   };
 }
@@ -1025,7 +1025,7 @@ actions() {
 Anything not used in preconditions or effects can be removed from the model section, as well as elements section if they are not relevant to our actions. This would distill down the component to the following adding preconditions for our 4 actions.
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [
     {
@@ -1054,43 +1054,43 @@ model () {
     }
   };
 },
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     },
     UNCHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     },
     CHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     },
     UNCHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) { ... },
-      effects() { ... },
+      perform (callback) { ... },
+      effects () { ... },
     }
   };
 }
@@ -1107,7 +1107,7 @@ Example:
 To continue with our checkbox actions, lets fill out the perform block for CHECK_CHECKBOX1. We know to check a checkbox in an html system you just have to click it. So first we need to have the selenium driver find the element, click it, then we can call our callback telling Simulato we are finished with the perform block.
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [
     {
@@ -1136,20 +1136,20 @@ model () {
     }
   };
 },
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox1'))
           .click()
           .then(callback, callback);
       },
-      effects() { ... },
+      effects () { ... },
     },
     ...
   };
@@ -1171,7 +1171,7 @@ Example:
 To continue fleshing out our checkbox example, when we perform the action CHECK_CHECKBOX1, the effect of the html should be that the html elements `checked` property should now be true. We will modify the expected state of our checkboxPage to reflect this.
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [
     {
@@ -1200,71 +1200,71 @@ model () {
     }
   };
 },
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox1'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox1.checked = true;
         });
       },
     },
     UNCHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox1'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox1.checked = false;
         });
       },
     },
     CHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox2'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox2.checked = true;
         });
       },
     },
     UNCHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox2'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox2.checked = false;
         });
@@ -1287,7 +1287,7 @@ Example:
 A common use case is when we want to use `driver.sendKeys()` in our perform block. Let's say we have an input, that we want to send some data to inside an ENTER_TEXT action. Our action block would look like this:
 
 ```
-actions() {
+actions () {
   return {
     ENTER_TEXT: {
       parameters: [
@@ -1298,17 +1298,17 @@ actions() {
           },
         },
       ],
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.displayed` ]
         ];
       },
-      perform(inputText, callback) {
+      perform (inputText, callback) {
         driver.findElement(By.id('textInputId'))
           .sendKeys(inputText)
           .then(callback, callback)
       },
-      effects(inputText, expectedState) {
+      effects (inputText, expectedState) {
         expectedState.modify(this.name, (input) => {
           input.value = inputText
         });
@@ -1325,7 +1325,7 @@ As seen above, the `inputText` is created inside the parameters block, and is pr
 With the growing popularity of reusable components for front end design, many views inside a particular site will call "mini views", or small templates rather than hard coding that section of the html over and over.  We can create components in this exact way, creating reusable components that we can call as children to ease development. Looking back at our checkbox example we used in the actions section, we created the following component: 
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [
     {
@@ -1354,71 +1354,71 @@ model () {
     }
   };
 },
-actions() {
+actions () {
   return {
     CHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox1'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox1.checked = true;
         });
       },
     },
     UNCHECK_CHECKBOX1: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox1.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox1'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox1.checked = false;
         });
       },
     },
     CHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox2'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox2.checked = true;
         });
       },
     },
     UNCHECK_CHECKBOX2: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checkbox2.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id('checkboxContainerCheckbox2'))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkboxPage) => {
           checkboxPage.checkbox2.checked = false;
         });
@@ -1431,8 +1431,8 @@ actions() {
 When looking at the component its clearly evident that both the actions for checkbox1 and checkbox2 do the exact same things, just for each respective checkbox.  Even the model and elements are similar, only difference being names and selector values.  These are all signs that we can convert this into a reusable component, and cut down on development time, especially if checkboxes are used elsewhere in the system. Just like any other programming, if some logic can be abstracted out, we should do the same for our components.  Let's first create a basic checkbox component
 
 ```
-type: `Checkbox`,
-elements() {
+type: 'Checkbox',
+elements () {
   return [
     {
       name: 'checkbox'
@@ -1443,42 +1443,42 @@ elements() {
     }
   ];
 },
-model() {
+model () {
   return {
     checked: 'checkbox.checked'
   };
 },
-actions() {
+actions () {
   return {
     CHECK: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isFalse', `pageState.${this.name}.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id(this.options.id))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkbox) => {
           checkbox.checked = true;
         });
       },
     },
     UNCHECK: {
-      preconditions() {
+      preconditions () {
         return [
           [ 'isTrue', `pageState.${this.name}.checked` ],
         ];
       },
-      perform(callback) {
+      perform (callback) {
         driver.findElement(By.id(this.options.id))
           .click()
           .then(callback, callback);
       },
-      effects(expectedState) {
+      effects (expectedState) {
         expectedState.modify(this.name, (checkbox) => {
           checkbox.checked = false;
         });
@@ -1491,17 +1491,17 @@ actions() {
 Now that we have created a base `Checkbox` component, we can rework our `CheckboxPage` to call these it's checkboxes as children rather than having to model out each checkbox itself.
 
 ```
-type: 'CheckboxPage`,
+type: 'CheckboxPage',
 elements () {
   return [];
 },
 model () {
   return {};
 },
-actions() {
+actions () {
   return {};
 },
-children() {
+children () {
   return [
     {
       type: 'Checkbox',
@@ -1541,19 +1541,19 @@ We have a view, `home-page.html`. We will assume that view will call 2 other vie
 
 ```
 type: 'HomePage',
-elements() { ... },
-model() { ... },
-actions() { ... },
-children() {
+elements () { ... },
+model () { ... },
+actions () { ... },
+children () {
   return [
     {
-      type: 'Actionbar`,
+      type: 'Actionbar,
       name: `${this.name}Actionbar`,
       state: { ... }
     },
     {
-      type: 'HomeSidenav`,
-      name: `homeSidenav`,
+      type: 'HomeSidenav',
+      name: 'homeSidenav',
       state: { ... } 
     }
   ];
