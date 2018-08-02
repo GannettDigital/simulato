@@ -752,6 +752,8 @@ If the elements section can be thought of how we tell selenium where to get the 
 
 `value`: value property of the element.
 
+`checked`: checked property of the element.
+
 `webElement`: webElement provided by Selenium. Contains all data, and used as a backup if there is some data needed not easily provided by Simulato.
 
 `isDisplayed`: Custom displayed function created for Simulato, a simplified version of the one default in Selenium. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page.
@@ -893,7 +895,360 @@ actions.DELETE_TEXT = {
   }
 }
 ```
+
 ## Actions
+
+The actions section has 4 main parts, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of the actions, however `preconditions` will be in almost every component besides your entry component.
+
+### Preconditions
+
+The preconditions property of the action object must be a function that returns an array of arrays representing [chai asserts](http://www.chaijs.com/api/assert/).  Inside the simulato code, it will process the chai asserts to generate tests, as well as make sure conditions are met during test execution.  The chai assert array follows the exact same pattern regardless of what chai assert you are calling. The following pattern is used:
+
+[ `<chaiAsserMethod>`, `<param1>`, `[param2]`, ... ]
+
+For example, a commonly used chai asset is [isTrue](http://www.chaijs.com/api/assert/#method_istrue). Looking at the documentation, isTrue takes a param value, as well as an optional param message.  If we wanted to check something on the pageState is displayed we could make the following chai assert array:
+
+[ 'isTrue', `pageState.${this.name}.displayed` ]
+
+This would tell Simulato to call the chai assert isTrue method, passing in the value we care about to check if is true.
+
+When creating you chai assert arrays, use `this.name` whenever possible when referring to the current component, in addition always make sure to prepend with either `pageState` or `dataStore` as this tells simulato what part of the system you are asserting on.
+
+Any number of preconditions are allowed for any given action, but the more preconditions the slower test generation becomes. Always make your preconditions as succinct, and specific to the action as possible.
+
+Example:
+
+Let's say we have a page with 2 checkboxes, checkbox1, and checkbox2. Both checkboxes are part of a component as seen below.
+
+```
+type: 'CheckboxPage`,
+elements () {
+  return [
+    {
+      name: 'checkboxContainer',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainer'
+      }
+    },
+    {
+      name: 'checkbox1',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox1'
+    }
+    },
+        {
+      name: 'checkbox2',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox2'
+      }
+    }
+  ];
+},
+model () {
+  displayed: 'checkboxContainer.isDisplayed',
+  checkbox1: {
+    displayed: 'checkbox1.isDisplayed',
+    checked: 'checkbox1.checked'
+  },
+  checkbox2: {
+    displayed: 'checkbox2.isDisplayed',
+    checked: 'checkbox2.checked'
+  }
+},
+actions () { ... }
+```
+
+When creating actions I want to have 2 actions for each checkbox, CHECK and UNCHECK. Just as they sound one action will check the box, the second will uncheck.  When creating preconditions we want to think of what is the bare minimum required to be able to perform that action.  Lets focus on one action, CHECK_CHECKBOX1. As part of our model we know we could use if the container is displayed, if checkbox1 is displayed as well as its checked property, and if checkbox2 is displayed and it's checked property. Because all of this is available to us we could make the follow preconditions
+
+```
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isTrue', `pageState.${this.name}.displayed` ],
+        [ 'isTrue', `pageState.${this.name}.checkbox1.displayed` ],
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+        [ 'isTrue', `pageState.${this.name}.checkbox2.displayed` ],
+        [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  }
+}
+```
+Looking at these preconditions, we are saying we can only perform CHECK_CHECKBOX1 if the checkboxContainer is displayed (which we assigned to displayed property of the model), and both checkbox1 and checkbox2 are displayed, and neither box is checked.  Since these are checkboxes and not radio buttons we will assume the status of checxkbox2 has no relevance to checkbox one, and we can easily remove the 2 preconditions regarding checkbox2 in our action for checkbox1.
+
+```
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isTrue', `pageState.${this.name}.displayed` ],
+        [ 'isTrue', `pageState.${this.name}.checkbox1.displayed` ],
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  }
+}
+```
+
+This leaves us with 3 preconditions to perform CHECK_CHECKBOX1.  To follow the standard of distilling the preconditions down to the bare minimum we need to meet the requirement, if our checkbox is never NOT displayed when this component is part of the state, and the container is never NOT displayed, we don't need to add these as preconditions as they are not relevant.
+
+```
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  }
+}
+```
+
+Anything not used in preconditions or effects can be removed from the model section, as well as elements section if they are not relevant to our actions. This would distill down the component to the following adding preconditions for our 4 actions.
+
+```
+type: 'CheckboxPage`,
+elements () {
+  return [
+    {
+      name: 'checkbox1',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox1'
+    }
+    },
+        {
+      name: 'checkbox2',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox2'
+      }
+    }
+  ];
+},
+model () {
+  checkbox1: {
+    checked: 'checkbox1.checked'
+  },
+  checkbox2: {
+    checked: 'checkbox2.checked'
+  }
+},
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  },
+  UNCHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isTrue', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  },
+  CHECK_CHECKBOX2: {
+    preconditions() {
+      return [
+        [ 'isFalse', `pageState.${this.name}.checkbox2.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  },
+  UNCHECK_CHECKBOX2: {
+    preconditions() {
+      return [
+        [ 'isTrue', `pageState.${this.name}.checkbox2.checked` ],
+      ];
+    },
+    perform(callback) { ... },
+    effects() { ... },
+  }
+}
+```
+
+Remember you can add in/remove parts of the model that you need. So while in this example we removed displayed from both our model and preconditions, if there were other actions that affected this displayed status of these checkboxes, we would want them back in both model and precondition.  So for example, if there was some sort toggle on the page, that toggles the display of the checkboxes. I would need to have the preconditions that the checkboxes are displayed as well as checked/unchecked, as there is a possibility in the system those checkboxes are not displayed.  We would also have to model the actions that would display and undisplay our checkboxes to have better complete tests of our system.
+
+### Perform
+
+Perform is where we will tell the selenium driver how to perform our action, and actually does the interaction on the web page.  Currently simulato only supports base javascript selenium, whos documentation can be found [here](http://seleniumhq.github.io/selenium/docs/api/javascript/index.html).  Both driver, and By are provided globally via Simulato, and are used when constructing the perform block.  Selenium uses promises to handle the synchronous nature of perform driver actions to the webpage, which can all be read about inside its documentation.  However, as promises are not used in Simulato, a callback is provided by simulato, into to the perform block, this must be called inside the perform block to tell Simulato this step is complete. When using selenium driver the most common actions we have found used are `findElement()`, `click()`, `sendKeys()`, and `then()`.
+
+Example: 
+
+To continue with our checkbox actions, lets fill out the perform block for CHECK_CHECKBOX1. We know to check a checkbox in an html system you just have to click it. So first we need to have the selenium driver find the element, click it, then we can call our callback telling Simulato we are finished with the perform block.
+
+```
+type: 'CheckboxPage`,
+elements () {
+  return [
+    {
+      name: 'checkbox1',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox1'
+    }
+    },
+        {
+      name: 'checkbox2',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox2'
+      }
+    }
+  ];
+},
+model () {
+  checkbox1: {
+    checked: 'checkbox1.checked'
+  },
+  checkbox2: {
+    checked: 'checkbox2.checked'
+  }
+},
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) {
+      driver.findElement(By.id('checkboxContainerCheckbox1'))
+        .click()
+        .then(callback, callback);
+    },
+    effects() { ... },
+  },
+  ...
+}
+```
+
+As seen we are using `driver.findElement()` to tell selenium driver how to find the element we want to perform our action on. `By`, the other globally provided object can also be found in the [selenium docs](http://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_By.html), and is used to provide selectors to `findElement()`. Common uses are `By.id()` and `By.css()`. Once we have the element found, we chain promises to click it, then call our callback.  It is best practice to use `.then(callback, callback)` to leave a perform block.  In the world of promises they can resolve differently, either success or reject. The first callback in `.then(callback, callback)` is called if the promise throws no errors, and is considered a success, while the second is called if an error is thrown. For converting it back to simulato's callback scheme, we want to call the callback for either a promise success, or promise reject, which is why we pass callback in twice.
+
+Similar to how preconditions should be as simple as possible, so should action perform blocks. If you find yourself performing actions on mutiple elements, or doing multiple things to one element inside one perform block, these should be broken out into multiple actions.
+
+### Effects
+
+Now that we know what conditions must be met to perform an action, how to perform the action, we need to describe the expected behavior, more specifically, the expected effect on the system of performing that action.
+
+When creating the effects block, keep to the standard of only modifying yourself, trying not to ever modify other components besides the component where the action is.
+
+Example:
+
+To continue fleshing out our checkbox example, when we perform the action CHECK_CHECKBOX1, the effect of the html should be that the html elements `checked` property should now be true. We will modify the expected state of our checkboxPage to reflect this.
+
+```
+type: 'CheckboxPage`,
+elements () {
+  return [
+    {
+      name: 'checkbox1',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox1'
+    }
+    },
+        {
+      name: 'checkbox2',
+      selector: {
+        type: 'getElementById'
+        value: 'checkboxContainerCheckbox2'
+      }
+    }
+  ];
+},
+model () {
+  checkbox1: {
+    checked: 'checkbox1.checked'
+  },
+  checkbox2: {
+    checked: 'checkbox2.checked'
+  }
+},
+actions() {
+  CHECK_CHECKBOX1: {
+    preconditions() {
+      return [
+        [ 'isFalse', `pageState.${this.name}.checkbox1.checked` ],
+      ];
+    },
+    perform(callback) {
+      driver.findElement(By.id('checkboxContainerCheckbox1'))
+        .click()
+        .then(callback, callback);
+    },
+    effects(expectedState) {
+      expectedState.modify(this.name, (checkboxPage) => {
+        checkboxPage.checkbox1.checked = true;
+      });
+    },
+  },
+  ...
+}
+```
+
+As seen above, we are following the standard of modify only the component the action is in. Following the standard, it will make it so most times you call `expectedState.modify()`, you will pass in `this.name` to specify which component added to the state you want to modify. When providing `expected.modify()` a callback, we are using the ES6 standard arrow notation.  The parameter passed into the callback is the expected state object of that component as it currently is inside the expected state. In our example we know that expected state object, which follows the model of this component, has a checkbox1 property, which has a checked property, which we now want to set to true.  If you are ever unsure what properties will be passed back refer to the model section of the component you are modifying. 
+
+In many cases, performing actions in one component will affect another component's state. Since the best practice is to only modify ourselves, we need a way to tell other components that our action was performed.  This concept is what led to the development of the event system inside our actions, which is described in detail in the events section of this document.
+
+### Parameters
+
+The last section inside an action is the Parameters section. This section was left for last as it is not used in every component you will create. Parameters provides you with a section to generate parameters that can be used during the perform and effect blocks of an action.  If you ever are using some sort of hard coded input, and then using that input inside the effects the parameters block should be used instead.  Parameters are prepended into the the parameters for both perform and effects, one parameter in the function calls for each parameter created in this parameters block.
+
+Example:
+
+A common use case is when we want to use `driver.sendKeys()` in our perform block. Let's say we have an input, that we want to send some data to inside an ENTER_TEXT action. Our action block would look like this:
+
+```
+actions() {
+  ENTER_TEXT: {
+    parameters: [
+      {
+        name: 'inputText',
+        generate() {
+            return 'Some static input text';
+        },
+      },
+    ],
+    preconditions() {
+      return [
+        [ 'isTrue', `pageState.${this.name}.displayed` ]
+      ];
+    },
+    perform(inputText, callback) {
+      driver.findElement(By.id('textInputId'))
+        .sendKeys(inputText)
+        .then(callback, callback)
+    },
+    effects(inputText, expectedState) {
+      expectedState.modify(this.name, (input) => {
+        input.value = inputText
+      });
+    }
+  }
+}
+```
+
+As seen above, the `inputText` is created inside the parameters block, and is prepended into the parameters of both the perform, and effects functions. Similar to other standards in programming, we can easily change the `inputText` parameter, and it will reflect in both places it is used.  While this example shows a static string being generated, the generate function for each parameter is invoked once during planning, so different inputs can be generated for each individual test generation.
+
+## Reusable Components
 
 ## Children
 
@@ -933,8 +1288,6 @@ Another common use case for children is when a certain html view has common html
 ## Expected State
 
 ## Data Store
-
-## Reusable Components
 
 ## Dynamic Areas
 
