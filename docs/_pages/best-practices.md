@@ -1817,9 +1817,58 @@ A standard to follow when emitting events, is to always prepend the event with `
 
 A second standard to follow when creating event listeners is to only listen "one level away".  In our example, the `CheckboxPage` is listening to its direct children `Checkbox`, this is listening only "one level away". Because of this we will easily know an event name when following naming conventions. Since we directly name the child, we will can use the same name from the child section to construct our event name. If we assumed that someone else called `CheckboxPage` as a child, and it actually cared about the CheckboxChecked event, we should propagate the event back up through the child hierarchy. We achieve this buy listening to a components direct child, and emitting a new event using `this.name`<Event> so we can continue to use `this.name` and the child name we know exists.
 
-## Expected State
-
 ## Data Store
+
+The data store is primarly used for persistent storage, as well as any system specific data that things not currently in the state may need later when they are added.  The data store should avoid being used for local storage inside a specific component, where `this.options` could be more easily utilized.
+
+Example:
+
+Lets say we have the following flow inside of a webpage.
+
+Navigate to site -> login page -> home page -> profile page.
+
+On the login page, I enter a username and passeword to get authenticated into the system, once logged in it brings me directly to the home page. At this point the only component inside our expected state is the home page.  On the home page is a link that directs me to the profile page. At this point the only component inside our expected state is the profile page. On the profile page a header exists that says 'Hello <username>', the username being filled in with what I provided in the login page.  To be able to assert that the message is displaying the correct name, I need to know the username that was entered into the login page. During the login action of a component I could store the username into the datastore for presistently storing that information. Then, once I create the login page component, I am able to retreive that data from the datastore and expect the state to be there.
+
+```
+type: 'LoginPage`,
+elements () { ... },
+model () { ... },
+actions () {
+  return {
+    LOGIN: {
+      parameters: [
+        {
+          name: 'username',
+          generator () {
+            return 'myUsername'
+          }
+        },
+        {
+          name: 'password',
+          generator () {
+            return 'topSekritPassword'
+          }
+        }
+      ],
+      preconditions () { ... },
+      perform (username, password, callback) { ... },
+      effects (username, password, expectedState, dataStore) {
+        expectedState.clear();
+        expectedState.createAndAddComponent({
+          type: 'HomePage',
+          name: 'homePage',
+          state: { ... }
+        });
+        dataStore.store('username', username);
+      }
+    }
+  }
+} 
+```
+
+As seen in the abbreviated component above, inside the effects of the LOGIN action, we are calling `dataStore.store()`, storing under the key 'username', the username value generated from our parameters section 'myUsername'.  We are now able to call `dataStore.retrieve()` at any point, inside any component where the data store is availble to retreive 'myUsername'.
+
+Similar to other naming such as children and events, if something being stored in the data store is specific to an individual component, prepend the key name with `this.name`. This way, just like names and events, we will know exactly who that data belongs too, and we can ensure we retrieve what we expect to retrieve. 
 
 ## Dynamic Areas
 
