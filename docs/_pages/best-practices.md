@@ -1566,6 +1566,257 @@ Another common use case for children is when a certain html view has common html
 
 ## Events
 
+As alluded to in previous action effects section, we need a way to communicate with other components.  As a rule of thumb for calling `expectedState.modify()`, we only want to modify the component we call the function in.  As a small part of the system, an individual component doesn't know which other components in the system are affected by it's actions, and it shouldn't have to know.  This is where the event emitter comes into play. When creating a component, if I know other parts of the system can be affected by any given action, I can emit out an event, broadcasting it to the rest of the components inside the expected state.  Other components can then register listener functions to these events, which can be invoked on broadcast of the event, triggering more changes to the expected state.
+
+Let's go back to our checkbox example from actions and lets assume when checkbox1 or checkbox2 is checked, a button becomes enabled on the page that if clicked will reset the checkboxes back to unchecked state. First we need to modify our checkboxPage to have a button.
+
+```
+type: 'CheckboxPage',
+elements () {
+  return [
+    {
+      name: 'resetButton',
+      selector: {
+        type: 'getElementById',
+        value: 'checkboxContainerResetButton'
+      }
+    }
+  ];
+},
+model () {
+  return {
+    resetButton: {
+      disabled: 'resetButton.disabled'
+    }
+  };
+},
+actions () {
+  return {
+    CLICK_RESET_BUTTON: {
+      preconditions () {
+        return [
+          [ 'isFalse', `pageState.${this.name}.button.disabled` ]
+        ];
+      },
+      perform (callback) {
+        driver.findElement(By.id('checkboxContainerResetButton'))
+          .click()
+          .then(callback, callback);
+      },
+      effects () {
+        //EFFECTS WILL BE ADDED LATER IN EXAMPLE
+      }
+    }
+  };
+},
+children () {
+  return [
+    {
+      type: 'Checkbox',
+      name: `${this.name}Checkbox1`,
+      state: {
+        checked: false
+      },
+      options: {
+        id: 'checkboxContainerCheckbox1'
+      }
+    },
+    {
+      type: 'Checkbox',
+      name: `${this.name}Checkbox2`,
+      state: {
+        checked: false
+      },
+      options: {
+        id: 'checkboxContainerCheckbox2'
+      }
+    },
+  ];
+}
+```
+
+We know of some setup in our `CheckboxPage` component to have an action for clicking the reset button. We purposely left the effects section blank, we will get back to that later as we describe events more.  When looking at the CLICK_RESET_BUTTON action, it has a precondition of the button has to be enabled, or more specifically disabled attribute must be false.  We know that this happens, when a checkbox is checked, which happens inside the `Checkbox` component. We need the `CheckboxPage` to know when a checkbox is checked.  We can emit an event out from the `Checkbox` component to start the process.
+
+```
+type: 'Checkbox',
+elements () {
+  return [
+    {
+      name: 'checkbox'
+      selector: {
+        type: `getElementById`,
+        value: this.options.id
+      }
+    }
+  ];
+},
+model () {
+  return {
+    checked: 'checkbox.checked'
+  };
+},
+actions () {
+  return {
+    CHECK: {
+      preconditions () {
+        return [
+          [ 'isFalse', `pageState.${this.name}.checked` ],
+        ];
+      },
+      perform (callback) {
+        driver.findElement(By.id(this.options.id))
+          .click()
+          .then(callback, callback);
+      },
+      effects (expectedState) {
+        expectedState.modify(this.name, (checkbox) => {
+          checkbox.checked = true;
+        });
+        expectedState.eventEmitter.emit(`${this.name}Checked`)
+      },
+    },
+    UNCHECK: {
+      preconditions () {
+        return [
+          [ 'isTrue', `pageState.${this.name}.checked` ],
+        ];
+      },
+      perform (callback) {
+        driver.findElement(By.id(this.options.id))
+          .click()
+          .then(callback, callback);
+      },
+      effects (expectedState) {
+        expectedState.modify(this.name, (checkbox) => {
+          checkbox.checked = false;
+        });
+        expectedState.eventEmitter.emit(`${this.name}Unchecked`)
+      },
+    }
+  };
+}
+```
+
+Looking into the action effects above we added an event to be emitted for each action, `${this.name}Checked` and `${this.name}Unhecked` for their respective actions. This will allow us to register a listener in our `CheckboxPage` component, so that component will know when a box is checked or unchecked.
+
+```
+type: 'CheckboxPage',
+elements () {
+  return [
+    {
+      name: 'resetButton',
+      selector: {
+        type: 'getElementById',
+        value: 'checkboxContainerResetButton'
+      }
+    }
+  ];
+},
+model () {
+  return {
+    resetButton: {
+      disabled: 'resetButton.disabled'
+    }
+  };
+},
+actions () {
+  return {
+    CLICK_RESET_BUTTON: {
+      preconditions () {
+        return [
+          [ 'isFalse', `pageState.${this.name}.button.disabled` ]
+        ];
+      },
+      perform (callback) {
+        driver.findElement(By.id('checkboxContainerResetButton'))
+          .click()
+          .then(callback, callback);
+      },
+      effects () {
+        //EFFECTS WILL BE ADDED LATER IN EXAMPLE
+      }
+    }
+  };
+},
+children () {
+  return [
+    {
+      type: 'Checkbox',
+      name: `${this.name}Checkbox1`,
+      state: {
+        checked: false
+      },
+      options: {
+        id: 'checkboxContainerCheckbox1'
+      }
+    },
+    {
+      type: 'Checkbox',
+      name: `${this.name}Checkbox2`,
+      state: {
+        checked: false
+      },
+      options: {
+        id: 'checkboxContainerCheckbox2'
+      }
+    },
+  ];
+},
+events (expectedState) {
+  const myThis = this;
+  return [
+    {
+      name: `${this.name}Checkbox1Checked`,
+      listener () {
+        expectedState.modify(myThis.name, (checkboxPage) => {
+          checkboxPage.button.disabled = false;
+        });
+      }
+    },
+    {
+      name: `${this.name}Checkbox1Unchecked`,
+      listener () {
+        expectedState.modify(myThis.name, (checkboxPage) => {
+          checkboxPage.button.disabled = true;
+        });
+      }
+    }
+  ];
+}
+```
+
+In the above events section you can see we added two event listeners, one for checkbox1 being checked, and one for it being unchecked. This allows us to follow the rule of modifying only the the component you are in where we can now call `expectedState.modify()` passing `this.name`.  Important note, because of the nature of the `this` context of javascript, the component's `this` context does not get passed into the `listener()`, as the listener is not actually called by the component, but by the eventEmitter.  Because of this, we need to create a variable inside the events function giving us access to the information we need such as name, options, dynamicarea.
+
+Base on the logic of the page, we know that it's not just checkbox1 that will enable/disable the button but also checkbox2. Instead of having to create 2 more listeners, that perform the same logic, we can pass in arrays for the name property of each event that should trigger a particular listener.
+
+```
+events (expectedState) {
+  const myThis = this;
+  return [
+    {
+      name: [ `${this.name}Checkbox1Checked`, `${this.name}Checkbox2Checked` ]
+      listener () {
+        expectedState.modify(myThis.name, (checkboxPage) => {
+          checkboxPage.button.disabled = false;
+        });
+      }
+    },
+    {
+      name: [ `${this.name}Checkbox1Unchecked`, `${this.name}Checkbox2Unchecked` ]
+      listener () {
+        expectedState.modify(myThis.name, (checkboxPage) => {
+          checkboxPage.button.disabled = true;
+        });
+      }
+    }
+  ];
+}
+```
+
+A standard to follow when emitting events, is to always prepend the event with `this.name`. This allows the events to become unique, since our component names must be unique.  In the above example, because we are emitting unique event names we know we are specifically listening to what checkboxes are being checked. If there was a 3rd checkbox somewhere else, and it did not affect our resetButton, but our event was some generic string like 'checkboxChecked'. Our event listener would trigger, and we would incorrectly enable our button.
+
+A second standard to follow when creating event listeners is to only listen "one level away".  In our example, the `CheckboxPage` is listening to its direct children `Checkbox`, this is listening only "one level away". Because of this we will easily know an event name when following naming conventions. Since we directly name the child, we will can use the same name from the child section to construct our event name. If we assumed that someone else called `CheckboxPage` as a child, and it actually cared about the CheckboxChecked event, we should propagate the event back up through the child hierarchy. We achieve this buy listening to a components direct child, and emitting a new event using `this.name`<Event> so we can continue to use `this.name` and the child name we know exists.
+
 ## Expected State
 
 ## Data Store
