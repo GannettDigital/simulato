@@ -1547,7 +1547,7 @@ actions () { ... },
 children () {
   return [
     {
-      type: 'Actionbar,
+      type: 'Actionbar',
       name: `${this.name}Actionbar`,
       state: { ... }
     },
