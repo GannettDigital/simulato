@@ -730,7 +730,7 @@ The elements section is used to describe what things we care about on the page, 
 
 The number one golden rule for selectors is to always use ids when possible. If you have control over the html you are modeling add id's to the elements you care about. Query selectors are brittle, and any change to the html page can break a query selector. Always, always, always prioritize ids when possible.
 
-That being said, there are many times you require in 3rd party libraries, or dont have the control of the html and query selectors are the best you are able to do.  When this is this case try to make as stable as a selector as you are able. For example, there is a sidebar with 3 links, each link is an anchor tag that is a direct child of a div with the id `sidebarId`. If the second link was the "active" link, and was given the class `active`, if I were to just open up chrome, have it tell me the selector it could give me a selector such as `'#sidebarId > a.active'`. At that given point in time, that it is selector, however if I click a different link it will not longer refer to the 2nd link.  A more stable querySelector would be `'#sidebarId > a:nth-child(2)'`, this will always refer to the second a tag even if it has the active class or not.
+That being said, there are many times you require in 3rd party libraries, or don't have the control of the html and query selectors are the best you are able to do.  When this is this case try to make as stable as a selector as you are able. For example, there is a sidebar with 3 links, each link is an anchor tag that is a direct child of a div with the id `sidebarId`. If the second link was the "active" link, and was given the class `active`, if I were to just open up chrome, have it tell me the selector it could give me a selector such as `'#sidebarId > a.active'`. At that given point in time, that it is selector, however if I click a different link it will not longer refer to the 2nd link.  A more stable querySelector would be `'#sidebarId > a:nth-child(2)'`, this will always refer to the second a tag even if it has the active class or not.
 
 It's good practice to only add elements you care about, that is, the elements used in the model section of the component. While a view may have 50 different html tags we could put in our elements, if only 5 are ones we care about for our model, those are the only 5 we should add to this section. While selenium will only actively grab data about the elements you put in the model (which costs execution time), it is a waste of your time to have selectors created for every single part of a view if we don't care about them all. In addition, all names must be unique inside a single component.
 
@@ -1870,6 +1870,118 @@ As seen in the abbreviated component above, inside the effects of the LOGIN acti
 
 Similar to other naming such as children and events, if something being stored in the data store is specific to an individual component, prepend the key name with `this.name`. This way, just like names and events, we will know exactly who that data belongs too, and we can ensure we retrieve what we expect to retrieve. 
 
+## Expected State
+
+The expected state is our primary tool to describe the system and its interactions. It contains the state of our components, as well as methods to manipulate and work with the components. `expectedState.modify()` and `expectedState.eventEmitter.emit()` has been gone over previously in the action and events sections of this documentation.
+
+### delete() / clear()
+
+`expectedState.delete(<name of component to delete>)` when called, will remove the specified component from the expected state, forever deleted from the expected state. Because this is removed, Simulato will no longer check anything regarding that component. This should be used with caution, because it should only be deleted if you really don't want the system to check for it any longer.  `expectedState.clear()` will called `delete` for every component currently inside the expected state, this is used when there are large state transitions to states we will never go back to.  A good example is in our `entry component` section, where we call `exepectedState.clear()` to clear out our entry component, and have a fresh empty state to begin describing the system.
+
+### stash() / pop()
+
+`expectedState.stash()` and `expectedState.pop()` will be used when we don't want to delete our state, but simply store it for later until we come back. When navigating through the UI of a system through test run executions, we create and add the components of the page into the expected state. If we were navigating into different tabs, into a modal, or a dropdown menu we still have the ability to navigate back to the previous state, we want a quick way to return to that previous state without having to create and add the components all over again.
+
+Let's assume we have a component `HomePage` that has an action `OPEN_ABOUT_US`. `OPEN_ABOUT_US` opens up a modal (pop up window), that displays some information and has a single button to close the modal.  When thinking about our expected state, we will have the state of the home page, that transitions to just the modal state, then once the modal is closed back to the homepage.  Nothing on the home page's expected state changes between transitions of state, we just want to tell Simulato to not assert on the home page state while the modal is opened. This is a prime example of using `expectedState.stash()` and `expectedState.pop()`.
+
+Example: 
+
+```
+type: 'HomePage'
+elements () { ... },
+model () { ... },
+actions () {
+  return {
+    OPEN_ABOUT_US: {
+      preconditions () { ... },
+      perform (callback) { ... },
+      effects (expectedState) {
+        expectedState.stash();
+        expectedState.createAndAddComponent({
+          type: 'AboutUsModal'
+          name: `${this.name}AboutUsModal`,
+          state: { ... }
+        });
+      }
+    }
+  };
+}
+```
+```
+type: 'AboutUsModal',
+elements () { ... },
+model () { ... },
+actions () {
+  return {
+    CLOSE_ABOUT_US: {
+      preconditions () { ... },
+      perform (callback) { ... },
+      effects (expectedState) {
+        expectedState.pop();
+      }
+    }
+  };
+}
+```
+
+As seen above when we open the modal, `OPEN_ABOUT_US`, it calls `expectedState.stash()` in the effects, putting everything in the current expected state onto the top of the stack of stashed expected states.  It then creates and adds the `AboutUsModal` component, placing it into the expected state.  At this point in time the only thing Simulato is running assertions on in the state is the the state of the `AboutUsModal`.  When we close the model, `CLOSE_ABOUT_US`, it calls `expectedState.pop()`. This will replace the current expected state, with the state on the top of the stack of stashed expected states, in this example it will bring back the state containing `HomePage`.  Using stash and pop allows us to easily go back to previous states, as well as "focus" in on a part of the state we want to perform actions in.  Something such as a dropdown box, we would stash the previous state as soon as we open the dropdown. This allows us to have simulato only perform actions available in the dropdown. If we left the entire state still available it could select any available action in both the previous state, and the dropdown which could cause conflicts such as having a button or link that is now covered by the dropdown box.
+
+While popping the state returns us back to our previous state, remember you can always modify the previous state as soon as it is popped back into the system.  However to keep in line with only modifying the state of the component where the action is declared, we should use events as previously discussed in the `events` section.  One important caveat is that only components currently in the state have their listeners registered. So if we emit an event inside `CLOSE_ABOUT_US` to communicate to `HomePage` that we have closed, we need to emit the event AFTER we call `expectedState.pop()` or else `HomePage` is not in the expected state to be able to hear the event.
+
+### runtime variables / getFromPage()
+
+When navigating through a UI, especially a dynamic website, there will be certain aspects on the page we don't know what will be there. We know there will be something there, and we know it will be text for example, we just don't know what that text is. Whenever we run into these situations we have a few choices to decide between:
+
+1. Is the text relevant to what we are testing? do we need to interact with that at all?
+  * If no, we don't need to model it
+2. Is checking the text is preset good enough?
+  * If so, we can create a simple model to make sure text is present, just not what the content is.
+3. We don't know what the content is now, however we do care about it because
+  a. change to some other text, and we need to make sure it changes
+  b. We don't know the value now, but we will later and we need to perform some validation on the text
+  c. we can use whatever that context is later.
+    * If so, we can create a model that captures the data using runtime variables
+
+runtime variables is just a name to indicate that the variable is declared during runtime, to actually get the information from the page we use `expectedState.getFromPage()`.  When using runtime variables there are a few warnings that need to be kept in mind. First and foremost the planner does not have access to the system under test, and runtime variable you use, will return as `undefined` inside the planner. This means they cannot be used for meaningful preconditions, as they will always be `undefined` which is most likely different than the actual values inside the system.  Second, in most cases, using getFromPage() inside effects does not create meaningful tests. If I have an action, and the effects of that action are only things I getFromPage(), that doesn't evaluate any meaningful change in the system.
+
+Most use cases of getFromPage() are when you are creating a component, first adding it into the state, and you don't know the state it will initially be created in.  It can also be used for getting information from the page such as a search result, or any dynamically loaded content.
+
 ## Dynamic Areas
 
-## Run Time Variables
+In the previous expected state section we talked about clearing, stashing and poping entire states. Dyanamic Areas gives us the ability to do the same, but smaller defined sections of the whole state.  While creating components, we can defined the dynamic area of state, essentially grouping that component under a named field.
+
+```
+expectedState.createAndAddComponent({
+  type: 'ComponentA'
+  name: 'componentA'
+  state: { ... },
+  options: { ... },
+  dynamicArea: 'mainContent'
+});
+
+expectedState.createAndAddComponent({
+  type: 'ComponentB'
+  name: 'componentB'
+  state: { ... },
+  options: { ... },
+  dynamicArea: 'sidebarContent'
+});
+
+expectedState.createAndAddComponent({
+  type: 'ComponentC'
+  name: 'componentC'
+  state: { ... },
+  options: { ... },
+  dynamicArea: [ 'mainContent', 'sidebarContent' ] 
+});
+```
+
+In the above examples we are defining 2 dynamic areas `mainContent` and `sidebarContent`. When we create the 3 components `mainContent` would have both `componentA` and `componentC`. `sidebarContent` would have both `componentB` and `componentC`.  Note that components can belong to more than 1 dynamic area.
+
+### clearDynamicArea()
+
+`expectedState.clearDynamicArea(<name of dynamic area>)` will call `expectedState.delete()` for each component specified as part of that dynamic area.  All warnings apply for calling clear/delete as before, any component deleted will no longer be checked by simulato, it does not check that the elements were deleted from the html, it just not long runs assertions on that component.
+
+### stashDynamicArea() / retrieveDynamicArea()
+
+`expectedState.stashDynamicArea()` and `expectedState.retrieveDynamicArea()` correspond to stash and pop, but again on a smaller scale of dynamic areas.  This is useful to use when you have UI elements such as tabs, that cycle through small areas of being displayed on the UI.  The only difference is `retrieveDynamicArea` will retrieve a specified dynamic area, rather than following a stack style pop.
