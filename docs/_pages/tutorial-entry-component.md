@@ -4,11 +4,11 @@ title: "Entry Component"
 toc: false
 ---
 
-The first model for any system modeled using Simulato is an entry component. This tells Simulato where it should start when planning occurs, and can be thought of as the entry into the system.  For most web UIs this is as simple as navigating to the website.
+The first component for any system modeled using Simulato is an entry component. This tells Simulato where it should start when planning occurs, and can be thought of as the entry into the system.  For most web UIs, this is as simple as navigating to the website.
 
 An entry component looks like any other component, but it also includes a special "entryCompomemt" property.
 
-Let's start creating our entry component, giving it a unique `type`. This component will detail out only 1 action, navigating to the the Simulato test site, as such we will give it a `type` of 'NavigateToTestSite', as well as the file name 'navigateToTestSite.model.js'. The file should be created in our components folder, and remember that `type` is always in PascalCase.
+Let's start creating our entry component, giving it a unique `type`. This component will detail out only 1 action, navigating to the the Simulato test site. As such, we will give it a `type` of 'NavigateToTestSite' as well as the file name 'navigateToTestSite.model.js'. The file should be created in our components folder. Remember that `type` is always in PascalCase.
 
 ```
 'use strict'
@@ -18,7 +18,7 @@ module.exports = {
 }
 ```
 
-When creating `elements` for our entry component specifically, we don't have anything in the system we want to select, in fact we are not even in the system yet to select anything. Since the purpose of the entry component is to get us into system, we will just return an empty array for elements.  We always need to return at least an empty array as `elements` is a required property.
+When creating `elements` for our entry component specifically, we don't have anything in the system we want to select, in fact we are not even in the system yet to select anything. Since the purpose of the entry component is to get us into system, we will just return an empty array for elements.  We always need to return at least an empty array because `elements` is a required property.
 
 ```
 'use strict'
@@ -47,7 +47,7 @@ module.exports = {
 }
 ```
 
-With our model section created, we are able to add the `entryComponent` property that differentiates entry components for other components.  Whenever a component is created and added to the expected state of the system, a unique  `name`, and an expected `state` must be provided.  Entry components are functionally no different, and a `name` and `state` must be provided. However, since we need some place to start, we provide this information directly in the component via the `entryComponent` property. This is a simple object that species a `name` and the expected `state`.
+With our model section created, we are able to add the `entryComponent` property that differentiates entry components for other components.  Whenever a component is created and added to the expected state of the system, a unique  `name`, and a component `state` must be provided.  Entry components are functionally no different, and a `name` and `state` must be provided. However, since we need some place to start, we provide this information directly in the component via the `entryComponent` property. This is a simple object that species a `name` and the component's `state`.
 
 ```
 'use strict'
@@ -67,16 +67,16 @@ module.exports = {
 }
 ```
 
-As seen above `name` is always camelCase, which helps us differentiate between `type` and `name`. With the presences of `entryComponent`, during Simualato's planning step, it will auto create this component, adding it into the expected state with the provided name, and provided state. This will be the base of all planning for test generation for our test site components.
+As seen above, `name` is always camelCase, which helps us differentiate between `type` and `name`. With the presence of the `entryComponent` property, Simualato will automatically create this component at the start of the planning step, adding it into the expected state with the provided name, and provided state. This will be the base of all planning for test generation for our test site components.
 
-Lastly, we need to create the `actions` property. Unlike the first component, there will be an action for our entry component, that action being the actual navigation to the the test site. The actions property must be a function that returns an object. The object contains key value pairs with each key being an action name, and the value an object with 4 main properties, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of the actions, however `preconditions` will be in almost every component besides your entry component. 
+Lastly, we need to create the `actions` property. Unlike the first component, there will be an action for our entry component. That action being the actual navigation to the the test site. The actions property must be a function that returns an object. The object contains key value pairs with each key being an action name, and the value an object with 4 main properties, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of an action, however `preconditions` will be in almost every component besides your entry component. 
 
-Since we are not relying on any part of our system to be in a certain state to navigate there, we can simply just not add `preconditions` to our action.
+Since we are not relying on any part of our system to be in a certain state to navigate there, we can simply omit `preconditions` to our action.
 
-`perform` is where we will tell the selenium driver how to perform our action, and actually does the interaction on the web page.  Currently Simulato only supports base javascript selenium, whos documentation can be found [here](http://seleniumhq.github.io/selenium/docs/api/javascript/index.html).  Both driver, and By are provided globally via Simulato, and are used when constructing the perform block.  Selenium uses promises to handle the synchronous nature of perform driver actions to the webpage, which can all be read about inside its documentation.  However, as promises are not used in Simulato, a callback is provided by Simulato, into to the perform block, this must be called inside the perform block to tell Simulato this step is complete. When using selenium driver the most common actions we have found used are `findElement()`, `click()`, `sendKeys()`, and `then()`. We use `then()` as the final call the the selenium promise chain to convert from promise to our Simulato callback scheme. In the world of promises they can resolve differently, either success or reject. The first callback in `.then(callback, callback)` is called if the promise throws no errors, and is considered a success, while the second is called if an error is thrown. For converting it back to Simulato's callback scheme, we want to call the callback for either a promise success, or promise reject, which is why we pass callback in twice.
+`perform` where we will tell the Selenium driver how to perform our action and actually interact with the web page.  Currently, Simulato only supports base JavaScript Selenium, the documentation can be found [here](http://seleniumhq.github.io/selenium/docs/api/javascript/index.html).  Both `driver`, `until`, and `By` are provided globally via Simulato, and are used when constructing the perform block.  Selenium uses promises to handle the synchronous nature of `driver` actions to the webpage, which can be read about inside its documentation.  However, as promises are not used in Simulato, a callback is provided  into to the perform block. This must be called inside the perform block to tell Simulato this step is complete. When using the Selenium driver the most common actions we have found used are `findElement()`, `click()`, and `sendKeys()`. We use the common `then()` function all promises have as the final call in the Selenium promise chain to convert from promises to Simulato's callback scheme. In the world of promises they either resolve (success) or reject (fail). The first callback in `.then(callback, callback)` is called if the promise throws no errors, and is considered a success, while the second is called if an error is thrown. For converting it back to Simulato's callback scheme, we want to call the callback for either a resolve or a reject which is why we pass the callback in twice.
 
 
-For `NavigateToPresto` we want our action to use one of the more uncommon driver actions `get()`. This tells Selenium to open up a browser, and navigate to the url provided. As with all perform blocks we need to to tell Simulato when the perform block is finished, which we do by calling the callback provided by Simulato in the perform function.
+For `NavigateToPresto` we want our action to use one of the more uncommon driver actions `get()`. This tells Selenium to open up a browser, and navigate to the url provided. As with all perform blocks, we need to to tell Simulato when the perform block is finished. We do this by calling the callback provided by Simulato in the perform function.
 
 ```
 'use strict'
@@ -106,13 +106,13 @@ module.exports = {
 }
 ```
 
-When creating actions names, we use all caps and underscores similar to constants. Originally when Simulato was being developed action names had to be unique, as each component was only used once. However as development continued we created the ability to reuse components, and action names were no longer unique, however the standard of all caps action names remained.
+When creating action names, we use all caps and underscores similar to constants. Originally, when Simulato was being developed action names had to be unique, as each component was only used once. However as development continued we created the ability to reuse components, and action names were no longer unique, however, the standard of all caps action names remained.
 
 When creating the url for `driver.get()` make sure you use the port your machine assigned to the test app.
 
-Now that we have our `perform` created, we need to tell Simulato the expected `effects` of the action. This will tell Simulato how we want to affect the expected state of our system.  In our current example, the only thing in our state is the entryComponent that was auto created 'navigateToTestSite' with an empty object for its expected state. Since we no longer care about the state of our entry component, we can remove that from the expected state with either `expectedState.delete('navigateToTestSite')` or more simply `expectedState.clear()` which will delete everything from the state (which is just `navigateToTestSite` at this point).
+Now that we have our `perform` created, we need to tell Simulato the expected effects of the action. This is done in the `effects` function of our action. This will tell Simulato how we want to change the expected state of our system.  In our current example, the only thing in our state is the entryComponent, `navigateToTestSite`, that was automatically created with an empty object for its state. Since we no longer care about the state of our entry component, we can remove that from the expected state with either `expectedState.delete('navigateToTestSite')` or more simply `expectedState.clear()` which will delete everything from the state (which is just `navigateToTestSite` at this point).
 
-In the [previous section](/tutorial-first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about expected state can be found [here](/expected-state/).
+In the [previous section](/tutorial-first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here](/expected-state/).
 
 ```
 'use strict'
