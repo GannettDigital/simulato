@@ -901,6 +901,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         let next;
         let callback;
         let Emitter;
+        let configHandler;
         let forwardStateSpaceSearch;
 
         beforeEach(function() {
@@ -920,9 +921,13 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             sinon.spy(Emitter, 'mixIn');
             next = sinon.stub();
             callback = sinon.stub();
+            configHandler = {
+                get: sinon.stub(),
+            };
+            sinon.spy(console, 'log');
 
             mockery.registerMock('../../util/emitter.js', Emitter);
-            mockery.registerMock('../../util/config-handler.js', {});
+            mockery.registerMock('../../util/config-handler.js', configHandler);
             mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
             forwardStateSpaceSearch = require(
@@ -937,6 +942,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         afterEach(function() {
+            console.log.restore();
             mockery.resetCache();
             mockery.deregisterAll();
             mockery.disable();
@@ -991,6 +997,99 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
                 generator.next(next);
 
                 expect(forwardStateSpaceSearch.goalActions.delete.args).to.deep.equal([['MY_ACTION']]);
+            });
+
+            it('should call configHandler.get once with the string \'debug\' as the parameter', function() {
+                forwardStateSpaceSearch.goalActions.has.returns(true);
+                forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                generator.next();
+                generator.next(next);
+
+                expect(configHandler.get.args).to.deep.equal([
+                    ['debug'],
+                ]);
+            });
+
+            describe('when configHandler.get returns the boolean true', function() {
+                describe('when goalActions.size equals the number 0', function() {
+                    it('should call console.log with a message reporting that paths to ' +
+                        'all actions were discovered', function() {
+                        configHandler.get.returns(true);
+                        forwardStateSpaceSearch.goalActions.has.returns(true);
+                        forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                        let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                        generator.next();
+                        generator.next(next);
+
+                        expect(console.log.args).to.deep.equal([
+                            ['\nFound a path to all 0 discovered action(s).'],
+                        ]);
+                    });
+                });
+
+                describe('when goalActions.size does not equal the number 0', function() {
+                    it('should call console.log three times', function() {
+                        configHandler.get.returns(true);
+                        forwardStateSpaceSearch.goalActions.has.returns(true);
+                        forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                        forwardStateSpaceSearch.goalActions.add('myComponent.MY_ACTION');
+                        let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                        generator.next();
+                        generator.next(next);
+
+                        expect(console.log.callCount).to.equal(3);
+                    });
+
+                    it('should call console.log with a message reporting the number of actions for which paths ' +
+                        'have been found', function() {
+                        configHandler.get.returns(true);
+                        forwardStateSpaceSearch.goalActions.has.returns(true);
+                        forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                        forwardStateSpaceSearch.goalActions.add('myComponent.MY_ACTION');
+                        let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                        generator.next();
+                        generator.next(next);
+
+                        expect(console.log.args[0]).to.deep.equal([
+                            '\nFound a path to 0 action(s).',
+                        ]);
+                    });
+
+                    it('should call console.log with the string \'Searching for a path to:\'', function() {
+                        configHandler.get.returns(true);
+                        forwardStateSpaceSearch.goalActions.has.returns(true);
+                        forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                        forwardStateSpaceSearch.goalActions.add('myComponent.MY_ACTION');
+                        let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                        generator.next();
+                        generator.next(next);
+
+                        expect(console.log.args[1]).to.deep.equal([
+                            'Searching for a path to:',
+                        ]);
+                    });
+
+                    it('should call console.log with forwardStateSpaceSearch.goalActions', function() {
+                        configHandler.get.returns(true);
+                        forwardStateSpaceSearch.goalActions.has.returns(true);
+                        forwardStateSpaceSearch.foundGoalActions.has.returns(false);
+                        forwardStateSpaceSearch.goalActions.add('myComponent.MY_ACTION');
+                        let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+
+                        generator.next();
+                        generator.next(next);
+
+                        expect(console.log.args[2]).to.deep.equal([
+                            forwardStateSpaceSearch.goalActions,
+                        ]);
+                    });
+                });
             });
 
             describe('if forwardStateSpaceSearch.predeterminedGoalAction is null', function() {
