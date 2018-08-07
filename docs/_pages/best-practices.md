@@ -8,7 +8,7 @@ This Documentation will go over best practices developers of Simulato have found
 
 ## File Structure
 
-When creating components, matching the system under test's file structure allows for ease of development.  It will allow anyone working with the HTML files to know which components represent that view so the components can be updated side by side with any changes to the view.  Constraining your component to only model what that is included with any given HTML will help keep models smaller, consistent with the system views, and help guide you create the component.
+When creating components, matching the system under test's file structure allows for ease of development.  It will allow anyone working with the HTML files to know which components represent that view so the components can be updated side by side with any changes to the view.  Constraining your component to only model what is included with any given HTML will help keep models smaller, consistent with the system views, as well as help guide you to create the component.
 
 System Under Test Files:
 
@@ -32,7 +32,7 @@ Test Files:
     - login.model.js
 ```
 
-As you can see all the components were appended with `.model.js` to help distinguish them from the views themselves, and let a user easily know these are models of the html.
+As you can see all the components were appended with `.model.js` to help distinguish them from the views themselves, and let a user easily know these are models of the HTML.
 
 Many times the created models for a system live in the same repository / file location as the system itself.  The same logic applies for where to put the tests, just inside a test folder in the main repository.  
 
@@ -70,22 +70,22 @@ For example, if inside the `profile.html` file, there is an HTML `<select>` tag 
 
 By keeping the the `profile` part the same and just adding `.dropdown` to the dropdown model, as well as putting them into a folder together, there is a clear grouping of those two models and both are needed to model the `profile.html` view.
 
-If you find that your system has very large complicated html views, don't be afraid to break the models down into multiple components, just remember to try and keep everything logically grouped so developers of the system know which models belong to which views.
+If you find that your system has very large complicated HTML views, don't be afraid to break the models down into multiple components, just remember to try and keep everything logically grouped so developers of the system know which models belong to which views.
 
 ## Naming
 
-This section will go into the details of names for your component's type, as well as how to choose names when creating and adding a component to your expected state.  In addition it will provide naming conventions for a components children, or any component it creates during actions.
+This section will go into the details of names for your component's type, as well as how to choose names when creating and adding a component to your expected state.  In addition, it will provide naming conventions for a component's children, or any component it creates while executing actions.
 
 ### Component Type
 
-Component type values should reflect directly back to the html they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language.
+Component type values should reflect directly back to the HTML they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language.
 
 Example:
 
 If the component is modeling a file `home-page.html`
 The type for that component should be `type: 'HomePage'`.
 
-In the case where multiple components comprise the same view, types should follow the naming you used for the files, following the standards in the `File Structure` section of this document.
+In the case where multiple components comprise the same view, types should follow the naming you used for the files namea, following the standards in the [File Structure section](/best-practices/#file-structure) of this document.
 
 Example: 
 
@@ -102,7 +102,7 @@ Example:
 `profile.model.js` would have `type: 'Profile'`
 `profile.dropdownmodel.js` would have `type: 'ProfileDropdown'`
 
-Many times when looking at a html file structure, files will have simple names such as `actionbar.html` or `index.html`. This would end up having multiple components with the same `type`, which isn't allowed in Simulato.  In this situation prepending the folder names allows to create unique `type` values, as multiple files of the same name are not allowed in a folder.
+Many times when looking at a HTML file structure, files will have simple names such as `actionbar.html` or `index.html`. This would end up having multiple components with the same `type`, which isn't allowed in Simulato.  In this situation prepending the folder names allows to create unique `type` values, as multiple files of the same name are not allowed in a folder.
 
 Example:
 
@@ -148,7 +148,7 @@ The types from top to bottom would be the following
 
 Continue moving up the the folder structure until you can satisfy creating a unique `type` value.
 
-As you create components, you might want to create some that don't follow exactly with the system under test.  Maybe you see a pattern of views using plain html text inputs, or a checkboxes frequently. Instead of having to model them in each view, you want to create a reusable component you can just call as a child to reduce model development time.  There is also your entry component, the component that navigates into your system (usually just one). For these types of models, that don't relate one to one with a view of the system, they should be placed in folders outside file structure you are copying, but still under the components folder.
+As you create components, you might want to create some that don't follow exactly with the system under test.  Maybe you see a pattern of views using plain HTML text inputs, or a checkboxes frequently. Instead of having to model them in each view, you want to create a reusable component you can just call as a child to reduce model development time.  There is also your entry component, the component that navigates into your system (usually just one). For these types of models, that don't relate one to one with a view of the system, they should be placed in folders outside file structure you are copying, but still under the components folder.
 
 ```
 - components
@@ -449,7 +449,7 @@ Inside the effects of our navigation we call expectedState.clear(), this will re
 
 #### Passing in a selector value for a reusable component:
 
-Going back to our form example, if I have form with two different input fields, these input fields will have different HTML selectors.  As a best practice always add id attribute to fields, more on this will be discussed in the `Elements` section of this documentation.  In order to pass in the selector value for each text input, we can use the options block as seen below:
+Going back to our form example, if I have form with two different input fields, these input fields will have different HTML selectors.  As a best practice always add id attribute to fields, more on this will be discussed in the [Elements section](/best-practices/#elements) of this documentation.  In order to pass in the selector value for each text input, we can use the options block as seen below:
 
 ```
 type: 'Form',
@@ -728,11 +728,11 @@ Remember, options can have whatever a user needs it. If that is a String, a Bool
 
 The elements section is used to describe what things we care about on the page, and more specifically how selenium can find them.  We previously went over using `this.options` for making selectorss more dynamic, so this section will just cover good practices when creating selectors.
 
-The number one golden rule for selectors is to always use ids when possible. If you have control over the html you are modeling add id's to the elements you care about. Query selectors are brittle, and any change to the html page can break a query selector. Always, always, always prioritize ids when possible.
+The number one golden rule for selectors is to always use ids when possible. If you have control over the HTML you are modeling add id's to the elements you care about. Query selectors are brittle, and any change to the HTML page can break a query selector. Always, always, always prioritize ids when possible.
 
-That being said, there are many times you require in 3rd party libraries, or don't have the control of the html and query selectors are the best you are able to do.  When this is this case try to make as stable as a selector as you are able. For example, there is a sidebar with 3 links, each link is an anchor tag that is a direct child of a div with the id `sidebarId`. If the second link was the "active" link, and was given the class `active`, if I were to just open up chrome, have it tell me the selector it could give me a selector such as `'#sidebarId > a.active'`. At that given point in time, that it is selector, however if I click a different link it will not longer refer to the 2nd link.  A more stable querySelector would be `'#sidebarId > a:nth-child(2)'`, this will always refer to the second a tag even if it has the active class or not.
+That being said, there are many times you require in 3rd party libraries, or don't have the control of the HTML and query selectors are the best you are able to do.  When this is this case try to make as stable as a selector as you are able. For example, there is a sidebar with 3 links, each link is an anchor tag that is a direct child of a div with the id `sidebarId`. If the second link was the "active" link, and was given the class `active`, if I were to just open up chrome, have it tell me the selector it could give me a selector such as `'#sidebarId > a.active'`. At that given point in time, that it is selector, however if I click a different link it will not longer refer to the 2nd link.  A more stable querySelector would be `'#sidebarId > a:nth-child(2)'`, this will always refer to the second a tag even if it has the active class or not.
 
-It's good practice to only add elements you care about, that is, the elements used in the model section of the component. While a view may have 50 different html tags we could put in our elements, if only 5 are ones we care about for our model, those are the only 5 we should add to this section. While selenium will only actively grab data about the elements you put in the model (which costs execution time), it is a waste of your time to have selectors created for every single part of a view if we don't care about them all. In addition, all names must be unique inside a single component.
+It's good practice to only add elements you care about, that is, the elements used in the model section of the component. While a view may have 50 different HTML tags we could put in our elements, if only 5 are ones we care about for our model, those are the only 5 we should add to this section. While selenium will only actively grab data about the elements you put in the model (which costs execution time), it is a waste of your time to have selectors created for every single part of a view if we don't care about them all. In addition, all names must be unique inside a single component.
 
 ## Model
 
@@ -872,7 +872,7 @@ model () {
 },
 ```
 
-When declaring a property on the model as a function (as seen above), the elements object is automatically passed in by Simulato. The elements object has a property for each element created in the elements section, with they key of the name you created. Accessing that element will provide you access to the properties described above.  When looking at the class attribute in html, it's value will be a string of all class names. For our example we check the string for the class we care about, evaluating to true or false accordingly.  We can now modify our `DELETE_TEXT` action to use the `locked` property of the model.
+When declaring a property on the model as a function (as seen above), the elements object is automatically passed in by Simulato. The elements object has a property for each element created in the elements section, with they key of the name you created. Accessing that element will provide you access to the properties described above.  When looking at the class attribute in HTML, it's value will be a string of all class names. For our example we check the string for the class we care about, evaluating to true or false accordingly.  We can now modify our `DELETE_TEXT` action to use the `locked` property of the model.
 
 ```
 actions.DELETE_TEXT = {
@@ -1104,7 +1104,7 @@ Perform is where we will tell the selenium driver how to perform our action, and
 
 Example: 
 
-To continue with our checkbox actions, lets fill out the perform block for CHECK_CHECKBOX1. We know to check a checkbox in an html system you just have to click it. So first we need to have the selenium driver find the element, click it, then we can call our callback telling Simulato we are finished with the perform block.
+To continue with our checkbox actions, lets fill out the perform block for CHECK_CHECKBOX1. We know to check a checkbox in an HTML system you just have to click it. So first we need to have the selenium driver find the element, click it, then we can call our callback telling Simulato we are finished with the perform block.
 
 ```
 type: 'CheckboxPage',
@@ -1168,7 +1168,7 @@ When creating the effects block, keep to the standard of only modifying yourself
 
 Example:
 
-To continue fleshing out our checkbox example, when we perform the action CHECK_CHECKBOX1, the effect of the html should be that the html elements `checked` property should now be true. We will modify the expected state of our checkboxPage to reflect this.
+To continue fleshing out our checkbox example, when we perform the action CHECK_CHECKBOX1, the effect of the HTML should be that the HTML elements `checked` property should now be true. We will modify the expected state of our checkboxPage to reflect this.
 
 ```
 type: 'CheckboxPage',
@@ -1276,7 +1276,7 @@ actions () {
 
 As seen above, we are following the standard of modify only the component the action is in. Following the standard, it will make it so most times you call `expectedState.modify()`, you will pass in `this.name` to specify which component added to the state you want to modify. When providing `expected.modify()` a callback, we are using the ES6 standard arrow notation.  The parameter passed into the callback is the expected state object of that component as it currently is inside the expected state. In our example we know that expected state object, which follows the model of this component, has a checkbox1 property, which has a checked property, which we now want to set to true.  If you are ever unsure what properties will be passed back refer to the model section of the component you are modifying. 
 
-In many cases, performing actions in one component will affect another component's state. Since the best practice is to only modify ourselves, we need a way to tell other components that our action was performed.  This concept is what led to the development of the event system inside our actions, which is described in detail in the events section of this document.
+In many cases, performing actions in one component will affect another component's state. Since the best practice is to only modify ourselves, we need a way to tell other components that our action was performed.  This concept is what led to the development of the event system inside our actions, which is described in detail in the [events section](/best-practices/#events) of this document.
 
 ### Parameters
 
@@ -1322,7 +1322,7 @@ As seen above, the `inputText` is created inside the parameters block, and is pr
 
 ## Reusable Components
 
-With the growing popularity of reusable components for front end design, many views inside a particular site will call "mini views", or small templates rather than hard coding that section of the html over and over.  We can create components in this exact way, creating reusable components that we can call as children to ease development. Looking back at our checkbox example we used in the actions section, we created the following component: 
+With the growing popularity of reusable components for front end design, many views inside a particular site will call "mini views", or small templates rather than hard coding that section of the HTML over and over.  We can create components in this exact way, creating reusable components that we can call as children to ease development. Looking back at our checkbox example we used in the actions section, we created the following component: 
 
 ```
 type: 'CheckboxPage',
@@ -1527,17 +1527,17 @@ children () {
 }
 ```
 
-There are a lot of things going on in this example, that are explained in various parts through this documentation. We are using the `this` context for both `name` and `options`, more details which can be found in the `this` section of this documentation. We are creating the preconditions, perform, and effects following the `actions` section of this documentation. We are following naming conventions for children and components as seen in the `naming` section.  At lastly we are using `children` that will be expanded on in the following children section of this document.
+There are a lot of things going on in this example, that are explained in various parts through this documentation. We are using the `this` context for both `name` and `options`, more details which can be found in the [this section](/best-practices/#this-context) of this documentation. We are creating the preconditions, perform, and effects following the [actions section](/best-practices/#actions) of this documentation. We are following naming conventions for children and components as seen in the `naming` section.  At lastly we are using `children` that will be expanded on in the following [children section](/best-practices/#children) of this document.
 
 The important thing to remember is, if we can abstract some part of the system, and make it easier on us to not have to write as much code, we should.
 
 ## Children
 
-Many sites contain a hierarchical view, for example a home page could call multiple views such as the left sidebar, or the top actionbar, which in turn those views could call numerous links and buttons. Continuing with our standard of mimicking the html structure with our components as closely as possible, we want to create these sub views as children inside the component for the main view.
+Many sites contain a hierarchical view, for example a home page could call multiple views such as the left sidebar, or the top actionbar, which in turn those views could call numerous links and buttons. Continuing with our standard of mimicking the HTML structure with our components as closely as possible, we want to create these sub views as children inside the component for the main view.
 
 Example:
 
-We have a view, `home-page.html`. We will assume that view will call 2 other views directly from the html of the home page view. It calls `actionbar.html` as well as `home-sidenav.html`.  To create our `HomePage` children section, we would want to add 2 children, one for `Actionbar` and one for `HomeSidenav`. The children section of our `HomePage` component would be as follows:
+We have a view, `home-page.html`. We will assume that view will call 2 other views directly from the HTML of the home page view. It calls `actionbar.html` as well as `home-sidenav.html`.  To create our `HomePage` children section, we would want to add 2 children, one for `Actionbar` and one for `HomeSidenav`. The children section of our `HomePage` component would be as follows:
 
 ```
 type: 'HomePage',
@@ -1560,9 +1560,9 @@ children () {
 }
 ```
 
-As seen above, this returns 2 children inside the `HomePage` component. This matches the home page view, and its always best practice to match html we are modeling.  This shows two different styles of naming, as stated above in the naming section. As a quick recap, assuming `ActionBar` is a reused component we name the child `${this.name}Actionbar`, this way we know it will be the home pages actionbar. However for `HomeSidenav`, it's a one time view, only `HomePage` calls `homeSidenav`, because of this we can give it a name that doesn't use `this.name`, however using `this.name` is still valid.  When creating the children, placing them in the order the html file calls them makes it easy to scan an html, along with a component and quickly identify what each child represents.
+As seen above, this returns 2 children inside the `HomePage` component. This matches the home page view, and its always best practice to match HTML we are modeling.  This shows two different styles of naming, as stated above in the naming section. As a quick recap, assuming `ActionBar` is a reused component we name the child `${this.name}Actionbar`, this way we know it will be the home pages actionbar. However for `HomeSidenav`, it's a one time view, only `HomePage` calls `homeSidenav`, because of this we can give it a name that doesn't use `this.name`, however using `this.name` is still valid.  When creating the children, placing them in the order the HTML file calls them makes it easy to scan an HTML, along with a component and quickly identify what each child represents.
 
-Another common use case for children is when a certain html view has common html elements such as `<button>`, `<input type="text">`, or `<a>`. To avoid having to create an element section, model section, and action section for each use in a view, we can create a reusable component that we can add as children.  A detailed example of this can be found in the `Reusable Component` section of this documentation.
+Another common use case for children is when a certain HTML view has common HTML elements such as `<button>`, `<input type="text">`, or `<a>`. To avoid having to create an element section, model section, and action section for each use in a view, we can create a reusable component that we can add as children.  A detailed example of this can be found in the [Reusable Component section](/best-practices/#reusable-components) of this documentation.
 
 ## Events
 
@@ -1872,7 +1872,7 @@ Similar to other naming such as children and events, if something being stored i
 
 ## Expected State
 
-The expected state is our primary tool to describe the system and its interactions. It contains the state of our components, as well as methods to manipulate and work with the components. `expectedState.modify()` and `expectedState.eventEmitter.emit()` has been gone over previously in the action and events sections of this documentation.
+The expected state is our primary tool to describe the system and its interactions. It contains the state of our components, as well as methods to manipulate and work with the components. `expectedState.modify()` and `expectedState.eventEmitter.emit()` has been gone over previously in the [actions](/best-practices/#actions) and [events](/best-practices/#events) sections of this documentation.
 
 ### delete() / clear()
 
@@ -1980,7 +1980,7 @@ In the above examples we are defining 2 dynamic areas `mainContent` and `sidebar
 
 ### clearDynamicArea()
 
-`expectedState.clearDynamicArea(<name of dynamic area>)` will call `expectedState.delete()` for each component specified as part of that dynamic area.  All warnings apply for calling clear/delete as before, any component deleted will no longer be checked by simulato, it does not check that the elements were deleted from the html, it just not long runs assertions on that component.
+`expectedState.clearDynamicArea(<name of dynamic area>)` will call `expectedState.delete()` for each component specified as part of that dynamic area.  All warnings apply for calling clear/delete as before, any component deleted will no longer be checked by simulato, it does not check that the elements were deleted from the HTML, it just not long runs assertions on that component.
 
 ### stashDynamicArea() / retrieveDynamicArea()
 
