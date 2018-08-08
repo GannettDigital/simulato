@@ -13,6 +13,10 @@ docs:
         url : /tutorial-first-component/
       - title: "Entry Component"
         url: /tutorial-entry-component/
+      - title: "Reusable Components Part 1"
+        url: /tutorial-reusable-components-pt1/
+      - title: "Reusable Components Part 2"
+        url: /tutorial-reusable-components-pt2/
   - title: "Documentation"
     children:
       - title: 'Components'
