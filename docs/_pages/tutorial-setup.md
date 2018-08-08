@@ -6,7 +6,7 @@ toc: false
 
 ## Prerequisites
 
-Simulato is built using Node.js, published as an NPM package to facilitate in UI testing of HTML based systems.  As we develop models throughout this tutorial a basic understand of javascript, Node, and HTML is assumed.  Any complex uses of javascript/Node will have a quick explanation as we dont want the language to get in the way of the modeling process.
+Simulato is built using Node.js and published as an NPM package to facilitate in UI testing of HTML based systems.  As we develop models throughout this tutorial a basic understand of JavaScript, Node.js, and HTML is assumed.  Any complex uses of JavaScript/Node.js will have a quick explanation as we dont want the language to get in the way of the modeling process.
 
 ## Dependencies Setup
 
@@ -19,18 +19,17 @@ In order to get Simulato up and running there are a few system dependencies we n
 * Chrome
   * Currently chrome is the only supported driver/browser
 * Chromedriver (http://chromedriver.chromium.org/)
-  * Needs to correspond with the version of chrome on your system
-  * Currently chrome is the only supported driver/browser
+  * Needs to correspond with the version of Chrome on your system
 
 ## Project Setup
 
-We will create new project environment to create our components in as we follow this tutorial. First lets create new folder to store our new project. Throughout this tutorial we will assume you are using a bash style terminal.
+We will create a new project environment as we follow this tutorial. First lets create a new folder to store our project. Throughout this tutorial we will assume you are using a bash style terminal.
 
 ```
 $ mkdir simulato-tutorial && cd simulato-tutorial
 ```
 
-Once inside the project folder we need to set up a basic Node environment. We will call `npm init` in the terminal, this will ask some default questions, hitting enter to use defaults is all we need to do.
+Once inside the project folder, we need to set up a basic Node.js environment. We will call `npm init` in the terminal, this will ask some default questions, hitting enter to use defaults is all we need to do.
 
 ```
 $ npm init
@@ -57,15 +56,15 @@ Now that we have our package.json we can install Simulato using NPM.
 $ npm install simulato --save
 ```
 
-This tutorial will base all examples of the test site created used to run acceptance tests for Simulato.  This is available as NPM package that we can install and run locally to have an environment to test, so lets install that too.
+This tutorial will base all examples off the test site created used to run acceptance tests for Simulato.  This is available as an NPM package that we can install and run locally to have an environment to test, so lets install that too.
 
 ```
 $ npm install simulato-test-site --save
 ```
 
-Lets now add a script into our package.json that will allow us to easily spin up the test site so we can access it, and run our tests we create against it.  Inside the package.json files "scripts" section we need to add `"start-test-site": "npm explore simulato-test-site -- npm start"`.  More about npm scripts can be found [here](https://docs.npmjs.com/misc/scripts). This script simply spins up our test site by calling the test sites script `start`.
+Let's now add a script into our package.json that will allow us to easily spin up the test site so we can access it and run our tests against it.  Inside the package.json file add `"start-test-site": "npm explore simulato-test-site -- npm start"` to the "scripts" section.  More about NPM scripts can be found [here](https://docs.npmjs.com/misc/scripts). This script simply spins up our test site by calling the test site's `start` script.
 
-Our package.json should now contain our two dependencies, as well as our custom script.
+Our package.json should now contain our two dependencies as well as our custom script.
 
 ```
 {
@@ -94,7 +93,7 @@ To make sure our site is all set up and ready to go lets simply call the script,
 $ npm run start-test-site
 ```
 
-The last part of our setup is to create a folder where we can add our components as we create them throughout this tutorial. We will simply create an empty folder in our project called `components`. This should leave us with the final project set up as follows, with folders indicated with '-':
+The last part of our setup is to create a folder where we can add our components as we create them throughout this tutorial. We will simply create an empty folder in our project called `components`. This should leave us with the final project file strucutre show below, with folders indicated with '-':
 
 ```
 - components
