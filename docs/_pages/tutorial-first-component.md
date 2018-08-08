@@ -5,7 +5,7 @@ toc: false
 classes: wide
 ---
 
-Now that we have our environment ready as detailed in the [setup](/tutorial-setup), we can start creating components to model our system.  Usuallym the first component created would be our entry component, a special type of component that describes how to enter the system. For the purpose of this tutorial we will start by creating our main site layout component, as this will help us learn the properties in a model.  After we will create the entry component that gets us there.
+Now that we have our environment ready as detailed in the [setup](/tutorial-setup), we can start creating components to model our system.  Usually the first component created would be our entry component, a special type of component that describes how to enter the system. For the purpose of this tutorial we will start by creating our main site layout component, as this will help us learn the properties in a model.  After we will create the entry component that gets us there.
 
 First, lets create the file in our system for our first component. This component will be modeling our 'mainSiteLayout.html' view, so let's create a file inside the components folder called 'mainSiteLayout.model.js'.
 
@@ -32,7 +32,7 @@ Every component needs a unique `type` property. This can be thought of as simila
 
 Whenever we create and add a component we will add components of a specified `type` while providing a unique `name`.
 
-**Note:** that just like classes or constructors, we want to use PascalCase so we can quickly differentiate `type` values from other properties' values such a `name`s.
+**Note:** that just like classes or constructors, we want to use PascalCase so we can quickly differentiate `type` values from other properties' values such as `name`s.
 {: .notice--info}
 
 
@@ -75,7 +75,7 @@ module.exports = {
 }
 ```
 
-When creating element objects, each must have a unique `name`. In addition, needs `selector` object that contains both `type` and `value`. The `selector.type` property will tell Simulato what browser selector function to run. `selector.value` will tell Simualto what value to run the selector function with. The current supported selectors can be found in the [elements section](/components/#elements) of the components documentation.  When we looked at the test site page there was more going on that just a header, but for creating our first component we will just worry about the header for now.  As the tutorial progresses, we will flesh out each component we create to make a full model of our system. 
+When creating element objects, each must have a unique `name`. In addition, it needs a `selector` object that contains both `type` and `value`. The `selector.type` property will tell Simulato what browser selector function to run. The `selector.value` will tell Simualto what value to run the selector function with. The current supported selectors can be found in the [elements section](/components/#elements) of the components documentation.  When we looked at the test site page there was more going on than just a header, but for creating our first component we will just worry about the header for now.  As the tutorial progresses, we will flesh out each component we create to make a full model of our system.
 
 Behind the scenes, Simulato converts our returned 'elements' into a single object. Each property on the object is the 'name' of an element, with its value an object containing the properties: `name`, `isDisplayed`, `disabled`, `innerHTML`, `innerText`, `hidden`, `value`, `checked`, `attributes`, `disabled`, and `webElement`.  More information regarding these properties can be found in the [elements section](/components/#elements) of the components documentation.
 {: .notice--info}
@@ -111,7 +111,7 @@ module.exports = {
 }
 ```
 
-There are a few things going on in the above model, so let's break everything down. First off, the structure of our model object is up to us, we can decide that structure according to what makes sense for us. This is allows us to make it more human readable.  We have put the information about the header into a 'header' property of the model, this helps us group it so it makes sense for us. Now that we have our header grouping, we need to detail out what we want to know. Which for us is just that it is displayed. We created a displayed property inside the header, again because this is more human readable, and gave it the value 'siteHeader.isDisplayed'. The string provided is used to call [lodash's get function](https://lodash.com/docs/4.17.10#get) to safely access properties inside the created `elements` object. In this case, it will go in to the created `elements` object, and access `siteHeader.isDisplayed`, which will let us know if our 'siteHeader' element is displayed, either true or false.
+There are a few things going on in the above model, so let's break everything down. First off, the structure of our model object is up to us, we can decide that structure according to what makes sense for us. This allows us to make it more human readable.  We have put the information about the header into a header property on the model, this helps us group it so it makes sense for us. Now that we have our header grouping, we need to detail out what we want to know. Which for us is just that it is displayed. We created a displayed property inside the header, again because this is more human readable, and gave it the value `siteHeader.isDisplayed`. The string provided is used to call [lodash's get function](https://lodash.com/docs/4.17.10#get) to safely access properties inside the created `elements` object. In this case, it will go in to the created `elements` object, and access `siteHeader.isDisplayed`, which will let us know if our `siteHeader` element is displayed, either true or false.
 
 The last required property for every component is the `actions` property. `actions` is a function that returns an object which details all actions that can be performed related to our component. For our current component, we will not be adding any actions at this point since we just want to set up the basic component. However, since `actions` is a required property we need to return an empty object.
 
@@ -144,4 +144,4 @@ module.exports = {
 }
 ```
 
-With the completion of `actions` we have finished our first component. But how do we use this component with Simulato? We need a way to get into the system so we can utilize to the `MainSiteLayout`.  As alluded to earlier, we still need our entry component, the component that allows us into the system. Let's create that [next](/tutorial-entry-component/).
+With the completion of `actions` we have finished our first component. But how do we use this component with Simulato? We need a way to get into the system so we can utilize the `MainSiteLayout` component.  As alluded to earlier, we still need our entry component, the component that allows us into the system. Let's create that [next](/tutorial-entry-component/).

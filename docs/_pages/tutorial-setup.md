@@ -13,13 +13,13 @@ Simulato is built using Node.js and published as an NPM package to facilitate in
 
 In order to get Simulato up and running there are a few system dependencies we need to have installed.
 
-* Node.js (https://nodejs.org/en/)
+* Node.js <https://nodejs.org/en/>
   * Simulato supports the latest LTS version of node
 * NPM
   * Installs with Node.js
 * Chrome
   * Currently chrome is the only supported driver/browser
-* Chromedriver (http://chromedriver.chromium.org/)
+* Chromedriver <http://chromedriver.chromium.org/>
   * Needs to correspond with the version of chrome on your system
 
 ## Project Setup
@@ -94,7 +94,7 @@ To make sure our site is all set up and ready to go lets simply call the script,
 $ npm run start-test-site
 ```
 
-The last part of our setup is to create a folder where we can add our components as we create them throughout this tutorial. We will simply create an empty folder in our project called `components`. This should leave us with the final project file strucutre show below, with folders indicated with '-':
+The last part of our setup is to create a folder where we can add our components as we create them throughout this tutorial. We will simply create an empty folder in our project called `components`. This should leave us with the final project file structure shown below, with folders indicated with '-':
 
 ```
 - components
