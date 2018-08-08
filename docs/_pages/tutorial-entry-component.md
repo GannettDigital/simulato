@@ -112,7 +112,7 @@ When creating the url for `driver.get()` make sure you use the port your machine
 
 Now that we have our `perform` created, we need to tell Simulato the expected effects of the action. This is done in the `effects` function of our action. This will tell Simulato how we want to change the expected state of our system.  In our current example, the only thing in our state is the entryComponent, `navigateToTestSite`, that was automatically created with an empty object for its state. Since we no longer care about the state of our entry component, we can remove that from the expected state with either `expectedState.delete('navigateToTestSite')` or more simply `expectedState.clear()` which will delete everything from the state (which is just `navigateToTestSite` at this point).
 
-In the [previous section](/tutorial-first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here](/expected-state/).
+In the [previous section](/tutorial-first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such, we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here](/expected-state/).
 
 ```
 'use strict'
@@ -166,15 +166,15 @@ model () {
 },
 ```
 
-When we created the component, and its `model`, we detailed out to Simulato what all components of this `type` needs when created and added to the expected state. As such our corresponding expected state must match the same structure.  Since we are directly adding this state into our expected state, we need to provide values for what we expect, which in this cause is we expect the `header.displayed` to be true.
+When we created the component, and its `model`, we detailed out to Simulato what all components of this `type` needs when created and added to the expected state. As such, our corresponding expected state must match the same structure.  Since we are directly adding this state into our expected state, we need to provide values for what we expect, which, in this case, we expect the `header.displayed` to be true.
 
-With the completion of our `actions` we now have 2 functioning components. We have the `type` 'NavigateToTestSite' and the `type` 'MainSiteLayout'.  As an entry component 'NavigateToTestSite' will automatically create and add a component into the state with the `name` 'navigateToTestSite'. 'navigateToTestSite' provides an action that will NAVIGATE_TO_TEST_SITE. This actions effects will clear out the state, then add the component with the `name` 'mainSectionLayout'. When we add 'mainSectionLayout' we expect that the header will be displayed.
+With the completion of our `actions` we now have 2 functioning components. We have the `type` 'NavigateToTestSite' and the `type` 'MainSiteLayout'.  As an entry component 'NavigateToTestSite' will automatically be created and added into the expected state with the `name` 'navigateToTestSite'. 'navigateToTestSite' provides an action, `NAVIGATE_TO_TEST_SITE`,  that will go the test site url. The actions' effects will clear out the state, then add the component with the `name` 'mainSectionLayout'. When we add 'mainSectionLayout' we expect that the header will be displayed.
 
-We should now be able to generate tests using Simulato. Before we generate tests, lets create a folder we can use to specify where tests should be written to the disk. Inside the project main folder create a directory 'tests'.  By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  Back in the terminal inside our project folder we can now run the command to generate tests specifying the test generation output to the 'tests' folder.
+We should now be able to generate tests using Simulato. But before we generate tests, lets create a folder we can use to specify where tests should be written to the disk. Inside the project main folder create a directory named 'tests'.  By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  Back in the terminal inside our project folder we can now run the command to generate tests specifying the test generation output to the 'tests' folder.
 
 `$ simulato generate -o ./tests`
 
-Only 1 test should be generate at this point, performing the action `navigateToTestSite.NAVIGATE_TO_SITE`. The terminal output should show this, showing it found 1 / 1 actions, and the name of the action it found. We should be left with the following file structure.
+Only 1 test should be generated at this point, performing the action `navigateToTestSite.NAVIGATE_TO_SITE`. The terminal output should display this, showing it found 1 / 1 actions, and the name of the action it found. We should be left with the following file structure.
 
 ```
 - components
@@ -193,7 +193,7 @@ Now that we have the test let's run it!
 
 We are using different cli flags for both run and generate which can be read about [here](/cli/).
 
-Hopefully if all went well you should that your test passed. However, if not, this is a good time to do a few quick checks. Does a chrome window open on your machine? If not make sure you have chromedriver installed.  If the window did pop up, check the url, make sure it navigated to the correct place, make sure to check the port!  If a test failed in the effects, it will show you what the page state was, vs what you expected, we can use this to make sure our tests are working correctly. Let's say I go back into our entry component 'NavigateToTestSite'. Inside the effects of our action, I change that I expect the header to be displayed true, to false. That is I am incorrectly expecting the header to not be displayed, while we know it's true. Let's take a look at the terminal when we rerun our test.
+Hopefully, if all went well, you should see that your test passed. However, if not, this is a good time to do a few quick checks. Does a chrome window open on your machine? If not, make sure you have chromedriver installed.  If the window did pop up, check the url, make sure it navigated to the correct place, make sure to check the port!  If a test failed in the effects, it will show you what the page state was vs what you expected. We can use this to make sure our tests are working correctly. Let's say I go back into our entry component 'NavigateToTestSite'. Inside the effects of our action, I change that I expect the `header.displayed` from `true` to `false`. That is, I am incorrectly expecting the header to not be displayed, while we know it's true. Let's take a look at the terminal when we rerun our test.
 
 ```
 $ simulato run -T ./tests
@@ -231,4 +231,4 @@ Failed Tests:
                 Action: navigateToTestSite.NAVIGATE_TO_SITE Step: effects ActionIndex: 0
 ```
 
-In the above test run execution, I can see that my test failed. It tells me the action `navigateToTestSite.NAVIGATE_TO_SITE` failed, in the `effects`. It also specifies the action index, so that if the same action was run multiple times in one test, I will know which instance if I compare to the JSON test file. It then goes on to show me a detailed comparison of what I expected, vs what the actual page state was. As seen above, I expected the header to be displayed false, however Simulato when checking the actual page state found it was displayed true. We can use this to determine that either the test failed, or we created our model wrong.
+In the above test run, I can see that my test failed. It tells me the action `navigateToTestSite.NAVIGATE_TO_SITE` failed and it failed in the `effects` step. It also specifies the action index, so that if the same action was run multiple times in one test, I will know which instance if I look up the index in the JSON test file. It then goes on to show me a detailed comparison of what I expected vs what the actual page state was. As seen above, I expected the header to be displayed `false`, however, when Simulato checked the actual page state it found displayed to be `true`. We can use this to determine that either the test failed or we created our model wrong.
