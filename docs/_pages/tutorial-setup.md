@@ -62,7 +62,7 @@ This tutorial will base all examples off the test site created used to run accep
 $ npm install simulato-test-site --save
 ```
 
-Let's now add a script into our package.json that will allow us to easily spin up the test site so we can access it and run our tests  against it.  Inside the package.json file add `"start-test-site": "npm explore simulato-test-site -- npm start"` to the "scripts" section.  More about NPM scripts can be found [here](https://docs.npmjs.com/misc/scripts). This script simply spins up our test site by calling the test site's `start` script.
+Let's now add a script into our package.json that will allow us to easily spin up the test site so we can access it and run our tests against it.  Inside the package.json file add `"start-test-site": "npm explore simulato-test-site -- npm start"` to the "scripts" section.  More about NPM scripts can be found [here](https://docs.npmjs.com/misc/scripts). This script simply spins up our test site by calling the test site's `start` script.
 
 Our package.json should now contain our two dependencies as well as our custom script.
 

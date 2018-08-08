@@ -67,7 +67,7 @@ module.exports = {
 }
 ```
 
-As seen above, `name` is always camelCase, which helps us differentiate between `type` and `name`. With the presence of the `entryComponent` property, Simualato will automatically create this component at the start of the planning step, adding it into the expected state with the provided name, and provided state. This will be the base of all planning for test generation for our test site components.
+As seen above, `name` is always camelCase, which helps us differentiate between `type` and `name`. With the presence of the `entryComponent` property, Simualato will automatically create this component at the start of the planning step, adding it into the expected state with the provided `name`, and `state`. This will be the base of all planning for test generation for our test site components.
 
 Lastly, we need to create the `actions` property. Unlike the first component, there will be an action for our entry component. That action being the actual navigation to the the test site. The actions property must be a function that returns an object. The object contains key value pairs with each key being an action name, and the value an object with 4 main properties, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of an action, however `preconditions` will be in almost every component besides your entry component. 
 
@@ -168,7 +168,7 @@ model () {
 
 When we created the component, and its `model`, we detailed out to Simulato what all components of this `type` needs when created and added to the expected state. As such, our corresponding expected state must match the same structure.  Since we are directly adding this state into our expected state, we need to provide values for what we expect, which, in this case, we expect the `header.displayed` to be true.
 
-With the completion of our `actions` we now have 2 functioning components. We have the `type` 'NavigateToTestSite' and the `type` 'MainSiteLayout'.  As an entry component 'NavigateToTestSite' will automatically be created and added into the expected state with the `name` 'navigateToTestSite'. 'navigateToTestSite' provides an action, `NAVIGATE_TO_TEST_SITE`,  that will go the test site url. The actions' effects will clear out the state, then add the component with the `name` 'mainSectionLayout'. When we add 'mainSectionLayout' we expect that the header will be displayed.
+With the completion of our `actions` we now have 2 functioning components. We have the `type` 'NavigateToTestSite' and the `type` 'MainSiteLayout'.  As an entry component, 'NavigateToTestSite' will automatically be created and added into the expected state with the `name` 'navigateToTestSite'. 'navigateToTestSite' provides an action, `NAVIGATE_TO_TEST_SITE`,  that will go the test site url. The actions' effects will clear out the state, then add the component with the `name` 'mainSectionLayout'. When we add 'mainSectionLayout' we expect that the header will be displayed.
 
 We should now be able to generate tests using Simulato. But before we generate tests, lets create a folder we can use to specify where tests should be written to the disk. Inside the project main folder create a directory named 'tests'.  By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  Back in the terminal inside our project folder we can now run the command to generate tests specifying the test generation output to the 'tests' folder.
 
