@@ -8,46 +8,45 @@ module.exports = {
                 name: 'modalTitle',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalTitle'
-                }
+                    value: 'createStoryModalTitle',
+                },
             },
             {
                 name: 'titleBox',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalTitleText'
+                    value: 'createStoryModalTitleText',
                 },
             },
             {
                 name: 'storyBody',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalStoryBodyText'
-                }
+                    value: 'createStoryModalStoryBodyText',
+                },
             },
             {
                 name: 'classificationSelect',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalSelectClassification'
+                    value: 'createStoryModalSelectClassification',
                 },
             },
             {
                 name: 'submitButton',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalSubmitButton'
-                }
+                    value: 'createStoryModalSubmitButton',
+                },
             },
             {
                 name: 'closeButton',
                 selector: {
                     type: 'getElementById',
-                    value: 'createStoryModalCloseButton'
-                }
-            }
+                    value: 'createStoryModalCloseButton',
+                },
+            },
     ];
-    
   },
   model() {
     return {
@@ -65,7 +64,7 @@ module.exports = {
             displayed: 'submitButton.isDisplayed',
         },
         closeButton: {
-            displayed: 'closeButton.isDisplayed'
+            displayed: 'closeButton.isDisplayed',
         },
     };
   },
@@ -73,20 +72,20 @@ module.exports = {
     return {
         CLOSE_STORY_MODAL:
         {
-            preconditions(){
+            preconditions() {
               return [
-                ['isTrue', `pageState.${this.name}.closeButton.displayed`]
+                ['isTrue', `pageState.${this.name}.closeButton.displayed`],
               ];
             },
-            perform(callback){
+            perform(callback) {
               driver.findElement(By.id('createStoryModalCloseButton'))
               .click()
-              .then(callback,callback);
+              .then(callback, callback);
             },
-            effects(expectedState){
+            effects(expectedState) {
               expectedState.pop();
-            }
-        }
+            },
+        },
     };
   },
-}
+};

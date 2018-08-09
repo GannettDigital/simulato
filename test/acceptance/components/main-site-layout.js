@@ -16,15 +16,15 @@ module.exports = {
         selector: {
           type: 'getElementById',
           value: 'createStoryButton',
-        }
+        },
       },
       {
         name: 'tabBar',
         selector: {
           type: 'getElementById',
-          value: 'main-tab-content'
-        }
-      }
+          value: 'main-tab-content',
+        },
+      },
     ];
   },
   model() {
@@ -34,25 +34,25 @@ module.exports = {
         displayed: 'storyButton.isDisplayed',
       },
       mainTabBar: {
-        displayed: 'tabBar.isDisplayed'
-      }
+        displayed: 'tabBar.isDisplayed',
+      },
     };
   },
   actions() {
     return {
       CLICK_CREATE_STORY_BUTTON:
       {
-        preconditions(){
+        preconditions() {
           return [
-            ['isTrue', `pageState.${this.name}.createStoryButton.displayed`]
+            ['isTrue', `pageState.${this.name}.createStoryButton.displayed`],
           ];
         },
-        perform(callback){
+        perform(callback) {
           driver.findElement(By.id('createStoryButton'))
           .click()
-          .then(callback,callback);
+          .then(callback, callback);
         },
-        effects(expectedState){
+        effects(expectedState) {
           expectedState.stash();
           expectedState.createAndAddComponent({
             type: 'CreateStoryModal',
@@ -76,8 +76,8 @@ module.exports = {
               },
             },
           });
-        }
-      }
+        },
+      },
     };
   },
   children() {
@@ -86,7 +86,7 @@ module.exports = {
         type: 'NewsSourceTabBar',
         name: 'newsSourceTabBar',
         state: {
-          
+
         },
         options: {
           newsArticleId: 'article1',

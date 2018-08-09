@@ -17,32 +17,31 @@ module.exports = {
           type: 'getElementById',
           value: this.options.newsTabSectionId,
         },
-      }
+      },
     ];
-    
   },
   model() {
     return {
       displayed: 'newsTab.isDisplayed',
       active(elements) {
-        return elements.newsTabSection.attributes['aria-selected'] ?  true : false;
+        return elements.newsTabSection.attributes['aria-selected'] ? true : false;
       },
     };
   },
   actions() {
     return {
       CLICK_NEWS_TAB: {
-        preconditions(){
+        preconditions() {
           return [
-            ['isTrue', `pageState.${this.name}.displayed`]
+            ['isTrue', `pageState.${this.name}.displayed`],
           ];
         },
-        perform(callback){
+        perform(callback) {
           driver.findElement(By.id(this.options.newsTabId))
           .click()
           .then(callback, callback);
         },
-        effects(expectedState){
+        effects(expectedState) {
           expectedState.createAndAddComponent({
             type: 'NewsArticle',
             name: 'newsArticle1',
@@ -73,8 +72,8 @@ module.exports = {
                 newsArticleId: `${this.options.newsTabSectionId}-article2`,
               },
           });
-        }
-      }
+        },
+      },
     };
   },
 };
