@@ -32,13 +32,6 @@ module.exports = {
           value: `${this.options.newsArticleId}ModalCloseButton`,
         },
       },
-      {
-        name: 'xCloseButton',
-        selector: {
-          type: 'querySelector',
-          value: `#${this.options.newsArticleId}ViewModal > div > div > div.modal-header > button`,
-        },
-      },
     ];
   },
   model() {
@@ -55,48 +48,22 @@ module.exports = {
       closeButton: {
         displayed: 'closeButton.isDisplayed',
       },
-      xCloseButton: {
-        displayed: 'xCloseButton.isDisplayed',
-      },
     };
   },
   actions() {
     return {
       CLICK_CLOSE_BUTTON: {
-        parameters: [
-          {
-            name: 'fakeParameter',
-            generate() {
-                return 'myFakeParameter';
-            },
-          },
-        ],
-        preconditions(fakeParam, dataStore) {
+        preconditions() {
           return [
             ['isTrue', `pageState.${this.name}.closeButton.displayed`],
           ];
         },
-        perform(fakeParam, callback) {
+        perform(callback) {
           driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
           .click()
           .then(callback, callback);
         },
-        effects(fakeParam, expectedState, dataStore) {
-          expectedState.pop();
-        },
-      },
-      CLICK_X_CLOSE_BUTTON: {
-        preconditions(dataStore) {
-          return [
-            ['isTrue', `pageState.${this.name}.xCloseButton.displayed`],
-          ];
-        },
-        perform(callback) {
-          driver.findElement(By.css(`#${this.options.newsArticleId}ViewModal > div > div > div.modal-header > button`))
-          .click()
-          .then(callback, callback);
-        },
-        effects(expectedState, dataStore) {
+        effects(expectedState) {
           expectedState.pop();
         },
       },

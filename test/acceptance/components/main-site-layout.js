@@ -19,15 +19,23 @@ module.exports = {
         }
       },
       {
-        name: ''
+        name: 'tabBar',
+        selector: {
+          type: 'getElementById',
+          value: 'main-tab-content'
+        }
       }
     ];
-
   },
   model() {
     return {
       displayed: 'headerRow.isDisplayed',
-      createStoryButton: 'storyButton.isDisplayed'
+      createStoryButton: {
+        displayed: 'storyButton.isDisplayed',
+      },
+      mainTabBar: {
+        displayed: 'tabBar.isDisplayed'
+      }
     };
   },
   actions() {
@@ -35,59 +43,53 @@ module.exports = {
       CLICK_CREATE_STORY_BUTTON:
       {
         preconditions(){
-
+          return [
+            ['isTrue', `pageState.${this.name}.createStoryButton.displayed`]
+          ];
         },
         perform(callback){
-
+          driver.findElement(By.id('createStoryButton'))
+          .click()
+          .then(callback,callback);
         },
         effects(expectedState){
-          
+          expectedState.stash();
+          expectedState.createAndAddComponent({
+            type: 'CreateStoryModal',
+            name: 'createStoryModal',
+            state: {
+              displayed: true,
+              titleBox: {
+                  displayed: true,
+              },
+              storyBody: {
+                  displayed: true,
+              },
+              classificationSelect: {
+                  displayed: true,
+              },
+              submitButton: {
+                  displayed: true,
+              },
+              closeButton: {
+                  displayed: true,
+              },
+            },
+          });
         }
       }
     };
   },
-  children(expectedState, dataStore) {
+  children() {
     return [
       {
-        type: 'NewsArticle',
-        name: 'newsArticle1',
+        type: 'NewsSourceTabBar',
+        name: 'newsSourceTabBar',
         state: {
-          displayed: true,
-          newsArticleImage: {
-            displayed: true,
-          },
-          newsArticleHeading: {
-            displayed: true,
-            text: this.getFromPage('newsArticle1.newsArticleHeading.text'),
-          },
-          newsArticleText: {
-            displayed: true,
-            text: this.getFromPage('newsArticle1.newsArticleText.text'),
-          },
+          
         },
         options: {
           newsArticleId: 'article1',
-        },
-      },
-      {
-        type: 'NewsArticle',
-        name: 'newsArticle2',
-        state: {
-          displayed: true,
-          newsArticleImage: {
-            displayed: true,
-          },
-          newsArticleHeading: {
-            displayed: true,
-            text: this.getFromPage('newsArticle2.newsArticleHeading.text'),
-          },
-          newsArticleText: {
-            displayed: true,
-            text: this.getFromPage('newsArticle2.newsArticleText.text'),
-          },
-        },
-        options: {
-          newsArticleId: 'article2',
         },
       },
     ];

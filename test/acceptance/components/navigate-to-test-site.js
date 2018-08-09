@@ -19,13 +19,19 @@ module.exports = {
           driver.get(`http://localhost:3000`)
             .then(callback, callback);
         },
-        effects(expectedState, dataStore) {
+        effects(expectedState) {
           expectedState.clear();
           expectedState.createAndAddComponent({
             type: 'MainSiteLayout',
             name: 'mainSiteLayout',
             state: {
               displayed: true,
+              createStoryButton: {
+                displayed: true,
+              },
+              mainTabBar: {
+                displayed: true,
+              },
             },
           });
         },
