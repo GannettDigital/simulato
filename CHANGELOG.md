@@ -2,6 +2,12 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Added debug flag to generate command
+  * Planner prints progress after finidng each action when debug flag is set
+* Brian Fitzpatrick
+  * Added additional acceptance tests
+
 ## 0.6.1
 
 * Brian Fitzpatrick
