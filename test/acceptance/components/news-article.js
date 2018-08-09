@@ -5,6 +5,20 @@ module.exports = {
   elements() {
     return [
       {
+        name: 'newsArticle',
+        selector: {
+          type: 'getElementById',
+          value: this.options.newsArticleId,
+        },
+      },
+      {
+        name: 'newsArticleImage',
+        selector: {
+          type: 'getElementById',
+          value: `${this.options.newsArticleId}Image`,
+        },
+      },
+      {
         name: 'newsArticleHeading',
         selector: {
           type: 'getElementById',
@@ -22,10 +36,16 @@ module.exports = {
   },
   model() {
     return {
+      displayed: 'newsArticle.isDisplayed',
+      newsArticleImage: {
+        displayed: 'newsArticleImage.isDisplayed',
+      },
       newsArticleHeading: {
+        displayed: 'newsArticleHeading.isDisplayed',
         text: 'newsArticleHeading.innerText',
       },
       newsArticleText: {
+        displayed: 'newsArticleText.isDisplayed',
         text: 'newsArticleText.innerText',
       },
     };
@@ -38,6 +58,7 @@ module.exports = {
           dataStore.store(`${this.name}Text`, this.getFromPage(`${this.name}.newsArticleText.text`));
 
           return [
+            ['isTrue', `pageState.${this.name}.displayed`],
             ['property', `dataStore`, `${this.name}HeadingText`],
             ['property', `dataStore`, `${this.name}Text`],
           ];
