@@ -175,7 +175,7 @@ When we created the component, and its `model`, we detailed out to Simulato what
 
 With the completion of our `actions` we now have 2 functioning components. We have the `type` 'NavigateToTestSite' and the `type` 'MainSiteLayout'.  As an entry component, 'NavigateToTestSite' will automatically be created and added into the expected state with the `name` 'navigateToTestSite'. 'navigateToTestSite' provides an action, `NAVIGATE_TO_TEST_SITE`,  that will go the test site url. The actions' effects will clear out the state, then add the component with the `name` 'mainSectionLayout'. When we add 'mainSectionLayout' we expect that the header will be displayed.
 
-We should now be able to generate tests using Simulato. But before we generate tests, lets create a folder we can use to specify where tests should be written to the disk. Inside the project main folder create a directory named 'tests'.  When we NPM installed Simulato, a bin file was added into the node_modules/.bin folder. When executing NPM scripts, NPM will automatically check that folder first when running commands.  For ease of generating and running tests lets create a couple scripts inside our package.lock file to help us out.
+We should now be able to generate tests using Simulato. But before we generate tests, lets create a folder we can use to specify where tests should be written to the disk. Inside the project main folder create a directory named 'tests'.  When we NPM installed Simulato, a bin file was added into the node_modules/.bin folder. When executing NPM scripts, NPM will automatically check that folder first when running commands.  For ease of generating and running tests lets create a couple scripts inside our `package.json` file to help us out.
 
 
 ```
@@ -200,7 +200,7 @@ We should now be able to generate tests using Simulato. But before we generate t
 
 First we modified the default `test` script to a command that will run our simulato tests. This command tells simulato to run all tests found in the ./tests folder.  We also added a new script `generate-tests` that generates the tests and specifies we want those tests output into our ./tests folder. We are using different cli flags for both run and generate and all CLI commands can be read about [here](/cli/). By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  
 
-Back in the terminal inside our project folder we can now run script to generate tests specifying.
+Back in the terminal, inside our project folder, we can now run our script to generate tests.
 
 `$ npm run generate-tests`
 
