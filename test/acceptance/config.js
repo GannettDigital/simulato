@@ -7,4 +7,8 @@ module.exports = {
     outputPath: './test/acceptance/tests',
     plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
     rerunFailedTests: 1,
+    sauceCapabilities: {
+        username: 'SOME USERNAME',
+        accesskey: 'some key',
+    },
 };
