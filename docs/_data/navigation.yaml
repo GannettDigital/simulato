@@ -19,6 +19,8 @@ docs:
         url: /data-store/
       - title: 'Run Time Variables'
         url: /run-time-variables/
+      - title: 'Best Practices'
+        url: /best-practices/
   - title: "Release Notes"
     children: 
       - title: 'Current Release Notes'

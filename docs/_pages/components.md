@@ -69,11 +69,16 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
         * Must be an object and is **required**
     * `selector.type`
         * Must be one of the following strings and is **required**
-            * `getElementById`
-            * `querySelector`
-            * `querySelectorAll`
-            * `getElementsByTagName`
-            * `getElementsByClassName`
+            * `isDisplayed`: Custom displayed function created for Simulato, a simplified version Selenium's displayed function. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page. Returns `true` if visable, `false` if not.
+            * `name`: name property of the element.
+            * `innerHTML`: innerHtml property of the element.
+            * `innerText`: innerText property of the element.
+            * `hidden`: hidden property of the element.
+            * `value`: value property of the element.
+            * `checked`: checked property of the element.
+            * `attributes`:  An object, each key on the object being an attribute present on the element, with the value of that key as the value for the attribute. Example: `<div hidden="true"></div>`. The attributes of this element would be `{hidden: 'true'}`.
+            * `disabled`:  Commonly used disabled attribute, put here for convenience rather than having to go through the attributes object.
+* Element properties
     * `selector.value`
         * Can be anything and is **required**
         * Keep in mind this is sent to the browser via selenium-webdriver
