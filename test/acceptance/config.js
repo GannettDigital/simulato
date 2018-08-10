@@ -6,9 +6,5 @@ module.exports = {
     reportPath: './test/acceptance/tests',
     outputPath: './test/acceptance/tests',
     plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
-    rerunFailedTests: 1,
-    sauceCapabilities: {
-        username: 'SOME USERNAME',
-        accesskey: 'some key',
-    },
+    rerunFailedTests: 1
 };
