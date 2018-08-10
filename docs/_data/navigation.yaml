@@ -4,7 +4,19 @@ docs:
       - title: "About Model Based Testing"
         url: /about-mbt/
       - title: "Quick Start Guide"
-        url: '/quick-start-guide/'
+        url: /quick-start-guide/
+  - title: "Tutorial"
+    children:
+      - title: "Setup"
+        url: /tutorial-setup/
+      - title: "Creating a Component"
+        url : /tutorial-first-component/
+      - title: "Entry Component"
+        url: /tutorial-entry-component/
+      - title: "Reusable Components Part 1"
+        url: /tutorial-reusable-components-pt1/
+      - title: "Reusable Components Part 2"
+        url: /tutorial-reusable-components-pt2/
   - title: "Documentation"
     children:
       - title: 'Components'
@@ -22,12 +34,12 @@ docs:
   - title: "Release Notes"
     children: 
       - title: 'Current Release Notes'
-        url: '/release-notes/'
+        url: /release-notes/
   - title: "Contributing"
     children:
       - title: 'Contributing Guidelines'
-        url: '/contributing-guidelines'
+        url: /contributing-guidelines/
       - title: 'Bug Report Template'
         url: /bug-report-template/
       - title: 'Publishing New Version'
-        url: '/publish/'
+        url: /publish/
