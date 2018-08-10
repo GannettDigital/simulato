@@ -738,11 +738,9 @@ It's good practice to only add elements you care about, that is, the elements us
 
 If the elements section can be thought of how we tell selenium where to get the elements, the model can be thought of as what things we care about for that element. Built into selenium the following data is retrieved for each element in the elements section: 
 
-`attributes`:  An object, each key on the object being an attribute present on the element, with the value of that key as the value for the attribute. Example: `<div hidden="true"></div>`. The attributes of this element would be `{hidden: 'true'}`.
+`isDisplayed`: Custom displayed function created for Simulato, a simplified version Selenium's displayed function. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page. Returns `true` if visable, `false` if not.
 
-`name`: Name provided by the creator of the elements section, remember each element has a name and selector, this is that provided name.
-
-`disabled`:  Commonly used disabled attribute, put here for convenience rather than having to go through the attributes object.
+`name`: name property of the element.
 
 `innerHTML`: innerHtml property of the element.
 
@@ -754,9 +752,9 @@ If the elements section can be thought of how we tell selenium where to get the 
 
 `checked`: checked property of the element.
 
-`webElement`: webElement provided by Selenium. Contains all data, and used as a backup if there is some data needed not easily provided by Simulato.
+`attributes`:  An object, each key on the object being an attribute present on the element, with the value of that key as the value for the attribute. Example: `<div hidden="true"></div>`. The attributes of this element would be `{hidden: 'true'}`.
 
-`isDisplayed`: Custom displayed function created for Simulato, a simplified version of the one default in Selenium. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page.
+`disabled`:  Commonly used disabled attribute, put here for convenience rather than having to go through the attributes object.
 
 Using this aggregated element data we can create a component with a model section modeling out the parts we care about. We should only model out parts of the system we are directly concerned with, each property we add to a model is more we have to manage in our expectedState.
 
