@@ -13,8 +13,8 @@ program.version(packageJSON.version);
 
 program
     .command('run')
-    .option('-T, --testPath <testPath>', 'Path to tests')
-    .option('-c, --componentPath <componentPath>', 'Path to components')
+    .option('-T, --testPath <testPath>', 'The path to the tests')
+    .option('-c, --componentPath <componentPath>', 'The path to the components')
     .option('-r, --reporter [reporter]', 'Specify a reporter to use')
     .option('-s, --saucelabs', 'Run tests in the saucelabs')
     .option('-p, --parallelism <parallelism>', 'Amount of tests to run in parallel', Number.parseInt)
@@ -30,11 +30,12 @@ program
 
 program
     .command('generate')
-    .option('-c, --componentPath <componentPath>', 'the path to the components')
+    .option('-c, --componentPath <componentPath>', 'The path to the components')
     .option('-o, --outputPath <path>', 'The path to write the generated test cases to')
     .option('-a, --actionToCover <action>', 'The action to generate a test for. Specfied as component.ACTION_NAME')
     .option('-A, --plannerAlgorithm <algorithm>', 'The algorithm for the planner to use')
     .option('-f, --configFile <path>', 'The path to the config file')
+    .option('-D, --debug', 'A flag to turn on debugging when generating tests')
     .action(configHandler.createConfig);
 
 program.parse(process.argv);
