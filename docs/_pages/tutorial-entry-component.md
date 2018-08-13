@@ -187,7 +187,7 @@ We should now be able to generate tests using Simulato. But before we generate t
   "scripts": {
     "test": "simulato run -T ./tests",
     "start-test-site": "npm explore simulato-test-site -- npm start",
-    "generate-tests": "simulato generate -o ./tests",
+    "generate-tests": "simulato generate -o ./tests"
   },
   "author": "",
   "license": "ISC",

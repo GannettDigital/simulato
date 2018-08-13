@@ -13,7 +13,7 @@ The `this` context in javascript behaves slightly differently then other languag
 
 We can use the `this` context to solve our need to pass in information to a component, specifically `this.options`. When calling `expectedState.createAndAddComponent()` we know we pass in an object containing `type`, `name`, and `state`, but there is also an additional property we can pass in `options`. The options object is provided to the end user as a place to pass in anything they find useful for the component they are creating.  When the component is actually created, `this.options` is the object passed in by a user and made available to the the `this` context. If no options are provided, a empty object is provided to the `this` context. Now that we have a way to send information, we are finally ready to make our first reusable component.
 
-First off we need to give our new component a `type`. Since we are using this to represent a news article, we can make the `type` as simple as `NewsArticle`.
+First off we need to give our new component a `type`. Since we are using this to represent a news article, we can make the `type` as simple as `NewsArticle`. Remember to make the file inside the `components` folder, giving it the name `newsArticle.model.js`.
 
 ```
 'use strict'

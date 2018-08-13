@@ -17,6 +17,8 @@ docs:
         url: /tutorial-reusable-components-pt1/
       - title: "Reusable Components Part 2"
         url: /tutorial-reusable-components-pt2/
+      - title: "Stash and Pop Expected State"
+        url: /tutorial-stash-pop/ 
   - title: "Documentation"
     children:
       - title: 'Components'
