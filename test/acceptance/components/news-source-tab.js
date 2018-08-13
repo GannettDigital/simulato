@@ -60,7 +60,7 @@ module.exports = {
               },
             },
             options: {
-              newsArticleId: `${this.options.newsTabSectionId}-article1`,
+              newsArticleId: `${this.options.newsTabSectionId}Article1`,
             },
           });
           expectedState.createAndAddComponent({
@@ -81,7 +81,7 @@ module.exports = {
                 },
               },
               options: {
-                newsArticleId: `${this.options.newsTabSectionId}-article2`,
+                newsArticleId: `${this.options.newsTabSectionId}Article2`,
               },
           });
         },

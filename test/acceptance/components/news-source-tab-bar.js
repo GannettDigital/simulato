@@ -22,8 +22,8 @@ module.exports = {
           active: false,
         },
         options: {
-          newsTabId: 'main-tab-content-tab-1',
-          newsTabSectionId: 'tab-section-1',
+          newsTabId: 'mainTabContentTab1',
+          newsTabSectionId: 'tabSection1',
         },
       },
       {
@@ -34,8 +34,8 @@ module.exports = {
           active: false,
         },
         options: {
-          newsTabId: 'main-tab-content-tab-2',
-          newsTabSectionId: 'tab-section-2',
+          newsTabId: 'mainTabContentTab2',
+          newsTabSectionId: 'tabSection2',
         },
       },
       {
@@ -46,8 +46,8 @@ module.exports = {
           active: false,
         },
         options: {
-          newsTabId: 'main-tab-content-tab-3',
-          newsTabSectionId: 'tab-section-3',
+          newsTabId: 'mainTabContentTab3',
+          newsTabSectionId: 'tabSection3',
         },
       },
       {
@@ -58,8 +58,8 @@ module.exports = {
           active: false,
         },
         options: {
-          newsTabId: 'main-tab-content-tab-4',
-          newsTabSectionId: 'tab-section-4',
+          newsTabId: 'mainTabContentTab4',
+          newsTabSectionId: 'tabSection4',
         },
       },
     ];

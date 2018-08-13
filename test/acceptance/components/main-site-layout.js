@@ -22,7 +22,7 @@ module.exports = {
         name: 'tabBar',
         selector: {
           type: 'getElementById',
-          value: 'main-tab-content',
+          value: 'mainTabContent',
         },
       },
     ];
