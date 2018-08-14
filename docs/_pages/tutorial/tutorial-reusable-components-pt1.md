@@ -269,11 +269,11 @@ Whenever a model changes for a given component, any other component that creates
 
 Now that our components are updated we should be able to generate and run the tests.  Be sure to clear our your previous test from the test folder so it doesnt run any old tests unexpectedly.
 
-`$ simulato generate -o ./tests`
+`$ npm run generate-tests`
 
 As before, it should still only generate one test, in fact it should generate the exact same test. Since we have not created any new actions, it will be the same test. However during execution there are more things on the page it will be checking for, our newly added articles, to validate that we navigated to the site correctly.
 
-`$ simulato run -T ./tests`
+`$ npm run test`
 
 Once again the single test should pass.  However let's take this time to purposely make some breaking changes so we can learn some common Simulato debugging tips, and possibly help if your test is not passing.  As in the previous section of the tutorial, lets change part of our expected state when create and add `MainSiteLayout`.  I am going to change the article 2 body to say I expect it NOT to be displayed, and I am going to change the article 1 header text to 'Test Article Three'.
 
