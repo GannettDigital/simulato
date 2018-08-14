@@ -72,7 +72,7 @@ module.exports = {
 `name` should always be camelCase, which helps us differentiate between `type` and `name`. Unique names are not enforced by Simulato, but when planning and generating tests, it determines unique actions with a combination of `name` and action names. If two components have the same name, Simulato will not be able to tell the difference between two components, and test generation will most likely not create the results expected.
 {: .notice--warning}
 
-With the presence of the `entryComponent` property, Simulato will automatically create this component at the start of the planning step, adding it into the expected state with the provided `name`, and `state`. This will be the base of all planning for test generation for our test site components.
+With the presence of the `entryComponent` property, Simulato will automatically create this component at the start of the planning step, adding it into the expected state with the provided `name`, and `state`. This will be the base of all planning for test generation for our test site components. More information regarding planning can be found in the [Test Generation](/test-generation/) document.
 
 Lastly, we need to create the `actions` property. Unlike the first component, there will be an action for our entry component. That action being the actual navigation to the the test site. The actions property must be a function that returns an object. The object contains key value pairs with each key being an action name, and the value an object with 4 main properties, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of the actions, however `preconditions` will be in almost every component besides your entry component. 
 
