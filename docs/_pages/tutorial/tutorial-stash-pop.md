@@ -1,13 +1,15 @@
 ---
-permalink: /tutorial-stash-pop/
+permalink: /tutorial/stash-pop/
 title: "Stash and Pop Expected State"
 toc: false
 classes: wide
+sidebar:
+  nav: "tutorial"
 ---
 
-In the previous sections we covered creating our [first component](/tutorial-first-component/), [entry components](/tutorial-entry-component/), and making [reusable components](/tutorial-reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
+In the previous sections we covered creating our [first component](/tutorial/first-component/), [entry components](/tutorial/entry-component/), and making [reusable components](/tutorial/reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
 
-![](../assets/tutorial/article1Modal.png)
+![](../../assets/tutorial/article1Modal.png)
 
 Both articles behave the same way, opening a model with their respective information. Since we created one reusable component,`NewsArticle`, we can a single action inside of that component to test the behavior of clicking a news article.  Since we gave each component of `type: NewsArticle` a unique name, Simulato will generate tests to click both `newsArticleOne` and `newsArticleTwo`.
 

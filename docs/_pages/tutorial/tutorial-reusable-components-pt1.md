@@ -1,21 +1,23 @@
 ---
-permalink: /tutorial-reusable-components-pt1/
+permalink: /tutorial/reusable-components-pt1/
 title: "Creating Reusable Components Part 1"
 toc: false
 classes: wide
+sidebar:
+  nav: "tutorial"
 ---
 
 Following through the tutorial we should now have two components created, our entry component 'NavigateToTestSite' and our 'MainSiteLayout' component.  If we go back and take a look at the home page of the site, which 'MainSiteLayout' is modeling, we can see there is more than just the header we currently have modeled.
 
-![](../assets/tutorial/mainSiteLayout.png)
+![](../../assets/tutorial/mainSiteLayout.png)
 
 Besides the header, we can see two articles presented to us. Each article contains a picture of a newspaper, a title, and some article text.  For our tests we want to make sure these are both loaded correctly, in order to do that we need to create elements, and add them into a model. Since these articles are present on the 'MainSiteLayout', lets add them there.
 
 First we will create the elements, for each article we care about 3 things, the picture, the title, and the article text. Since we have two articles we will be creating 6 new elements. Let's go to Chrome developer tools to find our Ids.
 
-![](../assets/tutorial/mainSiteLayoutArticle1Id.png)
+![](../../assets/tutorial/mainSiteLayoutArticle1Id.png)
 
-![](../assets/tutorial/mainSiteLayoutArticle2Id.png)
+![](../../assets/tutorial/mainSiteLayoutArticle2Id.png)
 
 Looking at the id's in the HTML above we can see the corresponding id's for the first article `article1Image`, `article1Heading`, `article1Text` and `article2Image`, `article2Heading`, `article2Text` for the second article. Now we can create the elements inside `MainSiteLayout`.
 
@@ -641,4 +643,4 @@ Again we are seeing some `undefined` but this time its inside the page state rat
 **Note:** Whenever you see `undefined` inside the *page state* check to make sure your selectors are correct, usually this means the element was not found. Also check your model, make sure everything is spelled correct, referencing the correct element as well as the correct property you are accessing.
 {: .notice--info}
 
-When looking at our newly modified `MainSiteLayout` we can see a lot of similarity with article one and two. The elements are all the same besides changes in id. The model is the same besides which article elements it references.  As programmers, whenever we see something like this we want to add a level of abstraction, only write out that code once, this is where reusable components come in.  [Part 2](/tutorial-reusable-components-pt2/) of reusable components will convert our articles into one reusable component.
+When looking at our newly modified `MainSiteLayout` we can see a lot of similarity with article one and two. The elements are all the same besides changes in id. The model is the same besides which article elements it references.  As programmers, whenever we see something like this we want to add a level of abstraction, only write out that code once, this is where reusable components come in.  [Part 2](/tutorial/reusable-components-pt2/) of reusable components will convert our articles into one reusable component.

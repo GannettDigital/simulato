@@ -2,6 +2,8 @@
 permalink: /contributing-guidelines/
 title: 'Contributing Guidelines'
 toc_label: 'Guidelines'
+sidebar:
+  nav: "home"
 ---
 
 ## Github Issues

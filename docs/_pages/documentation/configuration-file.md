@@ -1,7 +1,10 @@
 ---
-permalink: /configuration-file/
+permalink: /documentation/configuration-file/
 title: 'Configuration File'
-toc_label: 'Configuration File'
+toc: false
+classes: wide
+sidebar:
+  nav: "documentation"
 ---
 
 This section documents utilization of the configuration file in place of CLI options.

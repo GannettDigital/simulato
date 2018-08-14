@@ -1,8 +1,10 @@
 ---
-permalink: /tutorial-setup/
+permalink: /tutorial/setup/
 title: "Setup"
 toc: false
 classes: wide
+sidebar:
+  nav: "tutorial"
 ---
 
 ## Prerequisites
@@ -105,4 +107,4 @@ package.json
 
 Both package-lock.json and node_modules were created for us when we installed our packages.
 
-Now that everything is up and ready to go we can start creating components! Let's start by creating our [first component](/tutorial-first-component).
+Now that everything is up and ready to go we can start creating components! Let's start by creating our [first component](/tutorial/first-component).

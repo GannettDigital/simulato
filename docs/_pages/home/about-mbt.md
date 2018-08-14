@@ -2,13 +2,16 @@
 permalink: /about-mbt/
 title: "About Model Based Testing"
 toc: false
+sidebar:
+  nav: "home"
+classes: wide
 ---
 
 ## Definition
 * Describing system requirements and behavior as a model​
 * Generating tests from the those models​
 
-![](../assets/mbt-definition-model.png)
+![](../../assets/mbt-definition-model.png)
 
 ## Benefits vs Costs
 
@@ -25,11 +28,11 @@ toc: false
 ## Use Cases
   * Can generate many tests paths from models for high test coverage
 
-![](../assets/use-cases-many-paths.png)
+![](../../assets/use-cases-many-paths.png)
 
   * Can generate optimized path from models for minimum cost and maximum coverage
 
-![](../assets/use-cases-optimized-path.png)
+![](../../assets/use-cases-optimized-path.png)
 
 ## Model Based Testing References
  * [The challenges and benefits of model based testing](https://saucelabs.com/blog/the-challenges-and-benefits-of-model-based-testing)

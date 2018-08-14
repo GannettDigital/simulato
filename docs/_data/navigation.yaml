@@ -1,47 +1,131 @@
-docs:
+main:
+  - title: "Documentation"
+    url: /documentation/
+  - title: "Tutorial"
+    url: /tutorial/
+  - title: "Best Practices"
+    url: /best-practices/
+
+home:
   - title: "Getting Started"
+    url: /getting-started/
     children:
       - title: "About Model Based Testing"
         url: /about-mbt/
       - title: "Quick Start Guide"
         url: /quick-start-guide/
-  - title: "Tutorial"
-    children:
-      - title: "Setup"
-        url: /tutorial-setup/
-      - title: "Creating a Component"
-        url : /tutorial-first-component/
-      - title: "Entry Component"
-        url: /tutorial-entry-component/
-      - title: "Reusable Components Part 1"
-        url: /tutorial-reusable-components-pt1/
-      - title: "Reusable Components Part 2"
-        url: /tutorial-reusable-components-pt2/
-      - title: "Stash and Pop Expected State"
-        url: /tutorial-stash-pop/ 
-  - title: "Documentation"
-    children:
-      - title: 'Components'
-        url: /components/
-      - title: 'CLI'
-        url: /cli/
-      - title: 'Configuration File'
-        url: /configuration-file/
-      - title: 'Expected State'
-        url: /expected-state/
-      - title: 'Data Store'
-        url: /data-store/
-      - title: 'Run Time Variables'
-        url: /run-time-variables/
   - title: "Release Notes"
+    url: /release-notes/
     children: 
       - title: 'Current Release Notes'
-        url: /release-notes/
+        url: /current-notes/
   - title: "Contributing"
+    url: /contributing/
     children:
       - title: 'Contributing Guidelines'
         url: /contributing-guidelines/
       - title: 'Bug Report Template'
         url: /bug-report-template/
       - title: 'Publishing New Version'
-        url: /publish/
+        url: /publishing/
+
+documentation:
+  - title: "Components"
+    url: /documentation/components/
+    children:
+      - title: 'Type'
+        url: /documentation/components/#type
+      - title: 'Elements'
+        url: /documentation/components/#elements
+      - title: 'Model'
+        url: /documentation/components/#model
+      - title: 'Actions'
+        url: /documentation/components/#actions
+      - title: 'Children'
+        url: /documentation/components/#children
+      - title: 'Events'
+        url: /documentation/components/#events
+      - title: 'this Context'
+        url: /documentation/components/#this-context
+  - title: 'CLI'
+    url: /documentation/cli/
+    children:
+      - title: 'Run'
+        url: /documentation/cli/#run
+      - title: 'Generate'
+        url: /documentation/cli/#generate
+  - title: 'Configuration File'
+    url: /documentation/configuration-file/
+    children:
+      - title: 'Parameters'
+        url: /documentation/configuration-file/#parameters
+  - title: 'Expected State'
+    url: /documentation/expected-state/
+    children:
+      - title: 'Methods'
+        url: /documentation/expected-state/#methods
+      - title: 'Event Emitter'
+        url: /documentation/expected-state/#event-emitter
+  - title: 'Data Store'
+    url: /documentation/data-store/
+    children:
+      - title: 'Methods'
+        url: /documentation/data-store/#methods
+  - title: 'Run Time Variables'
+    url: /documentation/run-time-variables/
+    children:
+      - title: 'Using Run Time Variables'
+        url: /documentation/run-time-variables/#using-run-time-variables
+  - title: 'Test Generation'
+    url: /documentation/test-generation/
+    children: 
+      - title: 'Planning'
+        url: /documentation/test-generation/#planning 
+      
+
+tutorial:
+  - title: "Tutorial"
+    children:
+      - title: "Setup"
+        url: /tutorial/setup/
+      - title: "Creating First Component"
+        url : /tutorial/first-component/
+      - title: "Entry Component"
+        url: /tutorial/entry-component/
+      - title: "Reusable Components Part 1"
+        url: /tutorial/reusable-components-pt1/
+      - title: "Reusable Components Part 2"
+        url: /tutorial/reusable-components-pt2/
+      - title: "Stash and Pop Expected State"
+        url: /tutorial/stash-pop/ 
+
+bestPractices:
+  - title: "Best Practices"
+    url: /best-practices/
+    children:
+      - title: "File Structure"
+        url: /best-practices/modeling/#file-structure
+      - title: "Naming"
+        url: /best-practices/modeling/#naming
+      - title: "Entry Components"
+        url: /best-practices/modeling/#entry-components
+      - title: "this Context"
+        url: /best-practices/modeling/#this-context
+      - title: "Elements"
+        url: /best-practices/modeling/#elements
+      - title: "Model"
+        url: /best-practices/modeling/#model
+      - title: "Actions"
+        url: /best-practices/modeling/#actions
+      - title: "Reusable Components"
+        url: /best-practices/modeling/#reusable-components
+      - title: "Children"
+        url: /best-practices/modeling/#children
+      - title: "Events"
+        url: /best-practices/modeling/#events
+      - title: "Data Store"
+        url: /best-practices/modeling/#data-store
+      - title: "Expected State"
+        url: /best-practices/modeling/#expected-state
+      - title: "Dynamic Areas"
+        url: /best-practices/modeling/#dynamic-areas
