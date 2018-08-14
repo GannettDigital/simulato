@@ -48,19 +48,15 @@ this.getFromPage('nameOfComponent.propertyOnModel.subPropertyOnModel');
     * `elements` must be a function that must return an array
     * The elements specified here are retrieved from the browser when the tool scrapes the web page
     * The data that is retrieved for each element is:
-        * attributes
-            * Extracted key/value pairs from the element's attribute list
-            * For the element `<div class="myClass"></div>` the attribute `class` is retrieved along with all `key="value"` attributes of the elements
-        * name
-        * innerHTML
-        * innerText
-        * hidden
-        * value
-        * disabled
-        * webElement
-            * The selenium representation of the web element 
-        * isDisplayed
-            * A boolean computed based on whether the element is visible to a user
+        * `isDisplayed`: Custom displayed function created for Simulato, a simplified version Selenium's displayed function. Calls the browser function `getComputedStyle()` to check `display`, `visibility`, `opacity`, as well its the elements size to determine if that element is currently visible on the page. Returns `true` if visable, `false` if not.
+        * `name`: name property of the element.
+        * `innerHTML`: innerHtml property of the element.
+        * `innerText`: innerText property of the element.
+        * `hidden`: hidden property of the element.
+        * `value`: value property of the element.
+        * `checked`: checked property of the element.
+        * `attributes`:  An object, each key on the object being an attribute present on the element, with the value of that key as the value for the attribute. Example: `<div hidden="true"></div>`. The attributes of this element would be `{hidden: 'true'}`.
+        * `disabled`:  Commonly used disabled attribute, put here for convenience rather than having to go through the attributes object.
 * Element properties
     * `name`
         * Must a be a string and is **required**
