@@ -7,4 +7,4 @@ sidebar:
 classes: wide
 ---
 
-This section is for some hot documentation action.
+This section provides a documentation regarding the different features of Simulato.
