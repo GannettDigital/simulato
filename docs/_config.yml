@@ -8,7 +8,6 @@ url: https://GannettDigital.github.io
 # baseurl: /simulato
 repository: "GannettDigital/simulato"
 include: ["_pages"]
-search: true
 defaults:
   # _pages
   - scope:
