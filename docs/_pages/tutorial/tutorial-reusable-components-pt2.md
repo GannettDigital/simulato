@@ -11,24 +11,24 @@ In [part 1](/tutorial/reusable-components-pt1) of reusable components, we create
 
 Before we actually start making the component, we need to come up with a strategy to be able to pass information to the component we are making.  When we broke down the elements, and their selectors, we saw that only parts of the value are changing. We need to send the dynamic part of that id to our reusable component which will allow us to use one component `type` and just create two components of that type. Leveraging Javascript, we are able to use the `this` context as a medium to pass information to our components.
 
-The `this` context in javascript behaves slightly differently then other languages and can be read about [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this).  Inside simulato, when a component is created to be put into the expected state it will call `Object.create()` passing in the base component that is module.exported from a component file. This creates a new object, inheriting the property of the base component we module.export. It then sets some properties to the newly created component based on the values passed in during creation. These values are: `type`, `name`, `options`, and `dynamicarea`. The new component will then run the following functions in order: elements(), model(), actions(), events(), children(). Since the new component is calling its own properties, that is the functions listed previously, the `this` context bound to those functions will be the new component itself. We haven't covered `events` and `children` yet in this tutorial, but we can still note the `this` context is available to them.
+The `this` context in javascript behaves slightly differently then other languages and can be read about [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this).  Inside Simulato, when a component is created to be put into the expected state it will call `Object.create()` passing in the base component that is module.exported from a component file. This creates a new object, inheriting the property of the base component we module.export. It then sets some properties to the newly created component based on the values passed in during creation. These values are: `type`, `name`, `options`, and `dynamicarea`. The new component will then run the following functions in order: elements(), model(), actions(), events(), children(). Since the new component is calling its own properties, that is the functions listed previously, the `this` context bound to those functions will be the new component itself. We haven't covered `events` and `children` yet in this tutorial, but we can still note the `this` context is available to them.
 
 We can use the `this` context to solve our need to pass in information to a component, specifically `this.options`. When calling `expectedState.createAndAddComponent()` we know we pass in an object containing `type`, `name`, and `state`, but there is also an additional property we can pass in `options`. The options object is provided to the end user as a place to pass in anything they find useful for the component they are creating.  When the component is actually created, `this.options` is the object passed in by a user and made available to the the `this` context. If no options are provided, a empty object is provided to the `this` context. Now that we have a way to send information, we are finally ready to make our first reusable component.
 
 First off we need to give our new component a `type`. Since we are using this to represent a news article, we can make the `type` as simple as `NewsArticle`. Remember to make the file inside the `components` folder, giving it the name `newsArticle.model.js`.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NewsArticle',
 }
 ```
 
-Next we need to create the elements.  Elements is where we can getting start making use of  `this.options`. We know three elements we want to create are: image, heading and text. We know for each element we have an id we can use to select them, lets use for an example `article1Image`.  We know from our previous discussion that `article1` is the part of the string that changes, and it will always end in `Image`. We can use `this.options` to pass in the dynamic part of each id.  Assuming we named the option `baseId`, using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), we can easily create a selector value for all three of our elements.
+Next we need to create the elements.  Elements is where we can start making use of  `this.options`. We know three elements we want to create are: image, heading and text. We know for each element we have an id we can use to select them, lets use for an example `article1Image`.  We know from our previous discussion that `article1` is the part of the string that changes, and it will always end in `Image`. We can use `this.options` to pass in the dynamic part of each id.  Assuming we named the option `baseId`, using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), we can easily create a selector value for all three of our elements.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NewsArticle',
@@ -63,13 +63,13 @@ module.exports = {
 As seen above, whenever we create a component of `type` `NewsArticle` we will need to pass in `baseId` inside the options. It's good practice to add some internal documentation at the top of each component that uses options. This will help other component creators to reuse components more efficiently, and understand what is needed for the component you created.
 
 ```
-'use strict'
+'use strict';
 
 /*****
 * Options:
 *  baseId *required*
 *    String
-*    Specifies the base id that will prepended to element selectors for image, heading, and text.
+*    Specifies the base id that will be prepended to element selectors for image, heading, and text.
 *****/
 
 module.exports = {
@@ -107,7 +107,7 @@ Going forward with this tutorial, whenever `options` are added to a component we
 Now that we have our `elements`, we can create the `model`. This model should look very similar to the article section inside our previous `MainSiteLayout` component, as nothing has changed with what we want to model out for each element. In addition we will create our empty actions, as we do not currently have any actions related to `NewsArticle`.
 
 ```
-'use strict'
+'use strict';
 
 /*****
 * Options:
@@ -167,7 +167,7 @@ module.exports = {
 Now that we have our `NewsArticle` component, we can go remove the article related component parts out of `MainSiteLayout`.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
@@ -195,13 +195,13 @@ module.exports = {
 }
 ```
 
-Since we change our model, remember that you always need to and change the expected state of anyone creating the component of the model you change.
+Since we changed our model, we must always change the `expected state` wherever we add the component we changed. Whenever a component is added to the `expected state`, it must have have a matching `state` structure to that of the component's `model`.
 {: notice--info}
 
 Inside the `NAVIGATE_TO_SITE` action we need to update where we add in `MainSiteLayout` to the expected state according to our new model.  In addition, lets add 2 article components to the our expected state as they are present on the page when we navigate there.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',

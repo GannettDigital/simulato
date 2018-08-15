@@ -15,7 +15,7 @@ An entry component looks like any other component, but it also includes a specia
 Let's start creating our entry component, giving it a unique `type`. This component will detail out only 1 action, navigating to the the Simulato test site. As such, we will give it a `type` of 'NavigateToTestSite', as well as the file name 'navigateToTestSite.model.js'. The file should be created in our components folder. Remember that `type` is always in PascalCase.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite'
@@ -25,7 +25,7 @@ module.exports = {
 When creating `elements` for our entry component specifically, we don't have anything in the system we want to select, in fact we are not even in the system yet to select anything. Since the purpose of the entry component is to get us into the system, and has no elements on a page, we will just return an empty array for elements.  We always need to return at least an empty array because `elements` is a required property.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',
@@ -38,7 +38,7 @@ module.exports = {
 Since we have no `elements`, we won't have anything in our `model` section either. With no elements detailed out, there is nothing to model. Since its required, we will return an empty object.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',
@@ -54,7 +54,7 @@ module.exports = {
 With our model section created, we are able to add the `entryComponent` property that differentiates entry components from other components.  Whenever a component is created and added to the expected state of the system, a unique  `name`, and an expected `state` must be provided.  Entry components are functionally no different, and a `name` and `state` must be provided. However, since we need some place to start, we provide this information directly in the component via the `entryComponent` property. This is a simple object that specifies a `name` and the component's `state`.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',
@@ -86,7 +86,7 @@ The `perform` block is where we will tell the Selenium driver how to perform our
 For `NavigateToTestSite` we want our action to use one of the more uncommon driver actions `get()`. This tells Selenium to open up a browser, and navigate to the url provided. As with all perform blocks, we need to to tell Simulato when the perform block is finished. We do this by calling the callback provided by Simulato in the perform function.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',
@@ -122,7 +122,7 @@ Now that we have our `perform` created, we need to tell Simulato the expected ef
 In the [previous section](/tutorial/first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here](/documentation/expected-state/).
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',

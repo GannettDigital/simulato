@@ -22,7 +22,7 @@ First we will create the elements, for each article we care about 3 things, the 
 Looking at the id's in the HTML above we can see the corresponding id's for the first article `article1Image`, `article1Heading`, `article1Text` and `article2Image`, `article2Heading`, `article2Text` for the second article. Now we can create the elements inside `MainSiteLayout`.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
@@ -95,7 +95,7 @@ module.exports = {
 Now that we have our elements, we can add to the model section. Before we start adding to the model we need to decide what parts about each element we care about. For each article let's decide we care if the image is displayed, the heading is displayed and we verify the correct text, and that the article text is displayed and the correct text.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
@@ -199,7 +199,7 @@ Remember, when creating a model you get to control the structure of the model fo
 Now that we have updated the model for `MainSiteLayout` we need to make sure when we create and add this component to the state, we tell Simulato what we expect for each section of our newly revised model.  Let's go back to `NavigateToTestSite` where `MainSiteLayout` is added, and update the expected state.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'NavigateToTestSite',
@@ -267,7 +267,7 @@ module.exports = {
 Whenever a model changes for a given component, any other component that creates and adds that component to the expected state must be updated. If Simulato doesn't have an expected value for any given part of the model, it will not match the value it gets from the page state, and the test will fail.
 {: .notice--warning}
 
-Now that our components are updated we should be able to generate and run the tests.  Be sure to clear our your previous test from the test folder so it doesnt run any old tests unexpectedly.
+Now that our components are updated we should be able to generate and run the tests.  Be sure to clear out your previous test from the test folder so it doesn't run any old tests unexpectedly.
 
 `$ npm run generate-tests`
 
@@ -498,7 +498,7 @@ expectedState.createAndAddComponent({
 Now let's go to our 'MainSiteLayout' and change an elements selector to have the incorrect value, passing in an incorrect id.  In addition, lets change the model to have a typo, referring to the name of an element that wasn't created in the elements section.  For the element, we will change `siteHeader` to have a bad id, and change `article1.image` inside the model to reference a bad element.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',

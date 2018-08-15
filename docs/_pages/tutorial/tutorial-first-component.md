@@ -22,7 +22,7 @@ package.json
 Each component we create is an object that is exported from a JavaScript file. We use Node's [modules system](https://nodejs.org/api/modules.html#modules_module_exports) to export our objects. When creating components we recommend using [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode). Lets create the following basic shell for our component.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
 
@@ -39,7 +39,7 @@ Whenever we create and add a component we will add components of a specified `ty
 
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout'
@@ -59,7 +59,7 @@ For simplicity of our first component, let's use the header as an element that w
 Looking at the div element that is used to contain our header, it has the id of `siteHeader`.  We can now use this information to create the elements section of our component.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
@@ -99,7 +99,7 @@ The `model` is a required section of the component which is a function that retu
 For our `MainSiteLayout` component we added the 'siteHeader' element, now lets create the model section. Remember, this will detail what about the 'siteHeader' we care about. For right now, we simply care about it being displayed.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
@@ -129,7 +129,7 @@ There are a few things going on in the above model, so let's break everything do
 The last required property for every component is the `actions` property. `actions` is a function that returns an object which details all actions that can be performed related to our component. For our current component, we will not be adding any actions at this point since we just want to set up the basic component. However, since `actions` is a required property we need to return an empty object.
 
 ```
-'use strict'
+'use strict';
 
 module.exports = {
   type: 'MainSiteLayout',
