@@ -79,7 +79,10 @@ This section will go into the details of names for your component's type, as wel
 
 ### Component Type
 
-Component type values should reflect directly back to the HTML they are modeling.  This helps keep them clear and simple as to what type of component they are.  As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language.
+Component type values should reflect directly back to the HTML they are modeling.  This helps keep them clear and simple as to what type of component they are.
+
+As a standard, type should be in PascalCase, similar to how you would name a class or constructor in an object oriented language. In addition they must be unique, as any non unique component `type` will throw an error inside Simulato.
+{: .notice--info}
 
 Example:
 
@@ -101,7 +104,7 @@ Example:
 ```
 
 `profile.model.js` would have `type: 'Profile'`
-`profile.dropdownmodel.js` would have `type: 'ProfileDropdown'`
+`profile.dropdown.model.js` would have `type: 'ProfileDropdown'`
 
 Many times when looking at a HTML file structure, files will have simple names such as `actionbar.html` or `index.html`. This would end up having multiple components with the same `type`, which isn't allowed in Simulato.  In this situation prepending the folder names allows to create unique `type` values, as multiple files of the same name are not allowed in a folder.
 
@@ -130,13 +133,13 @@ Test File Structure
 - components
   - views
     - home
-      index.model.js
-      actionbar.model.js
+      - index.model.js
+      - actionbar.model.js
     - profile
-      index.model.js
-      actionbar.model.js
+      - index.model.js
+      - actionbar.model.js
     - login
-      index.model.js
+      - index.model.js
 ```
 
 The types from top to bottom would be the following
@@ -149,19 +152,24 @@ The types from top to bottom would be the following
 
 Continue moving up the the folder structure until you can satisfy creating a unique `type` value.
 
-As you create components, you might want to create some that don't follow exactly with the system under test.  Maybe you see a pattern of views using plain HTML text inputs, or a checkboxes frequently. Instead of having to model them in each view, you want to create a reusable component you can just call as a child to reduce model development time.  There is also your entry component, the component that navigates into your system (usually just one). For these types of models, that don't relate one to one with a view of the system, they should be placed in folders outside file structure you are copying, but still under the components folder.
+As you create components, you might want to create some that don't follow exactly with the system under test.  
+
+During your modeling process you will likely see a pattern of views using plain HTML text inputs, or a checkboxes frequently. Instead of having to model them in each view, you want to create a reusable component you can just call as a child to reduce model development time.
+{: .notice--info}
+
+There is also your entry component, the component that navigates into your system (usually just one). For these types of models, that don't relate one to one with a view of the system, they should be placed in folders outside file structure you are copying, but still under the components folder.
 
 ```
 - components
   - views
     - home
-      index.model.js
-      actionbar.model.js
+      - index.model.js
+      - actionbar.model.js
     - profile
-      index.model.js
-      actionbar.model.js
+      - index.model.js
+      - actionbar.model.js
     - login
-      index.model.js
+      - index.model.js
   - entry
     - entryComponent.model.js
   - base-html
@@ -171,9 +179,13 @@ As you create components, you might want to create some that don't follow exactl
 
 ### Component Name
 
-As a standard, names should be written in camelCase, to distinguish them from type. Similar to the component type being related to the HTML file, a given component's name should be related to that component's type. 
+As a standard, names should be written in camelCase, to distinguish them from type. Similar to the component type being related to the HTML file, a given component's name should be related to that component's type.
+{: .notice--info}
 
 When a component, and therefore a view, is only used once for the system the name can simply be the component's type, but in camelCase.
+
+Unique names are not enforced by Simulato, but when planning and generating tests, it determines unique actions with a combination of `name` and action names. If two components have the same name, Simulato will not be able to tell the difference between two components, and test generation will most likely not create the results expected.
+{: .notice--warning}
 
 Example:
 
@@ -274,7 +286,8 @@ children () {
 The home page model has `type: 'HomePage'`, and following standards the name should be `name: 'homePage'`.
 We want to add the TextInput component into the children section of the model. Assuming it has the `type: 'TextInput'`, we would want to prepend our current name `homePage` to the name we would give TextInput, `textInput`.  However since we do not specifically know what name will be given to any given component when it's added to the expected state, we want to avoid prepending any hard coded values. The components `this` context comes in to help out (specifics about `this` can be found [here](/documentation/components/#this-context)). Inside the `this` context we have access to the name property, that is the name this component was given during its creation. Using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), we can easily create a name for the child using the prepended components name.
 
-Remember to keep the standard of using camelCase, creating the following child:
+Remember to keep the standard of using camelCase, when creating the `name` of a component.
+{: .notice--info}
 
 ```
 children () {
