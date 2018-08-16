@@ -86,7 +86,7 @@ Outside of `isDisplayed`, which is a custom Simulato function to determine if an
 
 First lets select the element we are looking at, in this case our header.
 
-![](../../assets/tutorial/mainSiteLayoutHeaderShowPropertiesTabgit.png)
+![](../../assets/tutorial/mainSiteLayoutHeaderShowPropertiesTab.png)
 
 Once the properties for our element is expanded we will see a list of properties.
 
