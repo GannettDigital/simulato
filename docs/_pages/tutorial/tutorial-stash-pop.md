@@ -129,7 +129,7 @@ Now, all that's left is creating the `effects` section of the action. Once we cl
 As always, start by creating a new file in our components folder, `viewStoryModal.model.js`. Just like before we need to investigate the dom, pulling ids to create our `elements` section. Similar to `NewsArticle`, we want to create `ViewStoryModal` with reusability in mind, since every `NewsArticle` component added to the state will have our action `CLICK_TO_VIEW_STORY`, we need to create `ViewStoryModal` in a way to work for everyone. For our elements and model, we will care about the modal title, the modal body, and the close button.
 
 ```
-'use strict';;
+'use strict';
 
 /*****
 * Options:
@@ -385,7 +385,7 @@ module.exports = {
 Now that we are dynamically creating `ViewStoryModal` for any `NewsArticle` component, we can finish by adding our `CLOSE_MODAL` action to `ViewStoryModal`, which simply calls `expectedState.pop()`.
 
 ```
-'use strict';;
+'use strict';
 
 /*****
 * Options:
