@@ -258,6 +258,7 @@ describe('lib/util/get-element-data.js', function() {
             innerText: 'someInnerText',
             hidden: false,
             value: undefined,
+            checked: undefined,
             webElement: element,
             isDisplayed: true,
           });
@@ -342,6 +343,7 @@ describe('lib/util/get-element-data.js', function() {
               innerText: 'someInnerText',
               hidden: false,
               value: undefined,
+              checked: undefined,
               webElement: elements[0],
               isDisplayed: true,
             }, {
@@ -352,6 +354,7 @@ describe('lib/util/get-element-data.js', function() {
               innerText: 'someInnerText2',
               hidden: false,
               value: undefined,
+              checked: undefined,
               webElement: elements[1],
               isDisplayed: true,
             }]);

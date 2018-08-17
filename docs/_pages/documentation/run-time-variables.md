@@ -1,14 +1,16 @@
 ---
-permalink: /run-time-variables/
+permalink: /documentation/run-time-variables/
 title: 'Run Time Variables'
 toc: false
+sidebar:
+  nav: "documentation"
+classes: wide
 ---
 
-## When and where
 Run time variables are useful when a property in a model is not known until execution time.
 Run time variables are available to use anywhere you have access to the `this` context of the component.
 
-## How
+## Using Run Time Variables
 Use the function `this.getFromPage` detailed in the components section of the documentation.
 Since run time variables are only filled in during execution it places limits on their use.
 If a precondition is created using a run time variable it will always be `undefined` during planning.

@@ -1,7 +1,10 @@
 ---
-permalink: /expected-state/
+permalink: /documentation/expected-state/
 title: 'Expected State'
-toc_label: 'Expected State'
+toc: false
+classes: wide
+sidebar:
+  nav: "documentation"
 ---
 
 This section documents functions for the expected state used throughout the tool
@@ -97,6 +100,6 @@ This section documents functions for the expected state used throughout the tool
       * `dynamicArea` **required**
         * A String denoting the dynamic area you wish to retrieve
 
-## eventEmitter
+## event emitter
   * An event emitter instance wherein the events returned from the `events` function are registered
   * Use this emitter to emit events to other components

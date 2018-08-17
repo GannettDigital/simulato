@@ -1,7 +1,10 @@
 ---
-permalink: /cli/
+permalink: /documentation/cli/
 title: 'CLI'
-toc_label: 'CLI'
+toc: false
+classes: wide
+sidebar:
+  nav: "documentation"
 ---
 
 This section details the different commands used in the CLI. All passed in CLI options override any set inside the configuration file

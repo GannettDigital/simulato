@@ -8,3 +8,9 @@
 Simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser.
 
 [Documentation can be found here](https://gannettdigital.github.io/simulato/)
+
+### Big Thanks
+
+Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][homepage]
+
+[homepage]: https://saucelabs.com

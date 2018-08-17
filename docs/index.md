@@ -1,5 +1,7 @@
 ---
 title: "Simulato"
+sidebar:
+  nav: "home"
 feature_row:
   - image_path: /assets/github-logo.png
     alt: "placeholder image 1"

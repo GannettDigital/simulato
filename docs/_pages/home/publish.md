@@ -1,7 +1,10 @@
 ---
-permalink: /publish/
+permalink: /publishing/
 title: 'Publising New Version'
 toc: false
+sidebar:
+  nav: "home"
+classes: wide
 ---
 
 Steps for core contributers to publish a new release of simulato

@@ -1,7 +1,10 @@
 ---
-permalink: /data-store/
+permalink: /documentation/data-store/
 title: 'Data Store'
-toc_label: 'Data Store'
+toc: false
+classes: wide
+sidebar:
+  nav: "documentation"
 ---
 
 This section documents functions for the data store used throughout the tool

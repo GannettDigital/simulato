@@ -1,7 +1,9 @@
 ---
-permalink: /release-notes/
-title: 'Release Notes'
+permalink: /current-notes/
+title: 'Current Release Notes'
 toc_label: 'Version Number'
+sidebar:
+  nav: "home"
 ---
 
 ## 0.6.1

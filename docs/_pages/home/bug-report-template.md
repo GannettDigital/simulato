@@ -2,6 +2,9 @@
 permalink: /bug-report-template/
 title: 'Bug Report Template'
 toc: false
+sidebar:
+  nav: "home"
+classes: wide
 ---
 
 Please use the following template when creating a bug [issue](https://github.com/GannettDigital/simulato/issues) in github.

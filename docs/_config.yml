@@ -4,7 +4,7 @@ title: "Simulato"
 title_seperator: "|"
 feed: false
 description: "Simulato is a tool that uses model based testing techniques to generate and run tests for web page user interfaces in the browser."
-# url: https://GannettDigital.github.io
+url: https://GannettDigital.github.io
 # baseurl: /simulato
 repository: "GannettDigital/simulato"
 include: ["_pages"]
