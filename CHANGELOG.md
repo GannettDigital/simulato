@@ -2,6 +2,12 @@
 
 ## Pending Version
 
+## 0.6.2
+
+* Tom Dale
+  * Added checked property to get element data
+  * Added tutorial, best practices, and more documentation
+
 * Scott Gunther
   * Added debug flag to generate command
   * Planner prints progress after finidng each action when debug flag is set
