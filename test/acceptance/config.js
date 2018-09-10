@@ -7,4 +7,5 @@ module.exports = {
     outputPath: './test/acceptance/tests',
     plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
     rerunFailedTests: 1,
+    customReportPath: './test/acceptance/report'
 };

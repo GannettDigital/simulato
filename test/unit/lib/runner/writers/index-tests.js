@@ -25,7 +25,7 @@ describe('lib/runner/writers/index.js', function() {
   it('should export 1 item on an object', function() {
     let result = require('../../../../../lib/runner/writers');
 
-    expect(Object.getOwnPropertyNames(result).length).to.equal(1);
+    expect(Object.getOwnPropertyNames(result).length).to.equal(2);
   });
 
   it('should have the property \'JSON\' with the value from requiring'
