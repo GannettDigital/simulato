@@ -22,7 +22,7 @@ describe('lib/runner/writers/index.js', function() {
     mockery.disable();
   });
 
-  it('should export 1 item on an object', function() {
+  it('should export 2 items on an object', function() {
     let result = require('../../../../../lib/runner/writers');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(2);
