@@ -10,7 +10,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
     let path;
     let writeActionReportToDisk;
     let configHandler;
-    let obj;
+
     let report;
 
     beforeEach(function() {
@@ -20,7 +20,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       path = {
         resolve: sinon.stub(),
       };
-      
+
       report = {
         testReports: [
           {
@@ -31,10 +31,10 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                   actions: [
                     {
                       component: 'navigate',
-                      action: 'navigate'
-                    }
-                  ]
-                }
+                      action: 'navigate',
+                    },
+                  ],
+                },
               },
               {
                 report: {
@@ -42,12 +42,12 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                   actions: [
                     {
                       component: 'modal',
-                      action: 'click'
-                    }
-                  ]
-                }
-              }
-            ]
+                      action: 'click',
+                    },
+                  ],
+                },
+              },
+            ],
           },
           {
             testRuns: [
@@ -57,10 +57,10 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                   actions: [
                     {
                       component: 'navigate',
-                      action: 'navigate'
-                    }
-                  ]
-                }
+                      action: 'navigate',
+                    },
+                  ],
+                },
               },
               {
                 report: {
@@ -68,15 +68,15 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                   actions: [
                     {
                       component: 'modal',
-                      action: 'click'
-                    }
-                  ]
-                }
-              }
-            ]
+                      action: 'click',
+                    },
+                  ],
+                },
+              },
+            ],
           },
-        ]
-      }
+        ],
+      };
 
       fs = {
         writeFileSync: sinon.stub(),
@@ -104,66 +104,67 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
 
     it('should call path.resolve with the configs testPath', function() {
       let report = {
-        testReports: []
-      }
+        testReports: [],
+      };
       configHandler.get.returns('./testPath');
 
       writeActionReportToDisk(report);
 
       expect(path.resolve.args).to.deep.equal([
         [
-          './testPath'
+          './testPath',
         ],
       ]);
     });
 
     describe('for each test report of the passed in report', function() {
       it('should call fs.readFileSync with the path to the test and \'utf8\'', function() {
-
         path.resolve.returns('./testpath');
         fs.readFileSync.returns('{}');
 
         writeActionReportToDisk(report);
-  
+
         expect(fs.readFileSync.args).to.deep.equal([
           [
             './testpath/testOne',
-            'utf8'
+            'utf8',
           ],
           [
             './testpath/testOne',
-            'utf8'
+            'utf8',
           ],
         ]);
       });
-      
+
       it('should assign customReport', function() {
         let customReport = {
-          "name": `test`
-      }
+          'name': `test`,
+      };
         path.resolve.returns('./testpath');
         fs.readFileSync.returns('{}');
 
         writeActionReportToDisk(report);
 
-        expect(customReport.name).to.equal("test");
-
+        expect(customReport.name).to.equal('test');
       });
     });
 
     describe('for each key value pair in obj', function() {
-      it('should call fs.writeFileSync with the custom report path and the action report passed in', function () {
-
+      it('should call fs.writeFileSync with the custom report path and the action report passed in', function() {
         path.resolve.returns('./testpath');
         fs.readFileSync.returns('{}');
 
         writeActionReportToDisk(report);
 
         expect(fs.writeFileSync.args).to.deep.equal([[
-          "./testpath",
-          "[{\"automation\":\"Yes\",\"name\":\"modal.click\",\"automation-content\":\"sample#automation.content_0\",\"description\":\"\",\"precondition\":\"\",\"priority\":\"\",\"note\":{},\"test-steps\":[{\"description\":\"\",\"expected\":\"\",\"actual\":\"\",\"step-status\":\"\"}]},{\"automation\":\"Yes\",\"name\":\"modal.click\",\"automation-content\":\"sample#automation.content_1\",\"description\":\"\",\"precondition\":\"\",\"priority\":\"\",\"note\":{},\"test-steps\":[{\"description\":\"\",\"expected\":\"\",\"actual\":\"\",\"step-status\":\"\"}]}]"
+          './testpath',
+          '[{"automation":"Yes","name":"modal.click","automation-content":"sample#automation.content_0",'+
+          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
+          '"expected":"","actual":"","step-status":""}]},{"automation":"Yes","name":"modal.click",'+
+          '"automation-content":"sample#automation.content_1","description":"","precondition":"",' +
+          '"priority":"","note":{},"test-steps":[{"description":"","expected":"","actual":"","step-status":""}]}]',
         ]]);
-      })
-    })
+      });
+    });
   });
 });

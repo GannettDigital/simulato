@@ -631,7 +631,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
               'testReportHandler.testReportSummaryReadyToWrite',
               'actionJSON',
               testReportHandler._report,
-            ]
+            ],
           ]);
         });
       });
