@@ -2,6 +2,10 @@
 
 ## Pending Version
 
+* Subarna Mukhiyabeen
+  * Added a custom writer that can generate action reports for QASymphony
+  * Added unit tests for action-jason-writer
+
 ## 0.6.2
 
 * Tom Dale
