@@ -14,6 +14,7 @@ describe('lib/runner/writers/index.js', function() {
     json = sinon.stub();
 
     mockery.registerMock('./write-json-to-disk.js', json);
+    mockery.registerMock('./action-json-writer.js', json);
   });
 
   afterEach(function() {
@@ -33,5 +34,12 @@ describe('lib/runner/writers/index.js', function() {
     let result = require('../../../../../lib/runner/writers');
 
     expect(result.JSON).to.deep.equal(json);
+  });
+
+  it('should have the property \'actionJSON\' with the value from requiring'
+    + ' \'./action-json-writer.js\'', function() {
+    let result = require('../../../../../lib/runner/writers');
+
+    expect(result.actionJSON).to.deep.equal(json);
   });
 });
