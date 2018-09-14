@@ -6,15 +6,17 @@ const expect = require('chai').expect;
 
 describe('lib/runner/writers/index.js', function() {
   let json;
+  let actionJson;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../../lib/runner/writers');
 
     json = sinon.stub();
+    actionJson = sinon.stub();
 
     mockery.registerMock('./write-json-to-disk.js', json);
-    mockery.registerMock('./action-json-writer.js', json);
+    mockery.registerMock('./action-json-writer.js', actionJson);
   });
 
   afterEach(function() {
@@ -40,6 +42,6 @@ describe('lib/runner/writers/index.js', function() {
     + ' \'./action-json-writer.js\'', function() {
     let result = require('../../../../../lib/runner/writers');
 
-    expect(result.actionJSON).to.deep.equal(json);
+    expect(result.actionJSON).to.deep.equal(actionJson);
   });
 });

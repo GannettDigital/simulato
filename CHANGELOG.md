@@ -4,7 +4,7 @@
 
 * Subarna Mukhiyabeen
   * Added a custom writer that can generate action reports for QASymphony
-  * Added unit tests for action-jason-writer
+  * Added unit tests for action-json-writer
 
 ## 0.6.2
 

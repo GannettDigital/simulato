@@ -10,7 +10,6 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
     let path;
     let writeActionReportToDisk;
     let configHandler;
-
     let report;
 
     beforeEach(function() {
@@ -33,15 +32,8 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                       component: 'navigate',
                       action: 'navigate',
                     },
-                  ],
-                },
-              },
-              {
-                report: {
-                  testName: 'testOne',
-                  actions: [
                     {
-                      component: 'modal',
+                      component: 'article1',
                       action: 'click',
                     },
                   ],
@@ -53,22 +45,19 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
             testRuns: [
               {
                 report: {
-                  testName: 'testOne',
+                  testName: 'testTwo',
                   actions: [
                     {
                       component: 'navigate',
                       action: 'navigate',
                     },
-                  ],
-                },
-              },
-              {
-                report: {
-                  testName: 'testOne',
-                  actions: [
+                    {
+                      component: 'article2',
+                      action: 'click',
+                    },
                     {
                       component: 'modal',
-                      action: 'click',
+                      action: 'close',
                     },
                   ],
                 },
@@ -87,7 +76,6 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
         get: sinon.stub(),
       };
 
-      obj = {};
 
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
@@ -103,7 +91,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
     });
 
     it('should call path.resolve with the configs testPath', function() {
-      let report = {
+      report = {
         testReports: [],
       };
       configHandler.get.returns('./testPath');
@@ -113,6 +101,21 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       expect(path.resolve.args).to.deep.equal([
         [
           './testPath',
+        ],
+      ]);
+    });
+
+    it('should call configHandler.get with the parameter \'testPath\'', function() {
+      report = {
+        testReports: [],
+      };
+      configHandler.get.returns('./testPath');
+
+      writeActionReportToDisk(report);
+
+      expect(configHandler.get.args).to.deep.equal([
+        [
+          'testPath',
         ],
       ]);
     });
@@ -130,40 +133,97 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
             'utf8',
           ],
           [
-            './testpath/testOne',
+            './testpath/testTwo',
             'utf8',
           ],
         ]);
       });
-
-      it('should assign customReport', function() {
-        let customReport = {
-          'name': `test`,
-      };
-        path.resolve.returns('./testpath');
-        fs.readFileSync.returns('{}');
-
-        writeActionReportToDisk(report);
-
-        expect(customReport.name).to.equal('test');
-      });
     });
 
     describe('for each key value pair in obj', function() {
-      it('should call fs.writeFileSync with the custom report path and the action report passed in', function() {
-        path.resolve.returns('./testpath');
+      it('should call path.resolve with the configs reportPath and date string test name', function() {
+        configHandler.get.returns('./reportPath');
         fs.readFileSync.returns('{}');
 
         writeActionReportToDisk(report);
 
-        expect(fs.writeFileSync.args).to.deep.equal([[
-          './testpath',
-          '[{"automation":"Yes","name":"modal.click","automation-content":"sample#automation.content_0",'+
+        expect(path.resolve.args).to.deep.equal([
+          [
+            './reportPath',
+          ],
+          [
+            './reportPath',
+            'navigate.navigate.json',
+          ],
+          [
+            './reportPath',
+            'article1.click.json',
+          ],
+          [
+            './reportPath',
+            'article2.click.json',
+          ],
+          [
+            './reportPath',
+            'modal.close.json',
+          ],
+        ]);
+      });
+
+      it('should call fs.writeFileSync with filepath and passed in report', function() {
+        path.resolve.returns(`actionName.json`);
+        configHandler.get.returns('reportPath', 'actionName.json');
+        fs.readFileSync.returns('{}');
+
+        writeActionReportToDisk(report);
+
+        expect(configHandler.get.args).to.deep.equal([
+          ['testPath',
+          ],
+          [
+            'reportPath',
+          ],
+          [
+            'reportPath',
+          ],
+          [
+            'reportPath',
+          ],
+          [
+            'reportPath',
+          ],
+        ]);
+      });
+
+
+      it('should call fs.writeFileSync with the custom report path and the action report passed in', function() {
+        path.resolve.returns('./reportPath');
+        fs.readFileSync.returns('{}');
+
+        writeActionReportToDisk(report);
+
+        expect(fs.writeFileSync.args).to.deep.equal([
+          ['./reportPath',
+          '[{"automation":"Yes","name":"navigate.navigate","automation-content"' +
+          ':"sample#automation.content_0","description":"","precondition":"","' +
+          'priority":"","note":{},"test-steps":[{"description":"","expected":"",' +
+          '"actual":"","step-status":""}]},{"automation":"Yes","name":"navigate.navigate' +
+          '","automation-content":"sample#automation.content_1","description":"","precondition"' +
+          ':"","priority":"","note":{},"test-steps":[{"description":"","expected":"","' +
+          'actual":"","step-status":""}]}]'],
+          ['./reportPath',
+          '[{"automation":"Yes","name":"article1.click","automation-content":"sample#automation.content_0",'+
           '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
-          '"expected":"","actual":"","step-status":""}]},{"automation":"Yes","name":"modal.click",'+
-          '"automation-content":"sample#automation.content_1","description":"","precondition":"",' +
-          '"priority":"","note":{},"test-steps":[{"description":"","expected":"","actual":"","step-status":""}]}]',
-        ]]);
+          '"expected":"","actual":"","step-status":""}]}]'],
+          ['./reportPath',
+          '[{"automation":"Yes","name":"article2.click","automation-content":"sample#automation.content_0",'+
+          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
+          '"expected":"","actual":"","step-status":""}]}]'],
+          ['./reportPath',
+          '[{"automation":"Yes","name":"modal.close","automation-content":"sample#automation.content_0",'+
+          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
+          '"expected":"","actual":"","step-status":""}]}]'],
+        ]);
       });
     });
   });
