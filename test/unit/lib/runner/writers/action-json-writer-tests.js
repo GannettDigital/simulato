@@ -141,7 +141,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
     });
 
     describe('for each key value pair in obj', function() {
-      it('should call path.resolve with the configs reportPath and date string test name', function() {
+      it('should call path.resolve with the configs reportPath', function() {
         configHandler.get.returns('./reportPath');
         fs.readFileSync.returns('{}');
 
@@ -170,7 +170,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
         ]);
       });
 
-      it('should call fs.writeFileSync with filepath and passed in report', function() {
+      it('should call configHandler.get with reportPath and the report name', function() {
         path.resolve.returns(`actionName.json`);
         configHandler.get.returns('reportPath', 'actionName.json');
         fs.readFileSync.returns('{}');
