@@ -15,7 +15,7 @@ describe('lib/cli/orchestration/after.js', function() {
     mockery.registerAllowable('../../../../../lib/cli/orchestration/after.js');
 
     Saucelabs = {
-        close: sinon.stub(),
+      close: sinon.stub(),
     };
 
     concurrent = sinon.stub();

@@ -16,8 +16,8 @@ describe('lib/util/page-state-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -38,10 +38,10 @@ describe('lib/util/page-state-handler.js', function() {
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            pageStateHandler,
-            globalEventDispatch,
-          ],
+        [
+          pageStateHandler,
+          globalEventDispatch,
+        ],
       ]);
     });
 
@@ -93,8 +93,8 @@ describe('lib/util/page-state-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -154,8 +154,8 @@ describe('lib/util/page-state-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -237,8 +237,8 @@ describe('lib/util/page-state-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -331,8 +331,8 @@ describe('lib/util/page-state-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

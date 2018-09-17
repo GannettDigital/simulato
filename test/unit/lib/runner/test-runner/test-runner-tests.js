@@ -16,8 +16,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -41,10 +41,10 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            testRunner,
-            runnerEventDispatch,
-          ],
+        [
+          testRunner,
+          runnerEventDispatch,
+        ],
       ]);
     });
 
@@ -112,8 +112,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -226,8 +226,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -314,7 +314,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             './path/to/components',
           ],
           {
-           env: {
+            env: {
               key1: 'value1',
               key2: 'value2',
               USING_PARENT_TEST_RUNNER: true,
@@ -627,8 +627,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -701,8 +701,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -923,8 +923,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

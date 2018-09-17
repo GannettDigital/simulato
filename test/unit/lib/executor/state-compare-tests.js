@@ -16,8 +16,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -37,10 +37,10 @@ describe('lib/executor/state-compare.js', function() {
       stateCompare = require('../../../../lib/executor/state-compare.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-              stateCompare,
-              executorEventDispatch,
-          ],
+        [
+          stateCompare,
+          executorEventDispatch,
+        ],
       ]);
     });
 
@@ -208,8 +208,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -361,8 +361,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -435,26 +435,26 @@ describe('lib/executor/state-compare.js', function() {
 
     describe('when _.transform callback is called', function() {
       describe('if the value and base[key] are different', function() {
-          it('should call _.isObject once if the first value is NOT an object', function() {
-            let base = {key1: {key2: 'value3'}};
-            _.transform.onCall(0).callsArgWith(1, {}, {key2: 'value2'}, 'key1');
-            _.isEqual.returns(false);
-            _.isObject.returns(false);
+        it('should call _.isObject once if the first value is NOT an object', function() {
+          let base = {key1: {key2: 'value3'}};
+          _.transform.onCall(0).callsArgWith(1, {}, {key2: 'value2'}, 'key1');
+          _.isEqual.returns(false);
+          _.isObject.returns(false);
 
-            stateCompare._findDifference({key1: {key2: 'value2'}}, base, callback);
+          stateCompare._findDifference({key1: {key2: 'value2'}}, base, callback);
 
-            expect(_.isObject.callCount).to.equal(1);
-          });
-          it('should call _.isObject twice if the first value is an object', function() {
-            let base = {key1: {key2: 'value3'}};
-            _.transform.onCall(0).callsArgWith(1, {}, {key2: 'value2'}, 'key1');
-            _.isEqual.returns(false);
-            _.isObject.returns(true);
+          expect(_.isObject.callCount).to.equal(1);
+        });
+        it('should call _.isObject twice if the first value is an object', function() {
+          let base = {key1: {key2: 'value3'}};
+          _.transform.onCall(0).callsArgWith(1, {}, {key2: 'value2'}, 'key1');
+          _.isEqual.returns(false);
+          _.isObject.returns(true);
 
-            stateCompare._findDifference({key1: {key2: 'value2'}}, base, callback);
+          stateCompare._findDifference({key1: {key2: 'value2'}}, base, callback);
 
-            expect(_.isObject.callCount).to.equal(2);
-          });
+          expect(_.isObject.callCount).to.equal(2);
+        });
         describe('if both the value and the base[key] are objects', function() {
           it('should call _.transform with value as the first param', function() {
             let base = {key1: {key2: 'value3'}};
@@ -512,8 +512,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -573,8 +573,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -737,8 +737,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -914,8 +914,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1090,8 +1090,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1292,8 +1292,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1365,8 +1365,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1410,8 +1410,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1476,8 +1476,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1558,8 +1558,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1622,8 +1622,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1687,8 +1687,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1739,8 +1739,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -1777,8 +1777,8 @@ describe('lib/executor/state-compare.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

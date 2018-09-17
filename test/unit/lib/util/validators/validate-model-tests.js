@@ -106,11 +106,11 @@ describe('lib/util/validators/validate-model.js', function() {
 
     it('should throw an error if the passed in model is not an object', function() {
       SimulatoError.MODEL.MODEL_NOT_OBJECT.throws(
-        {message: `Model for ${instanceName} were not returned as an Object by parent component ${componentName}`}
+          {message: `Model for ${instanceName} were not returned as an Object by parent component ${componentName}`}
       );
 
       expect(validateModel.validate.bind(null, [], instanceName, componentName)).to.throw(
-        `Model for ${instanceName} were not returned as an Object by parent component ${componentName}`
+          `Model for ${instanceName} were not returned as an Object by parent component ${componentName}`
       );
     });
 
@@ -238,12 +238,12 @@ describe('lib/util/validators/validate-model.js', function() {
         let value = [];
 
         SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
-          {message: `Value for ${parentKeyString}1 inside ${componentName}`
+            {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );
 
         expect(validateModel._handleValueTypes.bind(null, value, parentKeyString, 'key1', componentName)).to.throw(
-          `Value for parentKeyString.1 inside componentName model must be either a string or object`
+            `Value for parentKeyString.1 inside componentName model must be either a string or object`
         );
       });
     });
@@ -251,22 +251,22 @@ describe('lib/util/validators/validate-model.js', function() {
     describe('if the value is a string or function', function() {
       it('should not throw an error when value is a string', function() {
         SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
-          {message: `Value for ${parentKeyString}1 inside ${componentName}`
+            {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );
 
         expect(validateModel._handleValueTypes.bind(
-          null, 'value', parentKeyString, 'key1', componentName
+            null, 'value', parentKeyString, 'key1', componentName
         )).to.not.throw();
       });
       it('should not throw an error when value is a function', function() {
         SimulatoError.MODEL.MODEL_OBJECT_VALUE.throws(
-          {message: `Value for ${parentKeyString}1 inside ${componentName}`
+            {message: `Value for ${parentKeyString}1 inside ${componentName}`
             + ` model must be either a string or object`}
         );
 
         expect(validateModel._handleValueTypes.bind(
-          null, sinon.stub(), parentKeyString, 'key1', componentName
+            null, sinon.stub(), parentKeyString, 'key1', componentName
         )).to.not.throw();
       });
       it('should not call validateModel.emit', function() {

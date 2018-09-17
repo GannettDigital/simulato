@@ -119,7 +119,7 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     it('should throw an error if the passed in actions is not an object', function() {
       SimulatoError.ACTION.ACTIONS_NOT_OBJECT.throws(
-        {message}
+          {message}
       );
 
       expect(validateActions.validate.bind(null, [], instanceName, componentName)).to.throw(message);
@@ -132,7 +132,7 @@ describe('lib/util/validators/validate-actions.js', function() {
             ACTION_ONE: [],
           };
           SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-            {message}
+              {message}
           );
 
           expect(validateActions.validate.bind(null, actions, instanceName, componentName)).to.throw(message);
@@ -213,28 +213,28 @@ describe('lib/util/validators/validate-actions.js', function() {
     describe('if the passed in action has preconditions property', function() {
       it('should throw an error if the preconditions is not a function', function() {
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {message}
+            {message}
         );
 
         expect(validateActions._validateAction.bind(null, {preconditions: {}}, instanceName, componentName)).to.throw(
-          message
+            message
         );
       });
 
       it('should NOT throw an error if the preconditions is a function', function() {
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {message}
+            {message}
         );
 
         expect(validateActions._validateAction.bind(
-          null,
-          {
-            preconditions: sinon.stub(),
-            perform: sinon.stub(),
-            effects: sinon.stub(),
-          },
-          instanceName,
-          componentName
+            null,
+            {
+              preconditions: sinon.stub(),
+              perform: sinon.stub(),
+              effects: sinon.stub(),
+            },
+            instanceName,
+            componentName
         )).to.not.throw();
       });
     });
@@ -242,11 +242,11 @@ describe('lib/util/validators/validate-actions.js', function() {
     describe('if the passed in action has parameters property', function() {
       it('should throw an error if the parameters is not an Array', function() {
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {message}
+            {message}
         );
 
         expect(validateActions._validateAction.bind(null, {parameters: {}}, instanceName, componentName)).to.throw(
-          message
+            message
         );
       });
 
@@ -277,11 +277,11 @@ describe('lib/util/validators/validate-actions.js', function() {
       };
 
       SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message}
+          {message}
       );
 
       expect(validateActions._validateAction.bind(null, action, 'ACTION_ONE', componentName)).to.throw(
-        message
+          message
       );
     });
     it('should throw an error if the effects property is undefined or not a function', function() {
@@ -290,11 +290,11 @@ describe('lib/util/validators/validate-actions.js', function() {
       };
 
       SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message}
+          {message}
       );
 
       expect(validateActions._validateAction.bind(null, action, 'ACTION_ONE', componentName)).to.throw(
-        message
+          message
       );
     });
   });
@@ -344,11 +344,11 @@ describe('lib/util/validators/validate-actions.js', function() {
 
     it('should throw an error if the passed in preconditions is not an Array', function() {
       SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-        {message}
+          {message}
       );
 
       expect(validateActions._validatePreconditions.bind(null, {}, actionName, componentName)).to.throw(
-        message
+          message
       );
     });
 
@@ -360,13 +360,13 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validatePreconditions.bind(null, preconditions, actionName, componentName)).to.throw(
-          message
+            message
         );
       });
 
@@ -377,13 +377,13 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validatePreconditions.bind(null, preconditions, actionName, componentName)).to.throw(
-          message
+            message
         );
       });
     });
@@ -440,13 +440,13 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          message
+            message
         );
       });
 
@@ -457,13 +457,13 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          message
+            message
         );
       });
 
@@ -474,13 +474,13 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.throw(
-          message
+            message
         );
       });
 
@@ -491,9 +491,9 @@ describe('lib/util/validators/validate-actions.js', function() {
         ];
 
         SimulatoError.ACTION.ACTION_TYPE_ERROR.throws(
-          {
-            message,
-          }
+            {
+              message,
+            }
         );
 
         expect(validateActions._validateParameters.bind(null, parameters, actionName, componentName)).to.not.throw();

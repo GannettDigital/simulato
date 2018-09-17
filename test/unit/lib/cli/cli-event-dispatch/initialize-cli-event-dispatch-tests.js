@@ -12,7 +12,7 @@ describe('lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js', function
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable(
-      '../../../../../lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js'
+        '../../../../../lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js'
     );
 
     cliEventDispatch = sinon.stub();
@@ -32,11 +32,11 @@ describe('lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js', function
   });
 
   describe('when the exported function is called', function() {
-      it('should registerCliEvents once with the cliEventDispatch as the parameter', function() {
+    it('should registerCliEvents once with the cliEventDispatch as the parameter', function() {
       initializecliEventDispatch();
 
       expect(registerCliEvents.args).to.deep.equal([
-          [cliEventDispatch],
+        [cliEventDispatch],
       ]);
     });
   });
