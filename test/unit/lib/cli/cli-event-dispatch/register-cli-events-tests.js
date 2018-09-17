@@ -75,10 +75,10 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
     registerCliEvents(cliEventDispatch);
 
     expect(cliEventDispatch.on.args[1]).to.deep.equal(
-      [
-        'run.configuredRunOrchestration',
-        before.runScripts,
-      ]
+        [
+          'run.configuredRunOrchestration',
+          before.runScripts,
+        ]
     );
   });
 
@@ -99,7 +99,7 @@ describe('lib/cli/cli-event-dispatch/register-cli-events.js', function() {
   describe('when the third call of cliEventDispatch.on callback is called', function() {
     it('should call cliEventDispath.emit with the first param \'cli.configured\' '
       + 'and the second param as the configureInfo', function() {
-        cliEventDispatch.on.onCall(2).callsArgWith(1, {some: 'info'});
+      cliEventDispatch.on.onCall(2).callsArgWith(1, {some: 'info'});
 
       registerCliEvents(cliEventDispatch);
 

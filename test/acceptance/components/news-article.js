@@ -57,7 +57,7 @@ module.exports = {
           {
             name: 'fakeParameter',
             generate() {
-                return 'myFakeParameter';
+              return 'myFakeParameter';
             },
           },
         ],
@@ -73,8 +73,8 @@ module.exports = {
         },
         perform(fakeParam, callback) {
           driver.findElement(By.id(this.options.newsArticleId))
-          .click()
-          .then(callback, callback);
+              .click()
+              .then(callback, callback);
         },
         effects(fakeParam, expectedState, dataStore) {
           expectedState.stash();

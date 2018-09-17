@@ -18,9 +18,9 @@ describe('lib/util/validators/validate-elements.js', function() {
     });
 
     it('should export a function', function() {
-        let result = require('../../../../../lib/util/validators/validate-elements.js');
+      let result = require('../../../../../lib/util/validators/validate-elements.js');
 
-        expect(result).to.be.a('function');
+      expect(result).to.be.a('function');
     });
   });
   describe('on exported function being executed', function() {
@@ -62,28 +62,28 @@ describe('lib/util/validators/validate-elements.js', function() {
 
     it('should throw an error if the passed in elements is not an array', function() {
       expect(validateElements.bind(null, {key: 'value'}, instanceName, componentName)).to.throw(
-        'Elements for instanceName were not returned as an Array by parent component componentName'
+          'Elements for instanceName were not returned as an Array by parent component componentName'
       );
     });
 
     describe('for each value of the passed in elements', function() {
       it('should throw an error if the value is not an object', function() {
         SimulatoError.ELEMENT.ELEMENT_NOT_OBJECT.throws(
-          {message: `Element of elements array at index ${0} for component ${componentName} must be an object`}
+            {message: `Element of elements array at index ${0} for component ${componentName} must be an object`}
         );
 
         expect(validateElements.bind(null, ['element1'], instanceName, componentName)).to.throw(
-          'Element of elements array at index 0 for component componentName must be an object'
+            'Element of elements array at index 0 for component componentName must be an object'
         );
       });
 
       it('should throw an error if the value.name is not a string', function() {
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `Element of elements array at index ${0} for component ${componentName} must be an string`}
+            {message: `Element of elements array at index ${0} for component ${componentName} must be an string`}
         );
 
         expect(validateElements.bind(null, [{name: 1}], instanceName, componentName)).to.throw(
-          'Element of elements array at index 0 for component componentName must be an string'
+            'Element of elements array at index 0 for component componentName must be an string'
         );
       });
 
@@ -91,11 +91,11 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: []}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector field for ${elements[0].name} must be an object`}
+            {message: `The selector field for ${elements[0].name} must be an object`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.throw(
-          `The selector field for name must be an object`
+            `The selector field for name must be an object`
         );
       });
 
@@ -103,11 +103,11 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 1}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'type' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'type' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.throw(
-          `The selector 'type' field for name must be a string`
+            `The selector 'type' field for name must be a string`
         );
       });
 
@@ -115,7 +115,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'getElementById', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
@@ -125,7 +125,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'querySelector', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
@@ -135,7 +135,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'querySelectorAll', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
@@ -145,7 +145,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'getElementsByTagName', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
@@ -155,7 +155,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'getElementsByClassName', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();
@@ -165,11 +165,11 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'madeUpType'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'type' field for ${elements[0].name} must be either 'attribute' or 'querySelector`}
+            {message: `The selector 'type' field for ${elements[0].name} must be either 'attribute' or 'querySelector`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.throw(
-          `The selector 'type' field for name must be either 'attribute' or 'querySelector`
+            `The selector 'type' field for name must be either 'attribute' or 'querySelector`
         );
       });
 
@@ -177,11 +177,11 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'getElementById', value: 1}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.throw(
-          `The selector 'value' field for name must be a string`
+            `The selector 'value' field for name must be a string`
         );
       });
 
@@ -189,7 +189,7 @@ describe('lib/util/validators/validate-elements.js', function() {
         let elements = [{name: 'name', selector: {type: 'getElementById', value: 'value'}}];
 
         SimulatoError.ELEMENT.ELEMENT_OBJECT_PROPERTY_TYPE.throws(
-          {message: `The selector 'value' field for ${elements[0].name} must be a string`}
+            {message: `The selector 'value' field for ${elements[0].name} must be a string`}
         );
 
         expect(validateElements.bind(null, elements, instanceName, componentName)).to.not.throw();

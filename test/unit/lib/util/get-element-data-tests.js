@@ -170,10 +170,10 @@ describe('lib/util/get-element-data.js', function() {
             getElementDataFunctions.findElement = sinon.stub().returns('anElement');
 
             expect(getElementDataFunctions.getElementData.bind(
-              null,
-              [{name: 'badElement', selector: {type: 'badType'}}]
+                null,
+                [{name: 'badElement', selector: {type: 'badType'}}]
             )).to.throw(
-              'Invalid selector.type for element \'badElement\' must be '
+                'Invalid selector.type for element \'badElement\' must be '
               + 'querySelector, querySelectorAll, getElementById, getElementsByTagName, or getElementsByClassName'
             );
           });
@@ -392,7 +392,7 @@ describe('lib/util/get-element-data.js', function() {
       describe('if the passed in element is not an instanceOf Element', function() {
         it('should throw an error', function() {
           expect(getElementDataFunctions.isDisplayed.bind({})).to.throw(
-            'elem is not an element'
+              'elem is not an element'
           );
         });
       });
