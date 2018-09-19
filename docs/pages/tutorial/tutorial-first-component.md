@@ -35,8 +35,7 @@ Every component needs a unique `type` property. This can be thought of as simila
 
 Whenever we create and add a component we will add components of a specified `type` while providing a unique `name`.
 
-**Note:** that just like classes or constructors, we want to use PascalCase so we can quickly differentiate `type` values from other properties' values such as `name`s.
-{: .notice--info}
+{% include note.html content="Just like classes or constructors, we want to use PascalCase so we can quickly differentiate `type` values from other properties' values such as `name`s." %}
 
 
 ```
