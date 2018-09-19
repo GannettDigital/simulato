@@ -1,0 +1,43 @@
+entries:
+- title: Sidebar
+  product: Best Practices
+  items:
+  - title: "File Structure"
+    output: web
+    url: /best-practices/#file-structure
+  - title: "Naming"
+    output: web
+    url: /best-practices/#naming
+  - title: "Entry Components"
+    output: web
+    url: /best-practices/#entry-components
+  - title: "this Context"
+    output: web
+    url: /best-practices/#this-context
+  - title: "Elements"
+    output: web
+    url: /best-practices/#elements
+  - title: "Model"
+    output: web
+    url: /best-practices/#model
+  - title: "Actions"
+    output: web
+    url: /best-practices/#actions
+  - title: "Reusable Components"
+    output: web
+    url: /best-practices/#reusable-components
+  - title: "Children"
+    output: web
+    url: /best-practices/#children
+  - title: "Events"
+    output: web
+    url: /best-practices/#events
+  - title: "Data Store"
+    output: web
+    url: /best-practices/#data-store
+  - title: "Expected State"
+    output: web
+    url: /best-practices/#expected-state
+  - title: "Dynamic Areas"
+    output: web
+    url: /best-practices/#dynamic-areas
