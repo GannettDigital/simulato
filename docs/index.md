@@ -1,7 +1,7 @@
 ---
 hide_sidebar: true
 toc: false
-permalink: index.html
+permalink: /
 ---
 
 <div class="container">
