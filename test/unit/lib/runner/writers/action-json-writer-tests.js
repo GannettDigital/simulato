@@ -76,7 +76,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
               },
             ],
           },
-         ],
+        ],
       };
 
       passingReport = {
@@ -116,7 +116,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
               },
             ],
           },
-         ],
+        ],
       };
 
       mockery.enable({useCleanCache: true});
@@ -588,7 +588,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
         '[{"automation":"Yes","name":"actionName","automation-content":"actionName",'+
         '"description":"","precondition":"","priority":"","test-steps":[{"description"'+
         ':"","expected":"","actual":"","step-status":""}],"execution-time":"NaN"}]',
-      ],
+        ],
       ]);
     });
   });
@@ -663,18 +663,18 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
 
         describe('if the passed in action has an error in perform', function() {
           it('should call _checkStepForError twice with the passed in action and steps \'preconditions\', \'perform\'',
-           function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
-            actionJsonWriter._checkStepForError.onCall(0).returns(null);
-            actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
+              function() {
+                let action = {status: 'fail'};
+                let testData = {status: 'pass'};
+                actionJsonWriter._checkStepForError.onCall(0).returns(null);
+                actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
 
-            actionJsonWriter._checkActionForError(action, testData);
+                actionJsonWriter._checkActionForError(action, testData);
 
-            expect(actionJsonWriter._checkStepForError.args).to.deep.equal([
-              [{status: 'fail'}, 'preconditions'],
-              [{status: 'fail'}, 'perform'],
-            ]);
+                expect(actionJsonWriter._checkStepForError.args).to.deep.equal([
+                  [{status: 'fail'}, 'preconditions'],
+                  [{status: 'fail'}, 'perform'],
+                ]);
           });
 
           it('should return the error from the call to _checkStepForError for perform', function() {
