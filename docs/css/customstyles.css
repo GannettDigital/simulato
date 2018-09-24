@@ -1207,3 +1207,7 @@ h4.panel-title {
 .tutorial-call {
     font-size: 160%;
 }
+
+.ext-logo {
+    max-height: 80px !important;
+}
