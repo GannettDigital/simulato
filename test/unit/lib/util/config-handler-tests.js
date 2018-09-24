@@ -16,8 +16,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -41,10 +41,10 @@ describe('lib/util/config-handler.js', function() {
       configHandler = require('../../../../lib/util/config-handler.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            configHandler,
-            globalEventDispatch,
-          ],
+        [
+          configHandler,
+          globalEventDispatch,
+        ],
       ]);
     });
   });
@@ -77,8 +77,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -350,8 +350,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -405,8 +405,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -466,8 +466,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -613,8 +613,8 @@ describe('lib/util/config-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

@@ -23,24 +23,24 @@ describe('lib/util/initialize-event-dispatchers', function() {
     initializeCliEventDispatch = sinon.stub();
 
     mockery.registerMock(
-      '../global-event-dispatch/initialize-global-event-dispatch',
-      initializeGlobalEventDispatch
+        '../global-event-dispatch/initialize-global-event-dispatch',
+        initializeGlobalEventDispatch
     );
     mockery.registerMock(
-      '../runner/runner-event-dispatch/initialize-runner-event-dispatch',
-      initializeRunnerEventDispatch
+        '../runner/runner-event-dispatch/initialize-runner-event-dispatch',
+        initializeRunnerEventDispatch
     );
     mockery.registerMock(
-      '../planner/planner-event-dispatch/initialize-planner-event-dispatch.js',
-      initializePlannerEventDispatch
+        '../planner/planner-event-dispatch/initialize-planner-event-dispatch.js',
+        initializePlannerEventDispatch
     );
     mockery.registerMock(
-      '../executor/executor-event-dispatch/initialize-executor-event-dispatch.js',
-      initializeExecuteEventDispatch
+        '../executor/executor-event-dispatch/initialize-executor-event-dispatch.js',
+        initializeExecuteEventDispatch
     );
     mockery.registerMock(
-      '../cli/cli-event-dispatch/initialize-cli-event-dispatch.js',
-      initializeCliEventDispatch
+        '../cli/cli-event-dispatch/initialize-cli-event-dispatch.js',
+        initializeCliEventDispatch
     );
 
     initializeEventDispatchers = require('../../../../lib/util/initialize-event-dispatchers');

@@ -67,7 +67,7 @@ module.exports = {
           {
             name: 'fakeParameter',
             generate() {
-                return 'myFakeParameter';
+              return 'myFakeParameter';
             },
           },
         ],
@@ -78,8 +78,8 @@ module.exports = {
         },
         perform(fakeParam, callback) {
           driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
-          .click()
-          .then(callback, callback);
+              .click()
+              .then(callback, callback);
         },
         effects(fakeParam, expectedState, dataStore) {
           expectedState.pop();
@@ -93,8 +93,8 @@ module.exports = {
         },
         perform(callback) {
           driver.findElement(By.css(`#${this.options.newsArticleId}ViewModal > div > div > div.modal-header > button`))
-          .click()
-          .then(callback, callback);
+              .click()
+              .then(callback, callback);
         },
         effects(expectedState, dataStore) {
           expectedState.pop();

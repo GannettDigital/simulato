@@ -60,8 +60,8 @@ describe('lib/errors/test-case/index.js', function() {
 
   it('should have the property \'NO_TEST_CASES_FOUND\' with the value from requiring'
   + ' \'./no-test-cases-found.js\'', function() {
-  let result = require('../../../../../lib/errors/test-case');
+    let result = require('../../../../../lib/errors/test-case');
 
-  expect(result.NO_TEST_CASES_FOUND).to.deep.equal(NO_TEST_CASES_FOUND);
-});
+    expect(result.NO_TEST_CASES_FOUND).to.deep.equal(NO_TEST_CASES_FOUND);
+  });
 });

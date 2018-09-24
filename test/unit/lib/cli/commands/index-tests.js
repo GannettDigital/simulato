@@ -5,37 +5,37 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/cli/commands/index.js', function() {
-    let run;
-    let generate;
+  let run;
+  let generate;
 
-    beforeEach(function() {
-        mockery.enable({useCleanCache: true});
-        mockery.registerAllowable('../../../../../lib/cli/commands');
+  beforeEach(function() {
+    mockery.enable({useCleanCache: true});
+    mockery.registerAllowable('../../../../../lib/cli/commands');
 
-        run = sinon.stub();
-        run.configure = true;
-        generate = sinon.stub();
-        generate.configure = true;
+    run = sinon.stub();
+    run.configure = true;
+    generate = sinon.stub();
+    generate.configure = true;
 
-        mockery.registerMock('./run.js', run);
-        mockery.registerMock('./generate.js', generate);
-    });
+    mockery.registerMock('./run.js', run);
+    mockery.registerMock('./generate.js', generate);
+  });
 
-    afterEach(function() {
-        mockery.resetCache();
-        mockery.deregisterAll();
-        mockery.disable();
-    });
-    it('should have the property \'run\' with the value from requiring'
+  afterEach(function() {
+    mockery.resetCache();
+    mockery.deregisterAll();
+    mockery.disable();
+  });
+  it('should have the property \'run\' with the value from requiring'
     + ' \'./run.js\'.configure', function() {
-      let result = require('../../../../../lib/cli/commands');
+    let result = require('../../../../../lib/cli/commands');
 
-      expect(result.run).to.deep.equal(true);
-    });
-    it('should have the property \'generate\' with the value from requiring'
+    expect(result.run).to.deep.equal(true);
+  });
+  it('should have the property \'generate\' with the value from requiring'
     + ' \'./generate.js\'.configure', function() {
-      let result = require('../../../../../lib/cli/commands');
+    let result = require('../../../../../lib/cli/commands');
 
-      expect(result.generate).to.deep.equal(true);
-    });
+    expect(result.generate).to.deep.equal(true);
+  });
 });

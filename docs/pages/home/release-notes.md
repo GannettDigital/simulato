@@ -5,6 +5,11 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.6.3
+
+* Scott Gunther
+  * Fix child process uncaught exception loop
+
 ## 0.6.2
 
 * Tom Dale

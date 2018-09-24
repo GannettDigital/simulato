@@ -27,7 +27,7 @@ describe('lib/errors/component/component-error.js', function() {
 
   describe('on execution of the required file', function() {
     it('should call new CustomError with \'ComponentError\', and passed in code and message', function() {
-        componentError('ERROR_CODE', 'ERROR_MESSAGE');
+      componentError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(CustomError.args).to.deep.equal([
         ['ComponentError', 'ERROR_CODE', 'ERROR_MESSAGE'],
