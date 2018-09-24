@@ -232,9 +232,9 @@ describe('lib/util/validators/validate-config.js', function() {
 
     describe('if the passed in key NOT included in _objectValues, ' +
       '_stringValues, _numberValues or _booleanValues', function() {
-        it('should throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'badProp', 2)).to.throw('invalid property');
-        });
+      it('should throw an error', function() {
+        expect(validateConfig._validateType.bind(null, 'origin', 'badProp', 2)).to.throw('invalid property');
+      });
     });
   });
 
@@ -276,7 +276,7 @@ describe('lib/util/validators/validate-config.js', function() {
 
       it('should throw simulato invalid value error', function() {
         expect(validateConfig._validateReporter.bind(
-          {reporter: 'badReporter'}, {key: 'configValue'}, {key: 'cliValue'}
+            {reporter: 'badReporter'}, {key: 'configValue'}, {key: 'cliValue'}
         )).throw('invalid value');
       });
     });
@@ -328,7 +328,7 @@ describe('lib/util/validators/validate-config.js', function() {
 
       it('should throw simulato invalid value error', function() {
         expect(validateConfig._validateWriter.bind(
-          {reportFormat: 'badFormat'}, {key: 'configValue'}, {key: 'cliValue'}
+            {reportFormat: 'badFormat'}, {key: 'configValue'}, {key: 'cliValue'}
         )).throw('invalid value');
       });
     });

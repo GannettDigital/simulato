@@ -5,6 +5,13 @@
 * Subarna Mukhiyabeen
   * Added a custom writer that can generate action reports for QASymphony
   * Added unit tests for action-json-writer
+  * updated
+
+## 0.6.3
+
+* Scott Gunther
+  * Fix child process uncaught exception loop
+
 
 ## 0.6.2
 

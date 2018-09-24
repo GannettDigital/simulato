@@ -16,8 +16,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -36,14 +36,14 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
     it('should call Emitter.mixIn with testReportHandler and runnerEventDispatch', function() {
       testReportHandler = require(
-        '../../../../../lib/runner/test-runner/test-report-handler.js'
+          '../../../../../lib/runner/test-runner/test-report-handler.js'
       );
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            testReportHandler,
-            runnerEventDispatch,
-          ],
+        [
+          testReportHandler,
+          runnerEventDispatch,
+        ],
       ]);
     });
   });
@@ -58,8 +58,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -103,8 +103,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -179,8 +179,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -222,8 +222,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -271,8 +271,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -296,13 +296,13 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
         testReportHandler._report = {
           failedTestCount: 3,
           testReports: [{
-              status: 'fail',
-              rerunCount: 0,
-              testRuns: [{
-                report: {
-                  status: 'pass',
-                },
-              }],
+            status: 'fail',
+            rerunCount: 0,
+            testRuns: [{
+              report: {
+                status: 'pass',
+              },
+            }],
           }],
         };
 
@@ -315,13 +315,13 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
         testReportHandler._report = {
           failedTestCount: 3,
           testReports: [{
-              status: 'fail',
-              rerunCount: 0,
-              testRuns: [{
-                report: {
-                  status: 'pass',
-                },
-              }],
+            status: 'fail',
+            rerunCount: 0,
+            testRuns: [{
+              report: {
+                status: 'pass',
+              },
+            }],
           }],
         };
 
@@ -331,19 +331,42 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
+    describe('if the most recent testRun report is empty', function() {
+      it('should set the report name to testReport.testName and the report status to \'fail\'', function() {
+        testReportHandler._report = {
+          failedTestCount: 3,
+          testReports: [{
+            testName: 'myTestName',
+            status: 'fail',
+            rerunCount: 0,
+            testRuns: [{
+              report: {},
+            }],
+          }],
+        };
+
+        testReportHandler.finalizeTestReport(0, 0);
+
+        expect(testReportHandler._report.testReports[0].testRuns[0].report).to.deep.equal({
+          testName: 'myTestName',
+          status: 'fail',
+        });
+      });
+    });
+
     describe('if the most recent testRun report status is \'fail\' '
       + 'and the passed in rerunCount is truthy', function() {
       it('should increment the testsReports rerunCount once', function() {
         testReportHandler._report = {
           failedTestCount: 3,
           testReports: [{
-              status: 'fail',
-              rerunCount: 0,
-              testRuns: [{
-                report: {
-                  status: 'fail',
-                },
-              }],
+            status: 'fail',
+            rerunCount: 0,
+            testRuns: [{
+              report: {
+                status: 'fail',
+              },
+            }],
           }],
         };
 
@@ -356,13 +379,13 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
         testReportHandler._report = {
           failedTestCount: 3,
           testReports: [{
-              status: 'fail',
-              rerunCount: 0,
-              testRuns: [{
-                report: {
-                  status: 'fail',
-                },
-              }],
+            status: 'fail',
+            rerunCount: 0,
+            testRuns: [{
+              report: {
+                status: 'fail',
+              },
+            }],
           }],
         };
 
@@ -400,8 +423,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -481,8 +504,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -539,8 +562,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

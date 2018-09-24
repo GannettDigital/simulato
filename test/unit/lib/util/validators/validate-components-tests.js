@@ -20,9 +20,9 @@ describe('lib/util/validators/validate-components.js', function() {
     });
 
     it('should export a function', function() {
-        let result = require('../../../../../lib/util/validators/validate-components.js');
+      let result = require('../../../../../lib/util/validators/validate-components.js');
 
-        expect(result).to.be.a('function');
+      expect(result).to.be.a('function');
     });
   });
 
@@ -137,7 +137,7 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerAllowable('path/to/file4.js');
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The file at path 'path/to/file4.js' was unable to be `+
+            `The file at path 'path/to/file4.js' was unable to be `+
           `loaded for reason 'Cannot find module 'path/to/file4.js''`
         );
       });
@@ -147,11 +147,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The component at file path ${files[2]} must be an object`}
+            {message: `The component at file path ${files[2]} must be an object`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The component at file path path/to/file3.js must be an object`
+            `The component at file path path/to/file3.js must be an object`
         );
       });
 
@@ -160,11 +160,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The component at file path ${files[2]} must have a string for name property`}
+            {message: `The component at file path ${files[2]} must have a string for name property`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The component at file path path/to/file3.js must have a string for name property`
+            `The component at file path path/to/file3.js must have a string for name property`
         );
       });
 
@@ -174,11 +174,11 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {message: `The entryComponent property must be an object for component ${component3.type}`}
+              {message: `The entryComponent property must be an object for component ${component3.type}`}
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The entryComponent property must be an object for component component3`
+              `The entryComponent property must be an object for component component3`
           );
         });
 
@@ -187,14 +187,14 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {
-              message:
+              {
+                message:
                 `The entryComponent.type property is required and must be a string for component ${component3.type}`,
-            }
+              }
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The entryComponent.type property is required and must be a string for component component3`
+              `The entryComponent.type property is required and must be a string for component component3`
           );
         });
 
@@ -207,14 +207,14 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {
-              message:
+              {
+                message:
               `The entryComponent.state property is required and must be an object for component ${component3.type}`,
-            }
+              }
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The entryComponent.state property is required and must be an object for component component3`
+              `The entryComponent.state property is required and must be an object for component component3`
           );
         });
 
@@ -226,10 +226,10 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {
-              message:
+              {
+                message:
               `The entryComponent.state property is required and must be an object for component ${component3.type }`,
-            }
+              }
           );
 
           expect(validateComponents.bind(null, files, callback)).to.not.throw();
@@ -241,11 +241,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The elements property must be a function for component ${component3.type}`}
+            {message: `The elements property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The elements property must be a function for component component3`
+            `The elements property must be a function for component component3`
         );
       });
 
@@ -254,11 +254,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The model property must be a function for component ${component3.type}`}
+            {message: `The model property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The model property must be a function for component component3`
+            `The model property must be a function for component component3`
         );
       });
 
@@ -268,11 +268,11 @@ describe('lib/util/validators/validate-components.js', function() {
           mockery.registerMock('path/to/file3.js', component3);
           validateComponents = require('../../../../../lib/util/validators/validate-components.js');
           SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-            {message: `The options property must be an object for component '${component3.type}'`}
+              {message: `The options property must be an object for component '${component3.type}'`}
           );
 
           expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The options property must be an object for component 'component3'`
+              `The options property must be an object for component 'component3'`
           );
         });
 
@@ -282,14 +282,14 @@ describe('lib/util/validators/validate-components.js', function() {
             mockery.registerMock('path/to/file3.js', component3);
             validateComponents = require('../../../../../lib/util/validators/validate-components.js');
             SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-              {
-                message:
+                {
+                  message:
                 `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
-              }
+                }
             );
 
             expect(validateComponents.bind(null, files, callback)).to.throw(
-              `The component.options.dynamicArea property must be an string for component 'component3'`
+                `The component.options.dynamicArea property must be an string for component 'component3'`
             );
           });
           it('should throw no error if the dynamicArea value is a string', function() {
@@ -297,10 +297,10 @@ describe('lib/util/validators/validate-components.js', function() {
             mockery.registerMock('path/to/file3.js', component3);
             validateComponents = require('../../../../../lib/util/validators/validate-components.js');
             SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-              {
-                message:
+                {
+                  message:
                 `The component.options.dynamicArea property must be an string for component '${component3.type}'`,
-              }
+                }
             );
 
             expect(validateComponents.bind(null, files, callback)).to.not.throw();
@@ -313,11 +313,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The elements property must be a function for component ${component3.type}`}
+            {message: `The elements property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The elements property must be a function for component component3`
+            `The elements property must be a function for component component3`
         );
       });
 
@@ -326,11 +326,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The model property must be a function for component ${component3.type}`}
+            {message: `The model property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The model property must be a function for component component3`
+            `The model property must be a function for component component3`
         );
       });
 
@@ -339,11 +339,11 @@ describe('lib/util/validators/validate-components.js', function() {
         mockery.registerMock('path/to/file3.js', component3);
         validateComponents = require('../../../../../lib/util/validators/validate-components.js');
         SimulatoError.COMPONENT.COMPONENT_TYPE_ERROR.throws(
-          {message: `The actions property must be a function for component ${component3.type}`}
+            {message: `The actions property must be a function for component ${component3.type}`}
         );
 
         expect(validateComponents.bind(null, files, callback)).to.throw(
-          `The actions property must be a function for component component3`
+            `The actions property must be a function for component component3`
         );
       });
     });
