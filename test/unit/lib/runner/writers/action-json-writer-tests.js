@@ -5,24 +5,29 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/runner/test-runner/action-json-writer.js', function() {
-  describe('writeActionReport', function() {
-    let fs;
-    let path;
-    let writeActionReportToDisk;
+  describe('write', function() {
+    let actionJsonWriter;
     let configHandler;
+    let path;
+    let fs;
     let report;
+    let passingReport;
 
     beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
-
+      configHandler = {
+        get: sinon.stub(),
+      };
       path = {
         resolve: sinon.stub(),
       };
-
+      fs = {
+        writeFileSync: sinon.stub(),
+        readFileSync: sinon.stub(),
+      };
       report = {
         testReports: [
           {
+            status: 'fail',
             testRuns: [
               {
                 report: {
@@ -31,57 +36,99 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
                     {
                       component: 'navigate',
                       action: 'navigate',
+                      status: 'pass',
+                      time: [
+                        1,
+                        201697760,
+                      ],
+                      steps: {
+                        precondition: {
+                          status: 'pass',
+                          error: null,
+                        },
+                        perform: {
+                          status: 'pass',
+                          error: null,
+                        },
+                        effects: {
+                          status: 'pass',
+                          error: null,
+                        },
+                      },
                     },
                     {
                       component: 'article1',
                       action: 'click',
+                      status: 'fail',
+                      time: [
+                        1,
+                        201697760,
+                      ],
+                      steps: {
+                        perform: {
+                          status: 'fail',
+                          error: 'perform failed',
+                        },
+                      },
                     },
                   ],
                 },
               },
             ],
           },
+         ],
+      };
+
+      passingReport = {
+        testReports: [
           {
+            status: 'fail',
             testRuns: [
               {
                 report: {
-                  testName: 'testTwo',
+                  testName: 'testOne',
                   actions: [
                     {
                       component: 'navigate',
                       action: 'navigate',
-                    },
-                    {
-                      component: 'article2',
-                      action: 'click',
-                    },
-                    {
-                      component: 'modal',
-                      action: 'close',
+                      status: 'pass',
+                      time: [
+                        1,
+                        201697760,
+                      ],
+                      steps: {
+                        precondition: {
+                          status: 'pass',
+                          error: null,
+                        },
+                        perform: {
+                          status: 'pass',
+                          error: null,
+                        },
+                        effects: {
+                          status: 'pass',
+                          error: null,
+                        },
+                      },
                     },
                   ],
                 },
               },
             ],
           },
-        ],
+         ],
       };
 
-      fs = {
-        writeFileSync: sinon.stub(),
-        readFileSync: sinon.stub(),
-      };
-
-      configHandler = {
-        get: sinon.stub(),
-      };
-
-
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
       mockery.registerMock('../../util/config-handler.js', configHandler);
 
-      writeActionReportToDisk = require('../../../../../lib/runner/writers/action-json-writer.js');
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+      actionJsonWriter._getActionTestData = sinon.stub();
+      actionJsonWriter._writeReports = sinon.stub();
+      actionJsonWriter._checkActionForError = sinon.stub();
     });
 
     afterEach(function() {
@@ -90,140 +137,661 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.disable();
     });
 
-    it('should call path.resolve with the configs testPath', function() {
-      report = {
-        testReports: [],
-      };
+    it('should call configHandler.get with \'testPath\'', function() {
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
+
+      actionJsonWriter.write(report);
+
+      expect(configHandler.get.args).to.deep.equal([['testPath']]);
+    });
+
+    it('should call path.resolve with testPath', function() {
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
       configHandler.get.returns('./testPath');
 
-      writeActionReportToDisk(report);
+      actionJsonWriter.write(report);
 
-      expect(path.resolve.args).to.deep.equal([
+      expect(path.resolve.args).to.deep.equal([['./testPath']]);
+    });
+
+    it('should call fs.readFileSync with the path to the test and \'utf8\'', function() {
+      path.resolve.returns('./testpath');
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
+
+      actionJsonWriter.write(report);
+
+      expect(fs.readFileSync.args).to.deep.equal([
         [
-          './testPath',
+          './testpath/testOne',
+          'utf8',
         ],
       ]);
     });
 
-    it('should call configHandler.get with the parameter \'testPath\'', function() {
-      report = {
-        testReports: [],
-      };
-      configHandler.get.returns('./testPath');
+    it('should call actionJsonWriter._getActionTestData with action name passed in', function() {
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
 
-      writeActionReportToDisk(report);
+      actionJsonWriter.write(report);
 
-      expect(configHandler.get.args).to.deep.equal([
+      expect(actionJsonWriter._getActionTestData.args).to.deep.equal([['navigate.navigate'], ['article1.click']]);
+    });
+
+    it('should call actionJsonWriter._checkActionForError with action and testData passed in', function() {
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
+
+      actionJsonWriter.write(report);
+
+      expect(actionJsonWriter._checkActionForError.args).to.deep.equal([
         [
-          'testPath',
+          {
+            'action': 'navigate',
+            'component': 'navigate',
+            'status': 'pass',
+            'steps': {
+              'effects': {
+                'error': null,
+                'status': 'pass',
+              },
+              'perform': {
+                'error': null,
+                'status': 'pass',
+              },
+              'precondition': {
+                'error': null,
+                'status': 'pass',
+              },
+            },
+            'time': [
+              1,
+              201697760,
+            ],
+          },
+          {
+            'averageTime': NaN,
+            'count': 2,
+          },
+        ],
+        [
+          {
+            'action': 'click',
+            'component': 'article1',
+            'status': 'fail',
+            'steps': {
+              'perform': {
+                'error': 'perform failed',
+                'status': 'fail',
+              },
+            },
+            'time': [
+              1,
+              201697760,
+            ],
+          },
+          {
+            'averageTime': NaN,
+            'count': 2,
+          },
         ],
       ]);
     });
 
-    describe('for each test report of the passed in report', function() {
-      it('should call fs.readFileSync with the path to the test and \'utf8\'', function() {
-        path.resolve.returns('./testpath');
-        fs.readFileSync.returns('{}');
+    describe('if there is an error in test data', function() {
+      it('should push the error to to testData.failures', function() {
+        actionJsonWriter._getActionTestData.returns({
+          count: 0,
+          failures: [],
+        });
 
-        writeActionReportToDisk(report);
+        actionJsonWriter._checkActionForError.returns({error: 'error'});
 
-        expect(fs.readFileSync.args).to.deep.equal([
+        actionJsonWriter.write(report);
+
+        expect(actionJsonWriter._checkActionForError.args).to.deep.equal([
           [
-            './testpath/testOne',
-            'utf8',
+            {
+              'action': 'navigate',
+              'component': 'navigate',
+              'status': 'pass',
+              'steps': {
+                'effects': {
+                  'error': null,
+                  'status': 'pass',
+                },
+                'perform': {
+                  'error': null,
+                  'status': 'pass',
+                },
+                'precondition': {
+                  'error': null,
+                  'status': 'pass',
+                },
+              },
+              'time': [
+                1,
+                201697760,
+              ],
+            },
+            {
+              'averageTime': NaN,
+              'count': 2,
+              'failures': [
+                {
+                  'error': {
+                    'error': 'error',
+                  },
+                  'test': undefined,
+                },
+                {
+                  'error': {
+                    'error': 'error',
+                  },
+                  'test': undefined,
+                },
+              ],
+            },
           ],
           [
-            './testpath/testTwo',
-            'utf8',
+            {
+              'action': 'click',
+              'component': 'article1',
+              'status': 'fail',
+              'steps': {
+                'perform': {
+                  'error': 'perform failed',
+                  'status': 'fail',
+                },
+              },
+              'time': [
+                1,
+                201697760,
+              ],
+            },
+            {
+              'averageTime': NaN,
+              'count': 2,
+              'failures': [
+                {
+                  'error': {
+                    'error': 'error',
+                  },
+                  'test': undefined,
+                },
+                {
+                  'error': {
+                    'error': 'error',
+                  },
+                  'test': undefined,
+                },
+              ],
+            },
+          ],
+        ]);
+      });
+
+      it('should push the error to to testData.failures', function() {
+        actionJsonWriter._getActionTestData.returns({
+          count: 0,
+          failures: [],
+        });
+        actionJsonWriter.write(passingReport);
+
+        expect(actionJsonWriter._checkActionForError.args).to.deep.equal([
+          [
+            {
+              'action': 'navigate',
+              'component': 'navigate',
+              'status': 'pass',
+              'steps': {
+                'effects': {
+                  'error': null,
+                  'status': 'pass',
+                },
+                'perform': {
+                  'error': null,
+                  'status': 'pass',
+                },
+                'precondition': {
+                  'error': null,
+                  'status': 'pass',
+                },
+              },
+              'time': [
+                1,
+                201697760,
+              ],
+            },
+            {
+              'averageTime': NaN,
+              'count': 1,
+              'failures': [],
+            },
           ],
         ]);
       });
     });
+  });
 
-    describe('for each key value pair in obj', function() {
-      it('should call path.resolve with the configs reportPath', function() {
-        configHandler.get.returns('./reportPath');
-        fs.readFileSync.returns('{}');
+  describe('_getActionTestData', function() {
+    let actionJsonWriter;
 
-        writeActionReportToDisk(report);
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('../../util/config-handler.js', {});
 
-        expect(path.resolve.args).to.deep.equal([
-          [
-            './reportPath',
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if there is no test data in actionJsonWriter._testData[actionName]', function() {
+      it('should _testData[actionName] to an object with the data', function() {
+        let actionName = 'action';
+        actionJsonWriter._testData[actionName] = false;
+
+        let testData = actionJsonWriter._getActionTestData(actionName);
+
+        expect(testData).to.deep.equal({
+          count: 0,
+          failures: [],
+          averageTime: 0,
+          status: 'pass',
+        });
+      });
+    });
+
+    describe('if there is test data in actionJsonWriter._testData[actionName]', function() {
+      it('should add  it', function() {
+        let actionName = 'action';
+        actionJsonWriter._testData[actionName] = true;
+
+        let testData = actionJsonWriter._getActionTestData(actionName);
+
+        expect(testData).to.deep.equal(true);
+      });
+    });
+  });
+
+  describe('_createNotes', function() {
+    let actionJsonWriter;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('../../util/config-handler.js', {});
+
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('for each failure within test.failures', function() {
+      it('should return report notes', function() {
+        let test = {
+          count: 4,
+          failures: [
+            {
+              error: 'error1',
+              test: 'test1',
+            },
+            {
+              error: 'error2',
+              test: 'test2',
+            },
           ],
-          [
-            './reportPath',
-            'navigate.navigate.json',
-          ],
-          [
-            './reportPath',
-            'article1.click.json',
-          ],
-          [
-            './reportPath',
-            'article2.click.json',
-          ],
-          [
-            './reportPath',
-            'modal.close.json',
-          ],
-        ]);
+        };
+        let notes;
+
+        notes = actionJsonWriter._createNotes(test);
+
+        expect(notes).to.equal('Run Count: 4\nFail Count: 2\nFailures:\nError: "error1"\n\nTest: test1\n' +
+        'Error: "error2"\n\nTest: test2');
+      });
+    });
+  });
+
+  describe('_writeReports', function() {
+    let actionJsonWriter;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('../../util/config-handler.js', {});
+
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+      actionJsonWriter._writeReport = sinon.stub();
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('for each key value pair in actionJsonWriter._testData', function() {
+      it('should call action actionJsonWriter._writeReport with actionName and test passed in', function() {
+        actionJsonWriter._testData = {
+          foo: 'bar',
+          test: 'two',
+        };
+
+        actionJsonWriter._writeReports();
+
+        expect(actionJsonWriter._writeReport.args).to.deep.equal([['foo', 'bar'], ['test', 'two']]);
+      });
+    });
+  });
+
+  describe('_writeReport', function() {
+    let actionJsonWriter;
+    let configHandler;
+    let path;
+    let fs;
+
+    beforeEach(function() {
+      configHandler = {
+        get: sinon.stub(),
+      };
+      path = {
+        resolve: sinon.stub(),
+      };
+      fs = {
+        writeFileSync: sinon.stub(),
+      };
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', fs);
+      mockery.registerMock('path', path);
+      mockery.registerMock('../../util/config-handler.js', configHandler);
+
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+      actionJsonWriter._createNotes = sinon.stub();
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should call actionJsonWriter._createNotes once with test passed in', function() {
+      let test = {
+        foo: 'bar',
+      };
+      let actionName = 'actionName';
+
+      actionJsonWriter._writeReport(actionName, test);
+
+      expect(actionJsonWriter._createNotes.args).to.deep.equal([
+        [{foo: 'bar'}],
+      ]);
+    });
+
+    it('should call configHandler.get once with \'reportPath\'', function() {
+      let test = {
+        foo: 'bar',
+      };
+      let actionName = 'actionName';
+
+      actionJsonWriter._writeReport(actionName, test);
+
+      expect(configHandler.get.args).to.deep.equal([['reportPath']]);
+    });
+
+    it('should call path.resolve once with \'reportPath\' and \'actionName.json\'', function() {
+      let test = {
+        foo: 'bar',
+      };
+      let actionName = 'actionName';
+      configHandler.get.returns('./reportPath');
+
+      actionJsonWriter._writeReport(actionName, test);
+
+      expect(path.resolve.args).to.deep.equal([['./reportPath', 'actionName.json']]);
+    });
+
+    it('should call fs.writeFileSync with customReportPath and customReport passed in', function() {
+      let test = {
+        foo: 'bar',
+      };
+      let actionName = 'actionName';
+      path.resolve.returns('./reportPath', 'actionName.json' );
+
+      actionJsonWriter._writeReport(actionName, test);
+
+      expect(fs.writeFileSync.args).to.deep.equal([
+        ['./reportPath',
+        '[{"automation":"Yes","name":"actionName","automation-content":"actionName",'+
+        '"description":"","precondition":"","priority":"","test-steps":[{"description"'+
+        ':"","expected":"","actual":"","step-status":""}],"execution-time":"NaN"}]',
+      ],
+      ]);
+    });
+  });
+
+  describe('_checkActionForError', function() {
+    let actionJsonWriter;
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('../../util/config-handler.js', {});
+
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+      actionJsonWriter._checkStepForError = sinon.stub();
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if the passed in action.status does not equal \'fail\'', function() {
+      it('should return null', function() {
+        let action = {status: 'pass'};
+        let testData = {};
+        let result;
+
+        result = actionJsonWriter._checkActionForError(action, testData);
+
+        expect(result).to.equal(null);
+      });
+    });
+
+    describe('if the passed in action.status equals \'fail\'', function() {
+      it('should set the passed in testData.status to \'fail\'', function() {
+        let action = {status: 'fail'};
+        let testData = {status: 'pass'};
+
+        actionJsonWriter._checkActionForError(action, testData);
+
+        expect(testData.status).to.equal('fail');
       });
 
-      it('should call configHandler.get with reportPath and the report name', function() {
-        path.resolve.returns(`actionName.json`);
-        configHandler.get.returns('reportPath', 'actionName.json');
-        fs.readFileSync.returns('{}');
+      describe('for each step in the array \'steps\'', function() {
+        describe('if the passed in action has an error in preconditions', function() {
+          it('should call _checkStepForError once with the passed in action and \'preconditions\'', function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            actionJsonWriter._checkStepForError.returns('error');
 
-        writeActionReportToDisk(report);
+            actionJsonWriter._checkActionForError(action, testData);
 
-        expect(configHandler.get.args).to.deep.equal([
-          ['testPath',
-          ],
-          [
-            'reportPath',
-          ],
-          [
-            'reportPath',
-          ],
-          [
-            'reportPath',
-          ],
-          [
-            'reportPath',
-          ],
-        ]);
+            expect(actionJsonWriter._checkStepForError.args).to.deep.equal([[
+              {status: 'fail'},
+              'preconditions',
+            ]]);
+          });
+
+          it('should return the error from the call to _checkStepForError', function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            let result;
+            actionJsonWriter._checkStepForError.returns('error');
+
+            result = actionJsonWriter._checkActionForError(action, testData);
+
+            expect(result).to.equal('error');
+          });
+        });
+
+        describe('if the passed in action has an error in perform', function() {
+          it('should call _checkStepForError twice with the passed in action and steps \'preconditions\', \'perform\'',
+           function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            actionJsonWriter._checkStepForError.onCall(0).returns(null);
+            actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
+
+            actionJsonWriter._checkActionForError(action, testData);
+
+            expect(actionJsonWriter._checkStepForError.args).to.deep.equal([
+              [{status: 'fail'}, 'preconditions'],
+              [{status: 'fail'}, 'perform'],
+            ]);
+          });
+
+          it('should return the error from the call to _checkStepForError for perform', function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            let result;
+            actionJsonWriter._checkStepForError.onCall(0).returns(null);
+            actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
+
+            result = actionJsonWriter._checkActionForError(action, testData);
+
+            expect(result).to.equal('perform error');
+          });
+        });
+
+        describe('if the passed in action has an error in effects', function() {
+          it('should call _checkStepForError thrice with the passed in action and steps'+
+          ' \'preconditions\', \'perform\', \'effects\'', function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            actionJsonWriter._checkStepForError.onCall(0).returns(null);
+            actionJsonWriter._checkStepForError.onCall(1).returns(null);
+            actionJsonWriter._checkStepForError.onCall(2).returns('effects error');
+
+            actionJsonWriter._checkActionForError(action, testData);
+
+            expect(actionJsonWriter._checkStepForError.args).to.deep.equal([
+              [{status: 'fail'}, 'preconditions'],
+              [{status: 'fail'}, 'perform'],
+              [{status: 'fail'}, 'effects'],
+            ]);
+          });
+
+          it('should return the error from the call to _checkStepForError for effects', function() {
+            let action = {status: 'fail'};
+            let testData = {status: 'pass'};
+            let result;
+            actionJsonWriter._checkStepForError.onCall(0).returns(null);
+            actionJsonWriter._checkStepForError.onCall(1).returns(null);
+            actionJsonWriter._checkStepForError.onCall(2).returns('effects error');
+
+            result = actionJsonWriter._checkActionForError(action, testData);
+
+            expect(result).to.equal('effects error');
+          });
+        });
+      });
+    });
+  });
+
+  describe('_checkStepForError', function() {
+    let actionJsonWriter;
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
+      mockery.registerMock('fs', {});
+      mockery.registerMock('path', {});
+      mockery.registerMock('../../util/config-handler.js', {});
+
+      actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if the passed in action.steps does NOT have the passed in step property', function() {
+      it('should return null', function() {
+        let action = {
+          steps: {
+            precondition: {},
+          },
+        };
+        let result;
+
+        result = actionJsonWriter._checkStepForError(action, 'step');
+
+        expect(result).to.equal(null);
+      });
+    });
+
+    describe('if the passed in action.steps does have the passed in step property', function() {
+      describe('if the passed in actions.steps[step] does NOT have the status \'fail\'', function() {
+        it('should return null', function() {
+          let action = {
+            steps: {
+              precondition: {
+                status: 'pass',
+              },
+            },
+          };
+          let result;
+
+          result = actionJsonWriter._checkStepForError(action, 'precondition');
+
+          expect(result).to.equal(null);
+        });
       });
 
+      describe('if the passed in actions.steps[step] does have the status \'fail\'', function() {
+        it('should return the error property', function() {
+          let action = {
+            steps: {
+              precondition: {
+                status: 'fail',
+                error: 'error',
+              },
+            },
+          };
+          let result;
 
-      it('should call fs.writeFileSync with the custom report path and the action report passed in', function() {
-        path.resolve.returns('./reportPath');
-        fs.readFileSync.returns('{}');
+          result = actionJsonWriter._checkStepForError(action, 'precondition');
 
-        writeActionReportToDisk(report);
-
-        expect(fs.writeFileSync.args).to.deep.equal([
-          ['./reportPath',
-          '[{"automation":"Yes","name":"navigate.navigate","automation-content"' +
-          ':"sample#automation.content_0","description":"","precondition":"","' +
-          'priority":"","note":{},"test-steps":[{"description":"","expected":"",' +
-          '"actual":"","step-status":""}]},{"automation":"Yes","name":"navigate.navigate' +
-          '","automation-content":"sample#automation.content_1","description":"","precondition"' +
-          ':"","priority":"","note":{},"test-steps":[{"description":"","expected":"","' +
-          'actual":"","step-status":""}]}]'],
-          ['./reportPath',
-          '[{"automation":"Yes","name":"article1.click","automation-content":"sample#automation.content_0",'+
-          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
-          '"expected":"","actual":"","step-status":""}]}]'],
-          ['./reportPath',
-          '[{"automation":"Yes","name":"article2.click","automation-content":"sample#automation.content_0",'+
-          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
-          '"expected":"","actual":"","step-status":""}]}]'],
-          ['./reportPath',
-          '[{"automation":"Yes","name":"modal.close","automation-content":"sample#automation.content_0",'+
-          '"description":"","precondition":"","priority":"","note":{},"test-steps":[{"description":"",' +
-          '"expected":"","actual":"","step-status":""}]}]'],
-        ]);
+          expect(result).to.equal('error');
+        });
       });
     });
   });
