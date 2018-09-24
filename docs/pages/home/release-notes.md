@@ -5,6 +5,12 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.6.4
+
+* Zach Knox
+  * Revamp documentation website design and structure
+  * Update npmignore to not include docs
+
 ## 0.6.3
 
 * Scott Gunther
