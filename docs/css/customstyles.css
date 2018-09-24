@@ -1197,3 +1197,13 @@ h4.panel-title {
     color: black !important;
     font-style: bold !important;
 }
+
+.docs-list {
+    font-size: 180%;
+    /* color: black !important; */
+    font-style: bold !important;
+}
+
+.tutorial-call {
+    font-size: 160%;
+}
