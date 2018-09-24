@@ -1,6 +1,9 @@
-# simulato change log
-
-## Pending Version
+---
+permalink: /release-notes/
+title: 'Release Notes'
+toc_label: 'Version Number'
+sidebar: about_sidebar
+---
 
 ## 0.6.4
 
@@ -52,7 +55,6 @@
   * Added parent event emiiters
     * Events bubble up
   * Updated files to use new event emitters
-  * Fix clear dynamic area bug where components aren't deleted from expected state
 
 * Brian Fitzpatrick
   * Added ability to add mutiple dynamic areas to a single component

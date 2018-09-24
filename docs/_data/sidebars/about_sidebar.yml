@@ -1,0 +1,24 @@
+entries:
+- title: Sidebar
+  product: About Simulato
+  output: web
+  items:
+  - title: "About Model Based Testing"
+    output: web
+    url: /about-mbt/
+  - title: "Release Notes"
+    output: web
+    url: /release-notes/
+  folders:
+  - title: "Contributing"
+    output: web
+    folderitems:
+      - title: 'Contributing Guidelines'
+        output: web
+        url: /contributing-guidelines/
+      - title: 'Bug Report Template'
+        output: web
+        url: /bug-report-template/
+      - title: 'Publishing New Versions'
+        output: web
+        url: /publishing/
