@@ -21,7 +21,7 @@
                 {% for entry in topnav.topnav %}
                 {% for item in entry.items %}
                 {% if item.external_url %}
-                <li><a href="{{item.external_url}}" target="_blank">{{item.title}}</a></li>
+                <li><a href="{{item.external_url}}" target="_blank">{{item.title}} <i class="fas fa-external-link-alt"></i></a></li>
                 {% elsif page.url contains item.url %}
                 <li class="active"><a href="{{item.url}}">{{item.title}}</a></li>
                 {% else %}

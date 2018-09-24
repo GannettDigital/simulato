@@ -3,7 +3,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{% if page.summary %}{{ page.summary | strip_html | strip_newlines | truncate: 160 }}{% endif %}">
 <meta name="keywords" content="{{page.tags}}{% if page.tags %}, {% endif %} {{page.keywords}}">
+{% if page.title %}
 <title>{{ page.title }} | {{ site.site_title }}</title>
+{% else %}
+<title>{{ site.site_title }}</title>
+{% endif %}
 <link rel="stylesheet" href="{{ "/css/syntax.css" }}">
 
 <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script>
