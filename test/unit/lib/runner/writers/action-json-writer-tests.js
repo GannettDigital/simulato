@@ -4,14 +4,13 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/runner/test-runner/action-json-writer.js', function() {
+describe('lib/runner/test-runner/action-json-writer.js', function() {
   describe('write', function() {
     let actionJsonWriter;
     let configHandler;
     let path;
     let fs;
     let report;
-    let passingReport;
 
     beforeEach(function() {
       configHandler = {
@@ -78,47 +77,6 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
           },
         ],
       };
-
-      passingReport = {
-        testReports: [
-          {
-            status: 'fail',
-            testRuns: [
-              {
-                report: {
-                  testName: 'testOne',
-                  actions: [
-                    {
-                      component: 'navigate',
-                      action: 'navigate',
-                      status: 'pass',
-                      time: [
-                        1,
-                        201697760,
-                      ],
-                      steps: {
-                        precondition: {
-                          status: 'pass',
-                          error: null,
-                        },
-                        perform: {
-                          status: 'pass',
-                          error: null,
-                        },
-                        effects: {
-                          status: 'pass',
-                          error: null,
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      };
-
 
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
@@ -305,7 +263,8 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
             actionJsonWriter._getActionTestData.returns({
               count: 0,
             });
-            actionJsonWriter.write(passingReport);
+            actionJsonWriter._checkActionForError.returns(null)
+            actionJsonWriter.write(report);
 
             expect(actionJsonWriter._writeReports.args).to.deep.equal([[]]);
           });
