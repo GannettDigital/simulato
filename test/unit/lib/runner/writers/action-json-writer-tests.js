@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe.only('lib/runner/test-runner/action-json-writer.js', function() {
+describe('lib/runner/test-runner/action-json-writer.js', function() {
   describe('write', function() {
     let actionJsonWriter;
     let configHandler;
@@ -147,24 +147,32 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
           expect(actionJsonWriter._getActionTestData.args).to.deep.equal([['navigate.navigate'], ['article1.click']]);
         });
 
-        it('should increment count by one', function() {
-          actionJsonWriter._getActionTestData.returns({
-            count: 0,
-          });
+        it('should increment count by one. and increment averageTime by the action.time', function() {
+          let testData = [
+            {
+              count: 0,
+              averageTime: 0,
+            },
+            {
+              count: 0,
+              averageTime: 0,
+            },
+          ];
+          actionJsonWriter._getActionTestData.onCall(0).returns(testData[0]);
+          actionJsonWriter._getActionTestData.onCall(1).returns(testData[1]);
 
           actionJsonWriter.write(report);
 
-          expect(actionJsonWriter._getActionTestData().count).to.equal(2);
-        });
-
-        it('should calculate the average time for each action', function() {
-          actionJsonWriter._getActionTestData.returns({
-            averageTime: 0,
-          });
-
-          actionJsonWriter.write(report);
-
-          expect(actionJsonWriter._getActionTestData().averageTime).to.equal(2.40339552);
+          expect(testData).to.deep.equal([
+            {
+              count: 1,
+              averageTime: 1.20169776,
+            },
+            {
+              count: 1,
+              averageTime: 1.20169776,
+            },
+          ]);
         });
 
         it('should call actionJsonWriter._checkActionForError with action and testData passed in', function() {
@@ -238,38 +246,52 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
         describe('if there is an error in test data', function() {
           it('should push the error and failing test to testData.failures', function() {
             fs.readFileSync.returns('testOne');
-            actionJsonWriter._getActionTestData.returns({
-              failures: [],
-            });
-            actionJsonWriter._checkActionForError.returns('error');
+            let testData = [
+              {
+                count: 0,
+                averageTime: 0,
+                failures: [],
+              },
+              {
+                count: 0,
+                averageTime: 0,
+                failures: [],
+              },
+            ];
+            actionJsonWriter._getActionTestData.onCall(0).returns(testData[0]);
+            actionJsonWriter._getActionTestData.onCall(1).returns(testData[1]);
+            actionJsonWriter._checkActionForError.onCall(0).returns('error');
 
             actionJsonWriter.write(report);
 
-            expect(actionJsonWriter._getActionTestData().failures).to.deep.equal([
+            expect(testData).to.deep.equal([
               {
-                'error': 'error',
-                'test': 'testOne',
+                count: 1,
+                averageTime: 1.20169776,
+                failures: [{
+                  error: 'error',
+                  test: 'testOne',
+                }],
               },
               {
-                'error': 'error',
-                'test': 'testOne',
+                count: 1,
+                averageTime: 1.20169776,
+                failures: [],
               },
             ]);
           });
         });
-
-        describe('if there is no an error in test data', function() {
-          it('should return actionJsonWriter._writeReports', function() {
-            actionJsonWriter._getActionTestData.returns({
-              count: 0,
-            });
-            actionJsonWriter._checkActionForError.returns(null);
-            actionJsonWriter.write(report);
-
-            expect(actionJsonWriter._writeReports.args).to.deep.equal([[]]);
-          });
-        });
       });
+    });
+
+    it('should return actionJsonWriter._writeReports', function() {
+      actionJsonWriter._getActionTestData.returns({
+        count: 0,
+      });
+      actionJsonWriter._checkActionForError.returns(null);
+      actionJsonWriter.write(report);
+
+      expect(actionJsonWriter._writeReports.args).to.deep.equal([[]]);
     });
   });
 
@@ -297,9 +319,9 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
         let actionName = 'action';
         actionJsonWriter._testData[actionName] = null;
 
-        let testData = actionJsonWriter._getActionTestData(actionName);
+        actionJsonWriter._getActionTestData(actionName);
 
-        expect(testData).to.deep.equal({
+        expect(actionJsonWriter._testData[actionName]).to.deep.equal({
           count: 0,
           failures: [],
           averageTime: 0,
@@ -308,15 +330,13 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
       });
     });
 
-    describe('if actionJsonWriter._testData[actionName] does exsist', function() {
-      it('should return actionJsonWriter._testData[actionName]', function() {
-        let actionName = 'action';
-        actionJsonWriter._testData[actionName] = 'testData';
+    it('should return actionJsonWriter._testData[actionName]', function() {
+      let actionName = 'action';
+      actionJsonWriter._testData[actionName] = 'testData';
 
-        let testData = actionJsonWriter._getActionTestData(actionName);
+      let testData = actionJsonWriter._getActionTestData(actionName);
 
-        expect(testData).to.deep.equal('testData');
-      });
+      expect(testData).to.deep.equal('testData');
     });
   });
 
@@ -340,7 +360,7 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
     });
 
     describe('for each failure within test.failures', function() {
-      it('should return report notes', function() {
+      it('should return report notes with the failures inside the notes', function() {
         let test = {
           count: 4,
           failures: [
@@ -365,20 +385,6 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
 
     describe('if there are no failures in test.failures', function() {
       it('should return reportNotes with a blank value for failures', function() {
-        let test = {
-          count: 4,
-          failures: [],
-        };
-        let notes;
-
-        notes = actionJsonWriter._createNotes(test);
-
-        expect(notes).to.equal('Run Count: 4\nFail Count: 0\nFailures:');
-      });
-    });
-
-    describe('for each failure within test.failures', function() {
-      it('should return report notes', function() {
         let test = {
           count: 4,
           failures: [],
