@@ -8,7 +8,7 @@ series: tutorial
 weight: 6
 ---
 
-In the previous sections we covered creating our [first component](/tutorial/first-component/), [entry components](/tutorial/entry-component/), and making [reusable components](/tutorial/reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
+In the previous sections we covered creating our [first component]({{ site.baseurl }}/tutorial/first-component/), [entry components]({{ site.baseurl }}/tutorial/entry-component/), and making [reusable components]({{ site.baseurl }}/tutorial/reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
 
 ![](../../assets/tutorial/article1Modal.png)
 

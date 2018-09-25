@@ -75,7 +75,7 @@ module.exports = {
 `name` should always be camelCase, which helps us differentiate between `type` and `name`. Unique names are not enforced by Simulato, but when planning and generating tests, it determines unique actions with a combination of `name` and action names. If two components have the same name, Simulato will not be able to tell the difference between two components, and test generation will most likely not create the results expected.
 {: .notice--warning}
 
-With the presence of the `entryComponent` property, Simulato will automatically create this component at the start of the planning step, adding it into the expected state with the provided `name`, and `state`. This will be the base of all planning for test generation for our test site components. More information regarding planning can be found in the [Test Generation](documentation/test-generation/) document.
+With the presence of the `entryComponent` property, Simulato will automatically create this component at the start of the planning step, adding it into the expected state with the provided `name`, and `state`. This will be the base of all planning for test generation for our test site components. More information regarding planning can be found in the [Test Generation]({{ site.baseurl }}/documentation/test-generation/) document.
 
 Lastly, we need to create the `actions` property. Unlike the first component, there will be an action for our entry component. That action being the actual navigation to the the test site. The actions property must be a function that returns an object. The object contains key value pairs with each key being an action name, and the value an object with 4 main properties, `preconditions`, `perform`, `effects`, and `parameters`.  Both `parameters` and `preconditions` are optional parts of the actions, however `preconditions` will be in almost every component besides your entry component. 
 
@@ -120,7 +120,7 @@ When creating the url for `driver.get()` make sure you use the port your machine
 
 Now that we have our `perform` created, we need to tell Simulato the expected effects of the action. This is done in the `effects` function of our action. This will tell Simulato how we want to change the expected state of our system.  In our current example, the only thing in our state is the entryComponent, `navigateToTestSite`, that was automatically created with an empty object for its state. Since we no longer care about the state of our entry component, we can remove that from the expected state with either `expectedState.delete('navigateToTestSite')` or more simply `expectedState.clear()` which will delete everything from the state (which is just `navigateToTestSite` at this point).
 
-In the [previous section](/tutorial/first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here](/documentation/expected-state/).
+In the [previous section]({{ site.baseurl }}/tutorial/first-component/) of the tutorial, we created a component `MainSiteLayout`.  We know when we navigate to the test site, we land on a page with the header, the same header we modeled in `MainSiteLayout`. As such we want to create and add this component to the expected state as the effect for navigating to the site using `expectedState.createAndAddComponent()`. More documentation about the expected state can be found [here]({{ site.baseurl }}/documentation/expected-state/).
 
 ```
 'use strict';
@@ -201,7 +201,7 @@ We should now be able to generate tests using Simulato. But before we generate t
 }
 ```
 
-First we modified the default `test` script to a command that will run our simulato tests. This command tells simulato to run all tests found in the ./tests folder.  We also added a new script `generate-tests` that generates the tests and specifies we want those tests output into our ./tests folder. We are using different cli flags for both run and generate and all CLI commands can be read about [here](/documentation/cli/). By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  
+First we modified the default `test` script to a command that will run our simulato tests. This command tells simulato to run all tests found in the ./tests folder.  We also added a new script `generate-tests` that generates the tests and specifies we want those tests output into our ./tests folder. We are using different cli flags for both run and generate and all CLI commands can be read about [here]({{ site.baseurl }}/documentation/cli/). By default, when calling the `generate` command it will look for components in a components folder, which is why we used that as a folder name.  
 
 Back in the terminal inside our project folder we can now run script to generate tests specifying.
 
@@ -264,6 +264,6 @@ Failed Tests:
 
 In the above test run, I can see that my test failed. It tells me the action `navigateToTestSite.NAVIGATE_TO_SITE` failed and it failed in the `effects` step. It also specifies the action index, so that if the same action was run multiple times in one test, I will know which instance if I look up the index in the JSON test file. It then goes on to show me a detailed comparison of what I expected vs what the actual page state was. As seen above, I expected the header to be displayed `false`, however, when Simulato checked the actual page state it found displayed to be `true`. We can use this to determine that either the test failed or we created our model wrong.
 
-Both components created so far can be thought of as "one time" components. That is they really are only used once when modeling out our system. there is only one home page, there is only one way to navigate to the site. Lets start taking a look on creating more dynamic, reusable components in the [next part of the tutorial](/tutorial/reusable-components-pt1).
+Both components created so far can be thought of as "one time" components. That is they really are only used once when modeling out our system. there is only one home page, there is only one way to navigate to the site. Lets start taking a look on creating more dynamic, reusable components in the [next part of the tutorial]({{ site.baseurl }}/tutorial/reusable-components-pt1).
 
 {% include seriesNext.html %}
