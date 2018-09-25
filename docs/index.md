@@ -72,7 +72,7 @@ When using model based testing developers create small, resuable components foun
             <a href="https://www.npmjs.com/package/simulato">
                 <div class="panel panel-default text-center">
                     <div class="panel-heading">
-                        <img class="ext-logo" src="/assets/npm-logo.png">
+                        <img class="ext-logo" src="{{ site.baseurl }}/assets/npm-logo.png">
                         <br />
                         <div class="home-card">Install via NPM</div>
                     </div>
@@ -83,7 +83,7 @@ When using model based testing developers create small, resuable components foun
             <a href="https://github.com/gannettdigital/simulato">
                 <div class="panel panel-default text-center">
                     <div class="panel-heading">
-                        <img class="ext-logo" src="/assets/github-mark.png">
+                        <img class="ext-logo" src="{{ site.baseurl }}/assets/github-mark.png">
                         <br />
                         <div class="home-card">View source and contribute</div>
                     </div>
