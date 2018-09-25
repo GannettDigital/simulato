@@ -641,6 +641,6 @@ Again we are seeing some `undefined` but this time its inside the page state rat
 
 {% include note.html content="Whenever you see `undefined` inside the *page state* check to make sure your selectors are correct, usually this means the element was not found. Also check your model, make sure everything is spelled correct, referencing the correct element as well as the correct property you are accessing." %}
 
-When looking at our newly modified `MainSiteLayout` we can see a lot of similarity with article one and two. The elements are all the same besides changes in id. The model is the same besides which article elements it references.  As programmers, whenever we see something like this we want to add a level of abstraction, only write out that code once, this is where reusable components come in.  [Part 2](/tutorial/reusable-components-pt2/) of reusable components will convert our articles into one reusable component.
+When looking at our newly modified `MainSiteLayout` we can see a lot of similarity with article one and two. The elements are all the same besides changes in id. The model is the same besides which article elements it references.  As programmers, whenever we see something like this we want to add a level of abstraction, only write out that code once, this is where reusable components come in.  [Part 2]({{ site.baseurl }}/tutorial/reusable-components-pt2/) of reusable components will convert our articles into one reusable component.
 
 {% include seriesNext.html %}
