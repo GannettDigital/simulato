@@ -1,6 +1,6 @@
 # simulato change log
 
-## 0.6.5
+## Pending Version
 
 * Subarna Mukhiyabeen
   * Added a custom writer that can generate action reports for QASymphony
@@ -17,7 +17,6 @@
 
 * Scott Gunther
   * Fix child process uncaught exception loop
-
 
 ## 0.6.2
 
