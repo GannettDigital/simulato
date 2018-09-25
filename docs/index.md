@@ -31,7 +31,7 @@ When using model based testing developers create small, resuable components foun
                  <div class="panel-body">
                      <div class="home-card">Getting started</div>
                      <p>Get going fast with our Quick Start guide or dive deeper with our tutorial.</p>
-                     <a href="/tutorial/" class="btn btn-primary">Tutorial</a>
+                     <a href="{{ site.baseurl }}/tutorial/" class="btn btn-primary">Tutorial</a>
                  </div>
              </div>
          </div>
@@ -46,7 +46,7 @@ When using model based testing developers create small, resuable components foun
                  <div class="panel-body">
                      <div class="home-card">Documentation</div>
                      <p>Learn more about all of Simulato's components and features.</p>
-                     <a href="/documentation/" class="btn btn-primary">Read the docs</a>
+                     <a href="{{ site.baseurl }}/documentation/" class="btn btn-primary">Read the docs</a>
                  </div>
              </div>
          </div>
@@ -61,7 +61,7 @@ When using model based testing developers create small, resuable components foun
                  <div class="panel-body">
                      <div class="home-card">Best Practices</div>
                      <p>Tips to make the best use of Simulato in your testing.</p>
-                     <a href="/best-practices/" class="btn btn-primary">Learn More</a>
+                     <a href="{{ site.baseurl }}/best-practices/" class="btn btn-primary">Learn More</a>
                  </div>
              </div>
          </div>

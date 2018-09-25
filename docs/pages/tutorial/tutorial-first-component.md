@@ -8,7 +8,7 @@ series: tutorial
 weight: 2
 ---
 
-Now that we have our environment ready as detailed in the [setup](/tutorial/setup/), we can start creating components to model our system.  Usually the first component created would be our entry component, a special type of component that describes how to enter the system. For the purpose of this tutorial we will start by creating our main site layout component, as this will help us learn the properties in a model.  After we will create the entry component that gets us there.
+Now that we have our environment ready as detailed in the [setup]({{ site.baseurl }}/tutorial/setup/), we can start creating components to model our system.  Usually the first component created would be our entry component, a special type of component that describes how to enter the system. For the purpose of this tutorial we will start by creating our main site layout component, as this will help us learn the properties in a model.  After we will create the entry component that gets us there.
 
 First, lets create the file in our system for our first component. This component will be modeling our 'mainSiteLayout.html' view, so let's create a file inside the components folder called 'mainSiteLayout.model.js'.
 
@@ -77,9 +77,9 @@ module.exports = {
 }
 ```
 
-When creating element objects, each must have a unique `name`. In addition, it needs a `selector` object that contains both `type` and `value`. The `selector.type` property will tell Simulato what browser selector function to run. The `selector.value` will tell Simulato what value to run the selector function with. The current supported selectors can be found in the [elements section](/documentation/components/#elements) of the components documentation.  When we looked at the test site page there was more going on than just a header, but for creating our first component we will just worry about the header for now.  As the tutorial progresses, we will flesh out each component we create to make a full model of our system.
+When creating element objects, each must have a unique `name`. In addition, it needs a `selector` object that contains both `type` and `value`. The `selector.type` property will tell Simulato what browser selector function to run. The `selector.value` will tell Simulato what value to run the selector function with. The current supported selectors can be found in the [elements section]({{ site.baseurl }}/documentation/components/#elements) of the components documentation.  When we looked at the test site page there was more going on than just a header, but for creating our first component we will just worry about the header for now.  As the tutorial progresses, we will flesh out each component we create to make a full model of our system.
 
-Behind the scenes, Simulato converts our returned 'elements' into a single object. Each property on the object is the 'name' of an element, with its value an object containing the properties: `name`, `isDisplayed`, `disabled`, `innerHTML`, `innerText`, `hidden`, `value`, `checked`, `attributes`, `disabled`.  More information regarding these properties can be found in the [elements section](/documentation/components/#elements) of the components documentation.
+Behind the scenes, Simulato converts our returned 'elements' into a single object. Each property on the object is the 'name' of an element, with its value an object containing the properties: `name`, `isDisplayed`, `disabled`, `innerHTML`, `innerText`, `hidden`, `value`, `checked`, `attributes`, `disabled`.  More information regarding these properties can be found in the [elements section]({{ site.baseurl }}/documentation/components/#elements) of the components documentation.
 {: .notice--info}
 
 Outside of `isDisplayed`, which is a custom Simulato function to determine if an element is displayed, each element property corresponds to the properties inside the html. Let's take a quick look at the chrome developer tools once more to see where these properties are coming from.
@@ -92,7 +92,7 @@ Once the properties for our element is expanded we will see a list of properties
 
 ![](../../assets/tutorial/mainSiteLayoutHeaderProperties.png)
 
-These are the actual properties of the elements that Simulato is getting form the web page. Only the ones specified in the [elements section](/documentation/components/#elements) are available to the model to use.
+These are the actual properties of the elements that Simulato is getting form the web page. Only the ones specified in the [elements section]({{ site.baseurl }}/documentation/components/#elements) are available to the model to use.
 
 The `model` is a required section of the component which is a function that returns an object.  If the `elements` section can be thought of as how we tell Simulato where to get the `elements`, the `model` can be thought of as what things we care about for those elements.  When an element is created in the `elements` section, Simulato will go and get information about the properties of those elements as stated above. It's this information we use to model out the state of our system.
 
@@ -157,6 +157,6 @@ module.exports = {
 }
 ```
 
-With the completion of `actions` we have finished our first component. But how do we use this component with Simulato? We need a way to get into the system so we can utilize the `MainSiteLayout` component.  As alluded to earlier, we still need our entry component, the component that allows us into the system. Let's create that [next](/tutorial/entry-component/).
+With the completion of `actions` we have finished our first component. But how do we use this component with Simulato? We need a way to get into the system so we can utilize the `MainSiteLayout` component.  As alluded to earlier, we still need our entry component, the component that allows us into the system. Let's create that [next]({{ site.baseurl }}/tutorial/entry-component/).
 
 {% include seriesNext.html %}

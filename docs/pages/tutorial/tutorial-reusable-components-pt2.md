@@ -8,7 +8,7 @@ series: tutorial
 weight: 5
 ---
 
-In [part 1](/tutorial/reusable-components-pt1) of reusable components, we created a fairly large, bulky elements and model section for articles in our `MainSiteLayout` component. When looking at the elements we added we can start to see a lot of similarities between the two articles. The selectors for each article element can be broken down into two parts, what article it belongs to, and if its a image, heading, or text. So for the `article1heading` we can break it into `article1` and `heading`, and `article2heading` to `article2` and `heading`. This trend follows through for image and text.  Looking at the model, for each article we are checking the same properties on the page. We are checking `isDisplayed` for the image, heading, and body as well as the `innerText` for heading and body. We can use these commonalities to create one reusable component for articles.
+In [part 1]({{ site.baseurl }}/tutorial/reusable-components-pt1) of reusable components, we created a fairly large, bulky elements and model section for articles in our `MainSiteLayout` component. When looking at the elements we added we can start to see a lot of similarities between the two articles. The selectors for each article element can be broken down into two parts, what article it belongs to, and if its a image, heading, or text. So for the `article1heading` we can break it into `article1` and `heading`, and `article2heading` to `article2` and `heading`. This trend follows through for image and text.  Looking at the model, for each article we are checking the same properties on the page. We are checking `isDisplayed` for the image, heading, and body as well as the `innerText` for heading and body. We can use these commonalities to create one reusable component for articles.
 
 Before we actually start making the component, we need to come up with a strategy to be able to pass information to the component we are making.  When we broke down the elements, and their selectors, we saw that only parts of the value are changing. We need to send the dynamic part of that id to our reusable component which will allow us to use one component `type` and just create two components of that type. Leveraging Javascript, we are able to use the `this` context as a medium to pass information to our components.
 
@@ -297,6 +297,6 @@ Once our test is generated (make sure you deleted the old one), we can run it.
 
 You should see the same result as before, a quick navigation to the test site, and it making sure the header, and both articles are correctly displayed.
 
-Now we have a good base knowledge for Simulato, and we can start adding more actions to test our site, using more features, and creating more components. Let's start by adding a new action for clicking on a `NewsArticle`, and exploring the [stash/pop](/tutorial/stash-pop/) feature of expected state.
+Now we have a good base knowledge for Simulato, and we can start adding more actions to test our site, using more features, and creating more components. Let's start by adding a new action for clicking on a `NewsArticle`, and exploring the [stash/pop]({{ site.baseurl }}/tutorial/stash-pop/) feature of expected state.
 
 {% include seriesNext.html %}

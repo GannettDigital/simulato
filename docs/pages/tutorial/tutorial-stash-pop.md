@@ -8,7 +8,7 @@ series: tutorial
 weight: 6
 ---
 
-In the previous sections we covered creating our [first component](/tutorial/first-component/), [entry components](/tutorial/entry-component/), and making [reusable components](/tutorial/reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
+In the previous sections we covered creating our [first component]({{ site.baseurl }}/tutorial/first-component/), [entry components]({{ site.baseurl }}/tutorial/entry-component/), and making [reusable components]({{ site.baseurl }}/tutorial/reusable-components-pt1). Throughout this process we still only have our one action, `NAVIGATE_TO_TEST_SITE`. We can now start adding new actions, to get a better test suite for our system.  Going back to our test site, if we click a news article, a pop up modal appears showing us the news article in full, we can start by adding that action first.
 
 ![](../../assets/tutorial/article1Modal.png)
 
@@ -125,7 +125,7 @@ actions () {
 
 Just like in our `elements` we can use `this.options` to created our dynamic id, and as always end our perform with `.then(callback, callback)`. 
 
-Now, all that's left is creating the `effects` section of the action. Once we click the article, we need to describe the changes to our expected state.  At this point, when describing the `effects`, we want to add that a pop up modal appears.  However, since we have not yet created this component, lets start by createing out view story modal component. Until most of your system is created this will be a common trend, creating new components when the effects of other actions need them. Just like our entry component `NavigateToTestSite` needed `MainSiteLayout` for its effects, `NewsArticle` will need a component we will call `ViewStoryModal`.
+Now, all that's left is creating the `effects` section of the action. Once we click the article, we need to describe the changes to our expected state.  At this point, when describing the `effects`, we want to add that a pop up modal appears.  However, since we have not yet created this component, lets start by creating our view story modal component. Until most of your system is created this will be a common trend, creating new components when the effects of other actions need them. Just like our entry component `NavigateToTestSite` needed `MainSiteLayout` for its effects, `NewsArticle` will need a component we will call `ViewStoryModal`.
 
 As always, start by creating a new file in our components folder, `viewStoryModal.model.js`. Just like before we need to investigate the dom, pulling ids to create our `elements` section. Similar to `NewsArticle`, we want to create `ViewStoryModal` with reusability in mind, since every `NewsArticle` component added to the state will have our action `CLICK_TO_VIEW_STORY`, we need to create `ViewStoryModal` in a way to work for everyone. For our elements and model, we will care about the modal title, the modal body, and the close button.
 

@@ -45,7 +45,7 @@ We can simplify this system into a few basic components isolating the actions an
 # Pieces of a Simulato Component
 All of the components are states of a given piece of the system. In this case, we may define some components such as, news articles, homepage, and article modal. We could also make more specific components such as news article text body, but the idea of model based testing is to leave up the structure of the system to the user testing it. The more specific you get, technically the better, but when considering business needs and time required, what you gain from being more specific can be lost in time spent.
  
- [Details on Components can be found here](/documentation/components/)
+ [Details on Components can be found here]({{ site.baseurl }}/documentation/components/)
 
 # Setting up your workspace
 
@@ -182,7 +182,7 @@ The actions have multiple discernable parts, in this example we have a perform b
 
 First we have the perform block, which takes the argument of a callback function and performs actions with the driver to interact with the UI we are testing. In this instance, we are navigating to our test site (which is localhost:3000 for the sake of this example, but could vary assuming your port configuration etc). As a reminder, this tutorial assumes a working knowledge of selenium, if you are unfamiliar, their documentation listed above covers how to interact with the webdriver. 
 
-After performing actions, we then need to continue to build our "test path" by creating additional components to further build our tests. In this case we are clearing the expectedState in order to make sure there is nothing carrying over as our new state will be the page we are navigating to. You can read more about the expected state here: [Expected State](/documentation/expected-state/).
+After performing actions, we then need to continue to build our "test path" by creating additional components to further build our tests. In this case we are clearing the expectedState in order to make sure there is nothing carrying over as our new state will be the page we are navigating to. You can read more about the expected state here: [Expected State]({{ site.baseurl }}/documentation/expected-state/).
 
 Once the expected state is cleared, we then proceed to create and add a new component MainSiteLayout, which is the next component will be creating. In big picture terms though, this is where the component is being added to the "test path" I mentioned above.
 
