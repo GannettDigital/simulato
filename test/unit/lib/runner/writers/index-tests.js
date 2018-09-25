@@ -42,6 +42,6 @@ describe('lib/runner/writers/index.js', function() {
     + ' \'./action-json-writer.js\'', function() {
     let result = require('../../../../../lib/runner/writers');
 
-    expect(result.actionJSON).to.deep.equal(actionJson.actionJsonWriter);
+    expect(result.actionJSON).to.deep.equal(actionJson.write);
   });
 });
