@@ -531,7 +531,7 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
 
       expect(fs.writeFileSync.args).to.deep.equal([
         ['./reportPath',
-        '[{"automation":"Yes","name":"actionName","automation-content":"actionName",'+
+          '[{"automation":"Yes","name":"actionName","automation-content":"actionName",'+
         '"description":"","precondition":"","priority":"","test-steps":[{"description"'+
         ':"","expected":"","actual":"","step-status":""}],"execution-time":"NaN"}]',
         ],
@@ -621,7 +621,7 @@ describe.only('lib/runner/test-runner/action-json-writer.js', function() {
                   [{status: 'fail'}, 'preconditions'],
                   [{status: 'fail'}, 'perform'],
                 ]);
-          });
+              });
 
           it('should return the error from the call to _checkStepForError for perform', function() {
             let action = {status: 'fail'};
