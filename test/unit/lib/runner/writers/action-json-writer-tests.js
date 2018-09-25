@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/runner/test-runner/action-json-writer.js', function() {
+describe.only('lib/runner/test-runner/action-json-writer.js', function() {
   describe('write', function() {
     let actionJsonWriter;
     let configHandler;
@@ -263,7 +263,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
             actionJsonWriter._getActionTestData.returns({
               count: 0,
             });
-            actionJsonWriter._checkActionForError.returns(null)
+            actionJsonWriter._checkActionForError.returns(null);
             actionJsonWriter.write(report);
 
             expect(actionJsonWriter._writeReports.args).to.deep.equal([[]]);
@@ -362,6 +362,21 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
         'Error: "error2"\n\nTest: test2');
       });
     });
+
+    describe('if there are no failures in test.failures', function() {
+      it('should return reportNotes with a blank value for failures', function() {
+        let test = {
+          count: 4,
+          failures: [],
+        };
+        let notes;
+
+        notes = actionJsonWriter._createNotes(test);
+
+        expect(notes).to.equal('Run Count: 4\nFail Count: 0\nFailures:');
+      });
+    });
+
     describe('for each failure within test.failures', function() {
       it('should return report notes', function() {
         let test = {
