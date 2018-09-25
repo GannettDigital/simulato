@@ -45,3 +45,6 @@ node_modules
 
 #tests
 test
+
+# docs
+docs/

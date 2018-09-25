@@ -1,0 +1,40 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+
+entries:
+- title: Sidebar
+  product: Tutorial
+  items:
+  - title: "Quick Start Guide"
+    url: /tutorial/
+    output: web
+
+
+  folders:
+
+  - title: Tutorial
+    output: web
+    folderitems:
+    - title: "Setup"
+      url: /tutorial/setup/
+      output: web
+
+    - title: "Creating First Component"
+      url: /tutorial/first-component/
+      output: web
+
+    - title: "Entry Component"
+      url: /tutorial/entry-component/
+      output: web
+
+    - title: "Reusable Components Part 1"
+      url: /tutorial/reusable-components-pt1/
+      output: web
+
+    - title: "Reusable Components Part 2"
+      url: /tutorial/reusable-components-pt2/
+      output: web
+
+    - title: "Stash and Pop Expected State"
+      url: /tutorial/stash-pop/
+      output: web

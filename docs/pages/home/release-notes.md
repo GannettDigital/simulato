@@ -1,11 +1,9 @@
-# simulato change log
-
-## 0.6.5
-
-* Subarna Mukhiyabeen
-  * Added a custom writer that can generate action reports for QASymphony
-  * Added unit tests for action-json-writer and updates 
-  * Updated unit tests for report-handler.js and index.js
+---
+permalink: /release-notes/
+title: 'Release Notes'
+toc_label: 'Version Number'
+sidebar: about_sidebar
+---
 
 ## 0.6.4
 
@@ -17,7 +15,6 @@
 
 * Scott Gunther
   * Fix child process uncaught exception loop
-
 
 ## 0.6.2
 
@@ -58,7 +55,6 @@
   * Added parent event emiiters
     * Events bubble up
   * Updated files to use new event emitters
-  * Fix clear dynamic area bug where components aren't deleted from expected state
 
 * Brian Fitzpatrick
   * Added ability to add mutiple dynamic areas to a single component

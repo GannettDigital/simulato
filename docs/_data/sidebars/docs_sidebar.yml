@@ -1,0 +1,57 @@
+entries:
+- title: Sidebar
+  product: Documentation
+  folders:
+  - title: "Components"
+    output: web
+    url: /documentation/components/
+    folderitems:
+      - title: 'Type'
+        output: web
+        url: /documentation/components/#type
+      - title: 'Elements'
+        output: web
+        url: /documentation/components/#elements
+      - title: 'Model'
+        output: web
+        url: /documentation/components/#model
+      - title: 'Actions'
+        output: web
+        url: /documentation/components/#actions
+      - title: 'Children'
+        output: web
+        url: /documentation/components/#children
+      - title: 'Events'
+        output: web
+        url: /documentation/components/#events
+      - title: 'this Context'
+        output: web
+        url: /documentation/components/#this-context
+  - title: 'CLI'
+    output: web
+    url: /documentation/cli/
+    folderitems:
+      - title: 'Run'
+        output: web
+        url: /documentation/cli/#run
+      - title: 'Generate'
+        output: web
+        url: /documentation/cli/#generate
+- title: Sidebar
+  product: Documentation
+  items:
+  - title: 'Configuration File'
+    output: web
+    url: /documentation/configuration-file/
+  - title: 'Expected State'
+    output: web
+    url: /documentation/expected-state/
+  - title: 'Data Store'
+    output: web
+    url: /documentation/data-store/
+  - title: 'Run Time Variables'
+    output: web
+    url: /documentation/run-time-variables/
+  - title: 'Test Generation'
+    output: web
+    url: /documentation/test-generation/
