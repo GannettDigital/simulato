@@ -27,7 +27,7 @@ Details for the various parameters you can use with a configuration in lieu of t
 {{ site.data.alerts.end }}
 
 {{ site.data.alerts.callout_default }}
-<div class="docs-list"><a href="/documentation/expected-state/">Expected State <i class="fas fa-arrow-circle-right"></i></a></div>
+<div class="docs-list"><a href="{{ site.baseurl }}/documentation/expected-state/">Expected State <i class="fas fa-arrow-circle-right"></i></a></div>
 
 Documents methods used to create, view, modify, and delete items with a state.
 {{ site.data.alerts.end }}
