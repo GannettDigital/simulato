@@ -653,6 +653,21 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
           ]);
         });
       });
+
+      describe('if configHandler.get(\'reportFormat\') returns \'actionJSON\'', function() {
+        it('should call testReportHandler.emit with the event \'testReportHandler.testReportSummaryReadyToWrite\'' +
+          ' \'actionJSON\', and the report', function() {
+          configHandler.get.returns('actionJSON');
+          testReportHandler._handleTestReportSummary();
+          expect(testReportHandler.emit.args).to.deep.equal([
+            [
+              'testReportHandler.testReportSummaryReadyToWrite',
+              'actionJSON',
+              testReportHandler._report,
+            ],
+          ]);
+        });
+      });
     });
   });
 });
