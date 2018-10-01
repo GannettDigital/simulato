@@ -17,4 +17,4 @@ script:
   - npm run coverage
   - codecov
   - npm run generate-acceptance-tests
-  - npm run acceptance-tests -- -s
+  - 'if [ "$SAUCE_USERNAME" -a "$SAUCE_ACCESS_KEY" ]; then npm run acceptance-tests -- -s; fi'
