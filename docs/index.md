@@ -30,7 +30,7 @@ When using model based testing developers create small, resuable components foun
                  </div>
                  <div class="panel-body">
                      <div class="home-card">Getting started</div>
-                     <p>Get going fast with our Quick Start guide or dive deeper with our tutorial.</p>
+                     <p>Jump into learning Simulato and model based testing with our tutorial.</p>
                      <a href="{{ site.baseurl }}/tutorial/" class="btn btn-primary">Tutorial</a>
                  </div>
              </div>
