@@ -10,11 +10,11 @@ install:
   - npm install
   - npm install -g codecov
 before_script:
-  - npm explore simulato-test-site -- nohup npm start &
+  - 'if [ "$SAUCE_USERNAME" -a "$SAUCE_ACCESS_KEY" ]; then npm explore simulato-test-site -- nohup npm start & fi'
 script: 
   - npm run lint-ci
   - npm run unit-test
   - npm run coverage
   - codecov
   - npm run generate-acceptance-tests
-  - npm run acceptance-tests -- -s
+  - 'if [ "$SAUCE_USERNAME" -a "$SAUCE_ACCESS_KEY" ]; then npm run acceptance-tests -- -s; fi'
