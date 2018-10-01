@@ -4,17 +4,8 @@
 entries:
 - title: Sidebar
   product: Tutorial
+
   items:
-  - title: "Quick Start Guide"
-    url: /tutorial/
-    output: web
-
-
-  folders:
-
-  - title: Tutorial
-    output: web
-    folderitems:
     - title: "Setup"
       url: /tutorial/setup/
       output: web
