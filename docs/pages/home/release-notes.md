@@ -5,6 +5,13 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.6.5
+
+* Subarna Mukhiyabeen
+  * Added a custom writer that can generate action reports for QASymphony
+  * Added unit tests for action-json-writer and updates 
+  * Updated unit tests for report-handler.js and index.js
+
 ## 0.6.4
 
 * Zach Knox

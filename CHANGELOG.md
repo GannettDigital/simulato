@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.6.5
+
 * Subarna Mukhiyabeen
   * Added a custom writer that can generate action reports for QASymphony
   * Added unit tests for action-json-writer and updates 
