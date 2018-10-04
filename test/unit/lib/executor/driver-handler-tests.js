@@ -182,7 +182,7 @@ describe('lib/executor/driver-handler.js', function() {
       expect(webdriverBuilder1.withCapabilities.args).to.deep.equal([[
         {
           custom: 'capabilitiy',
-          browserName: 'chrome', 
+          browserName: 'chrome',
         },
       ]]);
     });
