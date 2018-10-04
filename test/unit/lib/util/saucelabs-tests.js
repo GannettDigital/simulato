@@ -66,22 +66,22 @@ describe('lib/util/saucelabs', function() {
       expect(configHandler.get.callCount).to.equal(3);
     });
 
-    it('should call configHandler.get with driver.username', function() {
+    it('should call configHandler.get with driver.capabilities.username', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[0]).to.deep.equal(['driver.username']);
+      expect(configHandler.get.args[0]).to.deep.equal(['driver.capabilities.username']);
     });
 
-    it('should call configHandler.get with driver.accessKey', function() {
+    it('should call configHandler.get with driver.capabilities.accessKey', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[1]).to.deep.equal(['driver.accessKey']);
+      expect(configHandler.get.args[1]).to.deep.equal(['driver.capabilities.accessKey']);
     });
 
-    it('should call configHandler.get with driver.tunnelIdentifier', function() {
+    it('should call configHandler.get with driver.capabilities.tunnel-identifier', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[2]).to.deep.equal(['driver.tunnelIdentifier']);
+      expect(configHandler.get.args[2]).to.deep.equal(['driver.capabilities.tunnel-identifier']);
     });
 
     it('should call sauceConnectLauncher with an object as the first argument containing '

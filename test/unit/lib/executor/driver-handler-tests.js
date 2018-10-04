@@ -122,7 +122,6 @@ describe('lib/executor/driver-handler.js', function() {
       it('should call _.merge with the ._capabilities and the sauceDefaults', function() {
         configHandler.get.onCall(0).returns(true);
         configHandler.get.onCall(1).returns('testName');
-        configHandler.get.onCall(2).returns('tunnelID');
         process.env.SAUCE_USERNAME = 'sauceusername';
         process.env.SAUCE_ACCESS_KEY = 'accessKey';
 
@@ -138,7 +137,6 @@ describe('lib/executor/driver-handler.js', function() {
               'browserName': 'chrome',
               'name': 'testName',
               'platform': 'Windows 10',
-              'tunnel-identifier': 'tunnelID',
               'username': 'sauceusername',
               'version': 'latest',
             },

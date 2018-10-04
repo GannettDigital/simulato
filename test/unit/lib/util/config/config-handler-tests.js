@@ -64,6 +64,7 @@ describe('lib/util/config/config-handler.js', function() {
       _ = {
         merge: sinon.stub(),
         get: sinon.stub(),
+        set: sinon.stub(),
       };
 
       defaults = {
@@ -256,7 +257,8 @@ describe('lib/util/config/config-handler.js', function() {
           expect(uuidv4.args).to.deep.equal([[]]);
         });
 
-        it('set ._config.driver.tunnelIdentifier to \'MBTT\' + the returned value from uuidv4', function() {
+        it('should call _.set once with the _config, \'driver.capabilities.tunnel-identifier\' ' +
+            'and the uuid string', function() {
           configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
           configHandler.get.returns(true);
           configHandler._config = {
@@ -267,7 +269,15 @@ describe('lib/util/config/config-handler.js', function() {
 
           configHandler.createConfig(options);
 
-          expect(configHandler._config.driver.tunnelIdentifier).to.equal('MBTTuniqueID');
+          expect(_.set.args).to.deep.equal([[
+            {
+              driver: {
+                saucelabs: true,
+              },
+            },
+            'driver.capabilities.tunnel-identifier',
+            'MBTTuniqueID',
+          ]]);
         });
       });
 
