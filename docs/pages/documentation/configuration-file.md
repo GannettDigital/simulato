@@ -23,18 +23,11 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `basic`
   * Values Allowed: `basic`
   * Example: `reporter: 'basic'`
-    
-### saucelabs
-  * Flag for running tests in saucelabs. A sauce tunnel will be started
-  * Example: `saucelabs: true`
 
-### sauceCapabilities
-  * Object containing saucelabs configuration options
-  * Can include a specified `username` for your saucelabs account
-  * Can include a specified `accessKey` for your saucelabs account
-  * Example: `sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'}`
-  * All other options can be found here:
-  https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
+### driver
+  * User to customize the selenium driver
+  * See [driver configuration](#driver-configuration)
+  * Example: `driver: {<CUSTOM DRIVER CAPABILITIES>}`
 
 ### parallelism
   *  Amount of tests to run in parallel
@@ -91,6 +84,36 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `32489`
   * Example: `debugPort: 5072`
 
+## Driver Configuration
+
+Custom Selenium driver configurations can be passed in using the driver property of the configuration file.  Currently supported is passing in custom capabilities, custom server, and turning on and off saucelabs functionallity. Please note, if you need to call `forBrowser`, please use `browserName`, and the optional `version` properties inside capabilities.
+
+### capabilities
+  * Set custom selenium driver capabilities by calling [withCapabilities](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#withCapabilities) passing in custom capabilities
+  * Defaults to `browserName: 'chrome'`
+  * Example: `driver: { browserName: 'firefox', version: 'latest' }`
+
+### usingServer
+  * Set custom selenium server by calling [usingServer](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#usingServer) passing in custom server string
+  * Defaults to localhost
+  * Example: `driver: { usingServer: 'http://www.myCustomServer.com}`
+
+### saucelabs
+  * Set simulato to use saucelabs
+  * Defaults to `saucelabs: false`
+  * Example: `driver: { saucelabs: true }`
+  * Notes:
+    * When using saucelabs, default capabiltities will be set for you:
+      * name - pregenerated test name
+      * browserName - 'chrome'
+      * version - 'latest'
+      * platform - 'Windows 10',
+      * username - username set in `process.env.SAUCE_USERNAME`
+      * accessKey - username set in `process.env.SAUCE_ACCESS_KEY`
+      * tunnel-identifier - pregenerated tunnel name, unique to test suite execution
+    * usingServer will default to `http://<SAUCE_USERNAME>:<SAUCE_ACCESS_KEY>@ondemand.saucelabs.com:80/wd/hub`
+    * All defaults can be overwritten using custom capabilities/custom usingServer.
+
 ## Example File
     'use strict'
 
@@ -98,8 +121,13 @@ This section documents utilization of the configuration file in place of CLI opt
         testPath: './test/acceptance/tests',
         componentPath: './test/acceptance/components',
         reportPath: './test/acceptance/tests',
-        saucelabs: true,
-        sauceCapabilities: {'username': 'testUser', 'accessKey': 'testKey'},
+        driver: {
+          saucelabs: true,
+          capabilities: {
+            browserName: 'firefox'
+          }
+        },
         outputPath: './test/acceptance/tests',
         plannerAlgorithm: `forwardStateSpaceSearchHeuristic`
     }
+

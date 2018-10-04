@@ -37,12 +37,22 @@ entries:
       - title: 'Generate'
         output: web
         url: /documentation/cli/#generate
+  - title: 'Configuration File'
+    output: web
+    url: /documentation/configuration-file
+    folderitems:
+      - title: 'Parameters'
+        output: web
+        url: /documentation/configuration-file/#parameters
+      - title: 'Driver Configuration'
+        output: web
+        url: /documentation/configuration-file/#driver-configuration
+      - title: 'Example File'
+        output: web
+        url: /documentation/configuration-file/#example-file
 - title: Sidebar
   product: Documentation
   items:
-  - title: 'Configuration File'
-    output: web
-    url: /documentation/configuration-file/
   - title: 'Expected State'
     output: web
     url: /documentation/expected-state/
