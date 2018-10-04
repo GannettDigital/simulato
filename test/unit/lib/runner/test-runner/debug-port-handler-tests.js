@@ -21,7 +21,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       };
 
       mockery.registerMock('portscanner', {});
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
       debugPortHandler._findPort = sinon.stub();
@@ -138,7 +138,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       };
 
       mockery.registerMock('portscanner', portscanner);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
       debugPortHandler._portsToGet = [callback];
@@ -258,7 +258,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
       callback = sinon.stub();
 
       mockery.registerMock('portscanner', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       debugPortHandler = require('../../../../../lib/runner/test-runner/debug-port-handler.js');
     });

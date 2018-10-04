@@ -23,7 +23,7 @@ describe('lib/cli/run.js', function() {
       cliEventDispatch = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', cliEventDispatch);
     });
 
@@ -71,7 +71,7 @@ describe('lib/cli/run.js', function() {
       };
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
 
       run = require('../../../../../lib/cli/commands/run.js');

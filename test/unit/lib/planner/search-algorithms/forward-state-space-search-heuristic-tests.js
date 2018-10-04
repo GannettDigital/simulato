@@ -28,7 +28,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       plannerEventDispatch = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
     });
 
@@ -189,7 +189,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       ];
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -373,7 +373,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       callback = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -459,7 +459,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       };
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -927,7 +927,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       sinon.spy(console, 'log');
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -1233,7 +1233,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       callback = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -1393,7 +1393,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       callback = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -1630,7 +1630,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       callback = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
@@ -1772,7 +1772,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       callback = sinon.stub();
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(

@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/util/config-handler.js', function() {
+describe('lib/util/config/config-handler.js', function() {
   describe('on file being required', function() {
     let configHandler;
     let Emitter;
@@ -12,7 +12,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -27,8 +27,8 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
     });
 
     afterEach(function() {
@@ -38,7 +38,7 @@ describe('lib/util/config-handler.js', function() {
     });
 
     it('should call Emitter.mixIn with configHandler and globalEventDispatch', function() {
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
         [
@@ -59,7 +59,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       _ = {
         merge: sinon.stub(),
@@ -89,12 +89,14 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', defaults);
       mockery.registerMock('uuid/v4', uuidv4);
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
       configHandler._getBaseConfig = sinon.stub();
       configHandler._resolvePaths = sinon.stub();
+      configHandler._structureCliOptions = sinon.stub();
+      configHandler.get = sinon.stub();
     });
 
     afterEach(function() {
@@ -219,34 +221,53 @@ describe('lib/util/config-handler.js', function() {
         expect(options.opts.args).to.deep.equal([[], []]);
       });
 
+      it('should call configHandler._structureCliOptions with the returned opts', function() {
+        configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
+
+        configHandler.createConfig(options);
+
+        expect(configHandler._structureCliOptions.args).to.deep.equal([[{cliOption: 'a cli option'}]]);
+      });
+
       it('should call lodash merge passing in an current config, and passed in cliOptions', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
+        configHandler._structureCliOptions.returns({cliOption: 'a structured cli option'});
 
         configHandler.createConfig(options);
 
         expect(_.merge.args[2]).to.deep.equal([
           {},
-          {cliOption: 'a cli option'},
+          {cliOption: 'a structured cli option'},
         ]);
       });
 
-      describe('if configHandler.config saucelabs property is truthy', function() {
+      describe('if configHandler.get \'driver.saucelabs\' is truthy', function() {
         it('should call uuidv4 once wiht no params', function() {
           configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
-          configHandler._config = {saucelabs: true};
+          configHandler.get.returns(true);
+          configHandler._config = {
+            driver: {
+              saucelabs: true,
+            },
+          };
 
           configHandler.createConfig(options);
 
           expect(uuidv4.args).to.deep.equal([[]]);
         });
 
-        it('set configHandler._config.tunnelIdentifier to \'MBTT\' + the returned value from uuidv4', function() {
+        it('set ._config.driver.tunnelIdentifier to \'MBTT\' + the returned value from uuidv4', function() {
           configHandler._getBaseConfig.callsArgWith(1, {configFileKey: 'config file value'});
-          configHandler._config = {saucelabs: true};
+          configHandler.get.returns(true);
+          configHandler._config = {
+            driver: {
+              saucelabs: true,
+            },
+          };
 
           configHandler.createConfig(options);
 
-          expect(configHandler._config.tunnelIdentifier).to.equal('MBTTuniqueID');
+          expect(configHandler._config.driver.tunnelIdentifier).to.equal('MBTTuniqueID');
         });
       });
 
@@ -346,7 +367,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -364,10 +385,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
     });
 
     afterEach(function() {
@@ -401,7 +422,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -415,10 +436,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
     });
 
     afterEach(function() {
@@ -437,6 +458,91 @@ describe('lib/util/config-handler.js', function() {
     });
   });
 
+  describe('_structureCliOptions', function() {
+    let configHandler;
+    let Emitter;
+    let _;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+      _ = {
+        set: sinon.stub(),
+      };
+
+      mockery.registerMock('lodash', _);
+      mockery.registerMock('path', {});
+      mockery.registerMock('./defaults.js', {});
+      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
+
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    describe('if the passed in cliOptions.saucelabs is truthy', function() {
+      it('should delete the saucelabs property from the passed in cliOptions', function() {
+        let result;
+        let cliOptions = {
+          saucelabs: true,
+          1: 'option1',
+          2: 'option2',
+        };
+
+        result = configHandler._structureCliOptions(cliOptions);
+
+        expect(result).to.deep.equal({
+          1: 'option1',
+          2: 'option2',
+        });
+      });
+
+      it('should call _.set once with the passed in options,\'driver.saucelabs\', and the bool true', function() {
+        let cliOptions = {
+          saucelabs: true,
+          cliOption: 'a cli option',
+        };
+
+        configHandler._structureCliOptions(cliOptions);
+
+        expect(_.set.args).to.deep.equal([[
+          {cliOption: 'a cli option'},
+          'driver.saucelabs',
+          true,
+        ]]);
+      });
+    });
+
+    it('should return the passed in cliOptions', function() {
+      let result;
+      let cliOptions = {
+        1: 'option1',
+        2: 'option2',
+      };
+
+      result = configHandler._structureCliOptions(cliOptions);
+
+      expect(result).to.deep.equal({
+        1: 'option1',
+        2: 'option2',
+      });
+    });
+  });
+
   describe('_getBaseConfig', function() {
     let callback;
     let path;
@@ -446,7 +552,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       callback = sinon.spy();
 
@@ -476,10 +582,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', defaults);
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
     });
 
     afterEach(function() {
@@ -599,7 +705,7 @@ describe('lib/util/config-handler.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/config-handler.js');
+      mockery.registerAllowable('../../../../../lib/util/config/config-handler.js');
 
       path = {
         resolve: sinon.stub(),
@@ -623,10 +729,10 @@ describe('lib/util/config-handler.js', function() {
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
       mockery.registerMock('uuid/v4', {});
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
+      mockery.registerMock('../emitter.js', Emitter);
+      mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
-      configHandler = require('../../../../lib/util/config-handler.js');
+      configHandler = require('../../../../../lib/util/config/config-handler.js');
       configHandler._config = config;
     });
 

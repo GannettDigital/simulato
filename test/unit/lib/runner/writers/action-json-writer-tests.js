@@ -82,7 +82,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
       actionJsonWriter._getActionTestData = sinon.stub();
@@ -303,7 +303,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', {});
       mockery.registerMock('path', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
     });
@@ -348,7 +348,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', {});
       mockery.registerMock('path', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
     });
@@ -406,7 +406,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', {});
       mockery.registerMock('path', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
       actionJsonWriter._writeReport = sinon.stub();
@@ -452,7 +452,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
       actionJsonWriter._createNotes = sinon.stub();
@@ -526,7 +526,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', {});
       mockery.registerMock('path', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
       actionJsonWriter._checkStepForError = sinon.stub();
@@ -658,7 +658,7 @@ describe('lib/runner/test-runner/action-json-writer.js', function() {
       mockery.registerAllowable('../../../../../lib/runner/writers/action-json-writer.js');
       mockery.registerMock('fs', {});
       mockery.registerMock('path', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       actionJsonWriter = require('../../../../../lib/runner/writers/action-json-writer.js');
     });
