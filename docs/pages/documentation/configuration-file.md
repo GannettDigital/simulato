@@ -25,7 +25,7 @@ This section documents utilization of the configuration file in place of CLI opt
   * Example: `reporter: 'basic'`
 
 ### driver
-  * User to customize the selenium driver
+  * Use to customize the selenium driver
   * See [driver configuration](#driver-configuration)
   * Example: `driver: {<CUSTOM DRIVER CAPABILITIES>}`
 
@@ -89,17 +89,17 @@ This section documents utilization of the configuration file in place of CLI opt
 Custom Selenium driver configurations can be passed in using the driver property of the configuration file.  Currently supported is passing in custom capabilities, custom server, and turning on and off saucelabs functionallity. Please note, if you need to call `forBrowser`, please use `browserName`, and the optional `version` properties inside capabilities.
 
 ### capabilities
-  * Set custom selenium driver capabilities by calling [withCapabilities](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#withCapabilities) passing in custom capabilities
+  * Sets custom selenium driver capabilities by calling [withCapabilities](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#withCapabilities) passing in custom capabilities
   * Defaults to `browserName: 'chrome'`
   * Example: `driver: { browserName: 'firefox', version: 'latest' }`
 
 ### usingServer
-  * Set custom selenium server by calling [usingServer](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#usingServer) passing in custom server string
+  * Sets custom selenium server by calling [usingServer](https://seleniumhq.github.io/selenium/docs/api/javascript/module/selenium-webdriver/index_exports_Builder.html#usingServer) passing in custom server string
   * Defaults to localhost
   * Example: `driver: { usingServer: 'http://www.myCustomServer.com}`
 
 ### saucelabs
-  * Set simulato to use saucelabs
+  * Sets simulato to use saucelabs
   * Defaults to `saucelabs: false`
   * Example: `driver: { saucelabs: true }`
   * Notes:

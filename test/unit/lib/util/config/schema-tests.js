@@ -25,9 +25,6 @@ describe('lib/util/config/schema.js', function() {
         'plannerAlgorithm', 'parallelism', 'testDelay', 'rerunFailedTests',
       ],
       properties: {
-        foo: {
-          type: 'string',
-        },
         testPath: {
           type: 'string',
         },
