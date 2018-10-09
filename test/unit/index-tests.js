@@ -37,7 +37,7 @@ describe('index.js', function() {
     mockery.registerMock('./lib/errors', SimulatoError);
     mockery.registerMock('commander', program);
     mockery.registerMock('./package.json', packageJSON);
-    mockery.registerMock('./lib/util/config-handler.js', configHandler);
+    mockery.registerMock('./lib/util/config/config-handler.js', configHandler);
     mockery.registerMock('./lib/util/initialize-event-dispatchers', initializeEventDispatchers);
   });
 
@@ -167,23 +167,25 @@ describe('index.js', function() {
     expect(program.option.args[8]).to.deep.equal(['-f, --configFile <path>', 'The path to the config file']);
   });
 
-  it('should call program.option with the strings \'-d, --testDelay <milliseconds>\' ' +
-        'and \'The time in milliseconds to stagger test start times\'', function() {
+  it('should call program.option with the strings \'-d, --testDelay <milliseconds>\', ' +
+        '\'The time in milliseconds to stagger test start times\' and Number.parseInt', function() {
     require('../../index.js');
 
     expect(program.option.args[9]).to.deep.equal([
       '-d, --testDelay <milliseconds>',
       'The time in milliseconds to stagger test start times',
+      Number.parseInt,
     ]);
   });
 
-  it('should call program.option with the strings \'-F, --rerunFailedTests <int>\' ' +
-        'and \'The number of times to rerun failed tests\'', function() {
+  it('should call program.option with the strings \'-F, --rerunFailedTests <int>\', ' +
+        '\'The number of times to rerun failed tests\' and Number.parseInt', function() {
     require('../../index.js');
 
     expect(program.option.args[10]).to.deep.equal([
       '-F, --rerunFailedTests <int>',
       'The number of times to rerun failed tests',
+      Number.parseInt,
     ]);
   });
 
@@ -197,13 +199,14 @@ describe('index.js', function() {
     ]);
   });
 
-  it('should call program.option with the strings \'-P, --debugPort <int>\' ' +
-        'and \'Starting port for debugging when spawning child processes\'', function() {
+  it('should call program.option with the strings \'-P, --debugPort <int>\', ' +
+        '\'Starting port for debugging when spawning child processes\', and Number.parseInt', function() {
     require('../../index.js');
 
     expect(program.option.args[12]).to.deep.equal([
       '-P, --debugPort <int>',
       'Starting port for debugging when spawning child processes',
+      Number.parseInt,
     ]);
   });
 

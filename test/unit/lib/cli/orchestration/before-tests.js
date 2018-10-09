@@ -29,7 +29,7 @@ describe('lib/cli/orchestration/before.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('palinode', {concurrent});
       mockery.registerMock('../../util/saucelabs.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', cliEventDispatch);
     });
 
@@ -96,7 +96,7 @@ describe('lib/cli/orchestration/before.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('palinode', {concurrent});
       mockery.registerMock('../../util/saucelabs.js', Saucelabs);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
 
       before = require('../../../../../lib/cli/orchestration/before.js');
@@ -171,7 +171,13 @@ describe('lib/cli/orchestration/before.js', function() {
       });
     });
 
-    describe('when configHandler.get(\'saucelabs\') is truthy', function() {
+    it('should call configHanlder.get with \'driver.saucelabs\'', function() {
+      before.runScripts({someConfig: 'aConfigValue'});
+
+      expect(configHandler.get.args[1]).to.deep.equal(['driver.saucelabs']);
+    });
+
+    describe('when configHandler.get(\'driver.saucelabs\') is truthy', function() {
       it('should call Saucelabs.connect once', function() {
         configHandler.get.onCall(1).returns(true);
 
@@ -319,7 +325,7 @@ describe('lib/cli/orchestration/before.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('palinode', {concurrent});
       mockery.registerMock('../../util/saucelabs.js', Saucelabs);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
       mockery.registerMock('../cli-event-dispatch/cli-event-dispatch.js', {});
 
       before = require('../../../../../lib/cli/orchestration/before.js');

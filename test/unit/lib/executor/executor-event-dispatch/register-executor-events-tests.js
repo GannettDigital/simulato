@@ -22,8 +22,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
       configure: sinon.stub(),
     };
     driverHandler = {
-      inSauceLabs: sinon.stub(),
-      locally: sinon.stub(),
+      setup: sinon.stub(),
       quit: sinon.stub(),
       handleError: sinon.stub(),
     };
@@ -73,10 +72,10 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
     mockery.disable();
   });
 
-  it('should call executorEventDispatch.on 20 times', function() {
+  it('should call executorEventDispatch.on 19 times', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.callCount).to.equal(20);
+    expect(executorEventDispatch.on.callCount).to.equal(19);
   });
 
   it('should call executorEventDispatch.on with the event \'executor.scheduled\' ' +
@@ -109,23 +108,13 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
     ]);
   });
 
-  it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToSauce\' ' +
-        'and driverHandler.inSaucelabs as parameters', function() {
+  it('should call executorEventDispatch.on with the event \'executeTestCase.setupDriver\' ' +
+        'and driverHandler.setup as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
     expect(executorEventDispatch.on.args[3]).to.deep.equal([
-      'executeTestCase.driverSetToSauce',
-      driverHandler.inSaucelabs,
-    ]);
-  });
-
-  it('should call executorEventDispatch.on with the event \'executeTestCase.driverSetToLocal\' ' +
-        'and driverHandler.locally as parameters', function() {
-    registerExecutorEvents(executorEventDispatch);
-
-    expect(executorEventDispatch.on.args[4]).to.deep.equal([
-      'executeTestCase.driverSetToLocal',
-      driverHandler.locally,
+      'executeTestCase.setupDriver',
+      driverHandler.setup,
     ]);
   });
 
@@ -133,7 +122,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and executionEngine.configure as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[5]).to.deep.equal([
+    expect(executorEventDispatch.on.args[4]).to.deep.equal([
       'executeTestCase.configured',
       executionEngine.configure,
     ]);
@@ -143,7 +132,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.startReport as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[6]).to.deep.equal([
+    expect(executorEventDispatch.on.args[5]).to.deep.equal([
       'executionEngine.configured',
       eeReportHandler.startReport,
     ]);
@@ -153,7 +142,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.startAction as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[7]).to.deep.equal([
+    expect(executorEventDispatch.on.args[6]).to.deep.equal([
       'executionEngine.actionStarted',
       eeReportHandler.startAction,
     ]);
@@ -163,7 +152,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.endAction as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[8]).to.deep.equal([
+    expect(executorEventDispatch.on.args[7]).to.deep.equal([
       'executionEngine.actionFinished',
       eeReportHandler.endAction,
     ]);
@@ -173,7 +162,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.startStep as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[9]).to.deep.equal([
+    expect(executorEventDispatch.on.args[8]).to.deep.equal([
       'executionEngine.stepStarted',
       eeReportHandler.startStep,
     ]);
@@ -183,7 +172,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.endStep as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[10]).to.deep.equal([
+    expect(executorEventDispatch.on.args[9]).to.deep.equal([
       'executionEngine.stepEnded',
       eeReportHandler.endStep,
     ]);
@@ -193,7 +182,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.finalizeReport as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[11]).to.deep.equal([
+    expect(executorEventDispatch.on.args[10]).to.deep.equal([
       'executionEngine.done',
       eeReportHandler.finalizeReport,
     ]);
@@ -203,7 +192,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and driverHandler.quit as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[12]).to.deep.equal([
+    expect(executorEventDispatch.on.args[11]).to.deep.equal([
       'executionEngine.done',
       driverHandler.quit,
     ]);
@@ -213,7 +202,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and assertionHandler.assertPageState as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[13]).to.deep.equal([
+    expect(executorEventDispatch.on.args[12]).to.deep.equal([
       'executionEngine.preconditionsReadyForVerification',
       assertionHandler.assertPageState,
     ]);
@@ -223,7 +212,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and assertionHandler.assertExpectedPageState as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[14]).to.deep.equal([
+    expect(executorEventDispatch.on.args[13]).to.deep.equal([
       'executionEngine.effectsReadyForVerification',
       assertionHandler.assertExpectedPageState,
     ]);
@@ -233,7 +222,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and driverHandler.handleError as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[15]).to.deep.equal([
+    expect(executorEventDispatch.on.args[14]).to.deep.equal([
       'eeReportHandler.errorOccured',
       driverHandler.handleError,
     ]);
@@ -243,7 +232,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and stateCompare.printDifference as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[16]).to.deep.equal([
+    expect(executorEventDispatch.on.args[15]).to.deep.equal([
       'assertionHandler.stateCheckTimedOut',
       stateCompare.printDifference,
     ]);
@@ -253,7 +242,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and executionEngine.applyEffects as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[17]).to.deep.equal([
+    expect(executorEventDispatch.on.args[16]).to.deep.equal([
       'assertionHandler.effectsVerified',
       executionEngine.applyEffects,
     ]);
@@ -263,7 +252,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and executionEngine.applyPreconditions as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[18]).to.deep.equal([
+    expect(executorEventDispatch.on.args[17]).to.deep.equal([
       'assertionHandler.preconditionsVerified',
       executionEngine.applyPreconditions,
     ]);
@@ -273,7 +262,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
         'and eeReportHandler.appendStateCompare as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
-    expect(executorEventDispatch.on.args[19]).to.deep.equal([
+    expect(executorEventDispatch.on.args[18]).to.deep.equal([
       'stateCompare.differenceCreated',
       eeReportHandler.appendStateCompare,
     ]);

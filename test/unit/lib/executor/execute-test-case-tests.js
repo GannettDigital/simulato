@@ -25,7 +25,7 @@ describe('lib/executor/execute-test-case.js', function() {
 
       mockery.registerMock('selenium-webdriver', {});
       mockery.registerMock('../util/emitter.js', Emitter);
-      mockery.registerMock('../util/config-handler.js', {});
+      mockery.registerMock('../util/config/config-handler.js', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
     });
 
@@ -78,7 +78,7 @@ describe('lib/executor/execute-test-case.js', function() {
       mockery.registerMock('selenium-webdriver', webdriver);
       mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('/tests/my-test-case.js', 'testCase');
-      mockery.registerMock('../util/config-handler.js', configHandler);
+      mockery.registerMock('../util/config/config-handler.js', configHandler);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
       executeTestCase = require('../../../../lib/executor/execute-test-case.js');
@@ -119,7 +119,7 @@ describe('lib/executor/execute-test-case.js', function() {
       });
 
       it('should call process.on with the event \'executeTestCase.exceptionCaught\' and ' +
-                'the passed in error', function() {
+          'the passed in error', function() {
         let error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
@@ -159,16 +159,10 @@ describe('lib/executor/execute-test-case.js', function() {
       expect(executeTestCase.emit.callCount).to.equal(3);
     });
 
-    it('should call configHandler.get twice', function() {
+    it('should call configHandler.get once with \'componentPath\'', function() {
       executeTestCase.configure(testPath);
 
-      expect(configHandler.get.callCount).to.equal(2);
-    });
-
-    it('should call configHandler.get with \'componentPath\'', function() {
-      executeTestCase.configure(testPath);
-
-      expect(configHandler.get.args[0]).to.deep.equal(['componentPath']);
+      expect(configHandler.get.args).to.deep.equal([['componentPath']]);
     });
 
     it('should call executeTestCase.emit with the event \'componentHandler.configure\' ' +
@@ -183,32 +177,12 @@ describe('lib/executor/execute-test-case.js', function() {
       ]);
     });
 
-    it('should call configHandler.get with \'saucelabs\'', function() {
+    it('should call executeTestCase.emit with the event \'executeTestCase.setupDriver\'', function() {
       executeTestCase.configure(testPath);
 
-      expect(configHandler.get.args[1]).to.deep.equal(['saucelabs']);
-    });
-
-    describe('if configHandler.get(\'saucelabs\') is truthy', function() {
-      it('should call executeTestCase.emit with the event \'executeTestCase.driverSetToSauce\'', function() {
-        configHandler.get.returns(true);
-
-        executeTestCase.configure(testPath);
-
-        expect(executeTestCase.emit.args[1]).to.deep.equal([
-          'executeTestCase.driverSetToSauce',
-        ]);
-      });
-    });
-
-    describe('iff configHandler.get(\'saucelabs\') is falsey', function() {
-      it('should call executeTestCase.emit with the event \'executeTestCase.driverSetToLocal\'', function() {
-        executeTestCase.configure(testPath);
-
-        expect(executeTestCase.emit.args[1]).to.deep.equal([
-          'executeTestCase.driverSetToLocal',
-        ]);
-      });
+      expect(executeTestCase.emit.args[1]).to.deep.equal([
+        'executeTestCase.setupDriver',
+      ]);
     });
 
     it('should call executeTestCase.emit with the event \'executeTestCase.configured\'' +

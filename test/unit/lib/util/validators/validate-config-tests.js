@@ -11,6 +11,9 @@ describe('lib/util/validators/validate-config.js', function() {
     let cliOptions;
     let callback;
     let validateConfig;
+    let Ajv;
+    let ajv;
+    let configSchema;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -19,7 +22,6 @@ describe('lib/util/validators/validate-config.js', function() {
       callback = sinon.stub();
       config = {
         configKey: 'configValue',
-        hasOwnProperty: sinon.stub().returns(true),
       };
       configOptions = {
         configOptionsKey: 'configOptionsValue',
@@ -27,7 +29,22 @@ describe('lib/util/validators/validate-config.js', function() {
       cliOptions = {
         cliOptionsKey: 'cliOptionsKey',
       };
+      Ajv = sinon.stub();
+      ajv = {
+        validate: sinon.stub(),
+      };
+      Ajv.returns(ajv);
+      configSchema = {schema: 'schemaValue'};
+      global.SimulatoError = {
+        CONFIG: {
+          REQUIRED_PROPERTY: sinon.stub(),
+          TYPE_ERROR: sinon.stub(),
+          INVALID_VALUE: sinon.stub(),
+        },
+      };
 
+      mockery.registerMock('ajv', Ajv);
+      mockery.registerMock('../config/schema.js', configSchema);
       validateConfig = require('../../../../../lib/util/validators/validate-config.js');
       validateConfig._getOrigin = sinon.stub().returns('origin');
       validateConfig._validateType = sinon.stub();
@@ -36,68 +53,250 @@ describe('lib/util/validators/validate-config.js', function() {
     });
 
     afterEach(function() {
+      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    describe('for each key in the passed in config', function() {
-      describe('if the passed in config has the property && the value is truthy', function() {
-        it('should call validateConfig._getOrigin passing in the key, ' +
-        'the passed in configOptions and cliOptions', function() {
-          validateConfig.validate(config, configOptions, cliOptions, callback);
+    it('should call ajv.validate once with the required in schema, and passed in config', function() {
+      ajv.validate.returns(true);
+
+      validateConfig.validate(config, configOptions, cliOptions, callback);
+
+      expect(ajv.validate.args).to.deep.equal([[
+        {schema: 'schemaValue'},
+        {configKey: 'configValue'},
+      ]]);
+    });
+
+    describe('if the call to ajv.validate is returned falsey', function() {
+      describe('if the returned error has the keyword \'required\'', function() {
+        describe('if the error has a dataPath', function() {
+          it('should create the error with which key is required modified with dataPath', function() {
+            ajv.errors = [{
+              keyword: 'required',
+              dataPath: './subPath',
+              params: {
+                missingProperty: 'missingKey',
+              },
+            }];
+
+            try {
+              validateConfig.validate(config, configOptions, cliOptions, callback);
+            } catch (error) {
+            }
+
+            expect(global.SimulatoError.CONFIG.REQUIRED_PROPERTY.args).to.deep.equal([
+              ['Property \'/subPath.missingKey\' required'],
+            ]);
+          });
+        });
+
+        describe('if the error has a dataPath that is fasley', function() {
+          it('should create the error with which key is required modified with dataPath', function() {
+            ajv.errors = [{
+              keyword: 'required',
+              dataPath: '',
+              params: {
+                missingProperty: 'missingKey',
+              },
+            }];
+
+            try {
+              validateConfig.validate(config, configOptions, cliOptions, callback);
+            } catch (error) {
+            }
+
+            expect(global.SimulatoError.CONFIG.REQUIRED_PROPERTY.args).to.deep.equal([
+              ['Property \'missingKey\' required'],
+            ]);
+          });
+        });
+
+        it('should throw a CONFIG.REQUIRED_PROPERTY error', function() {
+          ajv.errors = [{
+            keyword: 'required',
+            dataPath: './subPath',
+            params: {
+              missingProperty: 'missingKey',
+            },
+          }];
+          global.SimulatoError.CONFIG.REQUIRED_PROPERTY.returns(
+              {message: 'My Error'}
+          );
+
+          expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
+              .to.throw('My Error');
+        });
+      });
+
+      describe('if the returned error has the keyword \'type\' and not \'required\'', function() {
+        it('should call validateConifg._getOrigin once with the key, the configOptions, and cliOptions', function() {
+          ajv.errors = [{
+            keyword: 'type',
+            dataPath: '.badKey',
+            params: {
+              type: 'string',
+            },
+          }];
+          config = {
+            badKey: 1,
+          };
+
+          try {
+            validateConfig.validate(config, configOptions, cliOptions, callback);
+          } catch (error) {
+          }
 
           expect(validateConfig._getOrigin.args).to.deep.equal([
-            ['configKey', configOptions, cliOptions],
-            ['hasOwnProperty', configOptions, cliOptions],
+            ['badKey', {configOptionsKey: 'configOptionsValue'}, {cliOptionsKey: 'cliOptionsKey'}],
           ]);
         });
 
-        it('should call validateConfig._validateType passing in the returned origin, ' +
-        'the key and the configs[key] value', function() {
-          validateConfig.validate(config, configOptions, cliOptions, callback);
+        it('should create the error with the type of value for the key, the key, ' +
+            'the origin, and what the valid type is', function() {
+          ajv.errors = [{
+            keyword: 'type',
+            dataPath: '.badKey',
+            params: {
+              type: 'string',
+            },
+          }];
+          config = {
+            badKey: 1,
+          };
 
-          expect(validateConfig._validateType.args).to.deep.equal([
-            ['origin', 'configKey', 'configValue'],
-            ['origin', 'hasOwnProperty', config.hasOwnProperty],
+          try {
+            validateConfig.validate(config, configOptions, cliOptions, callback);
+          } catch (error) {
+          }
+
+          expect(global.SimulatoError.CONFIG.TYPE_ERROR.args).to.deep.equal([
+            ['Invalid Type: \'number\' for Property: \'badKey\' Origin: \'origin\' Valid Type: \'string\''],
           ]);
         });
 
-        it('should call the passed in callback once with no args', function() {
-          validateConfig.validate(config, configOptions, cliOptions, callback);
+        it('should throw a CONFIG.TYPE_ERROR error', function() {
+          ajv.errors = [{
+            keyword: 'type',
+            dataPath: '.badKey',
+            params: {
+              type: 'string',
+            },
+          }];
+          global.SimulatoError.CONFIG.TYPE_ERROR.returns(
+              {message: 'My type Error'}
+          );
 
-          expect(callback.args).to.deep.equal([[]]);
+          expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
+              .to.throw('My type Error');
         });
       });
 
-      describe('if the passed in config does NOT have the property', function() {
-        it('should NOT call _getOrigin', function() {
-          config.hasOwnProperty.returns(false);
+      describe('if the returned error has the keyword \'enum\' and not \'required\' or \'type\'', function() {
+        it('should call validateConifg._getOrigin once with the key, the configOptions, and cliOptions', function() {
+          ajv.errors = [{
+            keyword: 'enum',
+            dataPath: '.badKey',
+            params: {
+              allowedValues: ['validValue1', 'validValue2'],
+            },
+          }];
+          config = {
+            badKey: 'invalidValue',
+          };
 
-          validateConfig.validate(config, configOptions, cliOptions, callback);
+          try {
+            validateConfig.validate(config, configOptions, cliOptions, callback);
+          } catch (error) {
+          }
 
-          expect(validateConfig._getOrigin.callCount).to.equal(0);
+          expect(validateConfig._getOrigin.args).to.deep.equal([
+            ['badKey', {configOptionsKey: 'configOptionsValue'}, {cliOptionsKey: 'cliOptionsKey'}],
+          ]);
+        });
+
+        it('should create the error with the invalud value, the key, ' +
+            'the origin, and what the valid values are', function() {
+          ajv.errors = [{
+            keyword: 'enum',
+            dataPath: '.badKey',
+            params: {
+              allowedValues: ['validValue1', 'validValue2'],
+            },
+          }];
+          config = {
+            badKey: 'invalidValue',
+          };
+
+          try {
+            validateConfig.validate(config, configOptions, cliOptions, callback);
+          } catch (error) {
+          }
+
+          expect(global.SimulatoError.CONFIG.INVALID_VALUE.args).to.deep.equal([
+            [
+              'Invalid Value: \'invalidValue\' for Property: \'badKey\' Origin: \'origin\'' +
+                ' Valid Values: \'validValue1,validValue2\'',
+            ],
+          ]);
+        });
+
+        it('should throw a CONFIG.INVALID_VALUE error', function() {
+          ajv.errors = [{
+            keyword: 'enum',
+            dataPath: '.badKey',
+            params: {
+              allowedValues: ['validValue1', 'validValue2'],
+            },
+          }];
+          global.SimulatoError.CONFIG.INVALID_VALUE.returns(
+              {message: 'My type Error'}
+          );
+
+          expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
+              .to.throw('My type Error');
+        });
+      });
+
+      describe('if the returned error does not have the keyword \'required\', \'type\', or \'enum\'', function() {
+        it('should create the error with the error.message', function() {
+          ajv.errors = [{
+            keyword: 'other',
+            message: 'some error message',
+          }];
+
+          try {
+            validateConfig.validate(config, configOptions, cliOptions, callback);
+          } catch (error) {
+          }
+
+          expect(global.SimulatoError.CONFIG.TYPE_ERROR.args).to.deep.equal([
+            [
+              'Error validating schema. Message: \'some error message\'',
+            ],
+          ]);
+        });
+
+        it('should throw a CONFIG.TYPE_ERROR error', function() {
+          ajv.errors = [{
+            keyword: 'other',
+            message: 'some error message',
+          }];
+          global.SimulatoError.CONFIG.TYPE_ERROR.returns(
+              {message: 'My other type Error'}
+          );
+
+          expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
+              .to.throw('My other type Error');
         });
       });
     });
 
-    it('should call _validateReporter once with the passed in config, configOptions, and cliOptions', function() {
-      validateConfig.validate(config, configOptions, cliOptions, callback);
+    it('should call the passed in callback once with no params', function() {
+      ajv.validate.returns(true);
 
-      expect(validateConfig._validateReporter.args).to.deep.equal([
-        [config, configOptions, cliOptions],
-      ]);
-    });
-
-    it('should call _validateWriter once with the passed in config, configOptions, and cliOptions', function() {
-      validateConfig.validate(config, configOptions, cliOptions, callback);
-
-      expect(validateConfig._validateWriter.args).to.deep.equal([
-        [config, configOptions, cliOptions],
-      ]);
-    });
-
-    it('should call the callback once with no args', function() {
       validateConfig.validate(config, configOptions, cliOptions, callback);
 
       expect(callback.args).to.deep.equal([[]]);
@@ -107,10 +306,19 @@ describe('lib/util/validators/validate-config.js', function() {
   describe('_getOrigin', function() {
     let validateConfig;
     let result;
+    let Ajv;
+    let ajv;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/util/validators/validate-config.js');
+
+      Ajv = sinon.stub();
+      ajv = {};
+      Ajv.returns(ajv);
+
+      mockery.registerMock('ajv', Ajv);
+      mockery.registerMock('../config/schema.js', {});
 
       validateConfig = require('../../../../../lib/util/validators/validate-config.js');
     });
@@ -144,200 +352,6 @@ describe('lib/util/validators/validate-config.js', function() {
 
           expect(result).to.equal('default');
         });
-      });
-    });
-  });
-
-  describe('_validateType', function() {
-    let validateConfig;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/util/validators/validate-config.js');
-
-      global.SimulatoError = {
-        CONFIG: {
-          TYPE_ERROR: sinon.stub().throws({message: 'type error'}),
-          INVALID_PROPERTY: sinon.stub().throws({message: 'invalid property'}),
-        },
-      };
-
-      validateConfig = require('../../../../../lib/util/validators/validate-config.js');
-    });
-
-    afterEach(function() {
-      delete global.SimulatoError;
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    describe('if the passed in key is included in _stringValues', function() {
-      describe('if the passed in value is not a string', function() {
-        it('should throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'testPath', 3)).to.throw('type error');
-        });
-      });
-
-      describe('if the passed in value is a string', function() {
-        it('should not throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'testPath', 'path')).to.not.throw();
-        });
-      });
-    });
-
-    describe('if the passed in key is included in _numberValues and not _stringValues', function() {
-      describe('if the passed in value is not a number', function() {
-        it('should throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'parallelism', 'string')).to.throw('type error');
-        });
-      });
-
-      describe('if the passed in value is a number', function() {
-        it('should not throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'parallelism', 2)).to.not.throw();
-        });
-      });
-    });
-
-    describe('if the passed in key is included in _booleanValues and not ' +
-      '_stringValues or _numberValues', function() {
-      describe('if the passed in value is not a boolean', function() {
-        it('should throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'debug', 'string')).to.throw('type error');
-        });
-      });
-
-      describe('if the passed in value is a number', function() {
-        it('should not throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'debug', true)).to.not.throw();
-        });
-      });
-    });
-
-    describe('if the passed in key is included in _objectValues and not ' +
-      '_stringValues, _numberValues or _booleanValues', function() {
-      describe('if the passed in value is not an object', function() {
-        it('should throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'sauceCapabilities', [])).to.throw('type error');
-        });
-      });
-
-      describe('if the passed in value is an object', function() {
-        it('should not throw an error', function() {
-          expect(validateConfig._validateType.bind(null, 'origin', 'sauceCapabilities', {})).to.not.throw();
-        });
-      });
-    });
-
-    describe('if the passed in key NOT included in _objectValues, ' +
-      '_stringValues, _numberValues or _booleanValues', function() {
-      it('should throw an error', function() {
-        expect(validateConfig._validateType.bind(null, 'origin', 'badProp', 2)).to.throw('invalid property');
-      });
-    });
-  });
-
-  describe('_validateReporter', function() {
-    let validateConfig;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/util/validators/validate-config.js');
-
-      global.SimulatoError = {
-        CONFIG: {
-          INVALID_VALUE: sinon.stub().throws({message: 'invalid value'}),
-        },
-      };
-
-      validateConfig = require('../../../../../lib/util/validators/validate-config.js');
-      validateConfig._getOrigin = sinon.stub();
-    });
-
-    afterEach(function() {
-      delete global.SimulatoError;
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    describe('if the passed in config.reporter is not a validFormat', function() {
-      it('should call validateConfig._getOrigin once with \'reporter\', the passed in configOptions '
-        + 'and the passed in cliOptions', function() {
-        try {
-          validateConfig._validateReporter({reporter: 'badReporter'}, {key: 'configValue'}, {key: 'cliValue'});
-        } catch (error) {}
-
-        expect(validateConfig._getOrigin.args).to.deep.equal([[
-          'reporter', {key: 'configValue'}, {key: 'cliValue'},
-        ]]);
-      });
-
-      it('should throw simulato invalid value error', function() {
-        expect(validateConfig._validateReporter.bind(
-            {reporter: 'badReporter'}, {key: 'configValue'}, {key: 'cliValue'}
-        )).throw('invalid value');
-      });
-    });
-
-    describe('if the passed in config.reporter is a validFormat', function() {
-      it('should not call validateConfig._getOrigin', function() {
-        validateConfig._validateReporter({reporter: 'basic'}, {}, {});
-
-        expect(validateConfig._getOrigin.callCount).to.equal(0);
-      });
-    });
-  });
-
-  describe('_validateWriter', function() {
-    let validateConfig;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/util/validators/validate-config.js');
-
-      global.SimulatoError = {
-        CONFIG: {
-          INVALID_VALUE: sinon.stub().throws({message: 'invalid value'}),
-        },
-      };
-
-      validateConfig = require('../../../../../lib/util/validators/validate-config.js');
-      validateConfig._getOrigin = sinon.stub();
-    });
-
-    afterEach(function() {
-      delete global.SimulatoError;
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    describe('if the passed in config.reportFormat is not a validFormat', function() {
-      it('should call validateConfig._getOrigin once with \'reporter\', the passed in configOptions '
-        + 'and the passed in cliOptions', function() {
-        try {
-          validateConfig._validateWriter({reporFormat: 'badFormat'}, {key: 'configValue'}, {key: 'cliValue'});
-        } catch (error) {}
-
-        expect(validateConfig._getOrigin.args).to.deep.equal([[
-          'reportFormat', {key: 'configValue'}, {key: 'cliValue'},
-        ]]);
-      });
-
-      it('should throw simulato invalid value error', function() {
-        expect(validateConfig._validateWriter.bind(
-            {reportFormat: 'badFormat'}, {key: 'configValue'}, {key: 'cliValue'}
-        )).throw('invalid value');
-      });
-    });
-
-    describe('if the passed in config.reportFormat is a validFormat', function() {
-      it('should not call validateConfig._getOrigin', function() {
-        validateConfig._validateWriter({reportFormat: 'JSON'}, {}, {});
-
-        expect(validateConfig._getOrigin.callCount).to.equal(0);
       });
     });
   });

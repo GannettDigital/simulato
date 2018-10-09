@@ -25,7 +25,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', runnerEventDispatch);
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
     });
 
     afterEach(function() {
@@ -68,7 +68,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -111,7 +111,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -187,7 +187,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -230,7 +230,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -279,7 +279,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
       testReportHandler._handleTestReport = sinon.stub();
@@ -433,7 +433,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
       testReportHandler._handleTestReportSummary = sinon.stub();
@@ -516,7 +516,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });
@@ -574,7 +574,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
     });

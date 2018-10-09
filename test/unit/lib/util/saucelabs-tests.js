@@ -26,7 +26,7 @@ describe('lib/util/saucelabs', function() {
       process.env.SAUCE_ACCESS_KEY = 'sauceAccessKey',
 
       mockery.registerMock('sauce-connect-launcher', sauceConnectLauncher);
-      mockery.registerMock('./config-handler.js', configHandler);
+      mockery.registerMock('./config/config-handler.js', configHandler);
 
       saucelabs = require('../../../../lib/util/saucelabs.js');
     });
@@ -66,22 +66,22 @@ describe('lib/util/saucelabs', function() {
       expect(configHandler.get.callCount).to.equal(3);
     });
 
-    it('should call configHandler.get with sauceCapabilities.username', function() {
+    it('should call configHandler.get with driver.capabilities.username', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[0]).to.deep.equal(['sauceCapabilities.username']);
+      expect(configHandler.get.args[0]).to.deep.equal(['driver.capabilities.username']);
     });
 
-    it('should call configHandler.get with sauceCapabilities.accesskey', function() {
+    it('should call configHandler.get with driver.capabilities.accessKey', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[1]).to.deep.equal(['sauceCapabilities.accesskey']);
+      expect(configHandler.get.args[1]).to.deep.equal(['driver.capabilities.accessKey']);
     });
 
-    it('should call configHandler.get with tunnelIdentifier', function() {
+    it('should call configHandler.get with driver.capabilities.tunnel-identifier', function() {
       saucelabs.connect(callback);
 
-      expect(configHandler.get.args[2]).to.deep.equal(['tunnelIdentifier']);
+      expect(configHandler.get.args[2]).to.deep.equal(['driver.capabilities.tunnel-identifier']);
     });
 
     it('should call sauceConnectLauncher with an object as the first argument containing '
@@ -202,7 +202,7 @@ describe('lib/util/saucelabs', function() {
       sinon.spy(console, 'log');
 
       mockery.registerMock('sauce-connect-launcher', {});
-      mockery.registerMock('./config-handler.js', {});
+      mockery.registerMock('./config/config-handler.js', {});
 
       saucelabs = require('../../../../lib/util/saucelabs.js');
       saucelabs._sauceConnectProcess = {

@@ -27,7 +27,7 @@ This section details the different commands used in the CLI. All passed in CLI o
         * Example: `-r basic`
     * `-s`, `--saucelabs`
         * Flag for running tests in saucelabs. A sauce tunnel will be started
-        * Must have `SAUCE_USERNAME` AND `SAUCE_ACCESS_KEY` specified
+        * More information about using saucelabs can be found [here](/simulato/documentation/configuration-file/#saucelabs)
         * Example: `-s`
     * `-p`, `--parallelism`
         *  Amount of tests to run in parallel

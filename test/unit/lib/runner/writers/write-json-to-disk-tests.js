@@ -31,7 +31,7 @@ describe('lib/runner/test-runner/write-json-to-disk.js', function() {
 
       mockery.registerMock('fs', fs);
       mockery.registerMock('path', path);
-      mockery.registerMock('../../util/config-handler.js', configHandler);
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       now = Date.now();
       clock = sinon.useFakeTimers(now);
