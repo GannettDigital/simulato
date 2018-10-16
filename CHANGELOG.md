@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.7.0
+
 * Scott Gunther
   * Batch requests when getting element data
 
