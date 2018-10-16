@@ -2,6 +2,13 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Batch requests when getting element data
+
+* Tom Dale
+  * Rework config validation
+  * Allow passing options to driver
+
 ## 0.6.5
 
 * Subarna Mukhiyabeen
