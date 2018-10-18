@@ -19,7 +19,7 @@ describe('lib/util/config/schema.js', function() {
     let schema = require('../../../../../lib/util/config/schema.js');
 
     expect(schema).to.deep.equal({
-      type: 'object',
+      type: 'objec',
       required: [
         'testPath', 'componentPath', 'outputPath', 'reporter',
         'plannerAlgorithm', 'parallelism', 'testDelay', 'rerunFailedTests',
@@ -46,7 +46,11 @@ describe('lib/util/config/schema.js', function() {
         },
         reportFormat: {
           type: 'string',
-          enum: ['JSON', 'actionJSON'],
+          enum: ['JSON', 'actionJSON', 'JUnit'],
+        },
+        jUnitReportSpecificity: {
+          type: 'string',
+          enum: ['testReport', 'testRun', 'action'],
         },
         technique: {
           type: 'string',
