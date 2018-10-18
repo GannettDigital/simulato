@@ -19,7 +19,7 @@ describe('lib/util/config/schema.js', function() {
     let schema = require('../../../../../lib/util/config/schema.js');
 
     expect(schema).to.deep.equal({
-      type: 'objec',
+      type: 'object',
       required: [
         'testPath', 'componentPath', 'outputPath', 'reporter',
         'plannerAlgorithm', 'parallelism', 'testDelay', 'rerunFailedTests',
