@@ -41,8 +41,22 @@ This section documents utilization of the configuration file in place of CLI opt
 ### reportFormat
   * The format in which to write the test reports in
   * Default is `JSON`
-  * Values Allowed: `JSON`
+  * Values Allowed: `JSON`, `actionJSON`, `JUnit`
   * Example: `reportFormat: 'JSON'`
+
+### jUnitReportSpecificity
+  * The levels of detail
+  * Default value is `testReport`
+  * Values Allowed: `testReport`, `testRun`, `action`
+    * `testReport`
+      * Creates a test case for each test file (reruns excluded)
+      * Sets the time of the test as the sum of the time of all executions for that test file
+        * A test that was run 3 times, 2 reruns taking 3 seconds each and 1 passing taking 5 seoncds, would produce a single test case in the report with a time of 11 seconds
+    * `testRun`
+      * Creates a test case for each test run (reruns included)
+    * `action`
+      * Creates a test case for each action executed (reruns included)
+  * Example: `jUnitReportSpecificity: testReport`
 
 ### before
   * The path to a before script run before the test suite

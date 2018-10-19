@@ -39,7 +39,7 @@ This section details the different commands used in the CLI. All passed in CLI o
     * `-J`, `--reportFormat`
         * The format in which to write the test reports in
         * Default is `JSON`
-        * Values Allowed: `JSON`
+        * Values Allowed: `JSON`, `actionJSON`, `JUnit`
         * Example: `-J JSON`
     * `-b`, `--before`
         * The path to a before script run before the test suite

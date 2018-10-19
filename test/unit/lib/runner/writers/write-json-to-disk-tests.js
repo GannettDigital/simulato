@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/runner/test-runner/write-json-to-disk.js', function() {
+describe('lib/runner/writers/write-json-to-disk.js', function() {
   describe('writeReport', function() {
     let fs;
     let path;
