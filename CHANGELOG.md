@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Scott Gunther
+  * Add JUnit xml report
+
 ## 0.7.0
 
 * Scott Gunther

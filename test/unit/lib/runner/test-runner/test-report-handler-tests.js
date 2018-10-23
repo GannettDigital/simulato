@@ -670,6 +670,23 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
           ]);
         });
       });
+
+      describe('if configHandler.get(\'reportFormat\') returns \'JUnit\'', function() {
+        it('should call testReportHandler.emit with the event \'testReportHandler.testReportSummaryReadyToWrite\'' +
+          ' \'JUnit\', and the report', function() {
+          configHandler.get.returns('JUnit');
+
+          testReportHandler._handleTestReportSummary();
+
+          expect(testReportHandler.emit.args).to.deep.equal([
+            [
+              'testReportHandler.testReportSummaryReadyToWrite',
+              'JUnit',
+              testReportHandler._report,
+            ],
+          ]);
+        });
+      });
     });
   });
 });

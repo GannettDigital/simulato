@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "npm run unit-test",
-    "unit-test": "mocha --recursive test/unit",
-    "coverage": "istanbul cover --include-all-sources -x **/docs/** ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R spec",
+    "unit-test": "mocha --recursive test/unit -R min",
+    "coverage": "istanbul cover --include-all-sources -x **/docs/** ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R min",
     "generate-acceptance-tests": "node index.js generate -f test/acceptance/config.js",
     "acceptance-tests": "node index.js run -f test/acceptance/config.js",
     "start-test-site": "npm explore simulato-test-site -- npm start",
@@ -37,7 +37,8 @@
     "sauce-connect-launcher": "^1.2.4",
     "saucelabs": "^1.5.0",
     "selenium-webdriver": "^3.6.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "xmlbuilder": "^10.1.0"
   },
   "devDependencies": {
     "eslint": "^5.7.0",

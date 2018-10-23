@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/runner/test-runner/action-json-writer.js', function() {
+describe('lib/runner/writers/action-json-writer.js', function() {
   describe('write', function() {
     let actionJsonWriter;
     let configHandler;

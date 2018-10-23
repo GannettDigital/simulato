@@ -46,7 +46,11 @@ describe('lib/util/config/schema.js', function() {
         },
         reportFormat: {
           type: 'string',
-          enum: ['JSON', 'actionJSON'],
+          enum: ['JSON', 'actionJSON', 'JUnit'],
+        },
+        jUnitReportSpecificity: {
+          type: 'string',
+          enum: ['testReport', 'testRun', 'action'],
         },
         technique: {
           type: 'string',
