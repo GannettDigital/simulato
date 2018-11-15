@@ -44,7 +44,7 @@ describe('lib/planner/test-planner.js', function() {
     });
   });
 
-  describe('generateTests', function() {
+  describe.only('generateTests', function() {
     let Emitter;
     let testPlanner;
     let plannerEventDispatch;
