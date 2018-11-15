@@ -72,9 +72,15 @@ module.exports = {
           ];
         },
         perform(fakeParam, callback) {
-          driver.findElement(By.id(this.options.newsArticleId))
-              .click()
-              .then(callback, callback);
+          driver.wait(() => {
+            return driver.findElement(By.id(this.options.newsArticleId))
+                .click()
+                .then(() => true)
+                .catch(() => false);
+          }, 3000)
+              .then(function() {
+                callback();
+              }, callback);
         },
         effects(fakeParam, expectedState, dataStore) {
           expectedState.stash();

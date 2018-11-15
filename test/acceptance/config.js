@@ -7,5 +7,5 @@ module.exports = {
   outputPath: './test/acceptance/tests',
   plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
   plannerTestLengtoh: 20,
-  rerunFailedTests: 1,
+  rerunFailedTests: 0,
 };
