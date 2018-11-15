@@ -5,7 +5,7 @@
 global.SimulatoError = require('./lib/errors');
 const program = require('commander');
 const packageJSON = require('./package.json');
-const configHandler = require('./lib/util/config-handler.js');
+const configHandler = require('./lib/util/config/config-handler.js');
 const initializeEventDispatchers = require('./lib/util/initialize-event-dispatchers');
 initializeEventDispatchers();
 
@@ -22,10 +22,10 @@ program
     .option('-J, --reportFormat <type>', 'The format in which to write the test reports in')
     .option('-b, --before <path>', 'The path to the before script')
     .option('-f, --configFile <path>', 'The path to the config file')
-    .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times')
-    .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests')
+    .option('-d, --testDelay <milliseconds>', 'The time in milliseconds to stagger test start times', Number.parseInt)
+    .option('-F, --rerunFailedTests <int>', 'The number of times to rerun failed tests', Number.parseInt)
     .option('-D, --debug', 'A flag to turn on debugging when spawning child processes')
-    .option('-P, --debugPort <int>', 'Starting port for debugging when spawning child processes')
+    .option('-P, --debugPort <int>', 'Starting port for debugging when spawning child processes', Number.parseInt)
     .action(configHandler.createConfig);
 
 program

@@ -16,8 +16,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -37,10 +37,10 @@ describe('lib/util/component-handler.js', function() {
       componentHandler = require('../../../../lib/util/component-handler.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            componentHandler,
-            globalEventDispatch,
-          ],
+        [
+          componentHandler,
+          globalEventDispatch,
+        ],
       ]);
     });
 
@@ -52,7 +52,7 @@ describe('lib/util/component-handler.js', function() {
 
     it('should call componentHandler.on with the event \'componentHandler.configured\' and the '
       + 'function componentHandler._loadComponents', function() {
-        componentHandler = require('../../../../lib/util/component-handler.js');
+      componentHandler = require('../../../../lib/util/component-handler.js');
 
       expect(componentHandler.on.args[0]).to.deep.equal([
         'componentHandler.configured',
@@ -72,8 +72,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -128,8 +128,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -178,8 +178,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -248,8 +248,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');
@@ -321,8 +321,8 @@ describe('lib/util/component-handler.js', function() {
 
       Emitter = {
         mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
         },
       };
       sinon.spy(Emitter, 'mixIn');

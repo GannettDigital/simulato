@@ -3,6 +3,42 @@
 ## Pending Version
 
 * Scott Gunther
+  * Add JUnit xml report
+
+## 0.7.0
+
+* Scott Gunther
+  * Batch requests when getting element data
+
+* Tom Dale
+  * Rework config validation
+  * Allow passing options to driver
+
+## 0.6.5
+
+* Subarna Mukhiyabeen
+  * Added a custom writer that can generate action reports for QASymphony
+  * Added unit tests for action-json-writer and updates 
+  * Updated unit tests for report-handler.js and index.js
+
+## 0.6.4
+
+* Zach Knox
+  * Revamp documentation website design and structure
+  * Update npmignore to not include docs
+
+## 0.6.3
+
+* Scott Gunther
+  * Fix child process uncaught exception loop
+
+## 0.6.2
+
+* Tom Dale
+  * Added checked property to get element data
+  * Added tutorial, best practices, and more documentation
+
+* Scott Gunther
   * Added debug flag to generate command
   * Planner prints progress after finidng each action when debug flag is set
 

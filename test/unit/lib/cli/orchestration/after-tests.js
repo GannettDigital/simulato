@@ -15,7 +15,7 @@ describe('lib/cli/orchestration/after.js', function() {
     mockery.registerAllowable('../../../../../lib/cli/orchestration/after.js');
 
     Saucelabs = {
-        close: sinon.stub(),
+      close: sinon.stub(),
     };
 
     concurrent = sinon.stub();
@@ -28,7 +28,7 @@ describe('lib/cli/orchestration/after.js', function() {
 
     mockery.registerMock('palinode', {concurrent});
     mockery.registerMock('../../util/saucelabs.js', Saucelabs);
-    mockery.registerMock('../../util/config-handler.js', configHandler);
+    mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
     after = require('../../../../../lib/cli/orchestration/after.js');
   });
@@ -41,13 +41,13 @@ describe('lib/cli/orchestration/after.js', function() {
     mockery.disable();
   });
 
-  it('should call configHandler.get once with \'saucelabs\'', function() {
+  it('should call configHandler.get once with \'driver.saucelabs\'', function() {
     after();
 
-    expect(configHandler.get.args).to.deep.equal([['saucelabs']]);
+    expect(configHandler.get.args).to.deep.equal([['driver.saucelabs']]);
   });
 
-  describe('when config.get(\'saucelabs\') is truthy', function() {
+  describe('when config.get(\'driver.saucelabs\') is truthy', function() {
     it('should call concurrent once', function() {
       configHandler.get.returns(true);
 

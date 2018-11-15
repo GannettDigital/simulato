@@ -1,0 +1,10 @@
+<p>{% assign pages = site.pages | sort:"weight"  %}
+    {% for p in pages %}
+    {% if p.series == page.series %}
+    {% assign nextTopic = page.weight | plus: "1"  %}
+    {% if p.weight == nextTopic  %}
+    <a href="{{ p.permalink | prepend: site.baseurl }}"><button type="button" class="btn btn-primary">Next: {{p.title}}</button></a>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+</p>

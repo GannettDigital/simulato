@@ -4,19 +4,19 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/errors/config/invalid-property.js', function() {
+describe('lib/errors/config/required-property.js', function() {
   let ConfigError;
-  let invalidProperty;
+  let requiredProperty;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
-    mockery.registerAllowable('../../../../../lib/errors/config/invalid-property.js');
+    mockery.registerAllowable('../../../../../lib/errors/config/required-property.js');
 
     ConfigError = sinon.stub();
 
     mockery.registerMock('./config-error.js', ConfigError);
 
-    invalidProperty = require('../../../../../lib/errors/config/invalid-property.js');
+    requiredProperty = require('../../../../../lib/errors/config/required-property.js');
   });
 
   afterEach(function() {
@@ -26,18 +26,18 @@ describe('lib/errors/config/invalid-property.js', function() {
   });
 
   describe('on execution of the required file', function() {
-    it('should call new ConfigError with \'INVALID_PROPERTY\', and passed in message', function() {
-      invalidProperty('ERROR_MESSAGE');
+    it('should call new ConfigError with \'REQUIRED_PROPERTY\', and passed in message', function() {
+      requiredProperty('ERROR_MESSAGE');
 
       expect(ConfigError.args).to.deep.equal([
-        ['INVALID_PROPERTY', 'ERROR_MESSAGE'],
+        ['REQUIRED_PROPERTY', 'ERROR_MESSAGE'],
       ]);
     });
 
     it('should return new ConfigError', function() {
       let result;
 
-      result = invalidProperty('ERROR_MESSAGE');
+      result = requiredProperty('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ConfigError);
     });

@@ -6,7 +6,7 @@ const expect = require('chai').expect;
 
 describe('lib/util/get-element-data.js', function() {
   let getElementData;
-  let getElementDataFunctions;
+  let componentsElements;
   let callback;
   let element1;
   let element2;
@@ -32,6 +32,10 @@ describe('lib/util/get-element-data.js', function() {
         value: 'someQuerySelector',
       },
     };
+    componentsElements = {
+      component1: [element1],
+      component2: [element2],
+    };
 
     global.document = {
       getElementsByTagName: sinon.stub().returns(['element1', 'element2']),
@@ -50,7 +54,6 @@ describe('lib/util/get-element-data.js', function() {
 
     getElementData =
       require('../../../../lib/util/get-element-data.js');
-    getElementDataFunctions = getElementData([], callback);
   });
 
   afterEach(function() {
@@ -62,23 +65,30 @@ describe('lib/util/get-element-data.js', function() {
     mockery.disable();
   });
 
-  it('should call the callback function', function() {
-    getElementData([element2], callback);
+  describe(`when two components' elements are passed in`, function() {
+    it('should call the callback function once with two components element data', function() {
+      getElementData(componentsElements, callback);
 
-    expect(callback.callCount).to.equal(2);
+      expect(callback.args).to.deep.equal([[
+        {
+          component1: {},
+          component2: {},
+        },
+      ]]);
+    });
   });
 
-  it('should call the callback function with a function as the parameter', function() {
-    getElementData([element2], callback);
+  it('should call the callback function with an empty object if componentsElements is empty', function() {
+    getElementData([], callback);
 
-    expect(callback.args[1][0]).to.be.a('object');
+    expect(callback.args).to.deep.equal([[{}]]);
   });
 
-  describe('if the callback catches an error', function() {
+  describe('if getElementData throws an error', function() {
     it('should call the callback with an error', function() {
-      getElementData([{}], callback);
+      getElementData(['asdf'], callback);
 
-      expect(callback.args[1][0]).to.be.an('error');
+      expect(callback.args[0][0]).to.be.an('error');
     });
   });
 
@@ -87,6 +97,7 @@ describe('lib/util/get-element-data.js', function() {
       describe('for each element in the passed in elementsToFind', function() {
         describe('if the the element\'s selector type is querySelector', function() {
           it('should call document.querySelector with that elements selector value', function() {
+            let getElementDataFunctions = getElementData([], callback);
             document.querySelector.returns('someElement');
             getElementDataFunctions.getElementInfo = sinon.stub();
 
@@ -98,6 +109,7 @@ describe('lib/util/get-element-data.js', function() {
 
         describe('if the the element\'s selector type is querySelectorAll', function() {
           it('should call document.querySelectorAll with that elements selector value', function() {
+            let getElementDataFunctions = getElementData([], callback);
             document.querySelectorAll.returns(['someElement1', 'someElement2']);
             getElementDataFunctions.getElementInfo = sinon.stub();
 
@@ -115,6 +127,7 @@ describe('lib/util/get-element-data.js', function() {
 
         describe('if the the element\'s selector type is getElementById', function() {
           it('should call document.getElementById with that elements selector value', function() {
+            let getElementDataFunctions = getElementData([], callback);
             document.getElementById.returns('someElement1');
             getElementDataFunctions.getElementInfo = sinon.stub();
 
@@ -132,6 +145,7 @@ describe('lib/util/get-element-data.js', function() {
 
         describe('if the the element\'s selector type is getElementsByTagName', function() {
           it('should call document.getElementsByTagName with that elements selector value', function() {
+            let getElementDataFunctions = getElementData([], callback);
             document.getElementsByTagName.returns(['someElement1', 'someElement2']);
             getElementDataFunctions.getElementInfo = sinon.stub();
 
@@ -149,6 +163,7 @@ describe('lib/util/get-element-data.js', function() {
 
         describe('if the the element\'s selector type is getElementsByClassName', function() {
           it('should call document.getElementsByClassName with that elements selector value', function() {
+            let getElementDataFunctions = getElementData([], callback);
             document.getElementsByClassName.returns(['someElement1', 'someElement2']);
             getElementDataFunctions.getElementInfo = sinon.stub();
 
@@ -166,20 +181,22 @@ describe('lib/util/get-element-data.js', function() {
 
         describe('if the the element\'s selector type is NOT valid', function() {
           it('should throw an error stating invalid selector.type', function() {
+            let getElementDataFunctions = getElementData([], callback);
             getElementDataFunctions.getElementInfo = sinon.stub();
             getElementDataFunctions.findElement = sinon.stub().returns('anElement');
 
             expect(getElementDataFunctions.getElementData.bind(
-              null,
-              [{name: 'badElement', selector: {type: 'badType'}}]
+                null,
+                [{name: 'badElement', selector: {type: 'badType'}}]
             )).to.throw(
-              'Invalid selector.type for element \'badElement\' must be '
+                'Invalid selector.type for element \'badElement\' must be '
               + 'querySelector, querySelectorAll, getElementById, getElementsByTagName, or getElementsByClassName'
             );
           });
         });
 
         it('should call getElementInfo with the passing in the element found', function() {
+          let getElementDataFunctions = getElementData([], callback);
           document.querySelector.returns('someElement');
           document.getElementById.returns('anElement');
           getElementDataFunctions.getElementInfo = sinon.stub();
@@ -195,6 +212,7 @@ describe('lib/util/get-element-data.js', function() {
 
       it('should return an object with all the found element data', function() {
         let data;
+        let getElementDataFunctions = getElementData([], callback);
         document.querySelector.returns('someElement');
         document.getElementById.returns('anElement');
         getElementDataFunctions.getElementInfo = sinon.stub().returns('elementData');
@@ -214,6 +232,7 @@ describe('lib/util/get-element-data.js', function() {
           let element = {
             attributes: ['some', 'attributes'],
           };
+          let getElementDataFunctions = getElementData([], callback);
           getElementDataFunctions.extractNameAndValue = sinon.stub();
           getElementDataFunctions.isDisplayed = sinon.stub();
 
@@ -226,6 +245,7 @@ describe('lib/util/get-element-data.js', function() {
           let element = {
             attributes: ['some', 'attributes'],
           };
+          let getElementDataFunctions = getElementData([], callback);
           getElementDataFunctions.extractNameAndValue = sinon.stub();
           getElementDataFunctions.isDisplayed = sinon.stub();
 
@@ -244,7 +264,7 @@ describe('lib/util/get-element-data.js', function() {
             hidden: false,
           };
           let returnedData;
-
+          let getElementDataFunctions = getElementData([], callback);
           getElementDataFunctions.extractNameAndValue = sinon.stub().returns([{attr1: 'attribute1'}]);
           getElementDataFunctions.isDisplayed = sinon.stub().returns(true);
 
@@ -258,6 +278,7 @@ describe('lib/util/get-element-data.js', function() {
             innerText: 'someInnerText',
             hidden: false,
             value: undefined,
+            checked: undefined,
             webElement: element,
             isDisplayed: true,
           });
@@ -267,6 +288,7 @@ describe('lib/util/get-element-data.js', function() {
       describe('if there is an array with 0 elements passed in', function() {
         it('should return an empty array', function() {
           let elements = [];
+          let getElementDataFunctions = getElementData([], callback);
           getElementDataFunctions.extractNameAndValue = sinon.stub();
           getElementDataFunctions.isDisplayed = sinon.stub();
 
@@ -284,6 +306,7 @@ describe('lib/util/get-element-data.js', function() {
             }, {
               attributes: ['some', 'other', 'attributes'],
             }];
+            let getElementDataFunctions = getElementData([], callback);
             getElementDataFunctions.extractNameAndValue = sinon.stub();
             getElementDataFunctions.isDisplayed = sinon.stub();
 
@@ -301,6 +324,7 @@ describe('lib/util/get-element-data.js', function() {
             }, {
               attributes: ['some', 'other', 'attributes'],
             }];
+            let getElementDataFunctions = getElementData([], callback);
             getElementDataFunctions.extractNameAndValue = sinon.stub();
             getElementDataFunctions.isDisplayed = sinon.stub();
 
@@ -326,7 +350,7 @@ describe('lib/util/get-element-data.js', function() {
               hidden: false,
             }];
             let returnedData;
-
+            let getElementDataFunctions = getElementData([], callback);
             getElementDataFunctions.extractNameAndValue = sinon.stub();
             getElementDataFunctions.extractNameAndValue.onCall(0).returns([{attr1: 'attribute1'}]);
             getElementDataFunctions.extractNameAndValue.onCall(1).returns([{attr2: 'attribute2'}]);
@@ -342,6 +366,7 @@ describe('lib/util/get-element-data.js', function() {
               innerText: 'someInnerText',
               hidden: false,
               value: undefined,
+              checked: undefined,
               webElement: elements[0],
               isDisplayed: true,
             }, {
@@ -352,6 +377,7 @@ describe('lib/util/get-element-data.js', function() {
               innerText: 'someInnerText2',
               hidden: false,
               value: undefined,
+              checked: undefined,
               webElement: elements[1],
               isDisplayed: true,
             }]);
@@ -374,6 +400,7 @@ describe('lib/util/get-element-data.js', function() {
             },
           ];
           let returnData;
+          let getElementDataFunctions = getElementData([], callback);
 
           returnData = getElementDataFunctions.extractNameAndValue(attributes);
 
@@ -388,14 +415,17 @@ describe('lib/util/get-element-data.js', function() {
     describe('on call of isDisplayed', function() {
       describe('if the passed in element is not an instanceOf Element', function() {
         it('should throw an error', function() {
+          let getElementDataFunctions = getElementData([], callback);
+
           expect(getElementDataFunctions.isDisplayed.bind({})).to.throw(
-            'elem is not an element'
+              'elem is not an element'
           );
         });
       });
 
       it('should call getComputedStyle once passing in the passed in element', function() {
         let element = new Element('element1');
+        let getElementDataFunctions = getElementData([], callback);
         getComputedStyle.returns({});
 
         getElementDataFunctions.isDisplayed(element);
@@ -407,6 +437,7 @@ describe('lib/util/get-element-data.js', function() {
         describe('if style.display is \'none\'', function() {
           it('should return false', function() {
             let element = new Element('element1');
+            let getElementDataFunctions = getElementData([], callback);
             getComputedStyle.returns({display: 'none'});
             let returnValue;
 
@@ -419,6 +450,7 @@ describe('lib/util/get-element-data.js', function() {
         describe('if style.visibility does not equal \'visible\'', function() {
           it('should return false', function() {
             let element = new Element('element1');
+            let getElementDataFunctions = getElementData([], callback);
             getComputedStyle.returns({visibility: 'notVisable'});
             let returnValue;
 
@@ -431,6 +463,7 @@ describe('lib/util/get-element-data.js', function() {
         describe('if style.opacity is less than 0.1', function() {
           it('should return false', function() {
             let element = new Element('element1');
+            let getElementDataFunctions = getElementData([], callback);
             getComputedStyle.returns({visibility: 'visible', opacity: 0.01});
             let returnValue;
 
@@ -442,6 +475,7 @@ describe('lib/util/get-element-data.js', function() {
 
         it('should call the passed in elements getBoundingClientRect function twice', function() {
           let element = new Element('element1');
+          let getElementDataFunctions = getElementData([], callback);
           getComputedStyle.returns({visibility: 'visible', opacity: 1});
 
           getElementDataFunctions.isDisplayed(element);
@@ -452,6 +486,7 @@ describe('lib/util/get-element-data.js', function() {
         describe('if the passed in elements offset width and height plus its height and width is 0', function() {
           it('should return false', function() {
             let element = new Element('element1');
+            let getElementDataFunctions = getElementData([], callback);
             element.offsetWidth = -10;
             element.offsetHeight = -10;
             getComputedStyle.returns({visibility: 'visible', opacity: 1});
@@ -465,6 +500,7 @@ describe('lib/util/get-element-data.js', function() {
 
         it('should return true if all the isDisplayed criteria passes', function() {
           let element = new Element('element1');
+          let getElementDataFunctions = getElementData([], callback);
           getComputedStyle.returns({visibility: 'visible', opacity: 1});
           let returnData;
 

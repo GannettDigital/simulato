@@ -5,85 +5,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/util/page-state-handler.js', function() {
-  describe('on file being required', function() {
-    let pageStateHandler;
-    let Emitter;
-    let globalEventDispatch;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('./emitter.js', Emitter);
-      mockery.registerMock('lodash', {});
-      mockery.registerMock('./get-element-data.js', {});
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
-    });
-
-    afterEach(function() {
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    it('should call Emitter.mixIn with pageStateHandler and globalEventDispatch', function() {
-      pageStateHandler = require('../../../../lib/util/page-state-handler.js');
-
-      expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            pageStateHandler,
-            globalEventDispatch,
-          ],
-      ]);
-    });
-
-    it('should call pageStateHandler.on 3 times', function() {
-      pageStateHandler = require('../../../../lib/util/page-state-handler.js');
-
-      expect(pageStateHandler.on.callCount).to.equal(3);
-    });
-
-    it('should call pageStateHandler.on with the event \'pageStateHandler.componentRetrieved\' and the '
-      + 'function pageStateHandler._getComponentState', function() {
-      pageStateHandler = require('../../../../lib/util/page-state-handler.js');
-
-      expect(pageStateHandler.on.args[0]).to.deep.equal([
-        'pageStateHandler.componentRetrieved',
-        pageStateHandler._getComponentState,
-      ]);
-    });
-
-    it('should call pageStateHandler.on with the event \'pageStateHandler.componentDataReceived\' and the '
-      + 'function pageStateHandler._aggregatePageState', function() {
-      pageStateHandler = require('../../../../lib/util/page-state-handler.js');
-
-      expect(pageStateHandler.on.args[1]).to.deep.equal([
-        'pageStateHandler.componentDataReceived',
-        pageStateHandler._aggregatePageState,
-      ]);
-    });
-
-    it('should call pageStateHandler.on with the event \'pageStateHandler.createComponentModel\' and the '
-      + 'function pageStateHandler._createComponentModel', function() {
-      pageStateHandler = require('../../../../lib/util/page-state-handler.js');
-
-      expect(pageStateHandler.on.args[2]).to.deep.equal([
-        'pageStateHandler.createComponentModel',
-        pageStateHandler._createComponentModel,
-      ]);
-    });
-  });
-
   describe('getPageState', function() {
-    let Emitter;
     let pageStateHandler;
     let callback;
 
@@ -91,22 +13,14 @@ describe('lib/util/page-state-handler.js', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
       callback = sinon.spy();
 
-      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', {});
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
+
+      pageStateHandler._getComponentsStates = sinon.stub();
     });
 
     afterEach(function() {
@@ -125,98 +39,101 @@ describe('lib/util/page-state-handler.js', function() {
       });
     });
 
-    describe('for each component in the components map', function() {
-      it('should call pageStateHanlder.emit with the event \'pageStateHandler.componentRetrieved\''
-        + 'the component, and the pageStateData object', function() {
-        let components = new Map();
-        components.set('key1', 'component1');
-        components.set('key2', 'component2');
-        pageStateHandler.getPageState(components, callback);
+    it('should call pageStateHanlder._getComponentsStates with the component, and the passed in callback', function() {
+      let components = new Map();
+      components.set('key1', 'component1');
+      components.set('key2', 'component2');
 
-        expect(pageStateHandler.emit.args).to.deep.equal([
-          ['pageStateHandler.componentRetrieved', 'component1', {pageModel: {}, length: 2, callback}],
-          ['pageStateHandler.componentRetrieved', 'component2', {pageModel: {}, length: 2, callback}],
-        ]);
-      });
+      pageStateHandler.getPageState(components, callback);
+
+      expect(pageStateHandler._getComponentsStates.args).to.deep.equal([
+        [new Map([['key1', 'component1'], ['key2', 'component2']]), callback],
+      ]);
     });
   });
 
-  describe('_getComponentState', function() {
-    let Emitter;
+  describe('_getComponentsStates', function() {
     let pageStateHandler;
     let getElementData;
-    let component;
-    let pageStateData;
+    let callback;
+    let components;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
       getElementData = sinon.stub();
-
       global.driver = {
         executeAsyncScript: sinon.stub(),
         then: sinon.stub(),
       };
       driver.executeAsyncScript.returns(driver);
 
-      component = {
+      callback = sinon.stub();
+
+      components = new Map();
+      components.set('component1', {
         type: 'Component',
         name: 'component1',
         elements: ['someElement1', 'someElement2'],
         model: {someModel: 'ofThisComponent'},
-      };
+      });
+      components.set('component2', {
+        type: 'Component',
+        name: 'component2',
+        elements: ['someElement3', 'someElement4'],
+        model: {someModel: 'ofThisComponent'},
+      });
 
-      pageStateData = {
-        state1: 'someData',
-        state2: 'someOtherData',
-      };
+      sinon.spy(components, 'values');
 
-      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', getElementData);
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
+
+      pageStateHandler._aggregatePageState = sinon.stub();
     });
 
     afterEach(function() {
+      components.values.restore();
       delete global.driver;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should call driver.executeAsyncScript with getElementData and the passed in component.elements', function() {
-      pageStateHandler._getComponentState(component, pageStateData);
+    it('should call components.values once with no arguments', function() {
+      pageStateHandler._getComponentsStates(components, callback);
+
+      expect(components.values.args).to.deep.equal([[]]);
+    });
+
+    it('should call driver.executeAsyncScript with getElementData and the passed in components', function() {
+      let componenetElements = {
+        component1: ['someElement1', 'someElement2'],
+        component2: ['someElement3', 'someElement4'],
+      };
+
+      pageStateHandler._getComponentsStates(components, callback);
 
       expect(driver.executeAsyncScript.args).to.deep.equal([
-        [getElementData, component.elements],
+        [getElementData, componenetElements],
       ]);
     });
 
     describe(`when driver.executeAsyncScript's promise is resolved`, function() {
       it(`should call pageStateHandler.emit with the event 'pageStateHandler.componentDataReceived' `
       + `the component.model, the component, the returned data, and the passed in pageStateData`, function() {
-        driver.then.callsArgWith(0, {data: 'someData'});
+        driver.then.callsArgWith(0, {component1: 'someData', component2: 'someMoreData'});
 
-        pageStateHandler._getComponentState(component, pageStateData);
+        pageStateHandler._getComponentsStates(components, callback);
 
-        expect(pageStateHandler.emit.args).to.deep.equal([
+        expect(pageStateHandler._aggregatePageState.args).to.deep.equal([
           [
-            'pageStateHandler.componentDataReceived',
-            component.model,
-            component,
-            {data: 'someData'},
-            pageStateData,
+            components,
+            {component1: 'someData', component2: 'someMoreData'},
+            callback,
           ],
         ]);
       });
@@ -224,118 +141,102 @@ describe('lib/util/page-state-handler.js', function() {
   });
 
   describe('_aggregatePageState', function() {
-    let Emitter;
     let pageStateHandler;
-    let model;
-    let data;
-    let component;
-    let pageStateData;
+    let components;
+    let componentsData;
+    let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
-        },
+      componentsData = {
+        component1: {data: 'someData'},
+        component2: {data: 'someMoreData'},
       };
-      sinon.spy(Emitter, 'mixIn');
-
-      model = {
-        someModel: 'ofSomething',
-      };
-      data = {
-        data: 'someData',
-      };
-      component = {
+      components = new Map();
+      components.set('component1', {
+        type: 'Component',
         name: 'component1',
-      };
-      pageStateData = {
-        pageModel: {},
-        length: 1,
-        callback: sinon.stub(),
-      };
+        elements: ['someElement1', 'someElement2'],
+        model: {someModel: 'ofThisComponent'},
+      });
+      components.set('component2', {
+        type: 'Component',
+        name: 'component2',
+        elements: ['someElement3', 'someElement4'],
+        model: {someModel: 'ofThisComponent2'},
+      });
+      callback = sinon.stub();
+      sinon.spy(components, 'values');
 
-      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', {});
       mockery.registerMock('./get-element-data.js', {});
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
+
+      pageStateHandler._createComponentModel = sinon.stub();
     });
 
     afterEach(function() {
+      components.values.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it(`should call pageStateHandler.emit once`, function() {
-      pageStateHandler._aggregatePageState(model, component, data, pageStateData);
+    it(`should call components.values once with no arguments`, function() {
+      pageStateHandler._aggregatePageState(components, componentsData, callback);
 
-      expect(pageStateHandler.emit.callCount).to.equal(1);
+      expect(components.values.args).to.deep.equal([[]]);
     });
 
-    it(`should call pageStateHandler.emit with the event 'pageStateHandler.createComponentModel' `
-      + `the passed in model, data, as first 3 parameters`, function() {
-      pageStateHandler._aggregatePageState(model, component, data, pageStateData);
+    describe('when there are two components', function() {
+      it(`should call pageStateHandler._createComponentModel twice with the component's model and data`, function() {
+        pageStateHandler._aggregatePageState(components, componentsData, callback);
 
-      expect(pageStateHandler.emit.args[0].splice(0, 3)).to.deep.equal([
-        'pageStateHandler.createComponentModel', model, data,
-      ]);
-    });
-
-    it(`should call pageStateHandler.emit a callback function as the last parameter`, function() {
-      pageStateHandler._aggregatePageState(model, component, data, pageStateData);
-
-      expect(pageStateHandler.emit.args[0].splice(3, 1)[0]).to.be.a('function');
-    });
-
-    describe('when the events callback is called', function() {
-      it('should set pageStateData.pageModel[component.name] to the returned model', function() {
-        pageStateHandler.emit.callsArgWith(3, {model: 'someModel'});
-
-        pageStateHandler._aggregatePageState(model, component, data, pageStateData);
-
-        expect(pageStateData.pageModel[component.name]).to.deep.equal({model: 'someModel'});
-      });
-    });
-
-    describe('when the number of keys in pageModel is equal to the number of components', function() {
-      it('should call pageStateData.callback with null and the pageModel', function() {
-        pageStateHandler.emit.callsArgWith(3, {model: 'someModel'});
-
-        pageStateHandler._aggregatePageState(model, component, data, pageStateData);
-
-        expect(pageStateData.callback.args).to.deep.equal([
-          [null, {component1: {model: 'someModel'}}],
+        expect(pageStateHandler._createComponentModel.args).to.deep.equal([
+          [
+            {someModel: 'ofThisComponent'},
+            {data: 'someData'},
+          ],
+          [
+            {someModel: 'ofThisComponent2'},
+            {data: 'someMoreData'},
+          ],
         ]);
       });
+    });
+
+    it(`should call the callback function with null and the pageModel`, function() {
+      pageStateHandler._createComponentModel.onCall(0).returns('modelOfComponent1');
+      pageStateHandler._createComponentModel.onCall(1).returns('modelOfComponent2');
+
+      pageStateHandler._aggregatePageState(components, componentsData, callback);
+
+      expect(callback.args).to.deep.equal([
+        [
+          null,
+          {
+            component1: 'modelOfComponent1',
+            component2: 'modelOfComponent2',
+          },
+        ],
+      ]);
     });
   });
 
   describe('_createComponentModel', function() {
-    let Emitter;
     let pageStateHandler;
     let data;
     let _;
-    let callback;
     let modelTemplate;
     let expectedReturnData;
+    let createComponentModel;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/page-state-handler.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-            myObject.on = sinon.stub();
-            myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
 
       data = {
         data: 'someData',
@@ -353,15 +254,16 @@ describe('lib/util/page-state-handler.js', function() {
       expectedReturnData = {
         prop1: 'dataFromFunction',
         prop2: 'string',
+        prop3: undefined,
       };
-      callback = sinon.stub();
 
-      mockery.registerMock('./emitter.js', Emitter);
       mockery.registerMock('lodash', _);
       mockery.registerMock('./get-element-data.js', {});
-      mockery.registerMock('../global-event-dispatch/global-event-dispatch.js', {});
 
       pageStateHandler = require('../../../../lib/util/page-state-handler.js');
+
+      createComponentModel = pageStateHandler._createComponentModel;
+      pageStateHandler._createComponentModel = sinon.stub();
     });
 
     afterEach(function() {
@@ -373,15 +275,15 @@ describe('lib/util/page-state-handler.js', function() {
     describe('for each propertyName in the properties of the passed in modelTemplate', function() {
       describe('if the type of that propertyName\'s value is a function', function() {
         it('should call that function passing in the passed in data', function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
+          createComponentModel(modelTemplate, data);
 
           expect(modelTemplate.prop1.args).to.deep.equal([[data]]);
         });
 
         it('should set the returned functions value to the model under the property\'s name', function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
+          let result = createComponentModel(modelTemplate, data);
 
-          expect(callback.args).to.deep.equal([[expectedReturnData]]);
+          expect(result).to.deep.equal(expectedReturnData);
         });
 
         describe('if the function throws an error', function() {
@@ -389,58 +291,31 @@ describe('lib/util/page-state-handler.js', function() {
             modelTemplate.prop1.throws(new Error('error'));
             expectedReturnData.prop1 = undefined;
 
-            pageStateHandler._createComponentModel(modelTemplate, data, callback);
+            let result = createComponentModel(modelTemplate, data);
 
-            expect(callback.args).to.deep.equal([[expectedReturnData]]);
+            expect(result).to.deep.equal(expectedReturnData);
           });
         });
       });
 
       describe('if the type of that propertyName\'s value is a string', function() {
         it('should call _.get once with the passed in data and that properties value', function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
+          createComponentModel(modelTemplate, data);
 
           expect(_.get.args).to.deep.equal([[data, 'string']]);
-        });
-
-        it('should set the returned functions value to the model under the property\'s name', function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
-
-          expect(callback.args).to.deep.equal([[expectedReturnData]]);
         });
       });
 
       describe('if the type of that propertyName\'s value is a object', function() {
-        it(`should call pageStateHandler.emit once`, function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
+        it(`should call pageStateHandler._createComponentModel once with the property and data`, function() {
+          createComponentModel(modelTemplate, data);
 
-          expect(pageStateHandler.emit.callCount).to.equal(1);
-        });
-
-        it(`should call pageStateHandler.emit with the event 'pageStateHandler.createComponentModel' `
-          + `the propertie\'s value, data, as first 3 parameters`, function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
-
-          expect(pageStateHandler.emit.args[0].splice(0, 3)).to.deep.equal([
-            'pageStateHandler.createComponentModel', {data: 'propData'}, data,
+          expect(pageStateHandler._createComponentModel.args).to.deep.equal([
+            [
+              {data: 'propData'},
+              {data: 'someData'},
+            ],
           ]);
-        });
-
-        it(`should call pageStateHandler.emit a callback function as the last parameter`, function() {
-          pageStateHandler._createComponentModel(modelTemplate, data, callback);
-
-          expect(pageStateHandler.emit.args[0].splice(3, 1)[0]).to.be.a('function');
-        });
-
-        describe('when the events callback is called', function() {
-          it('should set the returned functions value to the model under the property\'s name', function() {
-            pageStateHandler.emit.callsArgWith(3, 'propData');
-            expectedReturnData.prop3 = 'propData';
-
-            pageStateHandler._createComponentModel(modelTemplate, data, callback);
-
-            expect(callback.args).to.deep.equal([[expectedReturnData]]);
-          });
         });
       });
     });
