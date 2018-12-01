@@ -518,9 +518,9 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
       expect(jUnitWriter._createRootTag.args).to.deep.equal([[report]]);
     });
 
-    describe('if there testRun.report.actions is not an array', function() {
+    describe('if the testRun.report.actions is not an array', function() {
       it('should not call testsuiteTag.ele', function() {
-        report.testReports[0].testRuns[0].report.actions = [];
+        report.testReports[0].testRuns[0].report.actions = 'Not an Array';
 
         jUnitWriter._createReportWithActions(report);
 

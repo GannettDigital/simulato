@@ -4,6 +4,7 @@
 
 * Scott Gunther
   * Add JUnit xml report
+  * Add first version of offline replanning algorithm
 
 ## 0.7.0
 
