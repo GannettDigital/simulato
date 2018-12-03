@@ -6,5 +6,6 @@ module.exports = {
   reportPath: './test/acceptance/tests',
   outputPath: './test/acceptance/tests',
   plannerAlgorithm: 'forwardStateSpaceSearchHeuristic',
+  plannerTestLength: 20,
   rerunFailedTests: 1,
 };

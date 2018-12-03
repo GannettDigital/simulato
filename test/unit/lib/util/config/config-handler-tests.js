@@ -673,7 +673,7 @@ describe('lib/util/config/config-handler.js', function() {
             mockery.registerAllowable(1);
             path.normalize.onCall(0).returns(1);
 
-            expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw('path must be a string');
+            expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw();
           });
         });
       });
