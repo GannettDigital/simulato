@@ -5,6 +5,47 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 
 describe('lib/planner/search-node.js', function() {
+  describe('on file require', function() {
+    let Emitter;
+    let plannerEventDispatch;
+    let searchNode;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../lib/planner/search-node.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+          myObject.emitAsync = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+      plannerEventDispatch = sinon.stub();
+
+      mockery.registerMock('lodash', {});
+      mockery.registerMock('../util/emitter.js', Emitter);
+      mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should Emitter.mixIn once with searchNode and plannerEventDispatch ' +
+            'as parameters', function() {
+      searchNode = require('../../../../lib/planner/search-node.js');
+
+      expect(Emitter.mixIn.args).to.deep.equal([
+        [
+          searchNode,
+          plannerEventDispatch,
+        ],
+      ]);
+    });
+  });
+
   describe('create', function() {
     let Emitter;
     let callback;

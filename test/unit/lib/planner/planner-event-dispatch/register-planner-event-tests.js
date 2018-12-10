@@ -10,11 +10,13 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
   let writePlansToDisk;
   let searchNode;
   let forwardStateSpaceSearch;
+  let countActions;
   let reduceToMinimumSetOfPlans;
   let possibleActions;
   let applyEffects;
   let startNodes;
   let registerPlannerEvents;
+  let offlineReplanning;
   let plannerEventDispatch;
 
   beforeEach(function() {
@@ -22,7 +24,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     mockery.registerAllowable('../../../../../lib/planner/planner-event-dispatch/register-planner-events.js');
 
     actionCoverage = {
-      calculate: sinon.stub(),
+      reportCoverage: sinon.stub(),
     };
     testPlanner = {
       generateTests: sinon.stub(),
@@ -30,9 +32,13 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     writePlansToDisk = sinon.stub();
     searchNode = {
       create: sinon.stub(),
+      clone: sinon.stub(),
     };
     forwardStateSpaceSearch = {
       createPlans: sinon.stub(),
+    };
+    countActions = {
+      calculate: sinon.stub(),
     };
     reduceToMinimumSetOfPlans = sinon.stub();
     possibleActions = {
@@ -41,6 +47,9 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     applyEffects = sinon.stub();
     startNodes = {
       get: sinon.stub(),
+    };
+    offlineReplanning = {
+      replan: sinon.stub(),
     };
     plannerEventDispatch = {
       on: sinon.stub(),
@@ -52,6 +61,8 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     mockery.registerMock('../write-plans-to-disk.js', writePlansToDisk);
     mockery.registerMock('../search-node.js', searchNode);
     mockery.registerMock('../search-algorithms/forward-state-space-search-heuristic.js', forwardStateSpaceSearch);
+    mockery.registerMock('../search-algorithms/offline-replanning.js', offlineReplanning);
+    mockery.registerMock('../count-actions.js', countActions);
     mockery.registerMock('../reduce-to-minimum-set-of-plans.js', reduceToMinimumSetOfPlans);
     mockery.registerMock('../possible-actions.js', possibleActions);
     mockery.registerMock('../apply-effects.js', applyEffects);
@@ -73,10 +84,10 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     expect(plannerEventDispatch.on.callCount).to.equal(7);
   });
 
-  it('should call plannerEventDispatch.runOn 3 times', function() {
+  it('should call plannerEventDispatch.runOn 5 times', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.runOn.callCount).to.equal(3);
+    expect(plannerEventDispatch.runOn.callCount).to.equal(5);
   });
 
   it('should call plannerEventDispatch.on with the event \'planner.generateConfigured\' ' +
@@ -109,42 +120,32 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     ]);
   });
 
-  it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' +
+  it('should call plannerEventDispatch.on with the event \'planner.planningFinished\' ' +
         'and writePlansToDisk as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
     expect(plannerEventDispatch.on.args[2]).to.deep.equal([
-      'testPlanner.planningFinished',
+      'planner.planningFinished',
       writePlansToDisk,
     ]);
   });
 
-  it('should call plannerEventDispatch.on with the event \'testPlanner.planningFinished\' ' +
-        'and  as parameter', function() {
+  it('should call plannerEventDispatch.runOn with the event \'planner.planningFinished\' ' +
+        'and actionCoverage.reportCoverage as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.on.args[3]).to.deep.equal([
-      'testPlanner.planningFinished',
-      actionCoverage.calculate,
+    expect(plannerEventDispatch.runOn.args[1]).to.deep.equal([
+      'planner.planningFinished',
+      actionCoverage.reportCoverage,
     ]);
   });
 
-  it('should call plannerEventDispatch.on with the event \'forwardStateSpaceSearch.cloneSearchNode\' ' +
-        'and searchNode.clone as parameter', function() {
-    registerPlannerEvents(plannerEventDispatch);
-
-    expect(plannerEventDispatch.on.args[4]).to.deep.equal([
-      'forwardStateSpaceSearch.cloneSearchNode',
-      searchNode.clone,
-    ]);
-  });
-
-  it('should call plannerEventDispatch.on with the event \'forwardStateSpaceSearch.applyEffects\' ' +
+  it('should call plannerEventDispatch.on with the event \'planner.applyEffects\' ' +
         'and applyEffects as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.on.args[5]).to.deep.equal([
-      'forwardStateSpaceSearch.applyEffects',
+    expect(plannerEventDispatch.on.args[3]).to.deep.equal([
+      'planner.applyEffects',
       applyEffects,
     ]);
   });
@@ -153,9 +154,19 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         'and startNodes.get as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.runOn.args[1]).to.deep.equal([
+    expect(plannerEventDispatch.runOn.args[2]).to.deep.equal([
       'startNodes.get',
       startNodes.get,
+    ]);
+  });
+
+  it('should call plannerEventDispatch.on with the event \'searchNode.clone\' ' +
+        'and searchNode.clone as parameter', function() {
+    registerPlannerEvents(plannerEventDispatch);
+
+    expect(plannerEventDispatch.on.args[4]).to.deep.equal([
+      'searchNode.clone',
+      searchNode.clone,
     ]);
   });
 
@@ -163,9 +174,29 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         'and searchNode.create as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.on.args[6]).to.deep.equal([
+    expect(plannerEventDispatch.on.args[5]).to.deep.equal([
       'searchNode.create',
       searchNode.create,
+    ]);
+  });
+
+  it('should call plannerEventDispatch.runOn with the event \'offlineReplanning.replan\' ' +
+        'and offlineReplanning.replan as parameter', function() {
+    registerPlannerEvents(plannerEventDispatch);
+
+    expect(plannerEventDispatch.runOn.args[3]).to.deep.equal([
+      'offlineReplanning.replan',
+      offlineReplanning.replan,
+    ]);
+  });
+
+  it('should call plannerEventDispatch.on with the event \'countActions.calculate\' ' +
+        'and countActions.calculate as parameter', function() {
+    registerPlannerEvents(plannerEventDispatch);
+
+    expect(plannerEventDispatch.on.args[6]).to.deep.equal([
+      'countActions.calculate',
+      countActions.calculate,
     ]);
   });
 
@@ -173,7 +204,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
         'and possibleActions.get as parameter', function() {
     registerPlannerEvents(plannerEventDispatch);
 
-    expect(plannerEventDispatch.runOn.args[2]).to.deep.equal([
+    expect(plannerEventDispatch.runOn.args[4]).to.deep.equal([
       'possibleActions.get',
       possibleActions.get,
     ]);

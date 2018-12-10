@@ -54,6 +54,7 @@ module.exports = {
       },
       closeButton: {
         displayed: 'closeButton.isDisplayed',
+        disabled: 'closeButton.disabled',
       },
       xCloseButton: {
         displayed: 'xCloseButton.isDisplayed',

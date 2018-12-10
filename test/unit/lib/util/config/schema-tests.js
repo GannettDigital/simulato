@@ -67,6 +67,9 @@ describe('lib/util/config/schema.js', function() {
         plannerAlgorithm: {
           type: 'string',
         },
+        plannerTestLength: {
+          type: 'integer',
+        },
         parallelism: {
           type: 'integer',
         },

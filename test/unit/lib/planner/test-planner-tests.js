@@ -23,6 +23,7 @@ describe('lib/planner/test-planner.js', function() {
       plannerEventDispatch = sinon.stub();
 
       mockery.registerMock('../util/emitter.js', Emitter);
+      mockery.registerMock('../util/config/config-handler.js', {});
       mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
     });
 
@@ -48,6 +49,7 @@ describe('lib/planner/test-planner.js', function() {
     let Emitter;
     let testPlanner;
     let plannerEventDispatch;
+    let config;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -60,8 +62,12 @@ describe('lib/planner/test-planner.js', function() {
       };
       sinon.spy(Emitter, 'mixIn');
       plannerEventDispatch = sinon.stub();
+      config = {
+        get: sinon.stub(),
+      };
 
       mockery.registerMock('../util/emitter.js', Emitter);
+      mockery.registerMock('../util/config/config-handler.js', config);
       mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
 
       testPlanner = require('../../../../lib/planner/test-planner.js');
@@ -113,7 +119,7 @@ describe('lib/planner/test-planner.js', function() {
         });
 
         describe('when the callback is called for testPlanner.emit with the event ' +
-                    '\'testPlanner.reduceToMinimumSetOfTestPlans\'', function() {
+          '\'testPlanner.reduceToMinimumSetOfTestPlans\'', function() {
           describe('if an error is passed in', function() {
             it('should throw the error', function() {
               testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
@@ -123,18 +129,51 @@ describe('lib/planner/test-planner.js', function() {
             });
           });
           describe('if an error is not passed in', function() {
-            it('call testPlanner.emit with the event \'testPlanner.planningFinished\', ' +
-                            'the finalPlans, and discoveredActions', function() {
+            it('should call config.get once with the string "plannerTestLength"', function() {
               testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
               testPlanner.emit.onCall(1).callsArgWith(2, null, 'theFinalPlans');
 
               testPlanner.generateTests();
 
-              expect(testPlanner.emit.args[2]).to.deep.equal([
-                'testPlanner.planningFinished',
-                'theFinalPlans',
-                'discoveredActions',
+              expect(config.get.args).to.deep.equal([
+                [
+                  'plannerTestLength',
+                ],
               ]);
+            });
+            describe('if testLength is a truthy value', function() {
+              it('should call testPlanner.emit with the event \'offlineReplanning.replan\', ' +
+                'the finalPlans, discoveredActions, and an object with the testLength', function() {
+                testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
+                testPlanner.emit.onCall(1).callsArgWith(2, null, 'theFinalPlans');
+                config.get.returns(5);
+
+                testPlanner.generateTests();
+
+                expect(testPlanner.emit.args[2]).to.deep.equal([
+                  'offlineReplanning.replan',
+                  'theFinalPlans',
+                  'discoveredActions',
+                  {
+                    testLength: 5,
+                  },
+                ]);
+              });
+            });
+            describe('if testLength is a  falsy value', function() {
+              it('should call testPlanner.emit with the event \'testPlanner.planningFinished\', ' +
+                'the finalPlans, and discoveredActions', function() {
+                testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
+                testPlanner.emit.onCall(1).callsArgWith(2, null, 'theFinalPlans');
+
+                testPlanner.generateTests();
+
+                expect(testPlanner.emit.args[2]).to.deep.equal([
+                  'planner.planningFinished',
+                  'theFinalPlans',
+                  'discoveredActions',
+                ]);
+              });
             });
           });
         });

@@ -88,6 +88,12 @@ This section documents utilization of the configuration file in place of CLI opt
   * Supported algorithms: `forwardStateSpaceSearchHeuristic`
   * Example: `algorithm: forwardStateSpaceSearchHeuristic`
 
+### plannerTestLength
+  * The maximum test length for a generated test
+  * Using this option will initiate a replanning step to ensure tests conform to this
+  * The replanning step will most likely greatly reduce the number of generated tests
+  * Example: `plannerTestLength: 75`
+
 ### debug
   * Adds node debugging flag to spawned child processes
   * Default is `false`
