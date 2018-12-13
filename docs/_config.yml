@@ -92,3 +92,8 @@ description: "Simulato is a tool that uses model based testing techniques to gen
 
 url: https://GannettDigital.github.io/
 baseurl: /simulato
+
+plugins:
+  - jekyll-seo-tag
+
+title: simulato
