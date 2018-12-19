@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/GannettDigital/simulato#readme",
   "dependencies": {
-    "ajv": "^6.6.1",
+    "ajv": "^6.6.2",
     "chai": "^4.1.2",
     "commander": "^2.18.0",
     "eslint-config-google": "^0.10.0",
@@ -41,7 +41,7 @@
     "xmlbuilder": "^10.1.1"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
+    "eslint": "^5.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
