@@ -464,6 +464,30 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             });
           });
 
+          describe('if the returned backtrackPlan is null and configHandler.get returns true', function() {
+            it('should call console.log with a message containing the recently added action', function() {
+              let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
+              offlineReplanning._satisfiedActions = new Set();
+              offlineReplanning._plans = ['aPlan'];
+              offlineReplanning._getAction.returns('NEXT_ACTION');
+              configHandler.get.returns(true);
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+
+              generator.next();
+              generator.next(next);
+              generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
+              generator.next(startNodes);
+              generator.next();
+              generator.next({applicableActions: ['MY_ACTION_3', 'MY_ACTION_4']});
+              generator.next(null);
+              generator.next();
+
+              expect(console.log.args[1]).to.deep.equal([
+                'Added the following action to the plan: NEXT_ACTION',
+              ]);
+            });
+          });
+
           describe('if the returned backtrackPlan is null and offlineReplanning._satisfiedActions does ' +
             'not have the action', function() {
             it('should call offlineReplanning.emitAsync next with the event "planner.applyEffects"', function() {
