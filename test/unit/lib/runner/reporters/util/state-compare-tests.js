@@ -212,7 +212,7 @@ describe('lib/runner/reporters/util/state-compare.js', function() {
 
       mockery.registerMock('lodash', _);
 
-      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js')
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -396,7 +396,8 @@ describe('lib/runner/reporters/util/state-compare.js', function() {
     });
 
     describe('if the passed in difference value is an array', function() {
-      it('should call ._handleDifferenceArrayValue with differenceValue, baseValue, and keyString as params', function() {
+      it('should call ._handleDifferenceArrayValue with ' +
+          'differenceValue, baseValue, and keyString as params', function() {
         let parentKey = 'key1';
         let differenceValue = ['element1', 'element2'];
         let baseValue = 'baseValue';
@@ -414,7 +415,8 @@ describe('lib/runner/reporters/util/state-compare.js', function() {
     });
 
     describe('if the passed in difference value is an object', function() {
-      it('should call ._handleDifferenceObjectValue differenceValue, baseValue, keyString, and parentKey as params', function() {
+      it('should call ._handleDifferenceObjectValue with ' +
+          'differenceValue, baseValue, keyString, and parentKey as params', function() {
         let parentKey = 'key1';
         let differenceValue = {key2: 'value2'};
         let baseValue = 'baseValue';
