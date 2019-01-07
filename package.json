@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "npm run unit-test",
-    "unit-test": "mocha --recursive test/unit -R min",
+    "unit-test": "mocha --recursive test/unit -R nyan",
     "coverage": "istanbul cover --include-all-sources -x **/docs/** ./node_modules/mocha/bin/_mocha -- --recursive test/unit -R min",
     "generate-acceptance-tests": "node index.js generate -f test/acceptance/config.js",
     "acceptance-tests": "node index.js run -f test/acceptance/config.js",

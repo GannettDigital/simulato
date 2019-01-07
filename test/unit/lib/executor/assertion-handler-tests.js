@@ -1143,14 +1143,18 @@ describe('lib/executor/assertion-handler.js', function() {
       mockery.disable();
     });
 
-    it('should call assertionHanlder.emit once with with the event \'assertionHandler.clone\'', function() {
+    it('should call assertionHandler.emit with the event \'assertionHandler.clone\'', function() {
       assertionHandler._cloneAndGetPreconditions(callback);
 
-      expect(assertionHandler.emit.args).to.deep.equal([
-        [
-          'assertionHandler.clone',
-        ],
+      expect(assertionHandler.emit.args[0]).to.deep.equal([
+        'assertionHandler.clone',
       ]);
+    });
+
+    it('should call assertionHanlder.emit twice', function() {
+      assertionHandler._cloneAndGetPreconditions(callback);
+
+      expect(assertionHandler.emit.callCount).to.equal(2);
     });
 
     it('should set assertionHandler._components to the result of the function call to ' +
@@ -1232,6 +1236,17 @@ describe('lib/executor/assertion-handler.js', function() {
     });
 
     describe('when component.actions.MY_ACTION.preconditions does not throw', function() {
+      it('should call assertionHandler.emit with the event \'assertionHandler.clone\'', function() {
+        component.actions.MY_ACTION.preconditions.returns([['isTrue', true]]);
+
+        assertionHandler._cloneAndGetPreconditions(callback);
+
+        expect(assertionHandler.emit.args[1]).to.deep.equal([
+          'assertionHandler.preconditionsCalculated',
+          [['isTrue', true]],
+        ]);
+      });
+
       it('should call the callback once with null and the result of the call to ' +
                 'component.actions.MY_ACTION.preconditions', function() {
         component.actions.MY_ACTION.preconditions.returns([['isTrue', true]]);

@@ -4,179 +4,17 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/executor/state-compare.js', function() {
-  describe('on file being required', function() {
-    let Emitter;
-    let stateCompare;
-    let executorEventDispatch;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
-      mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
-    });
-
-    afterEach(function() {
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    it('should call Emitter.mixIn with stateCompare and executorEventDispatch', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(Emitter.mixIn.args).to.deep.equal([
-        [
-          stateCompare,
-          executorEventDispatch,
-        ],
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.findDrifference and stateCompare._findDrifference', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[0]).to.deep.equal([
-        'stateCompare.findDrifference',
-        stateCompare._findDifference,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.readyToPrintKeys and stateCompare._printKeys', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[1]).to.deep.equal([
-        'stateCompare.readyToPrintKeys',
-        stateCompare._printKeys,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.keyReadyToPrint and stateCompare._printKey', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[2]).to.deep.equal([
-        'stateCompare.keyReadyToPrint',
-        stateCompare._printKey,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.differenceValueFoundAsArray'
-      + 'and stateCompare._handleDifferenceArrayValue', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[3]).to.deep.equal([
-        'stateCompare.differenceValueFoundAsArray',
-        stateCompare._handleDifferenceArrayValue,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.differenceValueFoundAsObject'
-      + 'and stateCompare._handleDifferenceObjectValue', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[4]).to.deep.equal([
-        'stateCompare.differenceValueFoundAsObject',
-        stateCompare._handleDifferenceObjectValue,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.childReadyForPrint and stateCompare._printChild', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[5]).to.deep.equal([
-        'stateCompare.childReadyForPrint',
-        stateCompare._printChild,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToStartPrint'
-      + 'and stateCompare._printStartOfArray', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[6]).to.deep.equal([
-        'stateCompare.arrayReadyToStartPrint',
-        stateCompare._printStartOfArray,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToPrint'
-      + 'and stateCompare._printArrayElements', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[7]).to.deep.equal([
-        'stateCompare.arrayReadyToPrint',
-        stateCompare._printArrayElements,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToEndPrint'
-      + 'and stateCompare._printEndOfArray', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[8]).to.deep.equal([
-        'stateCompare.arrayReadyToEndPrint',
-        stateCompare._printEndOfArray,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToStartPrint'
-      + 'and stateCompare._printStartOfObject', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[9]).to.deep.equal([
-        'stateCompare.objectReadyToStartPrint',
-        stateCompare._printStartOfObject,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToPrint'
-      + 'and stateCompare._printObjectKeyValues', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[10]).to.deep.equal([
-        'stateCompare.objectReadyToPrint',
-        stateCompare._printObjectKeyValues,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToEndPrint'
-      + 'and stateCompare._printEndOfObject', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[11]).to.deep.equal([
-        'stateCompare.objectReadyToEndPrint',
-        stateCompare._printEndOfObject,
-      ]);
-    });
-
-    it('should call stateCompare.on 12 times', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.callCount).to.equal(12);
-    });
-  });
-
+describe('lib/runner/reporters/util/state-compare.js', function() {
   describe('printDifference', function() {
-    let Emitter;
     let stateCompare;
     let samplePageState;
     let sampleExpectedState;
     let sampleDifference;
+    let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       samplePageState = {
         displayed: true,
@@ -206,21 +44,14 @@ describe('lib/executor/state-compare.js', function() {
         },
       };
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      callback = sinon.stub();
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
+      stateCompare._findDifference = sinon.stub();
+      stateCompare._printKeys = sinon.stub();
       stateCompare._printRed = sinon.stub();
       stateCompare._printGreen = sinon.stub();
       stateCompare._printRed.returns(`redText`);
@@ -233,12 +64,16 @@ describe('lib/executor/state-compare.js', function() {
       mockery.disable();
     });
 
-    it('should call stateCompare.emit with the event \'stateCompare.findDrifference\','
-      + 'pageState, expectedState, and callback function', function() {
-      stateCompare.printDifference(samplePageState, sampleExpectedState);
+    it('should call _findDifference once', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-      expect(stateCompare.emit.args[0].slice(0, 3)).to.deep.equal([
-        'stateCompare.findDrifference',
+      expect(stateCompare._findDifference.callCount).to.equal(1);
+    });
+
+    it('should call _findDifference with the passed in pageState and ExpectedState as first 2 params', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
+
+      expect(stateCompare._findDifference.args[0].splice(0, 2)).to.deep.equal([
         {
           displayed: true,
           component1: {
@@ -262,51 +97,48 @@ describe('lib/executor/state-compare.js', function() {
       ]);
     });
 
-    it('should call stateCompare.emit once', function() {
-      stateCompare.printDifference(samplePageState, sampleExpectedState);
+    it('should call _findDifference with a function as the last param', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-      expect(stateCompare.emit.callCount).to.deep.equal(1);
+      expect(stateCompare._findDifference.args[0].splice(2)[0]).to.be.a('function');
     });
 
-    describe('when the stateCompare.emit callback is called', function() {
-      it('should call printRed once with `-- Page State`', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+    describe('when the _findDifference callback is called', function() {
+      it('should call printRed once with `    Page State`', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
         expect(stateCompare._printRed.args).to.deep.equal([
-          ['-- Page State'],
+          ['    Page State'],
         ]);
       });
 
-      it('should call printGreen once with `++ Expected State`', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+      it('should call printGreen once with `    Expected State`', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
         expect(stateCompare._printGreen.args).to.deep.equal([
-          ['++ Expected State'],
+          ['    Expected State'],
         ]);
       });
 
       it('should set stateCompare._indentCount to 0 then get incremented to 1', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
         stateCompare._indentCount = 9;
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        expect(stateCompare._indentCount).to.equal(1);
+        expect(stateCompare._indentCount).to.equal(2);
       });
 
+      it('should call _printKeys once with difference, and expectedState', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-      it('should call stateCompare.emit with the event \'stateCompare.findDrifference\', '
-        + 'difference, and expectedState', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(stateCompare.emit.args[1]).to.deep.equal([
-          'stateCompare.readyToPrintKeys',
+        expect(stateCompare._printKeys.args).to.deep.equal([[
           {
             component2: {
               displayed: true,
@@ -322,27 +154,17 @@ describe('lib/executor/state-compare.js', function() {
               displayed: true,
             },
           },
-        ]);
+        ]]);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.differenceCreated\', '
-        + 'stateCompare._compareResult', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+      it('should call the passed in callback with stateCompare._compareResult', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        expect(stateCompare.emit.args[2]).to.deep.equal([
-          'stateCompare.differenceCreated',
-          '\nredText\ngreenText\n{\n}',
-        ]);
-      });
-
-      it('should call stateCompare.emit three times', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(stateCompare.emit.callCount).to.deep.equal(3);
+        expect(callback.args).to.deep.equal([[
+          '\nredText\ngreenText\n  {\n  }',
+        ]]);
       });
     });
   });
@@ -357,7 +179,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -401,7 +223,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -508,7 +330,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -528,7 +350,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -569,7 +391,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -587,7 +409,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printRed = sinon.stub();
@@ -733,7 +555,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -751,7 +573,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
@@ -910,7 +732,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -928,7 +750,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
@@ -1086,7 +908,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1104,7 +926,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
@@ -1288,7 +1110,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1302,7 +1124,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
@@ -1361,7 +1183,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1377,7 +1199,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1406,7 +1228,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1423,7 +1245,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
     });
@@ -1472,7 +1294,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1486,7 +1308,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
 
@@ -1554,7 +1376,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1576,7 +1398,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1618,7 +1440,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1635,7 +1457,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
     });
@@ -1683,7 +1505,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1697,7 +1519,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1735,7 +1557,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1749,7 +1571,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1773,7 +1595,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       Emitter = {
         mixIn: function(myObject) {
@@ -1787,7 +1609,7 @@ describe('lib/executor/state-compare.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {

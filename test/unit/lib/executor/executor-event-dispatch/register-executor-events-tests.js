@@ -12,7 +12,6 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
   let assertionHandler;
   let executorEventDispatch;
   let registerExecutorEvents;
-  let stateCompare;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -32,6 +31,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
       done: sinon.stub(),
       applyEffects: sinon.stub(),
       applyPreconditions: sinon.stub(),
+      handleFailedStateCheck: sinon.stub(),
     };
     eeReportHandler = {
       startReport: sinon.stub(),
@@ -39,7 +39,7 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
       endAction: sinon.stub(),
       startStep: sinon.stub(),
       endStep: sinon.stub(),
-      appendStateCompare: sinon.stub(),
+      addPreconditions: sinon.stub(),
       finalizeReport: sinon.stub(),
     };
     assertionHandler = {
@@ -50,17 +50,11 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
       on: sinon.stub(),
     };
 
-    stateCompare = {
-      appendStateCompare: sinon.stub(),
-      printDifference: sinon.stub(),
-    };
-
     mockery.registerMock('../execute-test-case.js', executeTestCase);
     mockery.registerMock('../driver-handler.js', driverHandler);
     mockery.registerMock('../execution-engine/execution-engine.js', executionEngine);
     mockery.registerMock('../execution-engine/execution-engine-report-handler.js', eeReportHandler);
     mockery.registerMock('../assertion-handler.js', assertionHandler);
-    mockery.registerMock('../state-compare.js', stateCompare);
 
     registerExecutorEvents =
             require('../../../../../lib/executor/executor-event-dispatch/register-executor-events.js');
@@ -229,12 +223,12 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
   });
 
   it('should call executorEventDispatch.on with the event \'assertionHandler.stateCheckTimedOut\' ' +
-        'and stateCompare.printDifference as parameters', function() {
+        'and executionEngine.handleFailedStateCheck as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
     expect(executorEventDispatch.on.args[15]).to.deep.equal([
       'assertionHandler.stateCheckTimedOut',
-      stateCompare.printDifference,
+      executionEngine.handleFailedStateCheck,
     ]);
   });
 
@@ -258,13 +252,13 @@ describe('lib/executor/executor-event-dispatch/register-executor-events.js', fun
     ]);
   });
 
-  it('should call executorEventDispatch.on with the event \'stateCompare.differenceCreated\' ' +
-        'and eeReportHandler.appendStateCompare as parameters', function() {
+  it('should call executorEventDispatch.on with the event \'assertionHandler.preconditionsCalculated\' ' +
+        'and eeReportHandler.addPreconditions as parameters', function() {
     registerExecutorEvents(executorEventDispatch);
 
     expect(executorEventDispatch.on.args[18]).to.deep.equal([
-      'stateCompare.differenceCreated',
-      eeReportHandler.appendStateCompare,
+      'assertionHandler.preconditionsCalculated',
+      eeReportHandler.addPreconditions,
     ]);
   });
 });
