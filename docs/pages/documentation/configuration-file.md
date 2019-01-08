@@ -58,12 +58,12 @@ This section documents utilization of the configuration file in place of CLI opt
       * Creates a test case for each action executed (reruns included)
   * Example: `jUnitReportSpecificity: testReport`
 
-### reportState
-  * Toggle on/off adding the `expectedState` property of all actions within the effects step of the report. When `true`, `expectedState` property will always be added into the effects step. Note: By default, `expectedState` and `pageState` will always be added on an `effects` step failure regardless of the reportState flag.
+### reportStates
+  * Toggle on/off adding the `expectedState` property of all actions within the effects step of the report. When `true`, `expectedState` property will always be added into the effects step. Note: By default, `expectedState` and `pageState` will always be added on an `effects` step failure regardless of the reportStates flag.
   * Default value is `false`
   * Values Allows: `true`, `false`
-  * Example: `reportState: true`
-  * Sample Report: 
+  * Example: `reportStates: true`
+  * Sample Report:
 
 ```
 {
