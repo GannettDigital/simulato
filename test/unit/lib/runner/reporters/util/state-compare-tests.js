@@ -4,179 +4,17 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/executor/state-compare.js', function() {
-  describe('on file being required', function() {
-    let Emitter;
-    let stateCompare;
-    let executorEventDispatch;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
-      mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
-    });
-
-    afterEach(function() {
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    it('should call Emitter.mixIn with stateCompare and executorEventDispatch', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(Emitter.mixIn.args).to.deep.equal([
-        [
-          stateCompare,
-          executorEventDispatch,
-        ],
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.findDrifference and stateCompare._findDrifference', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[0]).to.deep.equal([
-        'stateCompare.findDrifference',
-        stateCompare._findDifference,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.readyToPrintKeys and stateCompare._printKeys', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[1]).to.deep.equal([
-        'stateCompare.readyToPrintKeys',
-        stateCompare._printKeys,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.keyReadyToPrint and stateCompare._printKey', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[2]).to.deep.equal([
-        'stateCompare.keyReadyToPrint',
-        stateCompare._printKey,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.differenceValueFoundAsArray'
-      + 'and stateCompare._handleDifferenceArrayValue', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[3]).to.deep.equal([
-        'stateCompare.differenceValueFoundAsArray',
-        stateCompare._handleDifferenceArrayValue,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.differenceValueFoundAsObject'
-      + 'and stateCompare._handleDifferenceObjectValue', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[4]).to.deep.equal([
-        'stateCompare.differenceValueFoundAsObject',
-        stateCompare._handleDifferenceObjectValue,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.childReadyForPrint and stateCompare._printChild', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[5]).to.deep.equal([
-        'stateCompare.childReadyForPrint',
-        stateCompare._printChild,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToStartPrint'
-      + 'and stateCompare._printStartOfArray', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[6]).to.deep.equal([
-        'stateCompare.arrayReadyToStartPrint',
-        stateCompare._printStartOfArray,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToPrint'
-      + 'and stateCompare._printArrayElements', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[7]).to.deep.equal([
-        'stateCompare.arrayReadyToPrint',
-        stateCompare._printArrayElements,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.arrayReadyToEndPrint'
-      + 'and stateCompare._printEndOfArray', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[8]).to.deep.equal([
-        'stateCompare.arrayReadyToEndPrint',
-        stateCompare._printEndOfArray,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToStartPrint'
-      + 'and stateCompare._printStartOfObject', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[9]).to.deep.equal([
-        'stateCompare.objectReadyToStartPrint',
-        stateCompare._printStartOfObject,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToPrint'
-      + 'and stateCompare._printObjectKeyValues', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[10]).to.deep.equal([
-        'stateCompare.objectReadyToPrint',
-        stateCompare._printObjectKeyValues,
-      ]);
-    });
-
-    it('should call stateCompare.on with stateCompare.objectReadyToEndPrint'
-      + 'and stateCompare._printEndOfObject', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.args[11]).to.deep.equal([
-        'stateCompare.objectReadyToEndPrint',
-        stateCompare._printEndOfObject,
-      ]);
-    });
-
-    it('should call stateCompare.on 12 times', function() {
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
-      expect(stateCompare.on.callCount).to.equal(12);
-    });
-  });
-
+describe('lib/runner/reporters/util/state-compare.js', function() {
   describe('printDifference', function() {
-    let Emitter;
     let stateCompare;
     let samplePageState;
     let sampleExpectedState;
     let sampleDifference;
+    let callback;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       samplePageState = {
         displayed: true,
@@ -206,21 +44,14 @@ describe('lib/executor/state-compare.js', function() {
         },
       };
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      callback = sinon.stub();
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
-
+      stateCompare._findDifference = sinon.stub();
+      stateCompare._printKeys = sinon.stub();
       stateCompare._printRed = sinon.stub();
       stateCompare._printGreen = sinon.stub();
       stateCompare._printRed.returns(`redText`);
@@ -233,12 +64,16 @@ describe('lib/executor/state-compare.js', function() {
       mockery.disable();
     });
 
-    it('should call stateCompare.emit with the event \'stateCompare.findDrifference\','
-      + 'pageState, expectedState, and callback function', function() {
-      stateCompare.printDifference(samplePageState, sampleExpectedState);
+    it('should call _findDifference once', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-      expect(stateCompare.emit.args[0].slice(0, 3)).to.deep.equal([
-        'stateCompare.findDrifference',
+      expect(stateCompare._findDifference.callCount).to.equal(1);
+    });
+
+    it('should call _findDifference with the passed in pageState and ExpectedState as first 2 params', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
+
+      expect(stateCompare._findDifference.args[0].splice(0, 2)).to.deep.equal([
         {
           displayed: true,
           component1: {
@@ -262,51 +97,48 @@ describe('lib/executor/state-compare.js', function() {
       ]);
     });
 
-    it('should call stateCompare.emit once', function() {
-      stateCompare.printDifference(samplePageState, sampleExpectedState);
+    it('should call _findDifference with a function as the last param', function() {
+      stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-      expect(stateCompare.emit.callCount).to.deep.equal(1);
+      expect(stateCompare._findDifference.args[0].splice(2)[0]).to.be.a('function');
     });
 
-    describe('when the stateCompare.emit callback is called', function() {
-      it('should call printRed once with `-- Page State`', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+    describe('when the _findDifference callback is called', function() {
+      it('should call printRed once with `    Page State`', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
         expect(stateCompare._printRed.args).to.deep.equal([
-          ['-- Page State'],
+          ['    Page State'],
         ]);
       });
 
-      it('should call printGreen once with `++ Expected State`', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+      it('should call printGreen once with `    Expected State`', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
         expect(stateCompare._printGreen.args).to.deep.equal([
-          ['++ Expected State'],
+          ['    Expected State'],
         ]);
       });
 
       it('should set stateCompare._indentCount to 0 then get incremented to 1', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
         stateCompare._indentCount = 9;
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        expect(stateCompare._indentCount).to.equal(1);
+        expect(stateCompare._indentCount).to.equal(2);
       });
 
+      it('should call _printKeys once with difference, and expectedState', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-      it('should call stateCompare.emit with the event \'stateCompare.findDrifference\', '
-        + 'difference, and expectedState', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(stateCompare.emit.args[1]).to.deep.equal([
-          'stateCompare.readyToPrintKeys',
+        expect(stateCompare._printKeys.args).to.deep.equal([[
           {
             component2: {
               displayed: true,
@@ -322,33 +154,22 @@ describe('lib/executor/state-compare.js', function() {
               displayed: true,
             },
           },
-        ]);
+        ]]);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.differenceCreated\', '
-        + 'stateCompare._compareResult', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
+      it('should call the passed in callback with stateCompare._compareResult', function() {
+        stateCompare._findDifference.callsArgWith(2, sampleDifference);
 
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
+        stateCompare.printDifference(samplePageState, sampleExpectedState, callback);
 
-        expect(stateCompare.emit.args[2]).to.deep.equal([
-          'stateCompare.differenceCreated',
-          '\nredText\ngreenText\n{\n}',
-        ]);
-      });
-
-      it('should call stateCompare.emit three times', function() {
-        stateCompare.emit.onCall(0).callsArgWith(3, sampleDifference);
-
-        stateCompare.printDifference(samplePageState, sampleExpectedState);
-
-        expect(stateCompare.emit.callCount).to.deep.equal(3);
+        expect(callback.args).to.deep.equal([[
+          '\nredText\ngreenText\n  {\n  }',
+        ]]);
       });
     });
   });
 
   describe('_findDifference', function() {
-    let Emitter;
     let stateCompare;
     let _;
     let callback;
@@ -357,15 +178,7 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       _ = {
         transform: sinon.stub(),
@@ -397,11 +210,9 @@ describe('lib/executor/state-compare.js', function() {
         },
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -502,21 +313,12 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printKeys', function() {
-    let Emitter;
     let stateCompare;
     let sampleDifference;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       sampleDifference = {
         key1: 'value1',
@@ -524,11 +326,10 @@ describe('lib/executor/state-compare.js', function() {
 
       sampleDifference.hasOwnProperty = sinon.stub();
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
+      stateCompare._printKey = sinon.stub();
     });
 
     afterEach(function() {
@@ -539,55 +340,43 @@ describe('lib/executor/state-compare.js', function() {
 
     describe('for each key in passed in difference', function() {
       describe('if the difference has the property key', function() {
-        it('should call stateCompare.emit with the event \'stateCompare.keyReadyToPrint\''
-          + 'they key, difference[key], and base[key]', function() {
+        it('should call ._printKey with the key, difference[key], and base[key]', function() {
           sampleDifference.hasOwnProperty.returns(true);
 
           stateCompare._printKeys(sampleDifference, {key1: 'value2'});
 
-          expect(stateCompare.emit.args[0]).to.deep.equal([
-            'stateCompare.keyReadyToPrint', 'key1', 'value1', 'value2',
+          expect(stateCompare._printKey.args[0]).to.deep.equal([
+            'key1', 'value1', 'value2',
           ]);
         });
       });
       describe('if it does not have the property key', function() {
-        it('should call stateCompare.emit 0 times', function() {
+        it('should call _printKey 0 times', function() {
           sampleDifference.hasOwnProperty.returns(false);
 
           stateCompare._printKeys(sampleDifference, {key1: 'value2'});
 
-          expect(stateCompare.emit.callCount).to.equal(0);
+          expect(stateCompare._printKey.callCount).to.equal(0);
         });
       });
     });
   });
 
   describe('_printKey', function() {
-    let Emitter;
     let stateCompare;
     let _;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printRed = sinon.stub();
@@ -595,6 +384,9 @@ describe('lib/executor/state-compare.js', function() {
       stateCompare._indent.returns('keyString ');
       stateCompare._printRed.returns(`redText`);
       stateCompare._printGreen.returns(`greenText`);
+      stateCompare._handleDifferenceArrayValue = sinon.stub();
+      stateCompare._handleDifferenceObjectValue = sinon.stub();
+      stateCompare._printChild = sinon.stub();
     });
 
     afterEach(function() {
@@ -604,17 +396,16 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('if the passed in difference value is an array', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.differenceValueFoundAsArray\''
-        + 'differenceValue, baseValue, and keyString as params', function() {
+      it('should call ._handleDifferenceArrayValue with ' +
+          'differenceValue, baseValue, and keyString as params', function() {
         let parentKey = 'key1';
         let differenceValue = ['element1', 'element2'];
         let baseValue = 'baseValue';
 
         stateCompare._printKey(parentKey, differenceValue, baseValue);
 
-        expect(stateCompare.emit.args).to.deep.equal([
+        expect(stateCompare._handleDifferenceArrayValue.args).to.deep.equal([
           [
-            'stateCompare.differenceValueFoundAsArray',
             ['element1', 'element2'],
             'baseValue',
             'keyString key1',
@@ -624,8 +415,8 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('if the passed in difference value is an object', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.differenceValueFoundAsObject\''
-        + 'differenceValue, baseValue, keyString, and parentKey as params', function() {
+      it('should call ._handleDifferenceObjectValue with ' +
+          'differenceValue, baseValue, keyString, and parentKey as params', function() {
         let parentKey = 'key1';
         let differenceValue = {key2: 'value2'};
         let baseValue = 'baseValue';
@@ -633,9 +424,8 @@ describe('lib/executor/state-compare.js', function() {
 
         stateCompare._printKey(parentKey, differenceValue, baseValue);
 
-        expect(stateCompare.emit.args).to.deep.equal([
+        expect(stateCompare._handleDifferenceObjectValue.args).to.deep.equal([
           [
-            'stateCompare.differenceValueFoundAsObject',
             {key2: 'value2'},
             'baseValue',
             'keyString key1',
@@ -677,8 +467,7 @@ describe('lib/executor/state-compare.js', function() {
           });
         });
         describe('if the baseValue is an object', function() {
-          it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-            + 'baseValue, _printGreen, and keyString as params', function() {
+          it('should call _printChild with baseValue, _printGreen, and keyString as params', function() {
             let parentKey = 'key1';
             let differenceValue = 'value2';
             let baseValue = 'baseValue';
@@ -687,9 +476,8 @@ describe('lib/executor/state-compare.js', function() {
 
             stateCompare._printKey(parentKey, differenceValue, baseValue);
 
-            expect(stateCompare.emit.args).to.deep.equal([
+            expect(stateCompare._printChild.args).to.deep.equal([
               [
-                'stateCompare.childReadyForPrint',
                 'baseValue',
                 stateCompare._printGreen,
                 'keyString key1',
@@ -727,36 +515,27 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_handleDifferenceArrayValue', function() {
-    let Emitter;
     let stateCompare;
     let _;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
       stateCompare._indent.returns('');
       stateCompare._printGreen.returns(`greenText`);
+      stateCompare._printChild = sinon.stub();
+      stateCompare._printKeys = sinon.stub();
     });
 
     afterEach(function() {
@@ -766,24 +545,21 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('if the baseValue is NOT an Array', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-        + 'differenceValue, _printRed, and keyString as params', function() {
+      it('should call ._printChild with the differenceValue, _printRed, and keyString as params', function() {
         let differenceValue = 'differenceValue';
         let baseValue = 'baseValue';
         let keyString = 'keyString';
 
         stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-        expect(stateCompare.emit.args[0]).to.deep.equal([
-          'stateCompare.childReadyForPrint',
+        expect(stateCompare._printChild.args[0]).to.deep.equal([
           'differenceValue',
           stateCompare._printRed,
           'keyString',
         ]);
       });
       describe('if baseValue is an Object', function() {
-        it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-          + 'differenceValue, _printGreen, and keyString as params', function() {
+        it('should call ._printChild with differenceValue, _printGreen, and keyString as params', function() {
           let differenceValue = 'differenceValue';
           let baseValue = {key: 'baseValue'};
           let keyString = 'keyString';
@@ -791,15 +567,14 @@ describe('lib/executor/state-compare.js', function() {
 
           stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-          expect(stateCompare.emit.args[1]).to.deep.equal([
-            'stateCompare.childReadyForPrint',
+          expect(stateCompare._printChild.args[1]).to.deep.equal([
             {key: 'baseValue'},
             stateCompare._printGreen,
             'keyString',
           ]);
         });
 
-        it('should call stateCompare.emit twice', function() {
+        it('should call stateCompare._printChild twice', function() {
           let differenceValue = 'differenceValue';
           let baseValue = {key: 'baseValue'};
           let keyString = 'keyString';
@@ -807,7 +582,7 @@ describe('lib/executor/state-compare.js', function() {
 
           stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-          expect(stateCompare.emit.callCount).to.equal(2);
+          expect(stateCompare._printChild.callCount).to.equal(2);
         });
       });
       describe('if baseValue is not an object or an array', function() {
@@ -864,17 +639,15 @@ describe('lib/executor/state-compare.js', function() {
         expect(stateCompare._indentCount).to.equal(5);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.readyToPrintKeys\''
-        + 'differenceValue and baseValue as params', function() {
+      it('should call _printKeys with differenceValue and baseValue as params', function() {
         let differenceValue = 'differenceValue';
         let baseValue = ['element1', 'element2'];
         let keyString = 'keyString';
 
         stateCompare._handleDifferenceArrayValue(differenceValue, baseValue, keyString);
 
-        expect(stateCompare.emit.args).to.deep.equal([
+        expect(stateCompare._printKeys.args).to.deep.equal([
           [
-            'stateCompare.readyToPrintKeys',
             'differenceValue',
             ['element1', 'element2'],
           ],
@@ -904,36 +677,27 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_handleDifferenceObjectValue', function() {
-    let Emitter;
     let stateCompare;
     let _;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
       stateCompare._indent.returns('');
       stateCompare._printGreen.returns(`greenText`);
+      stateCompare._printChild = sinon.stub();
+      stateCompare._printKeys = sinon.stub();
     });
 
     afterEach(function() {
@@ -943,8 +707,7 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('if the baseValue is NOT an Object', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-        + 'differenceValue, stateCompare._printRed, and parentKey as params', function() {
+      it('should call ._printChild with differenceValue, stateCompare._printRed, and parentKey as params', function() {
         let differenceValue = 'differenceValue';
         let baseValue = 'baseValue';
         let keyString = 'keyString';
@@ -953,9 +716,8 @@ describe('lib/executor/state-compare.js', function() {
 
         stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
 
-        expect(stateCompare.emit.args).to.deep.equal([
+        expect(stateCompare._printChild.args).to.deep.equal([
           [
-            'stateCompare.childReadyForPrint',
             'differenceValue',
             stateCompare._printRed,
             'parentKey',
@@ -1032,8 +794,7 @@ describe('lib/executor/state-compare.js', function() {
         expect(stateCompare._indentCount).to.equal(5);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.readyToPrintKeys\''
-        + 'differenceValue and baseValue as params', function() {
+      it('should call printKeys with differenceValue and baseValue as params', function() {
         let differenceValue = 'differenceValue';
         let baseValue = {key: 'baseValue'};
         let keyString = 'keyString';
@@ -1042,9 +803,8 @@ describe('lib/executor/state-compare.js', function() {
 
         stateCompare._handleDifferenceObjectValue(differenceValue, baseValue, keyString, parentKey);
 
-        expect(stateCompare.emit.args).to.deep.equal([
+        expect(stateCompare._printKeys.args).to.deep.equal([
           [
-            'stateCompare.readyToPrintKeys',
             'differenceValue',
             {key: 'baseValue'},
           ],
@@ -1078,7 +838,6 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printChild', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
     let baseString;
@@ -1086,30 +845,26 @@ describe('lib/executor/state-compare.js', function() {
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       _ = {
         isObject: sinon.stub(),
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', _);
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       stateCompare._indent = sinon.stub();
       stateCompare._printGreen = sinon.stub();
       stateCompare._indent.returns('');
       stateCompare._printGreen.returns(`greenText`);
+      stateCompare._printStartOfArray = sinon.stub();
+      stateCompare._printArrayElements = sinon.stub();
+      stateCompare._printEndOfArray = sinon.stub();
+      stateCompare._printStartOfObject = sinon.stub();
+      stateCompare._printObjectKeyValue = sinon.stub();
+      stateCompare._printEndOfObject = sinon.stub();
 
       colorFunc = stateCompare._printGreen;
       baseString = 'baseString';
@@ -1122,99 +877,70 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('if the passed in child is an Array', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.arrayReadyToStartPrint\''
-        + ', with the passed in baseString and colorFunc', function() {
+      it('should call _printStartOfArray with the passed in baseString and colorFunc', function() {
         let child = ['childArray'];
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[0]).to.deep.equal([
-          'stateCompare.arrayReadyToStartPrint',
+        expect(stateCompare._printStartOfArray.args).to.deep.equal([[
           'baseString',
           stateCompare._printGreen,
-        ]);
+        ]]);
       });
-      it('should call stateCompare.emit with the event \'stateCompare.arrayReadyToPrint\''
-        + ', with the passed in child and colorFunc', function() {
+      it('should call _printArrayElements with the passed in child and colorFunc', function() {
         let child = ['childArray'];
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[1]).to.deep.equal([
-          'stateCompare.arrayReadyToPrint',
+        expect(stateCompare._printArrayElements.args).to.deep.equal([[
           ['childArray'],
           stateCompare._printGreen,
-        ]);
+        ]]);
       });
-      it('should call stateCompare.emit with the event \'stateCompare.arrayReadyToEndPrint\''
-        + ', with the passed in colorFunc', function() {
+      it('should call _printEndOfArray with the passed in colorFunc', function() {
         let child = ['childArray'];
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[2]).to.deep.equal([
-          'stateCompare.arrayReadyToEndPrint',
+        expect(stateCompare._printEndOfArray.args).to.deep.equal([[
           stateCompare._printGreen,
-        ]);
-      });
-
-      it('should call stateCompare.emit 3 times', function() {
-        let child = ['childArray'];
-
-        stateCompare._printChild(child, colorFunc, baseString);
-
-        expect(stateCompare.emit.callCount).to.equal(3);
+        ]]);
       });
     });
     describe('if the passed in child is an Object', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.objectReadyToStartPrint\''
-        + ', with the passed in baseString and colorFunc', function() {
+      it('should call _printStartOfObject with the passed in baseString and colorFunc', function() {
         let child = {key: 'childObject'};
         _.isObject.returns(true);
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[0]).to.deep.equal([
-          'stateCompare.objectReadyToStartPrint',
+        expect(stateCompare._printStartOfObject.args).to.deep.equal([[
           'baseString',
           stateCompare._printGreen,
-        ]);
+        ]]);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.objectReadyToPrint\''
-        + ', with the passed in child and colorFunc', function() {
+      it('should call _printObjectKeyValue with the passed in child and colorFunc', function() {
         let child = {key: 'childObject'};
         _.isObject.returns(true);
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[1]).to.deep.equal([
-          'stateCompare.objectReadyToPrint',
+        expect(stateCompare._printObjectKeyValue.args).to.deep.equal([[
           {key: 'childObject'},
           stateCompare._printGreen,
-        ]);
+        ]]);
       });
 
-      it('should call stateCompare.emit with the event \'stateCompare.objectReadyToEndPrint\''
-        + ', with the passed in colorFunc', function() {
+      it('should call _printEndOfObject with the passed in colorFunc', function() {
         let child = {key: 'childObject'};
         _.isObject.returns(true);
 
         stateCompare._printChild(child, colorFunc, baseString);
 
-        expect(stateCompare.emit.args[2]).to.deep.equal([
-          'stateCompare.objectReadyToEndPrint',
+        expect(stateCompare._printEndOfObject.args).to.deep.equal([[
           stateCompare._printGreen,
-        ]);
-      });
-
-      it('should call stateCompare.emit 3 times', function() {
-        let child = {key: 'childObject'};
-        _.isObject.returns(true);
-
-        stateCompare._printChild(child, colorFunc, baseString);
-
-        expect(stateCompare.emit.callCount).to.equal(3);
+        ]]);
       });
     });
     describe('if the passed in child is not an Array or an Object', function() {
@@ -1282,27 +1008,16 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printStartOfArray', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
@@ -1355,29 +1070,19 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printArrayElements', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
+      stateCompare._printChild = sinon.stub();
     });
 
     afterEach(function() {
@@ -1387,43 +1092,31 @@ describe('lib/executor/state-compare.js', function() {
     });
 
     describe('for each element in the passed in array', function() {
-      it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-        + 'with the element and passed in color func as args', function() {
+      it('should call _printChild with the element and passed in color func as args', function() {
         stateCompare._printArrayElements(['child1', 'child2'], colorFunc);
 
-        expect(stateCompare.emit.args).to.deep.equal([
-          ['stateCompare.childReadyForPrint', 'child1', colorFunc],
-          ['stateCompare.childReadyForPrint', 'child2', colorFunc],
+        expect(stateCompare._printChild.args).to.deep.equal([
+          ['child1', colorFunc],
+          ['child2', colorFunc],
         ]);
       });
     });
   });
 
   describe('_printEndOfArray', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
     });
@@ -1466,27 +1159,16 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printStartOfObject', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
 
@@ -1547,22 +1229,13 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printObjectKeyValues', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
     let sampleObject;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
 
@@ -1572,11 +1245,10 @@ describe('lib/executor/state-compare.js', function() {
         hasOwnProperty: sinon.stub(),
       };
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
+      stateCompare._printChild = sinon.stub();
     });
 
     afterEach(function() {
@@ -1587,55 +1259,43 @@ describe('lib/executor/state-compare.js', function() {
 
     describe('for each key in the passed in object', function() {
       describe('if the object has that key property', function() {
-        it('should call stateCompare.emit with the event \'stateCompare.childReadyForPrint\''
-          +' passing in object[key], colorFunc, and key:', function() {
+        it('should call _printChild passing in object[key], colorFunc, and key:', function() {
           delete sampleObject.hasOwnProperty;
 
           stateCompare._printObjectKeyValues(sampleObject, colorFunc);
 
-          expect(stateCompare.emit.args).to.deep.equal([
-            ['stateCompare.childReadyForPrint', 'value1', colorFunc, 'key1:'],
-            ['stateCompare.childReadyForPrint', 'value2', colorFunc, 'key2:'],
+          expect(stateCompare._printChild.args).to.deep.equal([
+            ['value1', colorFunc, 'key1:'],
+            ['value2', colorFunc, 'key2:'],
           ]);
         });
       });
       describe('if the object does NOT have that key property', function() {
-        it('should not call stateCompare.emit', function() {
+        it('should not call stateCompare._printChild', function() {
           sampleObject.hasOwnProperty.returns(false);
 
           stateCompare._printObjectKeyValues(sampleObject, colorFunc);
 
-          expect(stateCompare.emit.callCount).to.equal(0);
+          expect(stateCompare._printChild.callCount).to.equal(0);
         });
       });
     });
   });
 
   describe('_printEndOfObject', function() {
-    let Emitter;
     let stateCompare;
     let colorFunc;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
       colorFunc = sinon.stub();
       colorFunc.returns('coloredString');
 
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
       stateCompare._indent = sinon.stub();
       stateCompare._indent.returns('  ');
     });
@@ -1678,26 +1338,15 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_indent', function() {
-    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1730,26 +1379,15 @@ describe('lib/executor/state-compare.js', function() {
   });
 
   describe('_printRed', function() {
-    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1763,31 +1401,20 @@ describe('lib/executor/state-compare.js', function() {
 
       result = stateCompare._printRed('stringThatShouldBeRed');
 
-      expect(result).to.equal('\x1b[31mstringThatShouldBeRed\x1b[0m');
+      expect(result).to.equal('\x1b[31m--ringThatShouldBeRed\x1b[0m');
     });
   });
 
   describe('_printGreen', function() {
-    let Emitter;
     let stateCompare;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../lib/executor/state-compare.js');
+      mockery.registerAllowable('../../../../../../lib/runner/reporters/utils/state-compare.js');
 
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('lodash', {});
-      mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
 
-      stateCompare = require('../../../../lib/executor/state-compare.js');
+      stateCompare = require('../../../../../../lib/runner/reporters/utils/state-compare.js');
     });
 
     afterEach(function() {
@@ -1801,7 +1428,7 @@ describe('lib/executor/state-compare.js', function() {
 
       result = stateCompare._printGreen('stringThatShouldBeGreen');
 
-      expect(result).to.equal('\x1b[32mstringThatShouldBeGreen\x1b[0m');
+      expect(result).to.equal('\x1b[32m++ringThatShouldBeGreen\x1b[0m');
     });
   });
 });

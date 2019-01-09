@@ -37,6 +37,12 @@ describe('lib/util/config/schema.js', function() {
         reportPath: {
           type: 'string',
         },
+        reportStates: {
+          type: 'boolean',
+        },
+        reportPreconditions: {
+          type: 'boolean',
+        },
         before: {
           type: 'string',
         },

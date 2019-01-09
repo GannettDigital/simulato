@@ -58,6 +58,104 @@ This section documents utilization of the configuration file in place of CLI opt
       * Creates a test case for each action executed (reruns included)
   * Example: `jUnitReportSpecificity: testReport`
 
+### reportStates
+  * Toggle on/off adding the `expectedState` property of all actions within the effects step of the report. When `true`, `expectedState` property will always be added into the effects step. Note: By default, `expectedState` and `pageState` will always be added on an `effects` step failure regardless of the reportStates flag.
+  * Default value is `false`
+  * Values Allows: `true`, `false`
+  * Example: `reportStates: true`
+  * Sample Report:
+
+```
+{
+  ...
+  actions: [
+    {
+      ...
+      steps: {
+        effects: {
+          "status": "pass",
+          "time": [
+            0,
+            8398883
+          ],
+          "error": null,
+          "expectedState": {
+            newsArticle1: {
+              displayed: true
+              headingText: {
+                displayed: true
+              },
+              text: {
+                diplayed: true
+              }
+            }
+          }
+        }
+        ...
+      }
+    }
+  ]
+  ...
+}
+```
+
+### reportPreconditions
+  * Toggle on/off adding the `conditions` property inside of all actions within the preconditions step of the report. When `true`, `conditions` will always be displayed into the preconditions object. In addition, on precondition failure, the pageState will be added into the preconditions object as well. (see below sample)
+  * Default value is `false`
+  * Values Allows: `true`, `false`
+  * Example: `reportPreconditions: true`
+  * Sample Report: 
+
+```
+{
+  ...
+  actions: [
+    {
+      ...
+      steps: {
+        preconditions: {
+          "status": "fail",
+          "time": [
+            0,
+            8398883
+          ],
+          "error": null,
+          "conditions": [
+            [
+              "isTrue",
+              "pageState.newsArticle1.displayed"
+            ],
+            [
+              "property",
+              "dataStore",
+              "newsArticle1HeadingText"
+            ],
+            [
+              "property",
+              "dataStore",
+              "newsArticle1Text"
+            ]
+          ]
+          "pageState": {
+            newsArticle1: {
+              displayed: false
+              headingText: {
+                displayed: true
+              },
+              text: {
+                diplayed: true
+              }
+            }
+          }
+        }
+        ...
+      }
+    }
+  ]
+  ...
+}
+```
+
 ### before
   * The path to a before script run before the test suite
   * Must be a valid JavaScript file that exports a single function

@@ -528,12 +528,13 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
       });
 
       it('should call executionEngine.emitAsync with the event \'executionEngine.stepStarted\' ' +
-                'and executionEngine._step', function() {
+                'executionEngine._step and executionEngine._expectedState', function() {
         executionEngine._executeStep();
 
         expect(executionEngine.emitAsync.args[0]).to.deep.equal([
           'executionEngine.stepStarted',
           'preconditions',
+          executionEngine._expectedState,
         ]);
       });
 
@@ -1081,6 +1082,49 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
   });
 
+  describe('handleFailedStateCheck', function() {
+    let Emitter;
+    let executionEngine;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/executor/execution-engine/execution-engine.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
+          myObject.emitAsync = sinon.stub();
+          myObject.runOn = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
+
+      executionEngine = require('../../../../../lib/executor/execution-engine/execution-engine.js');
+      executionEngine._expectedState = {};
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('set executionEngine._expectedState._state to the passed in failedExpectedState', function() {
+      executionEngine.handleFailedStateCheck({page: 'failedState'}, {expected: 'failedState'});
+
+      expect(executionEngine._expectedState._state).to.deep.equal({expected: 'failedState'});
+    });
+
+    it('set executionEngine._expectedState._pageState to the passed in failedExpectedState', function() {
+      executionEngine.handleFailedStateCheck({page: 'failedState'}, {expected: 'failedState'});
+
+      expect(executionEngine._expectedState._pageState).to.deep.equal({page: 'failedState'});
+    });
+  });
+
   describe('_stepCompleted', function() {
     let Emitter;
     let executionEngine;
@@ -1130,12 +1174,15 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     it('should call executionEngine.emitAsync with the event \'executionEngine.stepEnded\', null, ' +
             'executionEngine._action, executionEngine._actionConfig, executionEngine._step, ' +
             'and the string \'pass\' as parameters', function() {
+      executionEngine._expectedState = {foo: 'bar'};
+
       executionEngine._stepCompleted();
 
       expect(executionEngine.emitAsync.args[0]).to.deep.equal([
         'executionEngine.stepEnded',
         null,
         'perform',
+        {foo: 'bar'},
       ]);
     });
 
@@ -1193,6 +1240,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             'the passed in error, executionEngine._action,executionEngine._actionConfig, ' +
             'executionEngine._step, and the string \'fail\'', function() {
       let error = new Error('An error occurred!');
+      executionEngine._expectedState = {foo: 'bar'};
 
       executionEngine.errorOccurred(error, true);
 
@@ -1200,6 +1248,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         'executionEngine.stepEnded',
         error,
         'perform',
+        {foo: 'bar'},
       ]);
     });
 

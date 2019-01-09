@@ -335,6 +335,8 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
   describe('endStep', function() {
     let Emitter;
     let eeReportHandler;
+    let expectedState;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -349,10 +351,23 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       };
       sinon.spy(Emitter, 'mixIn');
 
+      configHandler = {
+        get: sinon.stub(),
+      };
+
       sinon.stub(process, 'hrtime').returns([123, 456]);
 
+      expectedState = {
+        _pageState: {
+          page: 'pageState',
+        },
+        _state: {
+          state: 'expectedState',
+        },
+      };
+
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
       eeReportHandler =
@@ -405,7 +420,71 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       expect(eeReportHandler._report.actions[0].steps['preconditions'].time).to.deep.equal([123, 456]);
     });
 
+    describe('if the stepName is equal to \'effects\'', function() {
+      it('should call configHandler.get once with the param \'reportStates\'', function() {
+        eeReportHandler.endStep(null, 'effects');
+
+        expect(configHandler.get.args).to.deep.equal([['reportStates']]);
+      });
+
+      describe('if configHandler.get returns trurthy or the passed in error is truthy', function() {
+        it('should added the passed in expectedState into the the effects step', function() {
+          configHandler.get.returns(true);
+
+          eeReportHandler.endStep(null, 'effects', expectedState);
+
+          expect(eeReportHandler._report.actions[0].steps.effects).to.deep.equal({
+            status: 'pass',
+            time: [123, 456],
+            error: null,
+            expectedState: {
+              state: 'expectedState',
+            },
+          });
+        });
+      });
+    });
+
     describe('if an error was passed in', function() {
+      describe('if the passed in stepName is \'effects\'', function() {
+        it('should set the steps.pageState to the passed in expectedState._pageState', function() {
+          let error = new Error('Error that was thrown');
+          error.code = 'error code';
+
+          eeReportHandler.endStep(error, 'effects', expectedState);
+
+          expect(eeReportHandler._report.actions[0].steps['effects'].pageState).to.deep.equal({
+            page: 'pageState',
+          });
+        });
+      });
+
+      describe('if the passed in stepName is \'preconditions\'', function() {
+        it('should call configHandler.get once with \'reportPreconditions\'', function() {
+          let error = new Error('Error that was thrown');
+          error.code = 'error code';
+
+          eeReportHandler.endStep(error, 'preconditions', expectedState);
+
+          expect(configHandler.get.args).to.deep.equal([['reportPreconditions']]);
+        });
+
+        describe('if the call to configHandler.get returns truthy', function() {
+          it('should set the step.pageState to the passed in expectedState._pageState', function() {
+            let error = new Error('Error that was thrown');
+            error.code = 'error code';
+            configHandler.get.returns(true);
+
+            eeReportHandler.endStep(error, 'preconditions', expectedState);
+
+            expect(eeReportHandler._report.actions[0].steps['preconditions'].pageState).to.deep.equal({
+              page: 'pageState',
+            });
+          });
+        });
+      });
+
+
       it('should set the step.error to the error passed in', function() {
         let error = new Error('Error that was thrown');
         error.code = 'error code';
@@ -461,9 +540,10 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     });
   });
 
-  describe('appendStateCompare', function() {
+  describe('addPreconditions', function() {
     let Emitter;
     let eeReportHandler;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -478,10 +558,12 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       };
       sinon.spy(Emitter, 'mixIn');
 
-      sinon.stub(process, 'hrtime').returns([123, 456]);
+      configHandler = {
+        get: sinon.stub(),
+      };
 
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/config/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
       mockery.registerMock('../executor-event-dispatch/executor-event-dispatch.js', {});
 
       eeReportHandler =
@@ -495,37 +577,35 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
           status: 'fail',
           time: [123, 456],
           steps: {
-            preconditions: {
-              status: 'fail',
-              time: [123, 456],
-              error: null,
-            },
-            perform: {
-              status: 'fail',
-              time: [123, 456],
-              error: null,
-            },
-            effects: {
-              status: 'fail',
-              time: [123, 456],
-              error: null,
-            },
+            preconditions: {},
+            perform: null,
+            effects: null,
           },
         },
       ];
     });
 
     afterEach(function() {
-      process.hrtime.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should set the current actions effects step the stateCompare to the passed in string', function() {
-      eeReportHandler.appendStateCompare('state compare string');
+    it('should call configHandler.get once with \'reportPreconditions\'', function() {
+      eeReportHandler.addPreconditions(['imma', 'precondition']);
 
-      expect(eeReportHandler._report.actions[0].steps['effects'].stateCompare).to.equal('state compare string');
+      expect(configHandler.get.args).to.deep.equal([['reportPreconditions']]);
+    });
+
+    describe('if the call to configHandler.get returns truthy', function() {
+      it('should add the passed in preconditions to the current steps preconditions.conditions', function() {
+        configHandler.get.returns(true);
+
+        eeReportHandler.addPreconditions([['imma', 'precondition']]);
+
+        expect(eeReportHandler._report.actions[0].steps['preconditions'].conditions)
+            .to.deep.equal([['imma', 'precondition']]);
+      });
     });
   });
 
