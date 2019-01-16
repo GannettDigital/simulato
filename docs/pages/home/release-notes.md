@@ -5,6 +5,17 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.7.1
+
+* Tom Dale
+  * Added flags to always show expectedstate and preconditions in report
+
+* Scott Gunther
+  * Add JUnit xml report
+  * Add first version of offline replanning algorithm
+  * Bug fixes for offline replanning
+
+
 ## 0.7.0
 
 * Scott Gunther
