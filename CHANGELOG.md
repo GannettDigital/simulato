@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.7.1
+
+* Tom Dale
+  * Added flags to always show expectedstate and preconditions in report
+
 * Scott Gunther
   * Add JUnit xml report
   * Add first version of offline replanning algorithm
