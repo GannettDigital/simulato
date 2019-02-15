@@ -2,6 +2,9 @@
 
 ## Pending Version
 
+* Subarna Mukhiyabeen
+  * Fix endStep function to get correct expectedState for each action
+
 ## 0.7.1
 
 * Tom Dale
@@ -25,7 +28,7 @@
 
 * Subarna Mukhiyabeen
   * Added a custom writer that can generate action reports for QASymphony
-  * Added unit tests for action-json-writer and updates 
+  * Added unit tests for action-json-writer and updates
   * Updated unit tests for report-handler.js and index.js
 
 ## 0.6.4
@@ -141,7 +144,7 @@
   * Made changes to ingestion of saucelabs config to allow for percision when modifying default values
   * Modified generated test names to be more clear
 
-* Tom Dale 
+* Tom Dale
   * Added bug report template
   * Parent exit code set to 1 when child has an error
 
@@ -172,7 +175,7 @@
 
 ## 0.3.0
 
-* Brian Fitzpatrick 
+* Brian Fitzpatrick
   * Updated CLI configuration to be exportable to file format, as well as saucelab configuration
 * Scott Gunther
   * Data store is broken out of the expected state
