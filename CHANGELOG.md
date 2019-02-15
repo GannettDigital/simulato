@@ -2,6 +2,8 @@
 
 ## Pending Version
 
+## 0.7.2
+
 * Subarna Mukhiyabeen
   * Fix endStep function to get correct expectedState for each action
 
