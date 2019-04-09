@@ -66,13 +66,13 @@ module.exports = {
         perform(callback) {
           driver.wait(() => {
             return driver.findElement(By.id(this.options.newsArticleId))
-              .click()
-              .then(() => true)
-              .catch(() => false);
+                .click()
+                .then(() => true)
+                .catch(() => false);
           }, 3000)
-            .then(function () {
-              callback();
-            }, callback);
+              .then(function() {
+                callback();
+              }, callback);
         },
         effects(expectedState, dataStore) {
           expectedState.stash();

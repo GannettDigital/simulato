@@ -61,8 +61,8 @@ module.exports = {
         },
         perform(callback) {
           driver.findElement(By.id(`${this.options.newsArticleId}ModalCloseButton`))
-            .click()
-            .then(callback, callback);
+              .click()
+              .then(callback, callback);
         },
         effects(expectedState) {
           expectedState.pop();

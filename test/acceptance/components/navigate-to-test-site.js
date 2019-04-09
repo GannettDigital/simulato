@@ -17,7 +17,7 @@ module.exports = {
       NAVIGATE_TO_TEST_SITE: {
         perform(callback) {
           driver.get(`http://localhost:3000`)
-            .then(callback, callback);
+              .then(callback, callback);
         },
         effects(expectedState) {
           expectedState.clear();
