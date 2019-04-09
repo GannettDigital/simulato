@@ -17,9 +17,9 @@ module.exports = {
       NAVIGATE_TO_TEST_SITE: {
         perform(callback) {
           driver.get(`http://localhost:3000`)
-              .then(callback, callback);
+            .then(callback, callback);
         },
-        effects(expectedState, dataStore) {
+        effects(expectedState) {
           expectedState.clear();
           expectedState.createAndAddComponent({
             type: 'MainSiteLayout',
