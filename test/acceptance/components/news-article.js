@@ -53,15 +53,7 @@ module.exports = {
   actions() {
     return {
       CLICK_TO_VIEW_STORY: {
-        parameters: [
-          {
-            name: 'fakeParameter',
-            generate() {
-              return 'myFakeParameter';
-            },
-          },
-        ],
-        preconditions(fakeParam, dataStore) {
+        preconditions(dataStore) {
           dataStore.store(`${this.name}HeadingText`, this.getFromPage(`${this.name}.newsArticleHeading.text`));
           dataStore.store(`${this.name}Text`, this.getFromPage(`${this.name}.newsArticleText.text`));
 
@@ -71,7 +63,7 @@ module.exports = {
             ['property', `dataStore`, `${this.name}Text`],
           ];
         },
-        perform(fakeParam, callback) {
+        perform(callback) {
           driver.wait(() => {
             return driver.findElement(By.id(this.options.newsArticleId))
                 .click()
@@ -82,7 +74,7 @@ module.exports = {
                 callback();
               }, callback);
         },
-        effects(fakeParam, expectedState, dataStore) {
+        effects(expectedState, dataStore) {
           expectedState.stash();
           expectedState.createAndAddComponent({
             type: 'ViewStoryModal',
@@ -100,9 +92,6 @@ module.exports = {
               closeButton: {
                 displayed: true,
                 disabled: false,
-              },
-              xCloseButton: {
-                displayed: true,
               },
             },
             options: {

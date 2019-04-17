@@ -8,6 +8,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
   let setOperations;
   let callback;
   let reduceToMinimumSetOfPlans;
+  let algorithm;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -17,6 +18,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       isSuperset: sinon.stub(),
     };
     callback = sinon.stub();
+    algorithm = 'default';
 
     mockery.registerMock('../util/set-operations.js', setOperations);
 
@@ -36,7 +38,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       },
     ];
 
-    reduceToMinimumSetOfPlans(plans, callback);
+    reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
     expect(setOperations.isSuperset.callCount).to.equal(0);
   });
@@ -54,7 +56,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       },
     ];
 
-    reduceToMinimumSetOfPlans(plans, callback);
+    reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
     expect(setOperations.isSuperset.callCount).to.equal(6);
   });
@@ -66,7 +68,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       },
     ];
 
-    reduceToMinimumSetOfPlans(plans, callback);
+    reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
     expect(callback.args).to.deep.equal([
       [
@@ -92,7 +94,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       ];
       setOperations.isSuperset.onCall(0).returns(true);
 
-      reduceToMinimumSetOfPlans(plans, callback);
+      reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
       expect(setOperations.isSuperset.args[0]).to.deep.equal([
         new Set(['action1', 'action2', 'action3']),
@@ -111,7 +113,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       ];
       setOperations.isSuperset.onCall(0).returns(true);
 
-      reduceToMinimumSetOfPlans(plans, callback);
+      reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
       expect(callback.args[0][1]).to.deep.equal([
         {
@@ -131,7 +133,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       ];
       setOperations.isSuperset.returns(false);
 
-      reduceToMinimumSetOfPlans(plans, callback);
+      reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
       expect(callback.args[0][1]).to.deep.equal([
         {

@@ -8,6 +8,7 @@ describe('lib/planner/count-actions.js', function() {
   describe('calculate', function() {
     let callback;
     let countActions;
+    let algorithm;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -23,16 +24,16 @@ describe('lib/planner/count-actions.js', function() {
       mockery.deregisterAll();
       mockery.disable();
     });
-
     it('should call initialize all actions occurrences to 0', function() {
       let plans = [];
+      algorithm = 'default';
       let discoveredActions = new Set([
         'action1',
         'action2',
         'action3',
       ]);
 
-      countActions.calculate(plans, discoveredActions, callback);
+      countActions.calculate(plans, discoveredActions, algorithm, callback);
 
       expect(callback.args[0][1].actionOccurrences).to.deep.equal(new Map([
         ['action1', 0],
@@ -50,13 +51,14 @@ describe('lib/planner/count-actions.js', function() {
           path: ['action1', 'action3'],
         },
       ];
+      algorithm = 'default';
       let discoveredActions = new Set([
         'action1',
         'action2',
         'action3',
       ]);
 
-      countActions.calculate(plans, discoveredActions, callback);
+      countActions.calculate(plans, discoveredActions, algorithm, callback);
 
       expect(callback.args[0][1].actionOccurrences).to.deep.equal(new Map([
         ['action1', 2],
@@ -74,6 +76,7 @@ describe('lib/planner/count-actions.js', function() {
           path: ['action1', 'action3'],
         },
       ];
+      algorithm = 'default';
       let discoveredActions = new Set([
         'action1',
         'action2',
@@ -81,7 +84,7 @@ describe('lib/planner/count-actions.js', function() {
         'action4',
       ]);
 
-      countActions.calculate(plans, discoveredActions, callback);
+      countActions.calculate(plans, discoveredActions, algorithm, callback);
 
       expect(callback.args[0][1].actionsNotCovered).to.deep.equal(new Set([
         'action4',
@@ -97,6 +100,7 @@ describe('lib/planner/count-actions.js', function() {
           path: ['action1', 'action3'],
         },
       ];
+      algorithm = 'default';
       let discoveredActions = new Set([
         'action1',
         'action2',
@@ -104,7 +108,7 @@ describe('lib/planner/count-actions.js', function() {
         'action4',
       ]);
 
-      countActions.calculate(plans, discoveredActions, callback);
+      countActions.calculate(plans, discoveredActions, algorithm, callback);
 
       expect(callback.args).to.deep.equal([
         [

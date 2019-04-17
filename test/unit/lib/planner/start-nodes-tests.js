@@ -65,11 +65,6 @@ describe('lib/planner/start-nodes.js', function() {
       sinon.spy(Emitter, 'mixIn');
       next = sinon.stub();
       callback = sinon.stub();
-      global.SimulatoError = {
-        COMPONENT: {
-          NO_ENTRY_POINT: sinon.stub(),
-        },
-      };
       components = {
         componentOne: {
           entryComponent: {
@@ -118,69 +113,31 @@ describe('lib/planner/start-nodes.js', function() {
     });
 
     afterEach(function() {
-      delete global.SimulatoError;
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should call startNodes.emitAsync with the event \'componentHandler.getComponents\' and next', function() {
+    it('should call startNodes.emitAsync with the event \'entryComponents.get\' and next', function() {
       let generator = startNodes.get(callback);
 
       generator.next();
       generator.next(next);
 
       expect(startNodes.emitAsync.args[0]).to.deep.equal([
-        'componentHandler.getComponents',
+        'entryComponents.get',
         next,
       ]);
     });
 
-    describe('if there are no components marked as entryComponent', function() {
-      it('should throw an error', function() {
-        let generator = startNodes.get(callback);
-        let components = {
-          'componentOne': {},
-          'componentTwo': {},
-        };
-
-        generator.next();
-        generator.next(next);
-
-        expect(generator.next.bind(generator, components)).to.throw();
-      });
-
-      it('should call SimulatoError.COMPONENT.NO_ENTRY_COMPONENT with an error message', function() {
-        let generator = startNodes.get(callback);
-        components = {
-          'componentOne': {},
-          'componentTwo': {},
-        };
-
-        generator.next();
-        generator.next(next);
-        try {
-          generator.next(components);
-        } catch (err) {
-
-        }
-
-        expect(SimulatoError.COMPONENT.NO_ENTRY_POINT.args).to.deep.equal([
-          [
-            'Planning failed, no entry component found',
-          ],
-        ]);
-      });
-    });
-
     describe('for each entry component', function() {
       it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
-                ' and next', function() {
+        ' and next', function() {
         let generator = startNodes.get(callback);
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
 
         expect(startNodes.emitAsync.args[1]).to.deep.equal([
           'searchNode.create',
@@ -190,12 +147,13 @@ describe('lib/planner/start-nodes.js', function() {
       });
 
       it('should call node.state.createAndAddComponent with the type, name, state, and options in an ' +
-                'object', function() {
+        'object', function() {
         let generator = startNodes.get(callback);
+        components.componentOne.type = 'componentOne';
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
 
         expect(node.state.createAndAddComponent.args).to.deep.equal([
@@ -216,10 +174,11 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should call node.testCase.push with the type, name, state, and options in an object', function() {
         let generator = startNodes.get(callback);
+        components.componentOne.type = 'componentOne';
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
 
         expect(node.testCase.push.args).to.deep.equal([
@@ -239,29 +198,30 @@ describe('lib/planner/start-nodes.js', function() {
       });
 
       it('should calll startNodes.emitAsync with the event \'possibleActions.get\', ' +
-                ' node, and next', function() {
+        ' node, and next', function() {
         let generator = startNodes.get(callback);
+        components.componentOne.type = 'componentOne';
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
 
         expect(startNodes.emitAsync.args[2]).to.deep.equal([
           'possibleActions.get',
-          node,
+          node.state,
           next,
         ]);
       });
 
       it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
-                'with the event \'possibleActions.get\'', function() {
+        'with the event \'possibleActions.get\'', function() {
         let generator = startNodes.get(callback);
         let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
         generator.next({applicableActions});
 
@@ -269,13 +229,13 @@ describe('lib/planner/start-nodes.js', function() {
       });
 
       it('should set node.allActions to the returned allActions from yielding to startNodes.emitAsync with the ' +
-                'event \'possibleActions.get\'', function() {
+        'event \'possibleActions.get\'', function() {
         let generator = startNodes.get(callback);
         let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
         generator.next({allActions});
 
@@ -289,7 +249,7 @@ describe('lib/planner/start-nodes.js', function() {
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
         generator.next({});
         generator.next(nodeTwo);
@@ -306,11 +266,11 @@ describe('lib/planner/start-nodes.js', function() {
 
         generator.next();
         generator.next(next);
-        generator.next(components);
+        generator.next([components.componentOne, components.componentTwo]);
         generator.next(node);
         generator.next({});
 
-        expect(startNodes.emitAsync.callCount).to.equal(3);
+        expect(startNodes.emitAsync.callCount).to.equal(4);
       });
     });
 
@@ -319,7 +279,7 @@ describe('lib/planner/start-nodes.js', function() {
 
       generator.next();
       generator.next(next);
-      generator.next(components);
+      generator.next([components.componentOne, components.componentTwo]);
       generator.next(node);
       generator.next({});
       generator.next(nodeTwo);

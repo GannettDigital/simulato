@@ -2,6 +2,17 @@
 
 ## Pending Version
 
+## 0.7.3
+
+* Brian  Fitzpatrick
+  * Added switch for search algorithm
+
+Scott Gunther
+  * Added single search for action in action tree
+
+* Tom Dale
+  * Created action tree search for actions
+
 ## 0.7.2
 
 * Subarna Mukhiyabeen

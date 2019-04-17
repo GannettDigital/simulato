@@ -39,7 +39,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     it('should Emitter.mixIn once with forwardStateSpaceSearch and plannerEventDispatch ' +
-            'as parameters', function() {
+      'as parameters', function() {
       forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
@@ -61,7 +61,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     it('should call forwardStateSpaceSearch.runOn with the event \'forwardStateSpaceSearch.findGoalActions' +
-            '\' and forwardStateSpaceSearch._findGoalActions', function() {
+      '\' and forwardStateSpaceSearch._findGoalActions', function() {
       forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
@@ -73,7 +73,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     it('should call forwardStateSpaceSearch.runOn with the event \'forwardStateSpaceSearch.testForGoal' +
-            '\' and forwardStateSpaceSearch._testForGoal', function() {
+      '\' and forwardStateSpaceSearch._testForGoal', function() {
       forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
@@ -159,7 +159,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
     describe('if configHandler.get(\'actionToCover\') is truthy', function() {
       it('should set forwardStateSpaceSearch._predeterminedGoalAction to the passed in ' +
-                'predeterminedGoalAction', function() {
+        'predeterminedGoalAction', function() {
         let generator = forwardStateSpaceSearch.createPlans(callback);
         configHandler.get.returns('component.ACTION');
 
@@ -172,7 +172,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
 
     it('should call forwardStateSpaceSearch.emitAsync with the event \'startNodes.get\' ' +
-            'and next', function() {
+      'and next', function() {
       let generator = forwardStateSpaceSearch.createPlans(callback);
 
       generator.next();
@@ -245,7 +245,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
-            'findGoalActions\'', function() {
+      'findGoalActions\'', function() {
       let generator = forwardStateSpaceSearch.createPlans(callback);
 
       generator.next();
@@ -421,12 +421,12 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         generator.next();
         try {
           generator.next(next);
-        } catch (err) {}
+        } catch (err) { }
 
         expect(global.SimulatoError.PLANNER.GOAL_NOT_FOUND.args).to.deep.equal([
           [
             'Planning finished before finding the following goal(s): ' +
-                            'componentInstance.MY_ACTION,componentInstance2.MY_OTHER_ACTION',
+            'componentInstance.MY_ACTION,componentInstance2.MY_OTHER_ACTION',
           ],
         ]);
       });
@@ -435,7 +435,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     describe('when a node is returned', function() {
       describe('for an action in node.actions.values', function() {
         it('should call forwardStateSpaceSearch.emitAsync with the event \'searchNode.clone\' ' +
-                    'the node, and the next callback', function() {
+          'the node, and the next callback', function() {
           let generator = forwardStateSpaceSearch._findGoalActions();
 
           generator.next();
@@ -484,7 +484,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'planner.applyEffects\' ' +
-                    'clonedNode, and the next callback', function() {
+          'clonedNode, and the next callback', function() {
           let clonedNode = {path: []};
           let generator = forwardStateSpaceSearch._findGoalActions();
 
@@ -503,8 +503,8 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'possibleActions.' +
-                    'get\', clonedNode, and the next callback', function() {
-          let clonedNode = {path: []};
+          'get\', clonedNode, and the next callback', function() {
+          let clonedNode = {path: [], state: {myProperty: {}}};
           let generator = forwardStateSpaceSearch._findGoalActions();
 
           generator.next();
@@ -515,15 +515,14 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           expect(forwardStateSpaceSearch.emitAsync.args[2]).to.deep.equal([
             'possibleActions.get',
             {
-              actions: new Set(),
-              path: ['myComponent.MY_ACTION'],
+              myProperty: {},
             },
             next,
           ]);
         });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
-                    'testForGoal\', clonedNode, and the next callback', function() {
+          'testForGoal\', clonedNode, and the next callback', function() {
           let clonedNode = {path: []};
           let generator = forwardStateSpaceSearch._findGoalActions();
 
@@ -544,9 +543,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         describe('if predeterminedGoalAction is null and discoveredActions.size is equal to ' +
-                    'foundGoalActions.size', function() {
+          'foundGoalActions.size', function() {
           it('should call the forwardStateSpaceSearch callback once with null, null, true, and ' +
-                        'discoveredActions as the parameters', function() {
+              'discoveredActions as the parameters', function() {
             let clonedNode = {path: []};
             forwardStateSpaceSearch._callback = sinon.stub();
             forwardStateSpaceSearch._discoveredActions = new Set();
@@ -600,7 +599,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           });
 
           it('should call the forwardStateSpaceSearch callback once with null, null, true, and ' +
-                        'discoveredActions as the parameters', function() {
+            'discoveredActions as the parameters', function() {
             let clonedNode = {path: []};
             forwardStateSpaceSearch._callback = sinon.stub();
             forwardStateSpaceSearch._discoveredActions = new Set();
@@ -632,9 +631,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         describe('if discoveredActions.size is not equal to foundGoalActions.size and foundGoalActions ' +
-                    'does not have the the predeterminedGoalAction', function() {
+          'does not have the the predeterminedGoalAction', function() {
           it('should call forwardStateSpaceSearch._findUnfoundGoalActionCount once with ' +
-                        'the clonedNode', function() {
+              'the clonedNode', function() {
             let clonedNode = {path: []};
             forwardStateSpaceSearch._discoveredActions = new Set();
             forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
@@ -659,7 +658,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           });
 
           it('should call forwardStateSpaceSearch._setNodeInMap once with ' +
-                        'the clonedNode and unfoundGoalActionCount', function() {
+              'the clonedNode and unfoundGoalActionCount', function() {
             let clonedNode = {path: []};
             forwardStateSpaceSearch._discoveredActions = new Set();
             forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
@@ -708,7 +707,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       });
 
       it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
-                'findGoalActions\'', function() {
+        'findGoalActions\'', function() {
         forwardStateSpaceSearch._getNodeFromMap.returns({
           actions: new Set(),
         });
@@ -842,7 +841,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       describe('when configHandler.get returns the boolean true', function() {
         describe('when goalActions.size equals the number 0', function() {
           it('should call console.log with a message reporting that paths to ' +
-                        'all actions were discovered', function() {
+            'all actions were discovered', function() {
             configHandler.get.returns(true);
             forwardStateSpaceSearch._goalActions.has.returns(true);
             forwardStateSpaceSearch._foundGoalActions.has.returns(false);
@@ -872,7 +871,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           });
 
           it('should call console.log with a message reporting the number of actions for which paths ' +
-                        'have been found', function() {
+            'have been found', function() {
             configHandler.get.returns(true);
             forwardStateSpaceSearch._goalActions.has.returns(true);
             forwardStateSpaceSearch._foundGoalActions.has.returns(false);
@@ -921,7 +920,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
       describe('if forwardStateSpaceSearch._predeterminedGoalAction is null', function() {
         it('should call forwardStateSpaceSearch._callback once with the parameters null and the result ' +
-                    'of the next yield', function() {
+          'of the next yield', function() {
           forwardStateSpaceSearch._goalActions.has.returns(true);
           forwardStateSpaceSearch._foundGoalActions.has.returns(false);
           let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
@@ -934,7 +933,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
-                    'cloneSearchNode\', the passed in node, and the next callback', function() {
+          'cloneSearchNode\', the passed in node, and the next callback', function() {
           forwardStateSpaceSearch._goalActions.has.returns(true);
           forwardStateSpaceSearch._foundGoalActions.has.returns(false);
           let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback); 0;
@@ -956,7 +955,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
       describe('if forwardStateSpaceSearch._predeterminedGoalAction is equal to node.lastAction', function() {
         it('should call forwardStateSpaceSearch._callback once with the parameters null and the result ' +
-                    'of the next yield', function() {
+          'of the next yield', function() {
           forwardStateSpaceSearch._goalActions.has.returns(true);
           forwardStateSpaceSearch._foundGoalActions.has.returns(false);
           forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
@@ -970,7 +969,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch' +
-                    '.cloneSearchNode\', the passed in node, and the next callback', function() {
+          '.cloneSearchNode\', the passed in node, and the next callback', function() {
           forwardStateSpaceSearch._goalActions.has.returns(true);
           forwardStateSpaceSearch._foundGoalActions.has.returns(false);
           forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
@@ -992,7 +991,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       });
 
       describe('if forwardStateSpaceSearch._predeterminedGoalAction not falsey and is not' +
-                'equal to node.lastAction', function() {
+        'equal to node.lastAction', function() {
         it('should not call forward forwardStateSpaceSearch._callback', function() {
           forwardStateSpaceSearch._goalActions.has.returns(true);
           forwardStateSpaceSearch._foundGoalActions.has.returns(false);
@@ -1073,9 +1072,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     describe('if the passed in node testCase.length already exists in' +
-            'forwardStateSpaceSearch nodes[testCase.length]', function() {
+      'forwardStateSpaceSearch nodes[testCase.length]', function() {
       describe('if the passed in unfoundGoalActionCount already exists in' +
-                'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
+          'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
         it('should push the passed in node to that spot in the 3d Array', function() {
           let node = {
             testCase: [0, 1, 2],
@@ -1109,9 +1108,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
       });
       describe('if the passed in unfoundGoalActionCount does NOT exist in' +
-            'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
+          'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
         it('should push the create an empty array in that element and' +
-                    'passed in node to that spot in the 3d Array', function() {
+              'passed in node to that spot in the 3d Array', function() {
           let node = {
             testCase: [0, 1, 2],
           };
@@ -1143,9 +1142,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     });
 
     describe('if the passed in node testCase.length does NOT exist in' +
-            'forwardStateSpaceSearch nodes[testCase.length]', function() {
+      'forwardStateSpaceSearch nodes[testCase.length]', function() {
       it('should push the create an empty array in that element and' +
-                'passed in node to that spot in the 3d Array', function() {
+          'passed in node to that spot in the 3d Array', function() {
         let node = {
           testCase: [0, 1, 2],
         };
@@ -1294,7 +1293,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         });
         describe('for each actionArray that has a 0 element', function() {
           it('should call forwardStateSpaceSearch._findNextNode with the ' +
-                        'first available node and the number of new actions', function() {
+            'first available node and the number of new actions', function() {
             forwardStateSpaceSearch._pathArray = [
               [
                 [
@@ -1454,9 +1453,9 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       });
 
       describe('if the returned unfoundGoalActionCount is NOT' +
-                'the same as passed in currentActionsCount', function() {
+        'the same as passed in currentActionsCount', function() {
         it('should call forwardStateSpaceSearch._setNodeInMap ' +
-          ' for each node comes back with a different count', function() {
+            ' for each node comes back with a different count', function() {
           forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(0).returns(1);
           forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(1).returns(2);
           forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(2).returns(2);

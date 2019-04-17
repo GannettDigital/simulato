@@ -21,7 +21,7 @@ module.exports = {
   actions() {
     return {};
   },
-  children(expectedState, dataStore) {
+  children() {
     return [
       {
         type: 'NewsArticle',

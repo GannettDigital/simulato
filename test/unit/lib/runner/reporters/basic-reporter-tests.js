@@ -61,6 +61,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
       };
 
       mockery.registerMock('./utils/state-compare.js', stateCompare);
+      mockery.registerMock('jest-diff', {});
 
       basicReporter = require('../../../../../lib/runner/reporters/basic-reporter.js');
     });
@@ -143,205 +144,6 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
 
           expect(console.log.callCount).to.equal(3);
         });
-
-        describe('if the report.errorLocation.step is \'effects\'', function() {
-          it('should call stateCompare.printDifference Once', function() {
-            report = {
-              status: 'fail',
-              errorLocation: {
-                actionIndex: 0,
-                step: 'effects',
-              },
-              actions: [
-                {
-                  component: 'componentName',
-                  action: 'ACTION_NAME',
-                  steps: {
-                    preconditions: null,
-                    peform: null,
-                    effects: {
-                      error: {
-                        name: 'ERROR NAME',
-                        message: 'ERROR MESSAGE',
-                        stack: 'an error stack',
-                      },
-                      expectedState: {
-                        foo: true,
-                      },
-                      pageState: {
-                        foo: false,
-                      },
-                    },
-                  },
-                },
-              ],
-            };
-
-            basicReporter.printTestResult(report);
-
-            expect(stateCompare.printDifference.callCount).to.equal(1);
-          });
-
-          it('should call stateCompare.printDifference with the failedStep\'s'
-            + ' pageState and expectedState as first two params', function() {
-            report = {
-              status: 'fail',
-              errorLocation: {
-                actionIndex: 0,
-                step: 'effects',
-              },
-              actions: [
-                {
-                  component: 'componentName',
-                  action: 'ACTION_NAME',
-                  steps: {
-                    preconditions: null,
-                    peform: null,
-                    effects: {
-                      error: {
-                        name: 'ERROR NAME',
-                        message: 'ERROR MESSAGE',
-                        stack: 'an error stack',
-                      },
-                      expectedState: {
-                        foo: true,
-                      },
-                      pageState: {
-                        foo: false,
-                      },
-                    },
-                  },
-                },
-              ],
-            };
-
-            basicReporter.printTestResult(report);
-
-            expect(stateCompare.printDifference.args[0].slice(0, 2)).to.deep.equal([
-              {
-                foo: false,
-              },
-              {
-                foo: true,
-              },
-            ]);
-          });
-
-          it('should call stateCompare.printDifference with a callback as the 3rd param', function() {
-            report = {
-              status: 'fail',
-              errorLocation: {
-                actionIndex: 0,
-                step: 'effects',
-              },
-              actions: [
-                {
-                  component: 'componentName',
-                  action: 'ACTION_NAME',
-                  steps: {
-                    preconditions: null,
-                    peform: null,
-                    effects: {
-                      error: {
-                        name: 'ERROR NAME',
-                        message: 'ERROR MESSAGE',
-                        stack: 'an error stack',
-                      },
-                      expectedState: {
-                        foo: true,
-                      },
-                      pageState: {
-                        foo: false,
-                      },
-                    },
-                  },
-                },
-              ],
-            };
-
-            basicReporter.printTestResult(report);
-
-            expect(stateCompare.printDifference.args[0][2]).to.be.a('function');
-          });
-
-          describe('when the callback param of stateCompare.printDifference is called', function() {
-            it('should call console.log printing out the returned stateDifference', function() {
-              report = {
-                status: 'fail',
-                errorLocation: {
-                  actionIndex: 0,
-                  step: 'effects',
-                },
-                actions: [
-                  {
-                    component: 'componentName',
-                    action: 'ACTION_NAME',
-                    steps: {
-                      preconditions: null,
-                      peform: null,
-                      effects: {
-                        error: {
-                          name: 'ERROR NAME',
-                          message: 'ERROR MESSAGE',
-                          stack: 'an error stack',
-                        },
-                        expectedState: {
-                          foo: true,
-                        },
-                        pageState: {
-                          foo: false,
-                        },
-                      },
-                    },
-                  },
-                ],
-              };
-              stateCompare.printDifference.callsArgWith(2, 'state compare string');
-
-              basicReporter.printTestResult(report);
-
-              expect(console.log.args[3]).to.deep.equal(['state compare string\n']);
-            });
-
-            it('should call console.log a total of 4 times', function() {
-              report = {
-                status: 'fail',
-                errorLocation: {
-                  actionIndex: 0,
-                  step: 'effects',
-                },
-                actions: [
-                  {
-                    component: 'componentName',
-                    action: 'ACTION_NAME',
-                    steps: {
-                      preconditions: null,
-                      peform: null,
-                      effects: {
-                        error: {
-                          name: 'ERROR NAME',
-                          message: 'ERROR MESSAGE',
-                          stack: 'an error stack',
-                        },
-                        expectedState: {
-                          foo: true,
-                        },
-                        pageState: {
-                          foo: false,
-                        },
-                      },
-                    },
-                  },
-                ],
-              };
-              stateCompare.printDifference.callsArgWith(2, 'state compare string');
-
-              basicReporter.printTestResult(report);
-
-              expect(console.log.callCount).to.equal(4);
-            });
-          });
-        });
       });
     });
   });
@@ -364,7 +166,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
         testReports: [],
       };
 
-      mockery.registerMock('./utils/state-compare.js', {});
+      mockery.registerMock('jest-diff', {});
 
       basicReporter = require('../../../../../lib/runner/reporters/basic-reporter.js');
     });

@@ -34,7 +34,7 @@ describe('lib/planner/action-coverage.js', function() {
     });
 
     it('should Emitter.mixIn once with actionCoverage and plannerEventDispatch ' +
-            'as parameters', function() {
+      'as parameters', function() {
       actionCoverage = require('../../../../lib/planner/action-coverage.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
@@ -79,7 +79,7 @@ describe('lib/planner/action-coverage.js', function() {
 
     it('should call actionCoverage.emit once with the event "countActions.calculate", ' +
       'plans, discoveredActions, and next', function() {
-      let generator = actionCoverage.reportCoverage('plans', 'discoveredActions');
+      let generator = actionCoverage.reportCoverage('plans', 'discoveredActions', 'algorithm');
 
       generator.next();
       generator.next(next);
@@ -89,6 +89,7 @@ describe('lib/planner/action-coverage.js', function() {
           'countActions.calculate',
           'plans',
           'discoveredActions',
+          'algorithm',
           next,
         ],
       ]);

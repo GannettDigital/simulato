@@ -65,12 +65,12 @@ describe('lib/planner/write-plans-to-disk.js', function() {
     });
 
     it('should call fs.writeFileSync with the resolved path,' +
-        'and the stringified version of the plan.testCase', function() {
+      'and the stringified version of the plan.testCase', function() {
       path.resolve.onCall(0).returns('path1');
       path.resolve.onCall(1).returns('path2');
       let plans = [
-        {testCase: {foo: 'bar'}},
-        {testCase: {bar: 'foo'}},
+        {foo: 'bar'},
+        {bar: 'foo'},
       ];
 
       writePlansToDisk(plans);

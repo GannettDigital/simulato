@@ -40,7 +40,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     it('should Emitter.mixIn once with offlineReplanning and plannerEventDispatch ' +
-            'as parameters', function() {
+      'as parameters', function() {
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
       );
@@ -62,7 +62,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     it('should call offlineReplanning.runOn with the event \'offlineReplanning.findGoalActions' +
-    '\' and offlineReplanning.backtrack', function() {
+      '\' and offlineReplanning.backtrack', function() {
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
       );
@@ -74,7 +74,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     it('should call offlineReplanning.runOn with the event \'offlineReplanning.updateExistingPlans' +
-    'AndActionOccurrences\' and offlineReplanning.updateExistingPlansAndActionOccurrences', function() {
+      'AndActionOccurrences\' and offlineReplanning.updateExistingPlansAndActionOccurrences', function() {
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
       );
@@ -86,7 +86,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     it('should call offlineReplanning.runOn with the event \'offlineReplanning.checkForLoopAndBackTrack' +
-    '\' and offlineReplanning.checkForLoopAndBackTrack', function() {
+      '\' and offlineReplanning.checkForLoopAndBackTrack', function() {
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
       );
@@ -190,7 +190,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     it('should call offlineReplanning.emitAsync with the event "countActions.calculate", offlineReplanning' +
       '._existingPlans, offlineReplanning._discoveredActions, and next', function() {
-      let generator = offlineReplanning.replan('existingPlans', 'discoveredActions');
+      let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
 
       generator.next();
       generator.next(next);
@@ -199,16 +199,17 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         'countActions.calculate',
         'existingPlans',
         'discoveredActions',
+        'algorithm',
         next,
       ]);
     });
 
     describe('while offlineReplanning._satisfiedActions.size is less than offlineReplanning._actionOccurrences ' +
-    '.size', function() {
+      '.size', function() {
       it('should set offlineReplanning._savedPlans to an empty array', function() {
         offlineReplanning._satisfiedActions = new Set();
         offlineReplanning._plans = ['aPlan'];
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions');
+        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
 
         generator.next();
         generator.next(next);
@@ -220,7 +221,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       it('should call offlineReplanning.emitAsync with the event "startNodes.get and next', function() {
         offlineReplanning._satisfiedActions = new Set();
         offlineReplanning._plans = ['aPlan'];
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions');
+        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
 
         generator.next();
         generator.next(next);
@@ -237,7 +238,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         offlineReplanning._satisfiedActions = new Set();
         offlineReplanning._plans = ['aPlan'];
         offlineReplanning._getAction.returns(null);
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 1});
+        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm', {testLength: 1});
 
         generator.next();
         generator.next(next);
@@ -254,13 +255,14 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       });
 
       describe('while the plan.path.length is less than the options.testLength and offlineReplanning.' +
-        '_satisfiedActions. size is less than offlineReplanning._actionOccurrences.size', function() {
+          '_satisfiedActions. size is less than offlineReplanning._actionOccurrences.size', function() {
         it('should call offlineReplanning._getAction once with the first plan in startNodes', function() {
-          let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
+          let startNodes = [{path: ['MY_ACTION'], state: {}}, {path: ['MY_ACTION_2'], state: {}}];
           offlineReplanning._satisfiedActions = new Set();
           offlineReplanning._plans = ['aPlan'];
           offlineReplanning._getAction.returns(null);
-          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+              'algorithm', {testLength: 4});
 
           generator.next();
           generator.next(next);
@@ -270,6 +272,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
           expect(offlineReplanning._getAction.args).to.deep.equal([
             [
               {
+                state: {},
                 path: ['MY_ACTION'],
               },
             ],
@@ -282,7 +285,8 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns(null);
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -299,7 +303,8 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns('NEXT_ACTION');
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -310,12 +315,13 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
           });
 
           it('should call offlineReplanning.emitAsync with the event "planner.applyEffects", the plan, ' +
-            'next', function() {
+                'next', function() {
             let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns('NEXT_ACTION');
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -331,12 +337,15 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             ]);
           });
 
-          it('should call offlineReplanning.emitAsync with the event "possibleActions.get, plan, and next', function() {
-            let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
+          it('should call offlineReplanning.emitAsync with the event "possibleActions.get, ' +
+                'plan, and next', function() {
+            let startNodes = [{path: ['MY_ACTION'], state: {myProperty: {}}},
+              {path: ['MY_ACTION_2'], state: {myProperty: {}}}];
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns('NEXT_ACTION');
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -347,18 +356,20 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             expect(offlineReplanning.emitAsync.args[3]).to.deep.equal([
               'possibleActions.get',
               {
-                path: ['MY_ACTION', 'NEXT_ACTION'],
+                myProperty: {},
               },
               next,
             ]);
           });
 
-          it('should set plan.actions to the value returned from emitting the event "possibleActions.get"', function() {
+          it('should set plan.actions to the value returned from emitting the event ' +
+                '"possibleActions.get"', function() {
             let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns('NEXT_ACTION');
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -370,13 +381,15 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             expect(startNodes[0].actions).to.deep.equal(['MY_ACTION_3', 'MY_ACTION_4']);
           });
 
-          it('should call offlineReplanning.emitAsync with the event "offlineReplanning.checkForLoopAndBackTrack" ' +
-            'checkForLoopAndBackTrack the plan, and next', function() {
+          it('should call offlineReplanning.emitAsync with the event ' +
+                '"offlineReplanning.checkForLoopAndBackTrack" ' +
+                'checkForLoopAndBackTrack the plan, and next', function() {
             let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
             offlineReplanning._satisfiedActions = new Set();
             offlineReplanning._plans = ['aPlan'];
             offlineReplanning._getAction.returns('NEXT_ACTION');
-            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+            let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                'algorithm', {testLength: 4});
 
             generator.next();
             generator.next(next);
@@ -396,13 +409,14 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
           });
 
           describe('if backtrackPlan is null and offlineReplanning._satisfiedActions does not have the ' +
-            'applied action', function() {
+                'applied action', function() {
             it('should add the action to offlineReplanning_satisfiedActions', function() {
               let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
               offlineReplanning._satisfiedActions = new Set();
               offlineReplanning._plans = ['aPlan'];
               offlineReplanning._getAction.returns('NEXT_ACTION');
-              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                  'algorithm', {testLength: 4});
 
               generator.next();
               generator.next(next);
@@ -416,12 +430,13 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             });
 
             it('should call offlineReplanning.emitAsync with the event "offlineReplanning.' +
-            'updateExistingPlansAndActionOccurrences" and next', function() {
+                    'updateExistingPlansAndActionOccurrences" and next', function() {
               let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
               offlineReplanning._satisfiedActions = new Set();
               offlineReplanning._plans = ['aPlan'];
               offlineReplanning._getAction.returns('NEXT_ACTION');
-              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                  'algorithm', {testLength: 4});
 
               generator.next();
               generator.next(next);
@@ -444,7 +459,8 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
               offlineReplanning._satisfiedActions = new Set();
               offlineReplanning._plans = ['aPlan'];
               offlineReplanning._getAction.returns('NEXT_ACTION');
-              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                  'algorithm', {testLength: 4});
 
               generator.next();
               generator.next(next);
@@ -471,7 +487,8 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
               offlineReplanning._plans = ['aPlan'];
               offlineReplanning._getAction.returns('NEXT_ACTION');
               configHandler.get.returns(true);
-              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                  'algorithm', {testLength: 4});
 
               generator.next();
               generator.next(next);
@@ -489,21 +506,24 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
           });
 
           describe('if the returned backtrackPlan is null and offlineReplanning._satisfiedActions does ' +
-            'not have the action', function() {
+                'not have the action', function() {
             it('should call offlineReplanning.emitAsync next with the event "planner.applyEffects"', function() {
               let startNodes = [{path: ['MY_ACTION']}, {path: ['MY_ACTION_2']}];
               offlineReplanning._satisfiedActions = new Set(['NEXT_ACTION']);
               offlineReplanning._plans = ['aPlan'];
               offlineReplanning._getAction.returns('NEXT_ACTION');
-              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', {testLength: 4});
+              let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+                  'algorithm', {testLength: 4});
 
               generator.next();
               generator.next(next);
-              generator.next({actionOccurrences: new Map([
-                ['MY_ACTION', 1],
-                ['MY_ACTION_2', 3],
-                ['NEXT_ACTION', 1],
-              ])});
+              generator.next({
+                actionOccurrences: new Map([
+                  ['MY_ACTION', 1],
+                  ['MY_ACTION_2', 3],
+                  ['NEXT_ACTION', 1],
+                ]),
+              });
               generator.next(startNodes);
               generator.next();
               generator.next({applicableActions: ['MY_ACTION_3', 'MY_ACTION_4']});
@@ -519,10 +539,10 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     describe('if offlineReplanning._satisfiedActions.size is equal to offlineReplanning._actionOccurrences ' +
       '.size', function() {
       it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
-        'offlineReplanning._discoveredActions', function() {
+          'offlineReplanning._discoveredActions', function() {
         offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
         offlineReplanning._plans = ['aPlan'];
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions');
+        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
 
         generator.next();
         generator.next(next);
@@ -607,7 +627,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     describe('if the loopStartIndex is not equal to the number "-1"', function() {
       it('should call offlineReplanning.emitAsync once with the event "offlineReplanning.backtrack",' +
-      'the passed in plan, and next', function() {
+        'the passed in plan, and next', function() {
         offlineReplanning._detectLoop.returns(3);
         let generator = offlineReplanning._checkForLoopAndBackTrack('myPlan', callback);
 
@@ -914,6 +934,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         'offlineReplanning._existingPlans, offlineReplanning._discoveredActions, and nexts', function() {
         offlineReplanning._pruneExistingPlans.returns(['planOne']);
         offlineReplanning._discoveredActions = new Set('ACTION_ONE');
+        offlineReplanning._algorithm = 'algorithm';
         let generator = offlineReplanning._updateExistingPlansAndActionOccurrences(callback);
 
         generator.next();
@@ -924,6 +945,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
             'countActions.calculate',
             ['planOne'],
             new Set('ACTION_ONE'),
+            'algorithm',
             next,
           ],
         ]);
@@ -970,7 +992,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       let generator = offlineReplanning._updateExistingPlansAndActionOccurrences(callback);
 
       generator.next();
-      let result =generator.next(next);
+      let result = generator.next(next);
 
       expect(result).to.deep.equal({
         value: 'myReturnValue',
@@ -1054,7 +1076,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
         try {
           offlineReplanning._savePlan('myPlan');
-        } catch (error) {}
+        } catch (error) { }
 
         expect(SimulatoError.PLANNER.DUPLICATE_PLAN_GENERATED.args).to.deep.equal([
           [
@@ -1221,7 +1243,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
           try {
             offlineReplanning._getAction(plan);
-          } catch (error) {}
+          } catch (error) { }
 
           expect(SimulatoError.PLANNER.NO_STARTING_ACTIONS.args).to.deep.equal([
             [
@@ -1291,7 +1313,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
             try {
               offlineReplanning._getAction(plan);
-            } catch (error) {}
+            } catch (error) { }
 
             expect(SimulatoError.PLANNER.NO_STARTING_ACTIONS.args).to.deep.equal([
               [
@@ -2648,7 +2670,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     describe('if there are three possible backtrack plans and none have actions.size greather than ' +
-    '0 after deleting the last action', function() {
+      '0 after deleting the last action', function() {
       it('should call offlineReplanning.emitAsync three times with each possible plan', function() {
         offlineReplanning._savedPlans = [
           {
