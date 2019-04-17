@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/planner-event-dispatch/register-planner-events.js', function () {
+describe('lib/planner/planner-event-dispatch/register-planner-events.js', function() {
   let actionCoverage;
   let testPlanner;
   let writePlansToDisk;
@@ -22,8 +22,8 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
   let entryComponents;
   let stateDifference;
 
-  beforeEach(function () {
-    mockery.enable({ useCleanCache: true });
+  beforeEach(function() {
+    mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../../lib/planner/planner-event-dispatch/register-planner-events.js');
 
     actionCoverage = {
@@ -79,35 +79,35 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     mockery.registerMock('../possible-actions.js', possibleActions);
     mockery.registerMock('../apply-effects.js', applyEffects);
     mockery.registerMock('../start-nodes.js', startNodes);
-    mockery.registerMock('../search-algorithms/action-tree.js', actionTree)
-    mockery.registerMock('../entry-components.js', entryComponents)
-    mockery.registerMock('../state-difference.js', stateDifference)
+    mockery.registerMock('../search-algorithms/action-tree.js', actionTree);
+    mockery.registerMock('../entry-components.js', entryComponents);
+    mockery.registerMock('../state-difference.js', stateDifference);
 
 
     registerPlannerEvents =
       require('../../../../../lib/planner/planner-event-dispatch/register-planner-events.js');
   });
 
-  afterEach(function () {
+  afterEach(function() {
     mockery.resetCache();
     mockery.deregisterAll();
     mockery.disable();
   });
 
-  it('should call plannerEventDispatch.on 8 times', function () {
+  it('should call plannerEventDispatch.on 8 times', function() {
     registerPlannerEvents(plannerEventDispatch);
 
     expect(plannerEventDispatch.on.callCount).to.equal(8);
   });
 
-  it('should call plannerEventDispatch.runOn 8 times', function () {
+  it('should call plannerEventDispatch.runOn 8 times', function() {
     registerPlannerEvents(plannerEventDispatch);
 
     expect(plannerEventDispatch.runOn.callCount).to.equal(8);
   });
 
   it('should call plannerEventDispatch.on with the event \'planner.generateConfigured\' ' +
-    'and testPlanner.generateTests as parameter', function () {
+    'and testPlanner.generateTests as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[0]).to.deep.equal([
@@ -117,7 +117,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'testPlanner.createActionTreePlans\' ' +
-    'and  as parameter', function () {
+    'and  as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[0]).to.deep.equal([
@@ -126,8 +126,9 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
       ]);
     });
 
-  it('should call plannerEventDispatch.runOn with the event \'testPlanner.createForwardStateSpaceSearchHeuristicPlans\' ' +
-    'and  as parameter', function () {
+  it('should call plannerEventDispatch.runOn with the event' +
+    '\testPlanner.createForwardStateSpaceSearchHeuristicPlans\' ' +
+    'and  as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[1]).to.deep.equal([
@@ -137,7 +138,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'testPlanner.reduceToMinimumSetOfPlans\' ' +
-    'and reduceToMinimumSetOfPlans as parameter', function () {
+    'and reduceToMinimumSetOfPlans as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[1]).to.deep.equal([
@@ -147,7 +148,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'planner.planningFinished\' ' +
-    'and writePlansToDisk as parameter', function () {
+    'and writePlansToDisk as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[2]).to.deep.equal([
@@ -157,7 +158,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'planner.planningFinished\' ' +
-    'and actionCoverage.reportCoverage as parameter', function () {
+    'and actionCoverage.reportCoverage as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[2]).to.deep.equal([
@@ -167,7 +168,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'planner.applyEffects\' ' +
-    'and applyEffects as parameter', function () {
+    'and applyEffects as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[3]).to.deep.equal([
@@ -177,7 +178,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'startNodes.get\' ' +
-    'and startNodes.get as parameter', function () {
+    'and startNodes.get as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[3]).to.deep.equal([
@@ -187,7 +188,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'searchNode.clone\' ' +
-    'and searchNode.clone as parameter', function () {
+    'and searchNode.clone as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[4]).to.deep.equal([
@@ -197,7 +198,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'searchNode.create\' ' +
-    'and searchNode.create as parameter', function () {
+    'and searchNode.create as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[5]).to.deep.equal([
@@ -207,7 +208,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'offlineReplanning.replan\' ' +
-    'and offlineReplanning.replan as parameter', function () {
+    'and offlineReplanning.replan as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[4]).to.deep.equal([
@@ -217,7 +218,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.on with the event \'countActions.calculate\' ' +
-    'and countActions.calculate as parameter', function () {
+    'and countActions.calculate as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[6]).to.deep.equal([
@@ -227,7 +228,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'possibleActions.get\' ' +
-    'and possibleActions.get as parameter', function () {
+    'and possibleActions.get as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[5]).to.deep.equal([
@@ -237,7 +238,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'entryComponents.get\' ' +
-    'and entryComponents.get as parameter', function () {
+    'and entryComponents.get as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.runOn.args[7]).to.deep.equal([
@@ -247,7 +248,7 @@ describe('lib/planner/planner-event-dispatch/register-planner-events.js', functi
     });
 
   it('should call plannerEventDispatch.runOn with the event \'stateDifference.createDiff\' ' +
-    'and stateDifference.createDiff as parameter', function () {
+    'and stateDifference.createDiff as parameter', function() {
       registerPlannerEvents(plannerEventDispatch);
 
       expect(plannerEventDispatch.on.args[7]).to.deep.equal([

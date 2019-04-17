@@ -4,18 +4,18 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/test-planner.js', function () {
-  describe('on file require', function () {
+describe('lib/planner/test-planner.js', function() {
+  describe('on file require', function() {
     let Emitter;
     let testPlanner;
     let plannerEventDispatch;
 
-    beforeEach(function () {
-      mockery.enable({ useCleanCache: true });
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/planner/test-planner.js');
 
       Emitter = {
-        mixIn: function (myObject) {
+        mixIn: function(myObject) {
           myObject.emit = sinon.stub();
         },
       };
@@ -27,13 +27,13 @@ describe('lib/planner/test-planner.js', function () {
       mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
     });
 
-    afterEach(function () {
+    afterEach(function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should Emitter.mixIn once with testPlanner and plannerEventDispatch as parameters', function () {
+    it('should Emitter.mixIn once with testPlanner and plannerEventDispatch as parameters', function() {
       testPlanner = require('../../../../lib/planner/test-planner.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
@@ -45,18 +45,18 @@ describe('lib/planner/test-planner.js', function () {
     });
   });
 
-  describe('generateTests', function () {
+  describe('generateTests', function() {
     let Emitter;
     let testPlanner;
     let plannerEventDispatch;
     let config;
 
-    beforeEach(function () {
-      mockery.enable({ useCleanCache: true });
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/planner/test-planner.js');
 
       Emitter = {
-        mixIn: function (myObject) {
+        mixIn: function(myObject) {
           myObject.emit = sinon.stub();
         },
       };
@@ -73,29 +73,30 @@ describe('lib/planner/test-planner.js', function () {
       testPlanner = require('../../../../lib/planner/test-planner.js');
     });
 
-    afterEach(function () {
+    afterEach(function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should call testPlanner.emit with the event \'testPlanner.createForwardStateSpaceSearchHeuristicPlans\'', function () {
-      testPlanner.generateTests();
+    it('should call testPlanner.emit with the event' +
+      '\testPlanner.createForwardStateSpaceSearchHeuristicPlans\'', function() {
+        testPlanner.generateTests();
 
-      expect(testPlanner.emit.args[0][0]).to.deep.equal('testPlanner.createForwardStateSpaceSearchHeuristicPlans');
-    });
+        expect(testPlanner.emit.args[0][0]).to.deep.equal('testPlanner.createForwardStateSpaceSearchHeuristicPlans');
+      });
 
     describe('when the callback for testPlanner.emit with the event ' +
-      '\'testPlanner.createPlans\' is called', function () {
-        describe('if an error is passed in to the callback', function () {
-          it('should throw an error', function () {
+      '\'testPlanner.createPlans\' is called', function() {
+        describe('if an error is passed in to the callback', function() {
+          it('should throw an error', function() {
             testPlanner.emit.onCall(0).callsArgWith(1, new Error('An error occurred!'));
 
             expect(testPlanner.generateTests).to.throw('An error occurred!');
           });
         });
-        describe('if a plan is passed in to the callback', function () {
-          it('should add it to the plans array', function () {
+        describe('if a plan is passed in to the callback', function() {
+          it('should add it to the plans array', function() {
             testPlanner.generateTests();
             let callback = testPlanner.emit.args[0][1];
 
@@ -105,9 +106,9 @@ describe('lib/planner/test-planner.js', function () {
             expect(testPlanner.emit.args[1][1]).to.deep.equal(['myPlan']);
           });
         });
-        describe('if a truthy value for done is pass in to the callback', function () {
+        describe('if a truthy value for done is pass in to the callback', function() {
           it('should call testPlanner.emit with the event \'testPlanner.reduceToMinimumSetOfPlans\', ' +
-            'plans, and discoveredActions', function () {
+            'plans, and discoveredActions', function() {
               testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
 
               testPlanner.generateTests();
@@ -119,18 +120,18 @@ describe('lib/planner/test-planner.js', function () {
             });
 
           describe('when the callback is called for testPlanner.emit with the event ' +
-            '\'testPlanner.reduceToMinimumSetOfTestPlans\'', function () {
-              describe('if an error is passed in', function () {
-                it('should throw the error', function () {
-                  testPlanner._algorithm = 'default'
+            '\'testPlanner.reduceToMinimumSetOfTestPlans\'', function() {
+              describe('if an error is passed in', function() {
+                it('should throw the error', function() {
+                  testPlanner._algorithm = 'default';
                   testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
                   testPlanner.emit.onCall(1).callsArgWith(3, new Error('An error occurred!'));
 
                   expect(testPlanner.generateTests).to.throw('An error occurred!');
                 });
               });
-              describe('if an error is not passed in', function () {
-                it('should call config.get once with the string "plannerTestLength"', function () {
+              describe('if an error is not passed in', function() {
+                it('should call config.get once with the string "plannerTestLength"', function() {
                   testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
                   testPlanner.emit.onCall(1).callsArgWith(3, null, 'theFinalPlans');
 
@@ -140,10 +141,9 @@ describe('lib/planner/test-planner.js', function () {
                     'plannerTestLength',
                   ]);
                 });
-                describe('if testLength is a truthy value', function () {
+                describe('if testLength is a truthy value', function() {
                   it('should call testPlanner.emit with the event \'offlineReplanning.replan\', ' +
-                    'the finalPlans, discoveredActions, and an object with the testLength', function () {
-
+                    'the finalPlans, discoveredActions, and an object with the testLength', function() {
                       testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
                       testPlanner.emit.onCall(1).callsArgWith(3, null, 'theFinalPlans');
                       config.get.onCall(0).returns('algorithm');
@@ -162,9 +162,9 @@ describe('lib/planner/test-planner.js', function () {
                       ]);
                     });
                 });
-                describe('if testLength is a  falsy value', function () {
+                describe('if testLength is a  falsy value', function() {
                   it('should call testPlanner.emit with the event \'testPlanner.planningFinished\', ' +
-                    'the finalPlans, and discoveredActions', function () {
+                    'the finalPlans, and discoveredActions', function() {
                       testPlanner.emit.onCall(0).callsArgWith(1, null, null, true, 'discoveredActions');
                       testPlanner.emit.onCall(1).callsArgWith(3, null, 'theFinalPlans');
                       config.get.onCall(0).returns('algorithm');

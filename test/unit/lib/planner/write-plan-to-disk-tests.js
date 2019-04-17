@@ -4,15 +4,15 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/write-plans-to-disk.js', function () {
+describe('lib/planner/write-plans-to-disk.js', function() {
   let fs;
   let path;
   let configHandler;
   let clock;
   let writePlansToDisk;
 
-  beforeEach(function () {
-    mockery.enable({ useCleanCache: true });
+  beforeEach(function() {
+    mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../lib/planner/write-plans-to-disk.js');
 
     fs = {
@@ -35,7 +35,7 @@ describe('lib/planner/write-plans-to-disk.js', function () {
     writePlansToDisk = require('../../../../lib/planner/write-plans-to-disk.js');
   });
 
-  afterEach(function () {
+  afterEach(function() {
     console.log.restore();
     clock.restore();
     mockery.resetCache();
@@ -43,7 +43,7 @@ describe('lib/planner/write-plans-to-disk.js', function () {
     mockery.disable();
   });
 
-  it('should call configHandler.get once with \'outputPath\'', function () {
+  it('should call configHandler.get once with \'outputPath\'', function() {
     let plans = [];
 
     writePlansToDisk(plans);
@@ -51,8 +51,8 @@ describe('lib/planner/write-plans-to-disk.js', function () {
     expect(configHandler.get.args).to.deep.equal([['outputPath']]);
   });
 
-  describe('for each plan of the passed in plans', function () {
-    it('should call path.resolve with the outputPath and the constructed file name', function () {
+  describe('for each plan of the passed in plans', function() {
+    it('should call path.resolve with the outputPath and the constructed file name', function() {
       let plans = ['plan1', 'plan2'];
       configHandler.get.returns('outputPath/');
 
@@ -65,12 +65,12 @@ describe('lib/planner/write-plans-to-disk.js', function () {
     });
 
     it('should call fs.writeFileSync with the resolved path,' +
-      'and the stringified version of the plan.testCase', function () {
+      'and the stringified version of the plan.testCase', function() {
         path.resolve.onCall(0).returns('path1');
         path.resolve.onCall(1).returns('path2');
         let plans = [
-          { foo: 'bar' },
-          { bar: 'foo' },
+          {foo: 'bar'},
+          {bar: 'foo'},
         ];
 
         writePlansToDisk(plans);
@@ -82,7 +82,7 @@ describe('lib/planner/write-plans-to-disk.js', function () {
       });
   });
 
-  it('should call console.log to say it wrote the amount of plans to disk as passed in', function () {
+  it('should call console.log to say it wrote the amount of plans to disk as passed in', function() {
     let plans = ['plan1', 'plan2'];
 
     writePlansToDisk(plans);

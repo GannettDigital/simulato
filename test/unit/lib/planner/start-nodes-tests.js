@@ -4,18 +4,18 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const expect = require('chai').expect;
 
-describe('lib/planner/start-nodes.js', function () {
-  describe('on file require', function () {
+describe('lib/planner/start-nodes.js', function() {
+  describe('on file require', function() {
     let Emitter;
     let startNodes;
     let plannerEventDispatch;
 
-    beforeEach(function () {
-      mockery.enable({ useCleanCache: true });
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/planner/start-nodes.js');
 
       Emitter = {
-        mixIn: function (myObject) {
+        mixIn: function(myObject) {
           myObject.emitAsync = sinon.stub();
         },
       };
@@ -26,13 +26,13 @@ describe('lib/planner/start-nodes.js', function () {
       mockery.registerMock('./planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
     });
 
-    afterEach(function () {
+    afterEach(function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should Emitter.mixIn once with startNodes and plannerEventDispatch as parameters', function () {
+    it('should Emitter.mixIn once with startNodes and plannerEventDispatch as parameters', function() {
       startNodes = require('../../../../lib/planner/start-nodes.js');
 
       expect(Emitter.mixIn.args).to.deep.equal([
@@ -44,7 +44,7 @@ describe('lib/planner/start-nodes.js', function () {
     });
   });
 
-  describe('get', function () {
+  describe('get', function() {
     let Emitter;
     let startNodes;
     let next;
@@ -53,12 +53,12 @@ describe('lib/planner/start-nodes.js', function () {
     let nodeTwo;
     let components;
 
-    beforeEach(function () {
-      mockery.enable({ useCleanCache: true });
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/planner/start-nodes.js');
 
       Emitter = {
-        mixIn: function (myObject) {
+        mixIn: function(myObject) {
           myObject.emitAsync = sinon.stub();
         },
       };
@@ -112,13 +112,13 @@ describe('lib/planner/start-nodes.js', function () {
       startNodes = require('../../../../lib/planner/start-nodes.js');
     });
 
-    afterEach(function () {
+    afterEach(function() {
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
 
-    it('should call startNodes.emitAsync with the event \'entryComponents.get\' and next', function () {
+    it('should call startNodes.emitAsync with the event \'entryComponents.get\' and next', function() {
       let generator = startNodes.get(callback);
 
       generator.next();
@@ -130,9 +130,9 @@ describe('lib/planner/start-nodes.js', function () {
       ]);
     });
 
-    describe('for each entry component', function () {
+    describe('for each entry component', function() {
       it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
-        ' and next', function () {
+        ' and next', function() {
           let generator = startNodes.get(callback);
 
           generator.next();
@@ -147,7 +147,7 @@ describe('lib/planner/start-nodes.js', function () {
         });
 
       it('should call node.state.createAndAddComponent with the type, name, state, and options in an ' +
-        'object', function () {
+        'object', function() {
           let generator = startNodes.get(callback);
           components.componentOne.type = 'componentOne';
 
@@ -172,7 +172,7 @@ describe('lib/planner/start-nodes.js', function () {
           ]);
         });
 
-      it('should call node.testCase.push with the type, name, state, and options in an object', function () {
+      it('should call node.testCase.push with the type, name, state, and options in an object', function() {
         let generator = startNodes.get(callback);
         components.componentOne.type = 'componentOne';
 
@@ -198,7 +198,7 @@ describe('lib/planner/start-nodes.js', function () {
       });
 
       it('should calll startNodes.emitAsync with the event \'possibleActions.get\', ' +
-        ' node, and next', function () {
+        ' node, and next', function() {
           let generator = startNodes.get(callback);
           components.componentOne.type = 'componentOne';
 
@@ -215,7 +215,7 @@ describe('lib/planner/start-nodes.js', function () {
         });
 
       it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
-        'with the event \'possibleActions.get\'', function () {
+        'with the event \'possibleActions.get\'', function() {
           let generator = startNodes.get(callback);
           let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
@@ -223,13 +223,13 @@ describe('lib/planner/start-nodes.js', function () {
           generator.next(next);
           generator.next([components.componentOne, components.componentTwo]);
           generator.next(node);
-          generator.next({ applicableActions });
+          generator.next({applicableActions});
 
           expect(node.actions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2']));
         });
 
       it('should set node.allActions to the returned allActions from yielding to startNodes.emitAsync with the ' +
-        'event \'possibleActions.get\'', function () {
+        'event \'possibleActions.get\'', function() {
           let generator = startNodes.get(callback);
           let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
 
@@ -237,14 +237,14 @@ describe('lib/planner/start-nodes.js', function () {
           generator.next(next);
           generator.next([components.componentOne, components.componentTwo]);
           generator.next(node);
-          generator.next({ allActions });
+          generator.next({allActions});
 
           expect(node.allActions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']));
         });
     });
 
-    describe('if there are two entryComponents', function () {
-      it('should call startNodes.emitAsync 5 times', function () {
+    describe('if there are two entryComponents', function() {
+      it('should call startNodes.emitAsync 5 times', function() {
         let generator = startNodes.get(callback);
 
         generator.next();
@@ -259,8 +259,8 @@ describe('lib/planner/start-nodes.js', function () {
       });
     });
 
-    describe('if there is one entryComponent', function () {
-      it('should call startNodes.emitAsync 3 times', function () {
+    describe('if there is one entryComponent', function() {
+      it('should call startNodes.emitAsync 3 times', function() {
         delete components.componentTwo;
         let generator = startNodes.get(callback);
 
@@ -274,7 +274,7 @@ describe('lib/planner/start-nodes.js', function () {
       });
     });
 
-    it('should call the passed in callback once with null, and the nodes', function () {
+    it('should call the passed in callback once with null, and the nodes', function() {
       let generator = startNodes.get(callback);
 
       generator.next();
