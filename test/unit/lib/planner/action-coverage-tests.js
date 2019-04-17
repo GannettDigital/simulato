@@ -35,15 +35,15 @@ describe('lib/planner/action-coverage.js', function() {
 
     it('should Emitter.mixIn once with actionCoverage and plannerEventDispatch ' +
       'as parameters', function() {
-        actionCoverage = require('../../../../lib/planner/action-coverage.js');
+      actionCoverage = require('../../../../lib/planner/action-coverage.js');
 
-        expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            actionCoverage,
-            plannerEventDispatch,
-          ],
-        ]);
-      });
+      expect(Emitter.mixIn.args).to.deep.equal([
+        [
+          actionCoverage,
+          plannerEventDispatch,
+        ],
+      ]);
+    });
   });
 
   describe('reportCoverage', function() {
@@ -79,21 +79,21 @@ describe('lib/planner/action-coverage.js', function() {
 
     it('should call actionCoverage.emit once with the event "countActions.calculate", ' +
       'plans, discoveredActions, and next', function() {
-        let generator = actionCoverage.reportCoverage('plans', 'discoveredActions', 'algorithm');
+      let generator = actionCoverage.reportCoverage('plans', 'discoveredActions', 'algorithm');
 
-        generator.next();
-        generator.next(next);
+      generator.next();
+      generator.next(next);
 
-        expect(actionCoverage.emitAsync.args).to.deep.equal([
-          [
-            'countActions.calculate',
-            'plans',
-            'discoveredActions',
-            'algorithm',
-            next,
-          ],
-        ]);
-      });
+      expect(actionCoverage.emitAsync.args).to.deep.equal([
+        [
+          'countActions.calculate',
+          'plans',
+          'discoveredActions',
+          'algorithm',
+          next,
+        ],
+      ]);
+    });
 
     it('should report the coverage percentage to a precision of 5', function() {
       let actionsNotCovered = new Set([

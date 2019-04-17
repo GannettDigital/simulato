@@ -133,44 +133,44 @@ describe('lib/planner/start-nodes.js', function() {
     describe('for each entry component', function() {
       it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
         ' and next', function() {
-          let generator = startNodes.get(callback);
+        let generator = startNodes.get(callback);
 
-          generator.next();
-          generator.next(next);
-          generator.next([components.componentOne, components.componentTwo]);
+        generator.next();
+        generator.next(next);
+        generator.next([components.componentOne, components.componentTwo]);
 
-          expect(startNodes.emitAsync.args[1]).to.deep.equal([
-            'searchNode.create',
-            new Set(),
-            next,
-          ]);
-        });
+        expect(startNodes.emitAsync.args[1]).to.deep.equal([
+          'searchNode.create',
+          new Set(),
+          next,
+        ]);
+      });
 
       it('should call node.state.createAndAddComponent with the type, name, state, and options in an ' +
         'object', function() {
-          let generator = startNodes.get(callback);
-          components.componentOne.type = 'componentOne';
+        let generator = startNodes.get(callback);
+        components.componentOne.type = 'componentOne';
 
-          generator.next();
-          generator.next(next);
-          generator.next([components.componentOne, components.componentTwo]);
-          generator.next(node);
+        generator.next();
+        generator.next(next);
+        generator.next([components.componentOne, components.componentTwo]);
+        generator.next(node);
 
-          expect(node.state.createAndAddComponent.args).to.deep.equal([
-            [
-              {
-                type: 'componentOne',
-                name: 'myName',
-                state: {
-                  property: 'value',
-                },
-                options: {
-                  myOption: 'option',
-                },
+        expect(node.state.createAndAddComponent.args).to.deep.equal([
+          [
+            {
+              type: 'componentOne',
+              name: 'myName',
+              state: {
+                property: 'value',
               },
-            ],
-          ]);
-        });
+              options: {
+                myOption: 'option',
+              },
+            },
+          ],
+        ]);
+      });
 
       it('should call node.testCase.push with the type, name, state, and options in an object', function() {
         let generator = startNodes.get(callback);
@@ -199,48 +199,48 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should calll startNodes.emitAsync with the event \'possibleActions.get\', ' +
         ' node, and next', function() {
-          let generator = startNodes.get(callback);
-          components.componentOne.type = 'componentOne';
+        let generator = startNodes.get(callback);
+        components.componentOne.type = 'componentOne';
 
-          generator.next();
-          generator.next(next);
-          generator.next([components.componentOne, components.componentTwo]);
-          generator.next(node);
+        generator.next();
+        generator.next(next);
+        generator.next([components.componentOne, components.componentTwo]);
+        generator.next(node);
 
-          expect(startNodes.emitAsync.args[2]).to.deep.equal([
-            'possibleActions.get',
-            node.state,
-            next,
-          ]);
-        });
+        expect(startNodes.emitAsync.args[2]).to.deep.equal([
+          'possibleActions.get',
+          node.state,
+          next,
+        ]);
+      });
 
       it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
         'with the event \'possibleActions.get\'', function() {
-          let generator = startNodes.get(callback);
-          let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
+        let generator = startNodes.get(callback);
+        let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
-          generator.next();
-          generator.next(next);
-          generator.next([components.componentOne, components.componentTwo]);
-          generator.next(node);
-          generator.next({applicableActions});
+        generator.next();
+        generator.next(next);
+        generator.next([components.componentOne, components.componentTwo]);
+        generator.next(node);
+        generator.next({applicableActions});
 
-          expect(node.actions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2']));
-        });
+        expect(node.actions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2']));
+      });
 
       it('should set node.allActions to the returned allActions from yielding to startNodes.emitAsync with the ' +
         'event \'possibleActions.get\'', function() {
-          let generator = startNodes.get(callback);
-          let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
+        let generator = startNodes.get(callback);
+        let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
 
-          generator.next();
-          generator.next(next);
-          generator.next([components.componentOne, components.componentTwo]);
-          generator.next(node);
-          generator.next({allActions});
+        generator.next();
+        generator.next(next);
+        generator.next([components.componentOne, components.componentTwo]);
+        generator.next(node);
+        generator.next({allActions});
 
-          expect(node.allActions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']));
-        });
+        expect(node.allActions).to.deep.equal(new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']));
+      });
     });
 
     describe('if there are two entryComponents', function() {

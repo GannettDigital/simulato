@@ -108,7 +108,7 @@ describe('lib/util/expected-state.js', function() {
       expectedState.create({}, callback);
 
       expect(Object.getOwnPropertyNames(callback.args[0][0]))
-        .to.deep.equal(Object.getOwnPropertyNames(comparableObject));
+          .to.deep.equal(Object.getOwnPropertyNames(comparableObject));
     });
   });
 
@@ -199,15 +199,15 @@ describe('lib/util/expected-state.js', function() {
 
       it('should set the cloned expected state property \'_pageState\' to the ' +
         'result of the first call to _.cloneDeep', function() {
-          myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
-          _.cloneDeep.onCall(0).returns({myName: 'myModel'});
+        myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+        _.cloneDeep.onCall(0).returns({myName: 'myModel'});
 
-          expectedState.clone.call(myThis, {}, callback);
+        expectedState.clone.call(myThis, {}, callback);
 
-          expect(clonedExpectedState._pageState).to.deep.equal({
-            myName: 'myModel',
-          });
+        expect(clonedExpectedState._pageState).to.deep.equal({
+          myName: 'myModel',
         });
+      });
 
       it('should call _.deepClone with that components state', function() {
         myThis._components.set('key', {name: 'test'});
@@ -231,20 +231,20 @@ describe('lib/util/expected-state.js', function() {
 
       it('should call createAndAddComponent with an object containing: ' +
         'component.type, component.name, componentState, and componentOptions', function() {
-          myThis._components.set(
+        myThis._components.set(
             'key',
             {type: 'componentName', name: 'instanceName', dynamicArea: 'myDynamicArea'}
-          );
-          myThis._state = {type: 'componentName', name: 'instanceName'};
-          myThis._cloneAndAddComponents = sinon.stub();
-          myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
+        );
+        myThis._state = {type: 'componentName', name: 'instanceName'};
+        myThis._cloneAndAddComponents = sinon.stub();
+        myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
 
-          expectedState.clone.call(myThis, {}, callback);
+        expectedState.clone.call(myThis, {}, callback);
 
-          expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
+        expect(clonedExpectedState._cloneAndAddComponents.args[0]).to.deep.equal(
             [myThis._components, myThis._state]
-          );
-        });
+        );
+      });
 
       it('should call _.cloneDeep with the stashedComponents of the expectedState being cloned', function() {
         myThis._stashedStates = ['stashedState1', 'stashedState2'];
@@ -271,13 +271,13 @@ describe('lib/util/expected-state.js', function() {
       it('should call clonedState._cloneAndAddComponent with a component', function() {
         let components = new Map();
         components.set(
-          'component1',
-          {
-            type: 'componentName',
-            name: 'comp1',
-            options: {option1: 'option1'},
-            dynamicArea: 'myDynamicArea',
-          }
+            'component1',
+            {
+              type: 'componentName',
+              name: 'comp1',
+              options: {option1: 'option1'},
+              dynamicArea: 'myDynamicArea',
+            }
         );
         myThis._components = [components];
         myThis.create.callsArgOnWith(1, myThis, clonedExpectedState);
@@ -291,8 +291,8 @@ describe('lib/util/expected-state.js', function() {
       it('should call clonedState._cloneStashedComponents with the new map of components', function() {
         let stashedComponents = new Map();
         stashedComponents.set(
-          'stashed1',
-          {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
+            'stashed1',
+            {type: 'componentName', name: 'stashed1', options: {option1: 'option1'}}
         );
         myThis._stashedComponents = [stashedComponents];
         clonedExpectedState.createComponent.onCall(0).returns({name: 'createdComponent'});
@@ -696,15 +696,15 @@ describe('lib/util/expected-state.js', function() {
     });
     it('should call stashedDynamicArea push with the dynamic area to be stashed', function() {
       expectedState._cloneStashedDynamicAreasComponentsAndStates
-        .call(myThis, stashedDynamicAreasComponentsAndStates);
+          .call(myThis, stashedDynamicAreasComponentsAndStates);
 
       expect(myThis._stashedDynamicAreasComponentsAndStates.set.args[0]).to.deep.equal(
-        ['instanceName',
-          {
-            'components': componentMap,
-            'states': stateMap,
-          },
-        ]);
+          ['instanceName',
+            {
+              'components': componentMap,
+              'states': stateMap,
+            },
+          ]);
     });
   });
 
@@ -770,30 +770,30 @@ describe('lib/util/expected-state.js', function() {
 
     it('should throw an error if the passed in componentConfig.type is not a string'
       + 'or a string of length 0', function() {
-        let message = `Error was thrown`;
-        SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
+      let message = `Error was thrown`;
+      SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
           {message}
-        );
-        delete componentConfig.type;
+      );
+      delete componentConfig.type;
 
-        expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
-      });
+      expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
+    });
 
     it('should throw an error if the passed in componentConfig.name is not a string'
       + 'or a string of length 0', function() {
-        let message = `Error was thrown`;
-        SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
+      let message = `Error was thrown`;
+      SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
           {message}
-        );
-        componentConfig.name = 1234;
+      );
+      componentConfig.name = 1234;
 
-        expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
-      });
+      expect(expectedState.createComponent.bind(null, componentConfig)).to.throw(message);
+    });
 
     it('should throw an error if the passed in componentConfig.options is not an object', function() {
       let message = `Error was thrown`;
       SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
-        {message}
+          {message}
       );
       componentConfig.options = [];
 
@@ -802,14 +802,14 @@ describe('lib/util/expected-state.js', function() {
 
     it('should call expectedState.emit with the event componentHandler.getComponent'
       + ' with the passed in componentConfig.type as first 2 params', function() {
-        expectedState.emit = sinon.stub();
+      expectedState.emit = sinon.stub();
 
-        expectedState.createComponent(componentConfig);
+      expectedState.createComponent(componentConfig);
 
-        expect(expectedState.emit.args[0].slice(0, 2)).to.deep.equal([
-          'componentHandler.getComponent', 'componentType',
-        ]);
-      });
+      expect(expectedState.emit.args[0].slice(0, 2)).to.deep.equal([
+        'componentHandler.getComponent', 'componentType',
+      ]);
+    });
 
     it('should call expectedState.emit with a function as the 3rd param', function() {
       expectedState.emit = sinon.stub();
@@ -915,17 +915,17 @@ describe('lib/util/expected-state.js', function() {
 
       it(`should call ExepectedState.emit with the event 'validators.validateElements', ` +
         `the newComponents.elements the newComponent.name and the newComponent.type`, function() {
-          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+        expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-          expectedState.createComponent(componentConfig);
+        expectedState.createComponent(componentConfig);
 
-          expect(expectedState.emit.args[1]).to.deep.equal([
-            'validators.validateElements',
-            ['myElements'],
-            'instanceName',
-            'componentType',
-          ]);
-        });
+        expect(expectedState.emit.args[1]).to.deep.equal([
+          'validators.validateElements',
+          ['myElements'],
+          'instanceName',
+          'componentType',
+        ]);
+      });
 
       it('should call newComponent.model once with no params', function() {
         expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
@@ -945,17 +945,17 @@ describe('lib/util/expected-state.js', function() {
 
       it(`should call ExepectedState.emit with the event 'validators.validateModel', ` +
         `the newComponents.model the newComponent.name and the newComponent.type`, function() {
-          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+        expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-          expectedState.createComponent(componentConfig);
+        expectedState.createComponent(componentConfig);
 
-          expect(expectedState.emit.args[2]).to.deep.equal([
-            'validators.validateModel',
-            {model: 'modelValue'},
-            'instanceName',
-            'componentType',
-          ]);
-        });
+        expect(expectedState.emit.args[2]).to.deep.equal([
+          'validators.validateModel',
+          {model: 'modelValue'},
+          'instanceName',
+          'componentType',
+        ]);
+      });
 
       it('should call newComponent.actions once with no params', function() {
         expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
@@ -975,17 +975,17 @@ describe('lib/util/expected-state.js', function() {
 
       it(`should call ExepectedState.emit with the event 'validators.validateActions', ` +
         `the newComponents.actions the newComponent.name and the newComponent.type`, function() {
-          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+        expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-          expectedState.createComponent(componentConfig);
+        expectedState.createComponent(componentConfig);
 
-          expect(expectedState.emit.args[3]).to.deep.equal([
-            'validators.validateActions',
-            {ACTION_1: 'someAction'},
-            'instanceName',
-            'componentType',
-          ]);
-        });
+        expect(expectedState.emit.args[3]).to.deep.equal([
+          'validators.validateActions',
+          {ACTION_1: 'someAction'},
+          'instanceName',
+          'componentType',
+        ]);
+      });
 
       describe('if newComponent.events and newComponent.children is not defined', function() {
         it('should call ExpectedState.emit 4 times', function() {
@@ -1010,17 +1010,17 @@ describe('lib/util/expected-state.js', function() {
 
         it('should call newComponent.events once with expectedState and '
           + 'expectedState._dataStore passed in', function() {
-            let events = sinon.stub();
-            component.events = events;
-            expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+          let events = sinon.stub();
+          component.events = events;
+          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-            expectedState.createComponent(componentConfig);
+          expectedState.createComponent(componentConfig);
 
-            expect(component.events.args).to.deep.equal([[
-              expectedState,
-              {storedData: 'someData'},
-            ]]);
-          });
+          expect(component.events.args).to.deep.equal([[
+            expectedState,
+            {storedData: 'someData'},
+          ]]);
+        });
 
         it('should assign newComponent.events to the result of the call to newComponent.events', function() {
           let events = sinon.stub().returns('myEvents');
@@ -1034,19 +1034,19 @@ describe('lib/util/expected-state.js', function() {
 
         it(`should call ExepectedState.emit with the event 'validators.validateEvents', ` +
           `the newComponents.events the newComponent.name and the newComponent.type`, function() {
-            let events = sinon.stub().returns('myEvents');
-            component.events = events;
-            expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+          let events = sinon.stub().returns('myEvents');
+          component.events = events;
+          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-            expectedState.createComponent(componentConfig);
+          expectedState.createComponent(componentConfig);
 
-            expect(expectedState.emit.args[4]).to.deep.equal([
-              'validators.validateEvents',
-              'myEvents',
-              'instanceName',
-              'componentType',
-            ]);
-          });
+          expect(expectedState.emit.args[4]).to.deep.equal([
+            'validators.validateEvents',
+            'myEvents',
+            'instanceName',
+            'componentType',
+          ]);
+        });
       });
 
       describe('if newComponent.children is defined', function() {
@@ -1077,30 +1077,30 @@ describe('lib/util/expected-state.js', function() {
 
         it('should assign newComponent.children to the result of the call to ' +
           'newComponent.children', function() {
-            let children = sinon.stub().returns('myChildren');
-            component.children = children;
-            expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+          let children = sinon.stub().returns('myChildren');
+          component.children = children;
+          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-            let newComponent = expectedState.createComponent(componentConfig);
+          let newComponent = expectedState.createComponent(componentConfig);
 
-            expect(newComponent.children).to.equal('myChildren');
-          });
+          expect(newComponent.children).to.equal('myChildren');
+        });
 
         it('should call ExpectedState.emit with the event \'validators.validateChildren\', ' +
           'newComponent.children, name, and componentType', function() {
-            let children = sinon.stub().returns('myChildren');
-            component.children = children;
-            expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
+          let children = sinon.stub().returns('myChildren');
+          component.children = children;
+          expectedState.emit.onCall(0).callsArgOnWith(2, expectedState, null, component);
 
-            expectedState.createComponent(componentConfig);
+          expectedState.createComponent(componentConfig);
 
-            expect(expectedState.emit.args[4]).to.deep.equal([
-              'validators.validateChildren',
-              'myChildren',
-              'instanceName',
-              'componentType',
-            ]);
-          });
+          expect(expectedState.emit.args[4]).to.deep.equal([
+            'validators.validateChildren',
+            'myChildren',
+            'instanceName',
+            'componentType',
+          ]);
+        });
       });
 
       describe('if dynamicArea is defined', function() {
@@ -1186,7 +1186,7 @@ describe('lib/util/expected-state.js', function() {
     it('should throw an error the passed in state is not an object', function() {
       let message = `Error thrown`;
       SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
-        {message}
+          {message}
       );
 
       expect(expectedState.addComponent.bind(null, component, 'notObject')).to.throw(message);
@@ -1194,13 +1194,13 @@ describe('lib/util/expected-state.js', function() {
 
     it('should set a component in this._components using the component.name as the key'
       + ' and the component as the value', function() {
-        let componentMap = new Map();
-        componentMap.set('instanceName', component);
+      let componentMap = new Map();
+      componentMap.set('instanceName', component);
 
-        expectedState.addComponent.call(myThis, component, state);
+      expectedState.addComponent.call(myThis, component, state);
 
-        expect(myThis._components).to.deep.equal(componentMap);
-      });
+      expect(myThis._components).to.deep.equal(componentMap);
+    });
 
     it('should set the this._state to the passed in state', function() {
       expectedState.addComponent.call(myThis, component, state);
@@ -1470,21 +1470,21 @@ describe('lib/util/expected-state.js', function() {
       describe('if the dynamicArea does not exist', function() {
         it('should create the dynamic area in the map with the key as the dynamic ' +
           'area and the value a set with the component\'s instanceName', function() {
-            let component = {
-              name: 'myInstance',
-              options: {},
-              dynamicArea: 'myDynamicArea',
-            };
+          let component = {
+            name: 'myInstance',
+            options: {},
+            dynamicArea: 'myDynamicArea',
+          };
 
-            expectedState._addToDynamicArea.call(myThis, component);
+          expectedState._addToDynamicArea.call(myThis, component);
 
-            expect(myThis._dynamicAreas).to.deep.equal(new Map([
-              [
-                'myDynamicArea',
-                new Set(['myInstance']),
-              ],
-            ]));
-          });
+          expect(myThis._dynamicAreas).to.deep.equal(new Map([
+            [
+              'myDynamicArea',
+              new Set(['myInstance']),
+            ],
+          ]));
+        });
       });
       describe('if the dynamicArea already exists', function() {
         it('should add the component\'s name to the set', function() {
@@ -1550,7 +1550,7 @@ describe('lib/util/expected-state.js', function() {
     describe('if child.options is undefined', function() {
       it('should set child.options to an empty object', function() {
         component.children.push(
-          {}
+            {}
         );
 
         expectedState._addChildren.call(myThis, component);
@@ -1562,11 +1562,11 @@ describe('lib/util/expected-state.js', function() {
     describe('if child.options.dynamicArea is set', function() {
       it('should keep the same value', function() {
         component.children.push(
-          {
-            options: {
-              dynamicArea: 'myChildDynamicArea',
-            },
-          }
+            {
+              options: {
+                dynamicArea: 'myChildDynamicArea',
+              },
+            }
         );
 
         expectedState._addChildren.call(myThis, component);
@@ -1578,7 +1578,7 @@ describe('lib/util/expected-state.js', function() {
     describe('if child.options.dynamicArea is not set and the component.options.dynamicArea is set', function() {
       it('should set child.options.dynamicArea to component.options.dynamicArea', function() {
         component.children.push(
-          {}
+            {}
         );
         component.dynamicArea = 'myComponentDynamicArea';
 
@@ -1591,11 +1591,11 @@ describe('lib/util/expected-state.js', function() {
     describe('if child.options.dynamicArea is not set and component.options.dynamicArea is not set', function() {
       it('should not change child.options.dynamicArea', function() {
         component.children.push(
-          {
-            options: {
-              something: 'value',
-            },
-          }
+            {
+              options: {
+                something: 'value',
+              },
+            }
         );
 
         expectedState._addChildren.call(myThis, component);
@@ -1607,7 +1607,7 @@ describe('lib/util/expected-state.js', function() {
     describe('if there is one item in component.children array', function() {
       it('should call this.createComponent once with child.componentName, ' +
         'child.instanceName, child.options', function() {
-          component.children.push(
+        component.children.push(
             {
               type: 'myComponent',
               name: 'myInstance',
@@ -1615,24 +1615,24 @@ describe('lib/util/expected-state.js', function() {
                 something: 'value',
               },
             }
-          );
+        );
 
-          expectedState._addChildren.call(myThis, component);
+        expectedState._addChildren.call(myThis, component);
 
-          expect(myThis.createComponent.args).to.deep.equal([
-            [{
-              type: 'myComponent',
-              name: 'myInstance',
-              options: {
-                something: 'value',
-              },
-            }],
-          ]);
-        });
+        expect(myThis.createComponent.args).to.deep.equal([
+          [{
+            type: 'myComponent',
+            name: 'myInstance',
+            options: {
+              something: 'value',
+            },
+          }],
+        ]);
+      });
 
       it('should call this.addComponent once with the value returned from ' +
         'this.createComponent and child.state', function() {
-          component.children.push(
+        component.children.push(
             {
               type: 'myComponent',
               name: 'myInstance',
@@ -1643,29 +1643,29 @@ describe('lib/util/expected-state.js', function() {
                 property: 'someValue',
               },
             }
-          );
-          myThis.createComponent.returns('myCreatedComponent');
+        );
+        myThis.createComponent.returns('myCreatedComponent');
 
-          expectedState._addChildren.call(myThis, component);
+        expectedState._addChildren.call(myThis, component);
 
-          expect(myThis.addComponent.args).to.deep.equal([
-            [
-              'myCreatedComponent',
-              {
-                property: 'someValue',
-              },
-            ],
-          ]);
-        });
+        expect(myThis.addComponent.args).to.deep.equal([
+          [
+            'myCreatedComponent',
+            {
+              property: 'someValue',
+            },
+          ],
+        ]);
+      });
     });
 
     describe('if there are 4 items in component.children array', function() {
       it('should call this.createComponent 4 times', function() {
         component.children.push(
-          {},
-          {},
-          {},
-          {}
+            {},
+            {},
+            {},
+            {}
         );
 
         expectedState._addChildren.call(myThis, component);
@@ -1713,22 +1713,22 @@ describe('lib/util/expected-state.js', function() {
       describe('if an event object has an array as the \'name\' property', function() {
         it('should call expectedState.eventEmitter.on twice with each item and the listener' +
           'if there are two items the array', function() {
-            let component = {
-              events: [
-                {
-                  name: ['event1', 'event2'],
-                  listener: sinon.stub(),
-                },
-              ],
-            };
+          let component = {
+            events: [
+              {
+                name: ['event1', 'event2'],
+                listener: sinon.stub(),
+              },
+            ],
+          };
 
-            expectedState._registerEvents.call(myThis, component);
+          expectedState._registerEvents.call(myThis, component);
 
-            expect(myThis.eventEmitter.on.args).to.deep.equal([
-              ['event1', component.events[0].listener],
-              ['event2', component.events[0].listener],
-            ]);
-          });
+          expect(myThis.eventEmitter.on.args).to.deep.equal([
+            ['event1', component.events[0].listener],
+            ['event2', component.events[0].listener],
+          ]);
+        });
       });
       describe('if an event object has a string for the \'name\' property', function() {
         it('should call expectedState.eventEmitter.on once with the name and the listener', function() {
@@ -1800,44 +1800,44 @@ describe('lib/util/expected-state.js', function() {
       describe('if an event object has an array as the \'name\' property', function() {
         it('should call expectedState.eventEmitter.removeListener twice with each item and the listener' +
           'if there are two items the array', function() {
-            let component = {
-              events: [
-                {
-                  name: ['event1', 'event2'],
-                  listener: sinon.stub(),
-                },
-              ],
-            };
+          let component = {
+            events: [
+              {
+                name: ['event1', 'event2'],
+                listener: sinon.stub(),
+              },
+            ],
+          };
 
-            expectedState._deregisterEvents.call(myThis, component);
+          expectedState._deregisterEvents.call(myThis, component);
 
-            expect(myThis.eventEmitter.removeListener.args).to.deep.equal([
-              ['event1', component.events[0].listener],
-              ['event2', component.events[0].listener],
-            ]);
-          });
+          expect(myThis.eventEmitter.removeListener.args).to.deep.equal([
+            ['event1', component.events[0].listener],
+            ['event2', component.events[0].listener],
+          ]);
+        });
       });
       describe('if an event object has a string for the \'name\' property', function() {
         it('should call expectedState.eventEmitter.removeListener once with the name and the' +
           'listener', function() {
-            let component = {
-              events: [
-                {
-                  name: 'event',
-                  listener: sinon.stub(),
-                },
-              ],
-            };
+          let component = {
+            events: [
+              {
+                name: 'event',
+                listener: sinon.stub(),
+              },
+            ],
+          };
 
-            expectedState._deregisterEvents.call(myThis, component);
+          expectedState._deregisterEvents.call(myThis, component);
 
-            expect(myThis.eventEmitter.removeListener.args).to.deep.equal([
-              [
-                'event',
-                component.events[0].listener,
-              ],
-            ]);
-          });
+          expect(myThis.eventEmitter.removeListener.args).to.deep.equal([
+            [
+              'event',
+              component.events[0].listener,
+            ],
+          ]);
+        });
       });
     });
 
@@ -1882,23 +1882,23 @@ describe('lib/util/expected-state.js', function() {
 
     it('should call createComponent with the passed args', function() {
       expectedState.createAndAddComponent(
-        {type: 'componentType', name: 'instanceName', state: {someState: 'stateValue'}}
+          {type: 'componentType', name: 'instanceName', state: {someState: 'stateValue'}}
       );
 
       expect(expectedState.createComponent.args)
-        .to.deep.equal([[
-          {
-            type: 'componentType',
-            name: 'instanceName',
-            state: {someState: 'stateValue'},
-          },
-        ]]);
+          .to.deep.equal([[
+            {
+              type: 'componentType',
+              name: 'instanceName',
+              state: {someState: 'stateValue'},
+            },
+          ]]);
     });
     it('should call addComponent with new component and componentConfig.state', function() {
       let newComponent = {name: 'instanceName'};
       expectedState.createComponent.returns(newComponent);
       expectedState.createAndAddComponent(
-        {type: 'componentType', name: 'instanceName', state: {someState: 'stateValue'}}
+          {type: 'componentType', name: 'instanceName', state: {someState: 'stateValue'}}
       );
 
       expect(expectedState.addComponent.args).to.deep.equal([[
@@ -2432,10 +2432,10 @@ describe('lib/util/expected-state.js', function() {
 
     it('should call the passed in callback with the component' +
       ' specified by the passed in instance name', function() {
-        expectedState.modify(instanceName, callback);
+      expectedState.modify(instanceName, callback);
 
-        expect(callback.args).to.deep.equal([['state']]);
-      });
+      expect(callback.args).to.deep.equal([['state']]);
+    });
   });
 
   describe('stash', function() {
@@ -2687,8 +2687,8 @@ describe('lib/util/expected-state.js', function() {
         expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
 
         expect(myThis._stashedDynamicAreasComponentsAndStates.get('testDynamicArea')
-          .components.get('instanceName'))
-          .to.equal('myClonedComponent');
+            .components.get('instanceName'))
+            .to.equal('myClonedComponent');
       });
 
       it('should call _.cloneDeep once with the state of the passed in dynamicAreaComponentName', function() {
@@ -2765,7 +2765,7 @@ describe('lib/util/expected-state.js', function() {
         expectedState.stashDynamicArea.call(myThis, 'testDynamicArea');
 
         expect(myThis._stashedDynamicAreasComponentsAndStates.get('testDynamicArea').states.get('instanceName'))
-          .to.equal(componentState);
+            .to.equal(componentState);
       });
     });
 
@@ -3042,12 +3042,12 @@ describe('lib/util/expected-state.js', function() {
 
     it('should call this._registerEvents with the this context as the this context of' +
       'the pop function', function() {
-        expectedState.pop.call(myThis);
+      expectedState.pop.call(myThis);
 
-        expect(myThis._registerEvents.thisValues).to.deep.equal([
-          myThis,
-        ]);
-      });
+      expect(myThis._registerEvents.thisValues).to.deep.equal([
+        myThis,
+      ]);
+    });
   });
   describe('retrieveDynamicArea', function() {
     let EventEmitter;
@@ -3150,7 +3150,7 @@ describe('lib/util/expected-state.js', function() {
     it('should throw an error if the passed in dynamic area is not stashed', function() {
       let message = 'The dynamic area testDynamicArea is not stashed.';
       SimulatoError.ACTION.EXPECTED_STATE_ERROR.throws(
-        {message}
+          {message}
       );
       myThis.isDynamicAreaStashed = sinon.stub().returns(false);
 

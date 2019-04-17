@@ -13,7 +13,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -40,21 +40,21 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
     it('should Emitter.mixIn once with forwardStateSpaceSearch and plannerEventDispatch ' +
       'as parameters', function() {
-        forwardStateSpaceSearch = require(
+      forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-        );
+      );
 
-        expect(Emitter.mixIn.args).to.deep.equal([
-          [
-            forwardStateSpaceSearch,
-            plannerEventDispatch,
-          ],
-        ]);
-      });
+      expect(Emitter.mixIn.args).to.deep.equal([
+        [
+          forwardStateSpaceSearch,
+          plannerEventDispatch,
+        ],
+      ]);
+    });
 
     it('should call fowardStateSpaceSearch.runOn 2 times', function() {
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       expect(forwardStateSpaceSearch.runOn.callCount).to.equal(2);
@@ -62,27 +62,27 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
     it('should call forwardStateSpaceSearch.runOn with the event \'forwardStateSpaceSearch.findGoalActions' +
       '\' and forwardStateSpaceSearch._findGoalActions', function() {
-        forwardStateSpaceSearch = require(
+      forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-        );
+      );
 
-        expect(forwardStateSpaceSearch.runOn.args[0]).to.deep.equal([
-          'forwardStateSpaceSearch.findGoalActions',
-          forwardStateSpaceSearch._findGoalActions,
-        ]);
-      });
+      expect(forwardStateSpaceSearch.runOn.args[0]).to.deep.equal([
+        'forwardStateSpaceSearch.findGoalActions',
+        forwardStateSpaceSearch._findGoalActions,
+      ]);
+    });
 
     it('should call forwardStateSpaceSearch.runOn with the event \'forwardStateSpaceSearch.testForGoal' +
       '\' and forwardStateSpaceSearch._testForGoal', function() {
-        forwardStateSpaceSearch = require(
+      forwardStateSpaceSearch = require(
           '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
-        );
+      );
 
-        expect(forwardStateSpaceSearch.runOn.args[1]).to.deep.equal([
-          'forwardStateSpaceSearch.testForGoal',
-          forwardStateSpaceSearch._testForGoal,
-        ]);
-      });
+      expect(forwardStateSpaceSearch.runOn.args[1]).to.deep.equal([
+        'forwardStateSpaceSearch.testForGoal',
+        forwardStateSpaceSearch._testForGoal,
+      ]);
+    });
   });
 
   describe('createPlans', function() {
@@ -96,7 +96,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -125,7 +125,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       forwardStateSpaceSearch._addActions = sinon.stub();
@@ -160,29 +160,29 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     describe('if configHandler.get(\'actionToCover\') is truthy', function() {
       it('should set forwardStateSpaceSearch._predeterminedGoalAction to the passed in ' +
         'predeterminedGoalAction', function() {
-          let generator = forwardStateSpaceSearch.createPlans(callback);
-          configHandler.get.returns('component.ACTION');
+        let generator = forwardStateSpaceSearch.createPlans(callback);
+        configHandler.get.returns('component.ACTION');
 
-          generator.next();
-          generator.next(next);
+        generator.next();
+        generator.next(next);
 
-          expect(forwardStateSpaceSearch._predeterminedGoalAction).to.equal('component.ACTION');
-        });
+        expect(forwardStateSpaceSearch._predeterminedGoalAction).to.equal('component.ACTION');
+      });
     });
 
 
     it('should call forwardStateSpaceSearch.emitAsync with the event \'startNodes.get\' ' +
       'and next', function() {
-        let generator = forwardStateSpaceSearch.createPlans(callback);
+      let generator = forwardStateSpaceSearch.createPlans(callback);
 
-        generator.next();
-        generator.next(next);
+      generator.next();
+      generator.next(next);
 
-        expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
-          'startNodes.get',
-          next,
-        ]);
-      });
+      expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
+        'startNodes.get',
+        next,
+      ]);
+    });
 
     describe('for each startNode in startNodes', function() {
       it('should call forwardStateSpaceSearch._addActions once with startNode.allActions', function() {
@@ -216,21 +216,21 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
       it('should call forwardStateSpaceSearch._setNodeInMap once with startNode and ' +
         'unfoundGoalActionCount', function() {
-          forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(4);
-          let generator = forwardStateSpaceSearch.createPlans(callback);
+        forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(4);
+        let generator = forwardStateSpaceSearch.createPlans(callback);
 
-          generator.next();
-          generator.next(next);
-          generator.next(startNodes);
-          generator.next();
+        generator.next();
+        generator.next(next);
+        generator.next(startNodes);
+        generator.next();
 
-          expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
-            [
-              startNodes[0],
-              4,
-            ],
-          ]);
-        });
+        expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
+          [
+            startNodes[0],
+            4,
+          ],
+        ]);
+      });
     });
 
     it('should call forwardStateSpaceSearch.emitAsync 2 times', function() {
@@ -246,17 +246,17 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
     it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
       'findGoalActions\'', function() {
-        let generator = forwardStateSpaceSearch.createPlans(callback);
+      let generator = forwardStateSpaceSearch.createPlans(callback);
 
-        generator.next();
-        generator.next(next);
-        generator.next(startNodes);
-        generator.next();
+      generator.next();
+      generator.next(next);
+      generator.next(startNodes);
+      generator.next();
 
-        expect(forwardStateSpaceSearch.emitAsync.args[1]).to.deep.equal([
-          'forwardStateSpaceSearch.findGoalActions',
-        ]);
-      });
+      expect(forwardStateSpaceSearch.emitAsync.args[1]).to.deep.equal([
+        'forwardStateSpaceSearch.findGoalActions',
+      ]);
+    });
   });
 
   describe('_addActions', function() {
@@ -266,7 +266,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -284,7 +284,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
     });
 
@@ -302,7 +302,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           forwardStateSpaceSearch._addActions(actions);
 
           expect(forwardStateSpaceSearch._goalActions).to.deep.equal(
-            new Set(['myComponent.MY_ACTION'])
+              new Set(['myComponent.MY_ACTION'])
           );
         });
       });
@@ -324,7 +324,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         forwardStateSpaceSearch._addActions(actions);
 
         expect(forwardStateSpaceSearch._goalActions).to.deep.equal(
-          new Set(['myComponent.MY_ACTION', 'myComponent.MY_ACTION_2'])
+            new Set(['myComponent.MY_ACTION', 'myComponent.MY_ACTION_2'])
         );
       });
     });
@@ -338,7 +338,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -362,7 +362,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       forwardStateSpaceSearch._getNodeFromMap = sinon.stub().returns({
@@ -436,21 +436,21 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       describe('for an action in node.actions.values', function() {
         it('should call forwardStateSpaceSearch.emitAsync with the event \'searchNode.clone\' ' +
           'the node, and the next callback', function() {
-            let generator = forwardStateSpaceSearch._findGoalActions();
+          let generator = forwardStateSpaceSearch._findGoalActions();
 
-            generator.next();
-            generator.next(next);
+          generator.next();
+          generator.next(next);
 
-            expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
-              'searchNode.clone',
-              {
-                actions: new Set([
-                  'myComponent.MY_ACTION',
-                ]),
-              },
-              next,
-            ]);
-          });
+          expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
+            'searchNode.clone',
+            {
+              actions: new Set([
+                'myComponent.MY_ACTION',
+              ]),
+            },
+            next,
+          ]);
+        });
 
         it('should set clonedNode.actions to an empty set', function() {
           let clonedNode = {path: []};
@@ -485,45 +485,75 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'planner.applyEffects\' ' +
           'clonedNode, and the next callback', function() {
-            let clonedNode = {path: []};
-            let generator = forwardStateSpaceSearch._findGoalActions();
+          let clonedNode = {path: []};
+          let generator = forwardStateSpaceSearch._findGoalActions();
 
-            generator.next();
-            generator.next(next);
-            generator.next(clonedNode);
+          generator.next();
+          generator.next(next);
+          generator.next(clonedNode);
 
-            expect(forwardStateSpaceSearch.emitAsync.args[1]).to.deep.equal([
-              'planner.applyEffects',
-              {
-                actions: new Set(),
-                path: ['myComponent.MY_ACTION'],
-              },
-              next,
-            ]);
-          });
+          expect(forwardStateSpaceSearch.emitAsync.args[1]).to.deep.equal([
+            'planner.applyEffects',
+            {
+              actions: new Set(),
+              path: ['myComponent.MY_ACTION'],
+            },
+            next,
+          ]);
+        });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'possibleActions.' +
           'get\', clonedNode, and the next callback', function() {
-            let clonedNode = {path: [], state: {myProperty: {}}};
-            let generator = forwardStateSpaceSearch._findGoalActions();
+          let clonedNode = {path: [], state: {myProperty: {}}};
+          let generator = forwardStateSpaceSearch._findGoalActions();
 
-            generator.next();
-            generator.next(next);
-            generator.next(clonedNode);
-            generator.next();
+          generator.next();
+          generator.next(next);
+          generator.next(clonedNode);
+          generator.next();
 
-            expect(forwardStateSpaceSearch.emitAsync.args[2]).to.deep.equal([
-              'possibleActions.get',
-              {
-                myProperty: {},
-              },
-              next,
-            ]);
-          });
+          expect(forwardStateSpaceSearch.emitAsync.args[2]).to.deep.equal([
+            'possibleActions.get',
+            {
+              myProperty: {},
+            },
+            next,
+          ]);
+        });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
           'testForGoal\', clonedNode, and the next callback', function() {
+          let clonedNode = {path: []};
+          let generator = forwardStateSpaceSearch._findGoalActions();
+
+          generator.next();
+          generator.next(next);
+          generator.next(clonedNode);
+          generator.next();
+          generator.next({applicableActions: new Set(), allActions: new Set()});
+
+          expect(forwardStateSpaceSearch.emitAsync.args[3]).to.deep.equal([
+            'forwardStateSpaceSearch.testForGoal',
+            {
+              actions: new Set(),
+              path: ['myComponent.MY_ACTION'],
+            },
+            next,
+          ]);
+        });
+
+        describe('if predeterminedGoalAction is null and discoveredActions.size is equal to ' +
+          'foundGoalActions.size', function() {
+          it('should call the forwardStateSpaceSearch callback once with null, null, true, and ' +
+              'discoveredActions as the parameters', function() {
             let clonedNode = {path: []};
+            forwardStateSpaceSearch._callback = sinon.stub();
+            forwardStateSpaceSearch._discoveredActions = new Set();
+            forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
+            forwardStateSpaceSearch._foundGoalActions = new Set();
+            forwardStateSpaceSearch._foundGoalActions.add('myComponent.SOME_ACTION');
+            let returnedActions = new Set();
+            returnedActions.add('myComponent.SOME_ACTION');
             let generator = forwardStateSpaceSearch._findGoalActions();
 
             generator.next();
@@ -531,48 +561,18 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
             generator.next(clonedNode);
             generator.next();
             generator.next({applicableActions: new Set(), allActions: new Set()});
+            generator.next();
 
-            expect(forwardStateSpaceSearch.emitAsync.args[3]).to.deep.equal([
-              'forwardStateSpaceSearch.testForGoal',
-              {
-                actions: new Set(),
-                path: ['myComponent.MY_ACTION'],
-              },
-              next,
+            expect(forwardStateSpaceSearch._callback.args).to.deep.equal([
+              [
+                null,
+                null,
+                true,
+                returnedActions,
+              ],
             ]);
           });
-
-        describe('if predeterminedGoalAction is null and discoveredActions.size is equal to ' +
-          'foundGoalActions.size', function() {
-            it('should call the forwardStateSpaceSearch callback once with null, null, true, and ' +
-              'discoveredActions as the parameters', function() {
-                let clonedNode = {path: []};
-                forwardStateSpaceSearch._callback = sinon.stub();
-                forwardStateSpaceSearch._discoveredActions = new Set();
-                forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
-                forwardStateSpaceSearch._foundGoalActions = new Set();
-                forwardStateSpaceSearch._foundGoalActions.add('myComponent.SOME_ACTION');
-                let returnedActions = new Set();
-                returnedActions.add('myComponent.SOME_ACTION');
-                let generator = forwardStateSpaceSearch._findGoalActions();
-
-                generator.next();
-                generator.next(next);
-                generator.next(clonedNode);
-                generator.next();
-                generator.next({applicableActions: new Set(), allActions: new Set()});
-                generator.next();
-
-                expect(forwardStateSpaceSearch._callback.args).to.deep.equal([
-                  [
-                    null,
-                    null,
-                    true,
-                    returnedActions,
-                  ],
-                ]);
-              });
-          });
+        });
 
         describe('if predeterminedGoalAction is defined and foundGoalActions.has returns true', function() {
           it('should call foundGoalActions.has once with the predeterminedGoalAction', function() {
@@ -600,16 +600,96 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
           it('should call the forwardStateSpaceSearch callback once with null, null, true, and ' +
             'discoveredActions as the parameters', function() {
+            let clonedNode = {path: []};
+            forwardStateSpaceSearch._callback = sinon.stub();
+            forwardStateSpaceSearch._discoveredActions = new Set();
+            forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
+            forwardStateSpaceSearch._foundGoalActions = {
+              has: sinon.stub().returns(true),
+            };
+            forwardStateSpaceSearch._predeterminedGoalAction = 'myComponent.SOME_ACTION';
+            let returnedActions = new Set();
+            returnedActions.add('myComponent.SOME_ACTION');
+            let generator = forwardStateSpaceSearch._findGoalActions();
+
+            generator.next();
+            generator.next(next);
+            generator.next(clonedNode);
+            generator.next();
+            generator.next({applicableActions: new Set(), allActions: new Set()});
+            generator.next();
+
+            expect(forwardStateSpaceSearch._callback.args).to.deep.equal([
+              [
+                null,
+                null,
+                true,
+                returnedActions,
+              ],
+            ]);
+          });
+        });
+
+        describe('if discoveredActions.size is not equal to foundGoalActions.size and foundGoalActions ' +
+          'does not have the the predeterminedGoalAction', function() {
+          it('should call forwardStateSpaceSearch._findUnfoundGoalActionCount once with ' +
+              'the clonedNode', function() {
+            let clonedNode = {path: []};
+            forwardStateSpaceSearch._discoveredActions = new Set();
+            forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
+            forwardStateSpaceSearch._foundGoalActions = new Set();
+            let generator = forwardStateSpaceSearch._findGoalActions();
+
+            generator.next();
+            generator.next(next);
+            generator.next(clonedNode);
+            generator.next();
+            generator.next({applicableActions: new Set(), allActions: new Set()});
+            generator.next();
+
+            expect(forwardStateSpaceSearch._findUnfoundGoalActionCount.args).to.deep.equal([
+              [
+                {
+                  actions: new Set(),
+                  path: ['myComponent.MY_ACTION'],
+                },
+              ],
+            ]);
+          });
+
+          it('should call forwardStateSpaceSearch._setNodeInMap once with ' +
+              'the clonedNode and unfoundGoalActionCount', function() {
+            let clonedNode = {path: []};
+            forwardStateSpaceSearch._discoveredActions = new Set();
+            forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
+            forwardStateSpaceSearch._foundGoalActions = new Set();
+            forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(1);
+            let generator = forwardStateSpaceSearch._findGoalActions();
+
+            generator.next();
+            generator.next(next);
+            generator.next(clonedNode);
+            generator.next();
+            generator.next({applicableActions: new Set(), allActions: new Set()});
+            generator.next();
+
+            expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
+              [
+                {
+                  actions: new Set(),
+                  path: ['myComponent.MY_ACTION'],
+                },
+                1,
+              ],
+            ]);
+          });
+
+          describe('if there was only 1 action', function() {
+            it('should call have called forwardStateSpaceSearch.emitAsync 5 times', function() {
               let clonedNode = {path: []};
-              forwardStateSpaceSearch._callback = sinon.stub();
               forwardStateSpaceSearch._discoveredActions = new Set();
               forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
-              forwardStateSpaceSearch._foundGoalActions = {
-                has: sinon.stub().returns(true),
-              };
-              forwardStateSpaceSearch._predeterminedGoalAction = 'myComponent.SOME_ACTION';
-              let returnedActions = new Set();
-              returnedActions.add('myComponent.SOME_ACTION');
+              forwardStateSpaceSearch._foundGoalActions = new Set();
               let generator = forwardStateSpaceSearch._findGoalActions();
 
               generator.next();
@@ -618,108 +698,28 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
               generator.next();
               generator.next({applicableActions: new Set(), allActions: new Set()});
               generator.next();
+              generator.next();
 
-              expect(forwardStateSpaceSearch._callback.args).to.deep.equal([
-                [
-                  null,
-                  null,
-                  true,
-                  returnedActions,
-                ],
-              ]);
-            });
-        });
-
-        describe('if discoveredActions.size is not equal to foundGoalActions.size and foundGoalActions ' +
-          'does not have the the predeterminedGoalAction', function() {
-            it('should call forwardStateSpaceSearch._findUnfoundGoalActionCount once with ' +
-              'the clonedNode', function() {
-                let clonedNode = {path: []};
-                forwardStateSpaceSearch._discoveredActions = new Set();
-                forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
-                forwardStateSpaceSearch._foundGoalActions = new Set();
-                let generator = forwardStateSpaceSearch._findGoalActions();
-
-                generator.next();
-                generator.next(next);
-                generator.next(clonedNode);
-                generator.next();
-                generator.next({applicableActions: new Set(), allActions: new Set()});
-                generator.next();
-
-                expect(forwardStateSpaceSearch._findUnfoundGoalActionCount.args).to.deep.equal([
-                  [
-                    {
-                      actions: new Set(),
-                      path: ['myComponent.MY_ACTION'],
-                    },
-                  ],
-                ]);
-              });
-
-            it('should call forwardStateSpaceSearch._setNodeInMap once with ' +
-              'the clonedNode and unfoundGoalActionCount', function() {
-                let clonedNode = {path: []};
-                forwardStateSpaceSearch._discoveredActions = new Set();
-                forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
-                forwardStateSpaceSearch._foundGoalActions = new Set();
-                forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(1);
-                let generator = forwardStateSpaceSearch._findGoalActions();
-
-                generator.next();
-                generator.next(next);
-                generator.next(clonedNode);
-                generator.next();
-                generator.next({applicableActions: new Set(), allActions: new Set()});
-                generator.next();
-
-                expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
-                  [
-                    {
-                      actions: new Set(),
-                      path: ['myComponent.MY_ACTION'],
-                    },
-                    1,
-                  ],
-                ]);
-              });
-
-            describe('if there was only 1 action', function() {
-              it('should call have called forwardStateSpaceSearch.emitAsync 5 times', function() {
-                let clonedNode = {path: []};
-                forwardStateSpaceSearch._discoveredActions = new Set();
-                forwardStateSpaceSearch._discoveredActions.add('myComponent.SOME_ACTION');
-                forwardStateSpaceSearch._foundGoalActions = new Set();
-                let generator = forwardStateSpaceSearch._findGoalActions();
-
-                generator.next();
-                generator.next(next);
-                generator.next(clonedNode);
-                generator.next();
-                generator.next({applicableActions: new Set(), allActions: new Set()});
-                generator.next();
-                generator.next();
-
-                expect(forwardStateSpaceSearch.emitAsync.callCount).to.equal(5);
-              });
+              expect(forwardStateSpaceSearch.emitAsync.callCount).to.equal(5);
             });
           });
+        });
       });
 
       it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
         'findGoalActions\'', function() {
-          forwardStateSpaceSearch._getNodeFromMap.returns({
-            actions: new Set(),
-          });
-          let generator = forwardStateSpaceSearch._findGoalActions();
-
-          generator.next();
-          generator.next(next);
-
-          expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
-            'forwardStateSpaceSearch.findGoalActions',
-          ]);
+        forwardStateSpaceSearch._getNodeFromMap.returns({
+          actions: new Set(),
         });
+        let generator = forwardStateSpaceSearch._findGoalActions();
+
+        generator.next();
+        generator.next(next);
+
+        expect(forwardStateSpaceSearch.emitAsync.args[0]).to.deep.equal([
+          'forwardStateSpaceSearch.findGoalActions',
+        ]);
+      });
     });
   });
 
@@ -733,7 +733,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -757,7 +757,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       forwardStateSpaceSearch._goalActions.has = sinon.stub();
@@ -842,18 +842,18 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         describe('when goalActions.size equals the number 0', function() {
           it('should call console.log with a message reporting that paths to ' +
             'all actions were discovered', function() {
-              configHandler.get.returns(true);
-              forwardStateSpaceSearch._goalActions.has.returns(true);
-              forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-              let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+            configHandler.get.returns(true);
+            forwardStateSpaceSearch._goalActions.has.returns(true);
+            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
 
-              generator.next();
-              generator.next(next);
+            generator.next();
+            generator.next(next);
 
-              expect(console.log.args).to.deep.equal([
-                ['\nFound a path to all 0 discovered action(s).'],
-              ]);
-            });
+            expect(console.log.args).to.deep.equal([
+              ['\nFound a path to all 0 discovered action(s).'],
+            ]);
+          });
         });
 
         describe('when goalActions.size does not equal the number 0', function() {
@@ -872,19 +872,19 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
           it('should call console.log with a message reporting the number of actions for which paths ' +
             'have been found', function() {
-              configHandler.get.returns(true);
-              forwardStateSpaceSearch._goalActions.has.returns(true);
-              forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-              forwardStateSpaceSearch._goalActions.add('myComponent.MY_ACTION');
-              let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+            configHandler.get.returns(true);
+            forwardStateSpaceSearch._goalActions.has.returns(true);
+            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+            forwardStateSpaceSearch._goalActions.add('myComponent.MY_ACTION');
+            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
 
-              generator.next();
-              generator.next(next);
+            generator.next();
+            generator.next(next);
 
-              expect(console.log.args[0]).to.deep.equal([
-                '\nFound a path to 0 action(s).',
-              ]);
-            });
+            expect(console.log.args[0]).to.deep.equal([
+              '\nFound a path to 0 action(s).',
+            ]);
+          });
 
           it('should call console.log with the string \'Searching for a path to:\'', function() {
             configHandler.get.returns(true);
@@ -921,90 +921,90 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       describe('if forwardStateSpaceSearch._predeterminedGoalAction is null', function() {
         it('should call forwardStateSpaceSearch._callback once with the parameters null and the result ' +
           'of the next yield', function() {
-            forwardStateSpaceSearch._goalActions.has.returns(true);
-            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+          forwardStateSpaceSearch._goalActions.has.returns(true);
+          forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+          let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
 
-            generator.next();
-            generator.next(next);
-            generator.next('myClonedNode');
+          generator.next();
+          generator.next(next);
+          generator.next('myClonedNode');
 
-            expect(forwardStateSpaceSearch._callback.args).to.deep.equal([[null, 'myClonedNode']]);
-          });
+          expect(forwardStateSpaceSearch._callback.args).to.deep.equal([[null, 'myClonedNode']]);
+        });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch.' +
           'cloneSearchNode\', the passed in node, and the next callback', function() {
-            forwardStateSpaceSearch._goalActions.has.returns(true);
-            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback); 0;
+          forwardStateSpaceSearch._goalActions.has.returns(true);
+          forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+          let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback); 0;
 
-            generator.next();
-            generator.next(next);
+          generator.next();
+          generator.next(next);
 
-            expect(forwardStateSpaceSearch.emitAsync.args).to.deep.equal([
-              [
-                'searchNode.clone',
-                {
-                  lastAction: 'MY_ACTION',
-                },
-                next,
-              ],
-            ]);
-          });
+          expect(forwardStateSpaceSearch.emitAsync.args).to.deep.equal([
+            [
+              'searchNode.clone',
+              {
+                lastAction: 'MY_ACTION',
+              },
+              next,
+            ],
+          ]);
+        });
       });
 
       describe('if forwardStateSpaceSearch._predeterminedGoalAction is equal to node.lastAction', function() {
         it('should call forwardStateSpaceSearch._callback once with the parameters null and the result ' +
           'of the next yield', function() {
-            forwardStateSpaceSearch._goalActions.has.returns(true);
-            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-            forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
-            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+          forwardStateSpaceSearch._goalActions.has.returns(true);
+          forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+          forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
+          let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
 
-            generator.next();
-            generator.next(next);
-            generator.next('myClonedNode');
+          generator.next();
+          generator.next(next);
+          generator.next('myClonedNode');
 
-            expect(forwardStateSpaceSearch._callback.args).to.deep.equal([[null, 'myClonedNode']]);
-          });
+          expect(forwardStateSpaceSearch._callback.args).to.deep.equal([[null, 'myClonedNode']]);
+        });
 
         it('should call forwardStateSpaceSearch.emitAsync with the event \'forwardStateSpaceSearch' +
           '.cloneSearchNode\', the passed in node, and the next callback', function() {
-            forwardStateSpaceSearch._goalActions.has.returns(true);
-            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-            forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
-            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback); 0;
+          forwardStateSpaceSearch._goalActions.has.returns(true);
+          forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+          forwardStateSpaceSearch._predeterminedGoalAction = 'MY_ACTION';
+          let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback); 0;
 
-            generator.next();
-            generator.next(next);
+          generator.next();
+          generator.next(next);
 
-            expect(forwardStateSpaceSearch.emitAsync.args).to.deep.equal([
-              [
-                'searchNode.clone',
-                {
-                  lastAction: 'MY_ACTION',
-                },
-                next,
-              ],
-            ]);
-          });
+          expect(forwardStateSpaceSearch.emitAsync.args).to.deep.equal([
+            [
+              'searchNode.clone',
+              {
+                lastAction: 'MY_ACTION',
+              },
+              next,
+            ],
+          ]);
+        });
       });
 
       describe('if forwardStateSpaceSearch._predeterminedGoalAction not falsey and is not' +
         'equal to node.lastAction', function() {
-          it('should not call forward forwardStateSpaceSearch._callback', function() {
-            forwardStateSpaceSearch._goalActions.has.returns(true);
-            forwardStateSpaceSearch._foundGoalActions.has.returns(false);
-            forwardStateSpaceSearch._predeterminedGoalAction = 'MY_AC';
-            let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
+        it('should not call forward forwardStateSpaceSearch._callback', function() {
+          forwardStateSpaceSearch._goalActions.has.returns(true);
+          forwardStateSpaceSearch._foundGoalActions.has.returns(false);
+          forwardStateSpaceSearch._predeterminedGoalAction = 'MY_AC';
+          let generator = forwardStateSpaceSearch._testForGoal({lastAction: 'MY_ACTION'}, callback);
 
-            generator.next();
-            generator.next(next);
-            generator.next('myClonedNode');
+          generator.next();
+          generator.next(next);
+          generator.next('myClonedNode');
 
-            expect(forwardStateSpaceSearch._callback.args).to.deep.equal([]);
-          });
+          expect(forwardStateSpaceSearch._callback.args).to.deep.equal([]);
         });
+      });
     });
 
     describe('if goalActions.has returns false and foundGoalActions.has returns true', function() {
@@ -1043,7 +1043,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -1061,7 +1061,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
     });
 
@@ -1073,102 +1073,102 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
     describe('if the passed in node testCase.length already exists in' +
       'forwardStateSpaceSearch nodes[testCase.length]', function() {
-        describe('if the passed in unfoundGoalActionCount already exists in' +
+      describe('if the passed in unfoundGoalActionCount already exists in' +
           'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
-            it('should push the passed in node to that spot in the 3d Array', function() {
-              let node = {
-                testCase: [0, 1, 2],
-              };
-              forwardStateSpaceSearch._pathArray = [
-                null,
-                null,
-                null,
-                [
-                  null,
-                  [
-                    {testCase: [3, 2, 1]},
-                  ],
-                ],
-              ];
+        it('should push the passed in node to that spot in the 3d Array', function() {
+          let node = {
+            testCase: [0, 1, 2],
+          };
+          forwardStateSpaceSearch._pathArray = [
+            null,
+            null,
+            null,
+            [
+              null,
+              [
+                {testCase: [3, 2, 1]},
+              ],
+            ],
+          ];
 
-              forwardStateSpaceSearch._setNodeInMap(node, 1);
+          forwardStateSpaceSearch._setNodeInMap(node, 1);
 
-              expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
-                null,
-                null,
-                null,
-                [
-                  null,
-                  [
-                    {testCase: [3, 2, 1]},
-                    {testCase: [0, 1, 2]},
-                  ],
-                ],
-              ]);
-            });
-          });
-        describe('if the passed in unfoundGoalActionCount does NOT exist in' +
-          'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
-            it('should push the create an empty array in that element and' +
-              'passed in node to that spot in the 3d Array', function() {
-                let node = {
-                  testCase: [0, 1, 2],
-                };
-                forwardStateSpaceSearch._pathArray = [
-                  null,
-                  null,
-                  null,
-                  [
-                    null,
-                    null,
-                  ],
-                ];
-
-                forwardStateSpaceSearch._setNodeInMap(node, 1);
-
-                expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
-                  null,
-                  null,
-                  null,
-                  [
-                    null,
-                    [
-                      {testCase: [0, 1, 2]},
-                    ],
-                  ],
-                ]);
-              });
-          });
+          expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
+            null,
+            null,
+            null,
+            [
+              null,
+              [
+                {testCase: [3, 2, 1]},
+                {testCase: [0, 1, 2]},
+              ],
+            ],
+          ]);
+        });
       });
+      describe('if the passed in unfoundGoalActionCount does NOT exist in' +
+          'forwardStateSpaceSearch nodes[testCast.length][unfoundGoalActionCount]', function() {
+        it('should push the create an empty array in that element and' +
+              'passed in node to that spot in the 3d Array', function() {
+          let node = {
+            testCase: [0, 1, 2],
+          };
+          forwardStateSpaceSearch._pathArray = [
+            null,
+            null,
+            null,
+            [
+              null,
+              null,
+            ],
+          ];
+
+          forwardStateSpaceSearch._setNodeInMap(node, 1);
+
+          expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
+            null,
+            null,
+            null,
+            [
+              null,
+              [
+                {testCase: [0, 1, 2]},
+              ],
+            ],
+          ]);
+        });
+      });
+    });
 
     describe('if the passed in node testCase.length does NOT exist in' +
       'forwardStateSpaceSearch nodes[testCase.length]', function() {
-        it('should push the create an empty array in that element and' +
+      it('should push the create an empty array in that element and' +
           'passed in node to that spot in the 3d Array', function() {
-            let node = {
-              testCase: [0, 1, 2],
-            };
-            forwardStateSpaceSearch._pathArray = [
-              null,
-              null,
-              null,
-              null,
-            ];
+        let node = {
+          testCase: [0, 1, 2],
+        };
+        forwardStateSpaceSearch._pathArray = [
+          null,
+          null,
+          null,
+          null,
+        ];
 
-            forwardStateSpaceSearch._setNodeInMap(node, 0);
+        forwardStateSpaceSearch._setNodeInMap(node, 0);
 
-            expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
-              null,
-              null,
-              null,
-              [
-                [
-                  {testCase: [0, 1, 2]},
-                ],
-              ],
-            ]);
-          });
+        expect(forwardStateSpaceSearch._pathArray).to.deep.equal([
+          null,
+          null,
+          null,
+          [
+            [
+              {testCase: [0, 1, 2]},
+            ],
+          ],
+        ]);
       });
+    });
   });
 
   describe('_getNodeFromMap', function() {
@@ -1178,7 +1178,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -1196,7 +1196,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       forwardStateSpaceSearch._findNextNode = sinon.stub();
@@ -1214,24 +1214,24 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
           describe('if the element exists', function() {
             it('should call forwardStateSpaceSearch._findNextNode with ' +
               'the first available node in the path the number of new actions', function() {
-                forwardStateSpaceSearch._pathArray = [
+              forwardStateSpaceSearch._pathArray = [
+                [
                   [
-                    [
-                      {key: 0},
-                    ],
-                    [
-                      {key: 1}, {key: 2}, {key: 3},
-                    ],
+                    {key: 0},
                   ],
-                ];
+                  [
+                    {key: 1}, {key: 2}, {key: 3},
+                  ],
+                ],
+              ];
 
-                forwardStateSpaceSearch._getNodeFromMap();
+              forwardStateSpaceSearch._getNodeFromMap();
 
-                expect(forwardStateSpaceSearch._findNextNode.args[0]).to.deep.equal([
-                  [{key: 1}, {key: 2}, {key: 3}],
-                  1,
-                ]);
-              });
+              expect(forwardStateSpaceSearch._findNextNode.args[0]).to.deep.equal([
+                [{key: 1}, {key: 2}, {key: 3}],
+                1,
+              ]);
+            });
             describe('if a node is returned from forwardStateSpaceSearch._findNextNode', function() {
               it('should return that node', function() {
                 forwardStateSpaceSearch._findNextNode.onCall(0).returns({key: 3});
@@ -1294,24 +1294,24 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
         describe('for each actionArray that has a 0 element', function() {
           it('should call forwardStateSpaceSearch._findNextNode with the ' +
             'first available node and the number of new actions', function() {
-              forwardStateSpaceSearch._pathArray = [
+            forwardStateSpaceSearch._pathArray = [
+              [
                 [
-                  [
-                    {key: 0},
-                  ],
-                  null,
+                  {key: 0},
                 ],
-              ];
+                null,
+              ],
+            ];
 
-              forwardStateSpaceSearch._getNodeFromMap();
+            forwardStateSpaceSearch._getNodeFromMap();
 
-              expect(forwardStateSpaceSearch._findNextNode.args).to.deep.equal([
-                [
-                  [{key: 0}],
-                  0,
-                ],
-              ]);
-            });
+            expect(forwardStateSpaceSearch._findNextNode.args).to.deep.equal([
+              [
+                [{key: 0}],
+                0,
+              ],
+            ]);
+          });
           describe('if a node is returned from forwardStateSpaceSearch._findNextNode', function() {
             it('should call the callback with null and the returned node', function() {
               forwardStateSpaceSearch._findNextNode.onCall(0).returns({key: 0});
@@ -1370,7 +1370,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -1388,7 +1388,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       forwardStateSpaceSearch._findUnfoundGoalActionCount = sinon.stub();
@@ -1454,46 +1454,46 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
 
       describe('if the returned unfoundGoalActionCount is NOT' +
         'the same as passed in currentActionsCount', function() {
-          it('should call forwardStateSpaceSearch._setNodeInMap ' +
+        it('should call forwardStateSpaceSearch._setNodeInMap ' +
             ' for each node comes back with a different count', function() {
-              forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(0).returns(1);
-              forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(1).returns(2);
-              forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(2).returns(2);
-              let nodesArray = [
-                {name: 'node1'},
-                {name: 'node2'},
-                {name: 'node3'},
-              ];
+          forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(0).returns(1);
+          forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(1).returns(2);
+          forwardStateSpaceSearch._findUnfoundGoalActionCount.onCall(2).returns(2);
+          let nodesArray = [
+            {name: 'node1'},
+            {name: 'node2'},
+            {name: 'node3'},
+          ];
 
-              forwardStateSpaceSearch._findNextNode(nodesArray, 3);
+          forwardStateSpaceSearch._findNextNode(nodesArray, 3);
 
-              expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
-                [
-                  {name: 'node3'},
-                  1,
-                ],
-                [
-                  {name: 'node2'},
-                  2,
-                ],
-                [
-                  {name: 'node1'},
-                  2,
-                ],
-              ]);
-            });
-
-          it('should return the null when no node is found', function() {
-            forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(0);
-            let nodesArray = [
+          expect(forwardStateSpaceSearch._setNodeInMap.args).to.deep.equal([
+            [
+              {name: 'node3'},
+              1,
+            ],
+            [
+              {name: 'node2'},
+              2,
+            ],
+            [
               {name: 'node1'},
-            ];
-
-            let result = forwardStateSpaceSearch._findNextNode(nodesArray, 3);
-
-            expect(result).to.equal(null);
-          });
+              2,
+            ],
+          ]);
         });
+
+        it('should return the null when no node is found', function() {
+          forwardStateSpaceSearch._findUnfoundGoalActionCount.returns(0);
+          let nodesArray = [
+            {name: 'node1'},
+          ];
+
+          let result = forwardStateSpaceSearch._findNextNode(nodesArray, 3);
+
+          expect(result).to.equal(null);
+        });
+      });
     });
   });
 
@@ -1504,7 +1504,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
 
       Emitter = {
@@ -1522,7 +1522,7 @@ describe('lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
 
       forwardStateSpaceSearch = require(
-        '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
+          '../../../../../lib/planner/search-algorithms/forward-state-space-search-heuristic.js'
       );
     });
 

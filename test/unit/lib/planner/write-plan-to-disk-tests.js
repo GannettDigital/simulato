@@ -66,20 +66,20 @@ describe('lib/planner/write-plans-to-disk.js', function() {
 
     it('should call fs.writeFileSync with the resolved path,' +
       'and the stringified version of the plan.testCase', function() {
-        path.resolve.onCall(0).returns('path1');
-        path.resolve.onCall(1).returns('path2');
-        let plans = [
-          {foo: 'bar'},
-          {bar: 'foo'},
-        ];
+      path.resolve.onCall(0).returns('path1');
+      path.resolve.onCall(1).returns('path2');
+      let plans = [
+        {foo: 'bar'},
+        {bar: 'foo'},
+      ];
 
-        writePlansToDisk(plans);
+      writePlansToDisk(plans);
 
-        expect(fs.writeFileSync.args).to.deep.equal([
-          ['path1', '{\"foo\":\"bar\"}'],
-          ['path2', '{\"bar\":\"foo\"}'],
-        ]);
-      });
+      expect(fs.writeFileSync.args).to.deep.equal([
+        ['path1', '{\"foo\":\"bar\"}'],
+        ['path2', '{\"bar\":\"foo\"}'],
+      ]);
+    });
   });
 
   it('should call console.log to say it wrote the amount of plans to disk as passed in', function() {

@@ -93,7 +93,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
         it('should call console.log to print the stdErr', function() {
           report.status = 'fail';
           report.stdErr = 'some stdErr',
-            delete report.errorLocation;
+          delete report.errorLocation;
 
           basicReporter.printTestResult(report);
 
@@ -105,7 +105,7 @@ describe('lib/runner/reporters/basic-reporter.js', function() {
         it('should call console.log twice', function() {
           report.status = 'fail';
           report.stdErr = 'some stdErr',
-            delete report.errorLocation;
+          delete report.errorLocation;
 
           basicReporter.printTestResult(report);
 
