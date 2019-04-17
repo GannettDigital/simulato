@@ -98,9 +98,11 @@ describe('lib/util/expected-state.js', function () {
         _stashedDynamicAreas: [],
         _stashedDynamicAreasComponentsAndStates: new Map(),
         _stashedComponents: [],
+        _newComponents: [],
         eventEmitter: EventEmitterInstance,
         _dataStore: {},
         _pageState: {},
+        _planningStashedStates: {},
       };
 
       expectedState.create({}, callback);
@@ -1154,6 +1156,7 @@ describe('lib/util/expected-state.js', function () {
         _addToDynamicArea: sinon.stub(),
         _components: new Map(),
         _dynamicAreas: new Map(),
+        _newComponents: [],
         _pageState: {
           'instanceName': {
             key: 'value',
@@ -2463,6 +2466,7 @@ describe('lib/util/expected-state.js', function () {
         _stashedStates: [],
         _stashedComponents: [],
         _stashedDynamicAreas: [],
+        _planningStashedStates: [],
         eventEmitter: {
           removeAllListeners: sinon.stub(),
         },
@@ -2494,10 +2498,12 @@ describe('lib/util/expected-state.js', function () {
       expect(myThis.eventEmitter.removeAllListeners.args).to.deep.equal([[]]);
     });
 
-    it('should clonedeep the state first', function () {
-      expectedState.stash.call(myThis);
+    describe('if the PLANNING_MODE is false', function () {
+      it('should clonedeep the state first', function () {
+        expectedState.stash.call(myThis);
 
-      expect(_.cloneDeep.callCount).to.equal(1);
+        expect(_.cloneDeep.callCount).to.equal(2);
+      });
     });
 
     it('should push the state into stashed state', function () {
