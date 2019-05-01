@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.8.1
+
+* Brian  Fitzpatrick
+  * Fixed bug with single action generation
+
 ## 0.8.0
 
 * Brian  Fitzpatrick
