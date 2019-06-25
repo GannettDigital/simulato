@@ -69,6 +69,7 @@ describe('lib/executor/execute-test-case.js', function() {
       webdriver = {
         By: sinon.stub(),
         until: sinon.stub(),
+        remote: sinon.stub(),
       };
       sinon.stub(process, 'on');
       configHandler = {
@@ -87,6 +88,7 @@ describe('lib/executor/execute-test-case.js', function() {
     afterEach(function() {
       delete global.By;
       delete global.until;
+      delete global.remote;
 
       process.exitCode = 0;
       process.on.restore();
