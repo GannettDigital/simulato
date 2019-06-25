@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.8.2
+
+* Raghu Dantuluri
+   * Exposed 'remote' from 'selenium-webdriver' for use in test execution
+
 ## 0.8.1
 
 * Brian  Fitzpatrick
