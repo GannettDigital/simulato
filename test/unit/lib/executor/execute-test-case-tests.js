@@ -26,6 +26,7 @@ describe('lib/executor/execute-test-case.js', function() {
       mockery.registerMock('selenium-webdriver', {});
       mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('../util/config/config-handler.js', {});
+      mockery.registerMock('selenium-webdriver/remote', {});
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', executorEventDispatch);
     });
 
@@ -51,13 +52,13 @@ describe('lib/executor/execute-test-case.js', function() {
     let Emitter;
     let testPath;
     let webdriver;
+    let remote;
     let executeTestCase;
     let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/execute-test-case.js');
-
       testPath = '/tests/my-test-case.js';
       Emitter = {
         mixIn: function(myObject) {
@@ -74,12 +75,14 @@ describe('lib/executor/execute-test-case.js', function() {
       configHandler = {
         get: sinon.stub(),
       };
+      remote = sinon.stub();
 
       mockery.registerMock('selenium-webdriver', webdriver);
       mockery.registerMock('../util/emitter.js', Emitter);
       mockery.registerMock('/tests/my-test-case.js', 'testCase');
       mockery.registerMock('../util/config/config-handler.js', configHandler);
       mockery.registerMock('./executor-event-dispatch/executor-event-dispatch.js', {});
+      mockery.registerMock('selenium-webdriver/remote', remote);
 
       executeTestCase = require('../../../../lib/executor/execute-test-case.js');
     });
@@ -87,6 +90,7 @@ describe('lib/executor/execute-test-case.js', function() {
     afterEach(function() {
       delete global.By;
       delete global.until;
+      delete global.remote;
 
       process.exitCode = 0;
       process.on.restore();
@@ -95,6 +99,13 @@ describe('lib/executor/execute-test-case.js', function() {
       mockery.deregisterAll();
       mockery.disable();
     });
+
+    it('should require a remote webdriver', function() {
+      executeTestCase.configure(testPath);
+
+      expect(global.remote).to.deep.equal(remote);
+    });
+
 
     it('should call process.on once', function() {
       executeTestCase.configure(testPath);
