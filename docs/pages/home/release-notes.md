@@ -5,6 +5,27 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.8.2
+
+* Raghu Dantuluri
+   * Exposed 'remote' from 'selenium-webdriver' for use in test execution
+
+## 0.8.1
+
+* Brian  Fitzpatrick
+  * Fixed bug with single action generation
+
+## 0.8.0
+
+* Brian  Fitzpatrick
+  * Added switch for search algorithm
+
+Scott Gunther
+  * Added single search for action in action tree
+
+* Tom Dale
+  * Created action tree search for actions
+
 ## 0.7.2
 
 * Subarna Mukhiyabeen
