@@ -7,12 +7,15 @@ const expect = require('chai').expect;
 describe('lib/util/saucelabs', function() {
   describe('connect', function() {
     let saucelabs;
+    let sauceConnectArgs;
     let sauceConnectLauncher;
     let callback;
     let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('lodash');
+
       mockery.registerAllowable('../../../../lib/util/saucelabs.js');
 
       sauceConnectLauncher = sinon.stub();
@@ -40,6 +43,117 @@ describe('lib/util/saucelabs', function() {
       mockery.disable();
     });
 
+    describe('buildOpts', function() {
+      it('should call configHandler.get 3 times', function() {
+        saucelabs.connect(callback);
+
+        expect(configHandler.get.callCount).to.equal(5);
+      });
+
+      it('should call configHandler.get with sauceConnectArgs', function() {
+        saucelabs.connect(callback);
+
+        expect(configHandler.get.args[0]).to.deep.equal(['sauceConnectArgs']);
+      });
+
+      it('should call configHandler.get with driver.capabilities.username', function() {
+        saucelabs.connect(callback);
+
+        expect(configHandler.get.args[1]).to.deep.equal(['driver.capabilities.username']);
+      });
+
+      it('should call configHandler.get with driver.capabilities.accessKey', function() {
+        saucelabs.connect(callback);
+
+        expect(configHandler.get.args[2]).to.deep.equal(['driver.capabilities.accessKey']);
+      });
+
+      it('should call configHandler.get with driver.capabilities.tunnel-identifier', function() {
+        saucelabs.connect(callback);
+
+        expect(configHandler.get.args[3]).to.deep.equal(['driver.capabilities.tunnel-identifier']);
+      });
+
+
+      describe('config handler should handle confusing behavior to help the end user', function() {
+        it('should set verbose to true if the v flag is set', function() {
+          configHandler.get.onCall(0).returns({v: true});
+
+          saucelabs.connect(callback);
+
+          expect(sauceConnectLauncher.args[0][0].verbose).to.equal(true);
+        });
+        it('should set verbose to true if the vv flag is set', function() {
+          configHandler.get.onCall(0).returns({vv: true});
+
+          saucelabs.connect(callback);
+
+          expect(sauceConnectLauncher.args[0][0].verbose).to.deep.equal(true);
+        });
+
+        it('should include a default logger if the verbose flag is set', function() {
+          configHandler.get.onCall(0).returns({verbose: true});
+          let defaultLogger = console.log;
+
+          saucelabs.connect(callback);
+
+          expect(sauceConnectLauncher.args[0][0].logger).to.equal(defaultLogger);
+        });
+      });
+    });
+
+    it('should call sauceConnectLauncher with an object returned by buildOpts in the first argument containing '
+        + 'username, accessKey, and tunnelIdentifier equal to their respective config values', function() {
+      configHandler.get.onCall(0).returns({sauceConnectArgs: 'sauceConnectArgs'});
+      configHandler.get.onCall(1).returns('configUsername');
+      configHandler.get.onCall(2).returns('configAccessKey');
+      configHandler.get.onCall(3).returns('tunnelIdentifier');
+
+
+      saucelabs.connect(callback);
+
+      expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
+        sauceConnectArgs: 'sauceConnectArgs',
+        username: 'configUsername',
+        accessKey: 'configAccessKey',
+        tunnelIdentifier: 'tunnelIdentifier',
+      });
+    });
+
+    describe('if the config sauceCapabilities.username is falsey', function() {
+      it('should call sauceConnectLauncher with an object as the second argument containing '
+          + 'username from process.env', function() {
+        configHandler.get.onCall(1).returns(undefined);
+        configHandler.get.onCall(2).returns('configAccessKey');
+        configHandler.get.onCall(3).returns('tunnelIdentifier');
+
+        saucelabs.connect(callback);
+
+        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
+          username: 'sauceUsername',
+          accessKey: 'configAccessKey',
+          tunnelIdentifier: 'tunnelIdentifier',
+        });
+      });
+    });
+
+    describe('if the config sauceCapabilities.accessKey is falsey', function() {
+      it('should call sauceConnectLauncher with an object as the third argument containing '
+          + 'accessKey from process.env', function() {
+        configHandler.get.onCall(1).returns('configUsername');
+        configHandler.get.onCall(2).returns(undefined);
+        configHandler.get.onCall(3).returns('tunnelIdentifier');
+
+        saucelabs.connect(callback);
+
+        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
+          username: 'configUsername',
+          accessKey: 'sauceAccessKey',
+          tunnelIdentifier: 'tunnelIdentifier',
+        });
+      });
+    });
+
     it('should call console.log to say sauce connect tunnel is connecting', function() {
       saucelabs.connect(callback);
 
@@ -59,80 +173,6 @@ describe('lib/util/saucelabs', function() {
 
       expect(sauceConnectLauncher.callCount).to.equal(1);
     });
-
-    it('should call configHandler.get 3 times', function() {
-      saucelabs.connect(callback);
-
-      expect(configHandler.get.callCount).to.equal(3);
-    });
-
-    it('should call configHandler.get with driver.capabilities.username', function() {
-      saucelabs.connect(callback);
-
-      expect(configHandler.get.args[0]).to.deep.equal(['driver.capabilities.username']);
-    });
-
-    it('should call configHandler.get with driver.capabilities.accessKey', function() {
-      saucelabs.connect(callback);
-
-      expect(configHandler.get.args[1]).to.deep.equal(['driver.capabilities.accessKey']);
-    });
-
-    it('should call configHandler.get with driver.capabilities.tunnel-identifier', function() {
-      saucelabs.connect(callback);
-
-      expect(configHandler.get.args[2]).to.deep.equal(['driver.capabilities.tunnel-identifier']);
-    });
-
-    it('should call sauceConnectLauncher with an object as the first argument containing '
-    + 'username, accessKey, and tunnelIdentifier equal to their respective config values', function() {
-      configHandler.get.onCall(0).returns('configUsername');
-      configHandler.get.onCall(1).returns('configAccessKey');
-      configHandler.get.onCall(2).returns('tunnelIdentifier');
-
-      saucelabs.connect(callback);
-
-      expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
-        username: 'configUsername',
-        accessKey: 'configAccessKey',
-        tunnelIdentifier: 'tunnelIdentifier',
-      });
-    });
-
-    describe('if the config sauceCapabilities.username is falsey', function() {
-      it('should call sauceConnectLauncher with an object as the first argument containing '
-      + 'username from process.env', function() {
-        configHandler.get.onCall(0).returns(undefined);
-        configHandler.get.onCall(1).returns('configAccessKey');
-        configHandler.get.onCall(2).returns('tunnelIdentifier');
-
-        saucelabs.connect(callback);
-
-        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
-          username: 'sauceUsername',
-          accessKey: 'configAccessKey',
-          tunnelIdentifier: 'tunnelIdentifier',
-        });
-      });
-    });
-
-    describe('if the config sauceCapabilities.accessKey is falsey', function() {
-      it('should call sauceConnectLauncher with an object as the first argument containing '
-      + 'accessKey from process.env', function() {
-        configHandler.get.onCall(0).returns('configUsername');
-        configHandler.get.onCall(1).returns(undefined);
-        configHandler.get.onCall(2).returns('tunnelIdentifier');
-
-        saucelabs.connect(callback);
-
-        expect(sauceConnectLauncher.args[0][0]).to.deep.equal({
-          username: 'configUsername',
-          accessKey: 'sauceAccessKey',
-          tunnelIdentifier: 'tunnelIdentifier',
-        });
-      });
-    });
-
 
     it('should call sauceConnectLauncher with a callback function as second argument', function() {
       saucelabs.connect(callback);
@@ -191,7 +231,6 @@ describe('lib/util/saucelabs', function() {
       });
     });
   });
-
   describe('close', function() {
     let saucelabs;
 
