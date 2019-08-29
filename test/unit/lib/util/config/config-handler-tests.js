@@ -427,7 +427,7 @@ describe('lib/util/config/config-handler.js', function() {
 
     it('should return an empty string if fetching a non-existant property from the config', function() {
       let invalidPath = '';
-      _.get.withArgs(invalidPath).returns(undefined)
+      _.get.withArgs(invalidPath).returns(undefined);
       configHandler.get(invalidPath);
 
       expect(_.get.args).to.deep.equal([[
