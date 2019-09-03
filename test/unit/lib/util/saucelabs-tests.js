@@ -10,20 +10,32 @@ describe('lib/util/saucelabs', function() {
     let sauceConnectLauncher;
     let callback;
     let configHandler;
-
+    let _;
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('lodash');
 
       mockery.registerAllowable('../../../../lib/util/saucelabs.js');
 
       sauceConnectLauncher = sinon.stub();
       callback = sinon.stub();
 
-      console.log = sinon.stub();
+      sinon.spy(console, 'log');
 
       configHandler = {
         get: sinon.stub(),
+      };
+
+      _ = {
+        pickBy: sinon.stub().callsFake(function pickByFake(obj) {
+          let copy = obj;
+          const keys = Object.keys(copy);
+          for (const key of keys) {
+            if (obj[key] === (undefined)) {
+              delete copy[key];
+            }
+          }
+          return copy;
+        }),
       };
 
       process.env.SAUCE_USERNAME = 'sauceUsername',
@@ -31,6 +43,7 @@ describe('lib/util/saucelabs', function() {
       process.env.SAUCE_CONNECT_ARGS = JSON.stringify({SauceConnectConfigArg: 'somethingUseful'});
 
       mockery.registerMock('sauce-connect-launcher', sauceConnectLauncher);
+      mockery.registerMock('lodash', _);
       mockery.registerMock('./config/config-handler.js', configHandler);
 
       saucelabs = require('../../../../lib/util/saucelabs.js');
@@ -40,11 +53,11 @@ describe('lib/util/saucelabs', function() {
       delete process.env.SAUCE_USERNAME;
       delete process.env.SAUCE_ACCESS_KEY;
       delete process.env.SAUCE_CONNECT_ARGS;
+      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
     });
-
     describe('buildOpts', function() {
       it('should call configHandler.get 3 times', function() {
         saucelabs.connect(callback);
@@ -120,6 +133,7 @@ describe('lib/util/saucelabs', function() {
 
       describe('config handler should handle confusing behavior to help the end user', function() {
         it('should set verbose to true if the v flag is set', function() {
+          _.pickBy.returns({verbose: true});
           configHandler.get.onCall(0).returns({v: true});
 
           saucelabs.connect(callback);
@@ -258,9 +272,10 @@ describe('lib/util/saucelabs', function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/util/saucelabs.js');
 
-      console.log = sinon.stub();
-
-
+      sinon.spy(console, 'log');
+      let _ = {
+      };
+      mockery.registerMock('lodash', _);
       mockery.registerMock('sauce-connect-launcher', {});
       mockery.registerMock('./config/config-handler.js', {});
 
@@ -271,6 +286,7 @@ describe('lib/util/saucelabs', function() {
     });
 
     afterEach(function() {
+      console.log.restore();
       mockery.resetCache();
       mockery.deregisterAll();
       mockery.disable();
