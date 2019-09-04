@@ -424,6 +424,17 @@ describe('lib/util/config/config-handler.js', function() {
 
       expect(result).to.equal('value');
     });
+
+    it('should return an empty string if fetching a non-existant property from the config', function() {
+      let invalidPath = '';
+      _.get.withArgs(invalidPath).returns(undefined);
+      configHandler.get(invalidPath);
+
+      expect(_.get.args).to.deep.equal([[
+        {},
+        '',
+      ]]);
+    });
   });
 
   describe('get all', function() {
