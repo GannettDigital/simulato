@@ -3,6 +3,8 @@
 ## Pending Version
 
 ## 0.8.3
+
+* Raghu Dantuluri
     * Added functionality to allow user to pass sauce connect options to the embedded sauce connect tunnel;
 
 ## 0.8.2
