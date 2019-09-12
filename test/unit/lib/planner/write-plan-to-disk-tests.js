@@ -7,6 +7,7 @@ const expect = require('chai').expect;
 describe('lib/planner/write-plans-to-disk.js', function() {
   let fs;
   let path;
+  let crypto_stub;
   let configHandler;
   let clock;
   let writePlansToDisk;
@@ -14,7 +15,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../lib/planner/write-plans-to-disk.js');
-
+    let crypto;
     fs = {
       writeFileSync: sinon.stub(),
     };
@@ -24,12 +25,22 @@ describe('lib/planner/write-plans-to-disk.js', function() {
     configHandler = {
       get: sinon.stub(),
     };
+    crypto = {
+      createHash: sinon.stub().returns({
+        update: sinon.stub().returns({
+          digest: sinon.stub().returns(
+              'hashedPlan'
+          ),
+        }),
+      }),
+    };
 
     clock = sinon.useFakeTimers(12345);
     sinon.spy(console, 'log');
 
     mockery.registerMock('fs', fs);
     mockery.registerMock('path', path);
+    mockery.registerMock('crypto', crypto);
     mockery.registerMock('../util/config/config-handler.js', configHandler);
 
     writePlansToDisk = require('../../../../lib/planner/write-plans-to-disk.js');
@@ -53,14 +64,14 @@ describe('lib/planner/write-plans-to-disk.js', function() {
 
   describe('for each plan of the passed in plans', function() {
     it('should call path.resolve with the outputPath and the constructed file name', function() {
-      let plans = ['plan1', 'plan2'];
+      let plans = ['plan1'];
+
       configHandler.get.returns('outputPath/');
 
       writePlansToDisk(plans);
 
       expect(path.resolve.args).to.deep.equal([
-        [`outputPath/`, '12345-simulato-1_2.json'],
-        [`outputPath/`, '12345-simulato-2_2.json'],
+        [`outputPath/`, 'simulato--hashedPlan'],
       ]);
     });
 
