@@ -70,7 +70,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
       writePlansToDisk(plans);
 
       expect(path.resolve.args).to.deep.equal([
-        [`outputPath/`, 'simulato--hashedPlan'],
+        [`outputPath/`, 'simulato--hashedPlan.json'],
       ]);
     });
 
