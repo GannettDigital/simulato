@@ -7,7 +7,6 @@ const expect = require('chai').expect;
 describe('lib/planner/write-plans-to-disk.js', function() {
   let fs;
   let path;
-  let crypto_stub;
   let configHandler;
   let clock;
   let writePlansToDisk;
