@@ -6,6 +6,7 @@
 
 * Raghu Dantuluri
     * Added functionality to allow user to pass sauce connect options to the embedded sauce connect tunnel;
+    * Changed the generated tests' names to be based on the test plan;
 
 ## 0.8.2
 
