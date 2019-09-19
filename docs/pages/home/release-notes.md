@@ -4,6 +4,12 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
+## 0.8.3
+
+* Raghu Dantuluri
+   * Changed generated test names to be based off the test plan;
+   * Added functionality to allow user to pass sauce connect options to the embedded sauce connect tunnel;
+
 
 ## 0.8.2
 
