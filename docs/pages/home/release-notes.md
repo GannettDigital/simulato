@@ -4,6 +4,12 @@ title: 'Release Notes'
 toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
+
+## 0.8.4
+
+* Raghu Dantuluri
+   * Fixed generated test names to not collide, causing test overwrites
+    
 ## 0.8.3
 
 * Raghu Dantuluri
