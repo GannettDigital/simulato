@@ -1,0 +1,19 @@
+[
+    {
+        "type": "NavigateToPresto",
+        "name": "navigateToPresto",
+        "state": {}
+    },
+    {
+        "name": "navigateToPresto.NAVIGATE_TO_PRESTO"
+    },
+    {
+        "name": "navSidebarSearchAssetsAnchor.CLICK"
+    },
+    {
+        "name": "searchFiltersRightSideBarFilterTabPublishStatus.OPEN_DROPDOWN"
+    },
+    {
+        "name": "searchFiltersRightSideBarFilterTabPublishStatusDropdown.SELECT_TOP_CHOICE"
+    }
+]

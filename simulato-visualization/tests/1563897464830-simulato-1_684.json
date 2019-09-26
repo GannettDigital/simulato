@@ -1,0 +1,16 @@
+[
+    {
+        "type": "NavigateToPresto",
+        "name": "navigateToPresto",
+        "state": {}
+    },
+    {
+        "name": "navigateToPresto.NAVIGATE_TO_PRESTO"
+    },
+    {
+        "name": "header.OPEN"
+    },
+    {
+        "name": "header.CLOSE"
+    }
+]

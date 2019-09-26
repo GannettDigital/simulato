@@ -1,0 +1,1 @@
+[{"type":"NavigateToPresto","name":"navigateToPresto","state":{}},{"name":"navigateToPresto.NAVIGATE_TO_PRESTO"},{"name":"navSidebarPlanningAnchor.CLICK"},{"name":"planningSearchListCreateNewListButton.CLICK"},{"name":"planningSearchListNewListModalListDescription.ENTER_TEXT","options":{"parameters":["Simulato List Description"]}}]
