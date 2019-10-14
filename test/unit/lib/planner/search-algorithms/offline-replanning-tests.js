@@ -538,21 +538,45 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     describe('if offlineReplanning._satisfiedActions.size is equal to offlineReplanning._actionOccurrences ' +
       '.size', function() {
-      it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
-          'offlineReplanning._discoveredActions', function() {
-        offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
-        offlineReplanning._plans = ['aPlan'];
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
+      describe('if offlineReplanning._algorithm is actiontree', function() {
+        it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
+        'offlineReplanning._discoveredActions, offlineReplanning._algorithm', function() {
+          offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
+          offlineReplanning._plans = ['aPlan'];
+          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'actionTree');
 
-        generator.next();
-        generator.next(next);
-        generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
+          generator.next();
+          generator.next(next);
+          generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
 
-        expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
-          'planner.planningFinished',
-          ['aPlan'],
-          'discoveredActions',
-        ]);
+          expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
+            'planner.planningFinished',
+            [undefined],
+            'discoveredActions',
+            'actionTree',
+          ]);
+        });
+      });
+
+      describe('if offlineReplanning._algorithm is forwardstatespacesearchheuristic', function() {
+        it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
+        'offlineReplanning._discoveredActions, offlineReplanning._algorithm', function() {
+          offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
+          offlineReplanning._plans = ['aPlan'];
+          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+              'forwardStateSpaceSearchHeuristic');
+
+          generator.next();
+          generator.next(next);
+          generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
+
+          expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
+            'planner.planningFinished',
+            ['aPlan'],
+            'discoveredActions',
+            'forwardStateSpaceSearchHeuristic',
+          ]);
+        });
       });
     });
   });
