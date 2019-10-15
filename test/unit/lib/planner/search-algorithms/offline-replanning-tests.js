@@ -538,21 +538,45 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     describe('if offlineReplanning._satisfiedActions.size is equal to offlineReplanning._actionOccurrences ' +
       '.size', function() {
-      it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
-          'offlineReplanning._discoveredActions', function() {
-        offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
-        offlineReplanning._plans = ['aPlan'];
-        let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'algorithm');
+      describe('if offlineReplanning._algorithm is actiontree', function() {
+        it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
+        'offlineReplanning._discoveredActions, offlineReplanning._algorithm', function() {
+          offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
+          offlineReplanning._plans = ['aPlan'];
+          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions', 'actionTree');
 
-        generator.next();
-        generator.next(next);
-        generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
+          generator.next();
+          generator.next(next);
+          generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
 
-        expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
-          'planner.planningFinished',
-          ['aPlan'],
-          'discoveredActions',
-        ]);
+          expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
+            'planner.planningFinished',
+            [undefined],
+            'discoveredActions',
+            'actionTree',
+          ]);
+        });
+      });
+
+      describe('if offlineReplanning._algorithm is forwardstatespacesearchheuristic', function() {
+        it('should call offlineReplanning.emitAsync with the event "planningFinished", offlineReplanning._plans, ' +
+        'offlineReplanning._discoveredActions, offlineReplanning._algorithm', function() {
+          offlineReplanning._satisfiedActions = new Set(['MY_ACTION']);
+          offlineReplanning._plans = ['aPlan'];
+          let generator = offlineReplanning.replan('existingPlans', 'discoveredActions',
+              'forwardStateSpaceSearchHeuristic');
+
+          generator.next();
+          generator.next(next);
+          generator.next({actionOccurrences: new Map([['MY_ACTION', 1]])});
+
+          expect(offlineReplanning.emitAsync.args[1]).to.deep.equal([
+            'planner.planningFinished',
+            ['aPlan'],
+            'discoveredActions',
+            'forwardStateSpaceSearchHeuristic',
+          ]);
+        });
       });
     });
   });
@@ -1384,24 +1408,46 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     describe('for each plan in offlineReplanning._existingPlans', function() {
-      it('should call setOperations.isSuperset once with offlineReplanning._satisfiedActions ' +
+      describe('if offlineReplanning._algorithm is actiontree', function() {
+        it('should call setOperations.isSuperset once with offlineReplanning._satisfiedActions ' +
+        'and plan as a set', function() {
+          offlineReplanning._algorithm = 'actionTree';
+          offlineReplanning._existingPlans = [['ACTION_ONE']];
+          offlineReplanning._satisfiedActions = new Set(['ACTION_ONE']);
+
+          offlineReplanning._pruneExistingPlans();
+
+          expect(setOperations.isSuperset.args).to.deep.equal([
+            [
+              new Set(['ACTION_ONE']),
+              new Set(['ACTION_ONE']),
+            ],
+          ]);
+        });
+      });
+
+      describe('if offlineReplanning._algorithm is forwardstatespacesearchheuristic', function() {
+        it('should call setOperations.isSuperset once with offlineReplanning._satisfiedActions ' +
         'and plan.path as a set', function() {
-        offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}];
-        offlineReplanning._satisfiedActions = new Set(['ACTION_ONE']);
+          offlineReplanning._algorithm = 'forwardStateSpaceSearchHeuristic';
+          offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}];
+          offlineReplanning._satisfiedActions = new Set(['ACTION_ONE']);
 
-        offlineReplanning._pruneExistingPlans();
+          offlineReplanning._pruneExistingPlans();
 
-        expect(setOperations.isSuperset.args).to.deep.equal([
-          [
-            new Set(['ACTION_ONE']),
-            new Set(['ACTION_ONE']),
-          ],
-        ]);
+          expect(setOperations.isSuperset.args).to.deep.equal([
+            [
+              new Set(['ACTION_ONE']),
+              new Set(['ACTION_ONE']),
+            ],
+          ]);
+        });
       });
 
       describe('if setOperations.isSuperset returns a truthy value', function() {
         it('should not add the plan to the prunedPlans', function() {
           setOperations.isSuperset.returns(true);
+          offlineReplanning._algorithm = 'forwardStateSpaceSearchHeuristic';
           offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}];
           offlineReplanning._satisfiedActions = new Set(['ACTION_ONE']);
 
@@ -1414,6 +1460,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       describe('if setOperations.isSuperset returns a falsy value', function() {
         it('should add the the plan to the prunedPlans', function() {
           setOperations.isSuperset.returns(false);
+          offlineReplanning._algorithm = 'forwardStateSpaceSearchHeuristic';
           offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}];
           offlineReplanning._satisfiedActions = new Set(['ACTION_ONE']);
 
@@ -1426,6 +1473,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     describe('if there are two plans in offlineReplanning._existingPlans', function() {
       it('should call superOperations.isSuperset twice', function() {
+        offlineReplanning._algorithm = 'forwardStateSpaceSearchHeuristic';
         offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}, {path: ['ACTION_TWO']}];
         offlineReplanning._satisfiedActions = new Set(['ACTION_ONE', 'ACTION_TWO']);
 
@@ -1438,6 +1486,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         it('should only the second plan to the prunedPlans array', function() {
           setOperations.isSuperset.onCall(0).returns(true);
           setOperations.isSuperset.onCall(1).returns(false);
+          offlineReplanning._algorithm = 'forwardStateSpaceSearchHeuristic';
           offlineReplanning._existingPlans = [{path: ['ACTION_ONE']}, {path: ['ACTION_TWO']}];
           offlineReplanning._satisfiedActions = new Set(['ACTION_ONE', 'ACTION_TWO']);
 

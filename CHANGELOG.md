@@ -2,21 +2,27 @@
 
 ## Pending Version
 
+## 0.8.5
+
+* Zach Knox
+  * Enabled replanning support for actionTree algorithm
+  * Fixed replanning algorithm to output correctly when running with actionTree algorithm
+
 ## 0.8.4
     
-   * Raghu Dantuluri
-      * Fixed generated test names to not collide, causing test overwrites
+* Raghu Dantuluri
+  * Fixed generated test names to not collide, causing test overwrites
         
 ## 0.8.3
 
 * Raghu Dantuluri
-    * Added functionality to allow user to pass sauce connect options to the embedded sauce connect tunnel;
-    * Changed the generated tests' names to be based on the test plan;
+  * Added functionality to allow user to pass sauce connect options to the embedded sauce connect tunnel;
+  * Changed the generated tests' names to be based on the test plan;
 
 ## 0.8.2
 
 * Raghu Dantuluri
-   * Exposed 'remote' from 'selenium-webdriver' for use in test execution
+  * Exposed 'remote' from 'selenium-webdriver' for use in test execution
 
 ## 0.8.1
 
