@@ -538,7 +538,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
       it(`should call testcase.att once with the string 'name' and the action's component and action name`, function() {
         jUnitWriter._createReportWithActions(report);
 
-        expect(testcase.att.args).to.deep.equal([['name', 'myComponent.MY_ACTION']]);
+        expect(testcase.att.args).to.deep.equal([['name', '1234_test.json:myComponent.MY_ACTION']]);
       });
 
       it(`should call jUnitWrtier._setStatus once with the action and the testcase`, function() {
