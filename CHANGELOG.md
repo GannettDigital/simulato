@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.8.6
+
+* Shauna Hao
+  * Prepended test file name to test case name of action report for easy mapping and better debugging
+
 ## 0.8.5
 
 * Zach Knox
