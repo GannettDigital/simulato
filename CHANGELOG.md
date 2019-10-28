@@ -2,6 +2,11 @@
 
 ## Pending Version
 
+## 0.8.7
+
+* Mike Millgate
+  * Security vulnerability dependency updates (CVE-2019-16892).
+
 ## 0.8.6
 
 * Shauna Hao
