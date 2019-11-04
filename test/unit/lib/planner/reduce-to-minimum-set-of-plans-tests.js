@@ -9,6 +9,9 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
   let callback;
   let reduceToMinimumSetOfPlans;
   let algorithm;
+  let crypto;
+  let hash;
+  let digest;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -20,7 +23,18 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
     callback = sinon.stub();
     algorithm = 'default';
 
+    digest = sinon.stub();
+    hash = {
+      update: sinon.stub().returns({
+        digest,
+      }),
+    };
+    crypto = {
+      createHash: sinon.stub().returns(hash),
+    };
+
     mockery.registerMock('../util/set-operations.js', setOperations);
+    mockery.registerMock('crypto', crypto);
 
     reduceToMinimumSetOfPlans = require('../../../../lib/planner/reduce-to-minimum-set-of-plans.js');
   });
@@ -31,118 +45,134 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
     mockery.disable();
   });
 
-  it('should call setOperations.isSuperset 0 times if there is one plan', function() {
-    let plans = [
-      {
-        path: new Set('action1', 'action2'),
-      },
-    ];
-
-    reduceToMinimumSetOfPlans(plans, algorithm, callback);
-
-    expect(setOperations.isSuperset.callCount).to.equal(0);
-  });
-
-  it('should call setOperations.isSuperset 6 times if there are three plans', function() {
-    let plans = [
-      {
-        path: new Set(['action1', 'action2']),
-      },
-      {
-        path: new Set(['action1', 'action3']),
-      },
-      {
-        path: new Set(['action1', 'action4']),
-      },
-    ];
-
-    reduceToMinimumSetOfPlans(plans, algorithm, callback);
-
-    expect(setOperations.isSuperset.callCount).to.equal(6);
-  });
-
-  it('should call the passed in callback once with null and the finalPlans', function() {
-    let plans = [
-      {
-        path: new Set(['action1', 'action2']),
-      },
-    ];
-
-    reduceToMinimumSetOfPlans(plans, algorithm, callback);
-
-    expect(callback.args).to.deep.equal([
-      [
-        null,
-        [
+  describe('when the algorithm is actionTree', function() {
+    describe('for each plan from the passed in plans', function() {
+      it('should create a hash for each plan', function() {
+        let plans = [
           {
             path: new Set(['action1', 'action2']),
           },
-        ],
-      ],
-    ]);
-  });
+        ];
+        algorithm = 'actionTree';
 
-  describe('for each plan in the passed in plans', function() {
-    it('should call setOperations.isSuperset with the two plan paths', function() {
-      let plans = [
-        {
-          path: new Set(['action1', 'action2']),
-        },
-        {
-          path: new Set(['action1', 'action2', 'action3']),
-        },
-      ];
-      setOperations.isSuperset.onCall(0).returns(true);
+        reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
-      reduceToMinimumSetOfPlans(plans, algorithm, callback);
+        expect(crypto.createHash.args).to.eql([
+          ['sha256'],
+        ]);
+      });
 
-      expect(setOperations.isSuperset.args[0]).to.deep.equal([
-        new Set(['action1', 'action2', 'action3']),
-        new Set(['action1', 'action2']),
-      ]);
+      it('should update the hash with the plan string', function() {
+        let plans = [
+          {
+            path: new Set(['action1', 'action2']),
+          },
+        ];
+        algorithm = 'actionTree';
+
+        reduceToMinimumSetOfPlans(plans, algorithm, callback);
+
+        expect(hash.update.args).to.eql([
+          [JSON.stringify({
+            path: new Set(['action1', 'action2']),
+          })],
+        ]);
+      });
+
+      it('should create a base64 digest of the hash', function() {
+        let plans = [
+          {
+            path: new Set(['action1', 'action2']),
+          },
+        ];
+        algorithm = 'actionTree';
+
+        reduceToMinimumSetOfPlans(plans, algorithm, callback);
+
+        expect(digest.args).to.eql([
+          ['base64'],
+        ]);
+      });
+
+      describe('when there is not an existing plan', function() {
+        it('should add the plan to the array of final plans', function() {
+          let plans = [
+            {
+              path: new Set(['action1', 'action2']),
+            },
+            {
+              path: new Set(['action2', 'action3']),
+            },
+          ];
+          algorithm = 'actionTree';
+
+          reduceToMinimumSetOfPlans(plans, algorithm, callback);
+
+          expect(callback.args).to.eql([
+            [
+              null,
+              {
+                path: new Set(['action1', 'action2']),
+              },
+              {
+                path: new Set(['action2', 'action3']),
+              },
+            ],
+          ]);
+        });
+      });
+
+      describe('when there is an existing plan', function() {
+        it('should not add the plan to the array of final plans', function() {
+          let plans = [
+            {
+              path: new Set(['action1', 'action2']),
+            },
+            {
+              path: new Set(['action1', 'action2']),
+            },
+          ];
+          algorithm = 'actionTree';
+
+          reduceToMinimumSetOfPlans(plans, algorithm, callback);
+
+          expect(callback.args).to.eql([
+            [
+              null,
+              {
+                path: new Set(['action1', 'action2']),
+              },
+            ],
+          ]);
+        });
+      });
     });
 
-    it('should remove the plan from the list of the plans if setOperation.isSuperset returns true', function() {
-      let plans = [
-        {
-          path: new Set(['action1', 'action2']),
-        },
-        {
-          path: new Set(['action1', 'action2', 'action3']),
-        },
-      ];
-      setOperations.isSuperset.onCall(0).returns(true);
+    describe('when the algorithm is not actionTree', function() {
+      it('should call the callback with the passed in plans', function() {
+        let plans = [
+          {
+            path: new Set(['action1', 'action2']),
+          },
+          {
+            path: new Set(['action1', 'action2']),
+          },
+        ];
 
-      reduceToMinimumSetOfPlans(plans, algorithm, callback);
+        reduceToMinimumSetOfPlans(plans, 'not-action-reee', callback);
 
-      expect(callback.args[0][1]).to.deep.equal([
-        {
-          path: new Set(['action1', 'action2', 'action3']),
-        },
-      ]);
-    });
-
-    it('should not remove the plan from the list of the plans if setOperation.isSuperset returns false', function() {
-      let plans = [
-        {
-          path: new Set(['action1', 'action2']),
-        },
-        {
-          path: new Set(['action1', 'action2', 'action3']),
-        },
-      ];
-      setOperations.isSuperset.returns(false);
-
-      reduceToMinimumSetOfPlans(plans, algorithm, callback);
-
-      expect(callback.args[0][1]).to.deep.equal([
-        {
-          path: new Set(['action1', 'action2']),
-        },
-        {
-          path: new Set(['action1', 'action2', 'action3']),
-        },
-      ]);
+        expect(callback.args).to.eql([
+          [
+            null,
+            {
+              path: new Set(['action1', 'action2']),
+            },
+            {
+              path: new Set(['action1', 'action2']),
+            },
+          ],
+        ]);
+      });
     });
   });
 });

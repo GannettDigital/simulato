@@ -29,6 +29,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
     });
@@ -103,6 +104,8 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     let plannerEventDispatch;
     let configHandler;
     let next;
+    let setOperations;
+    let crypto;
     let offlineReplanning;
 
     beforeEach(function() {
@@ -126,11 +129,21 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       sinon.spy(console, 'log');
       next = sinon.stub();
 
+      crypto = {
+        createHash: sinon.stub(),
+      };
+
+      setOperations = {
+        isEqual: sinon.stub(),
+        isSuperset: sinon.stub(),
+      };
+
       mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', crypto);
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', configHandler);
+      mockery.registerMock('../../util/set-operations.js', setOperations);
 
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
@@ -138,6 +151,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
       offlineReplanning._getAction = sinon.stub();
       offlineReplanning._savePlan = sinon.stub();
+      offlineReplanning._comparePlan = sinon.stub();
     });
 
     afterEach(function() {
@@ -147,16 +161,25 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.disable();
     });
 
-    it('should call configHandler.get once with the string "debug"', function() {
+    it('should call configHandler.get with the string "debug"', function() {
       let generator = offlineReplanning.replan();
 
       generator.next();
       generator.next(next);
 
-      expect(configHandler.get.args).to.deep.equal([
-        [
-          'debug',
-        ],
+      expect(configHandler.get.args[0]).to.deep.equal([
+        'debug',
+      ]);
+    });
+
+    it('should call configHandler.get with the string "replanningSeed"', function() {
+      let generator = offlineReplanning.replan();
+
+      generator.next();
+      generator.next(next);
+
+      expect(configHandler.get.args[1]).to.deep.equal([
+        'replanningSeed',
       ]);
     });
 
@@ -619,6 +642,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
@@ -916,6 +940,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -1030,6 +1055,9 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     let plannerEventDispatch;
     let configHandler;
     let offlineReplanning;
+    let crypto;
+    let hash;
+    let update;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -1056,16 +1084,26 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       };
       sinon.spy(console, 'log');
 
+      update = {
+        digest: sinon.stub(),
+      };
+      hash = {
+        update: sinon.stub().returns(update),
+      };
+      crypto = {
+        createHash: sinon.stub().returns(hash),
+      };
+
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', configHandler);
+      mockery.registerMock('crypto', crypto);
 
       offlineReplanning = require(
           '../../../../../lib/planner/search-algorithms/offline-replanning.js'
       );
-
       offlineReplanning._isDuplicate = sinon.stub();
     });
 
@@ -1111,6 +1149,30 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     describe('if duplicate is falsy', function() {
+      it('should call createHash with "sha256"', function() {
+        offlineReplanning._savePlan({path: 'myPath'});
+
+        expect(crypto.createHash.args).to.eql([
+          ['sha256'],
+        ]);
+      });
+
+      it('should update the hash with the plan path', function() {
+        offlineReplanning._savePlan({path: 'myPath'});
+
+        expect(hash.update.args).to.eql([
+          ['\"myPath\"'],
+        ]);
+      });
+
+      it('should create a base64 digest of the hash', function() {
+        offlineReplanning._savePlan({path: 'myPath'});
+
+        expect(update.digest.args).to.eql([
+          ['base64'],
+        ]);
+      });
+
       it('should add push the passed in plan on to offlinePlanning._plans', function() {
         offlineReplanning._savePlan('myPlan');
 
@@ -1187,6 +1249,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -1316,28 +1379,14 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         });
 
         describe('if plan.path.length is not greater than 0', function() {
-          it('should throw an error', function() {
-            offlineReplanning._chooseAction.returns(null);
-            let plan = {
-              actions: new Set(['ACTION_THREE']),
-              lastAction: '',
-              path: [],
-            };
-
-            expect(offlineReplanning._getAction.bind(null, plan)).to.throw();
-          });
-
           it('should call SimulatoError.PLANNER.NO_STARTING_ACTIONS once with an error message', function() {
-            offlineReplanning._chooseAction.returns(null);
             let plan = {
               actions: new Set(['ACTION_THREE']),
               lastAction: '',
               path: [],
             };
-
-            try {
-              offlineReplanning._getAction(plan);
-            } catch (error) { }
+            offlineReplanning._chooseAction.returns(null);
+            offlineReplanning._getAction(plan);
 
             expect(SimulatoError.PLANNER.NO_STARTING_ACTIONS.args).to.deep.equal([
               [
@@ -1345,6 +1394,19 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
               ],
             ]);
           });
+        });
+
+        it('should return null', function() {
+          offlineReplanning._chooseAction.returns(null);
+          let plan = {
+            actions: new Set(['ACTION_THREE']),
+            lastAction: '',
+            path: [],
+          };
+
+          let result = offlineReplanning._getAction(plan);
+
+          expect(result).to.equal(null);
         });
       });
 
@@ -1393,6 +1455,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', setOperations);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -1526,6 +1589,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', setOperations);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -1543,14 +1607,14 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     describe('for each plan in offlineReplanning._plans', function() {
       it('should call setOperations.isEqual once with aPlan.paht and the passed in plan.path as a set', function() {
         offlineReplanning._plans = [{path: ['ACTION_ONE']}];
-        let plan = {path: ['ACTION_ONE']};
+        let plan = {path: ['ACTION_TWO']};
 
         offlineReplanning._isDuplicate(plan);
 
         expect(setOperations.isEqual.args).to.deep.equal([
           [
-            ['ACTION_ONE'],
             new Set(['ACTION_ONE']),
+            new Set(['ACTION_TWO']),
           ],
         ]);
       });
@@ -1641,6 +1705,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', setOperations);
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -1664,6 +1729,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       let plan = {
         actions: ['ACTION_ONE'],
       };
+      offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
       setOperations.difference.returns(new Set());
 
       offlineReplanning._chooseAction(plan);
@@ -1699,6 +1765,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       let plan = {
         actions: ['ACTION_THREE'],
       };
+      offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
       setOperations.difference.returns(new Set(['ACTION_FOUR']));
 
       offlineReplanning._chooseAction(plan);
@@ -1718,6 +1785,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         let plan = {
           actions: ['ACTION_ONE'],
         };
+        offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
         setOperations.difference.returns(new Set());
         offlineReplanning._getActionWithSameComponent.returns('ACTION_WITH_SAME_COMPONENT');
 
@@ -1729,6 +1797,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         let plan = {
           actions: ['ACTION_ONE'],
         };
+        offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
         setOperations.difference.returns(new Set());
         offlineReplanning._getActionWithSameComponent.returns('ACTION_WITH_SAME_COMPONENT');
 
@@ -1743,6 +1812,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         let plan = {
           actions: ['ACTION_ONE'],
         };
+        offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
         setOperations.difference.returns(new Set(['ACTION_TWO', 'ACTION_THREE']));
 
         let result = offlineReplanning._chooseAction(plan);
@@ -1773,104 +1843,12 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         let plan = {
           actions: ['ACTION_ONE'],
         };
+        offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
         setOperations.difference.returns(new Set());
 
         offlineReplanning._chooseAction(plan);
 
         expect(setOperations.difference.callCount).to.equal(2);
-      });
-
-      it('should call offlineReplanning._getMostOccurringAction once with unusedActions as a parameter', function() {
-        let plan = {
-          actions: ['ACTION_ONE'],
-        };
-        setOperations.difference.onCall(0).returns(new Set());
-        setOperations.difference.onCall(1).returns(new Set(['UNUSED_ACTION']));
-
-        offlineReplanning._chooseAction(plan);
-
-        expect(offlineReplanning._getMostOccurringAction.args).to.deep.equal([
-          [
-            new Set(['UNUSED_ACTION']),
-          ],
-        ]);
-      });
-
-      describe('if mostOccurringUnusedAction is truthy', function() {
-        it('should return mostOccurringUnusedAction', function() {
-          let plan = {
-            actions: ['ACTION_ONE'],
-          };
-          setOperations.difference.returns(new Set());
-          offlineReplanning._getMostOccurringAction.returns('MOST_OCCURRING_UNUSED_ACTION');
-
-          let result = offlineReplanning._chooseAction(plan);
-
-          expect(result).to.equal('MOST_OCCURRING_UNUSED_ACTION');
-        });
-      });
-
-      describe('if mostOccurringUnusedAction is falsy and unusedActions.size is greater than 0', function() {
-        it('should return the first item in unusedActions set', function() {
-          let plan = {
-            actions: ['ACTION_ONE'],
-          };
-          setOperations.difference.onCall(0).returns(new Set());
-          setOperations.difference.onCall(1).returns(new Set(['UNUSED_ACTION', 'UNUSED_ACTION_TWO']));
-
-          let result = offlineReplanning._chooseAction(plan);
-
-          expect(result).to.equal('UNUSED_ACTION');
-        });
-      });
-
-      describe('if mostOccurringUnusedAction is falsy and unusedActions.size is not greater than 0', function() {
-        it('should call offlineReplanning._getLeastOccurringActionInPath once with the passed in plan ' +
-          'and nonZeroActionCountActions', function() {
-          let plan = {
-            actions: ['ACTION_ONE'],
-          };
-          offlineReplanning._filterZeroActionCountActions.returns(new Set(['NON_ZERO_ACTION_COUNT_ACTION']));
-          setOperations.difference.returns(new Set());
-
-          offlineReplanning._chooseAction(plan);
-
-          expect(offlineReplanning._getLeastOccurringActionInPath.args).to.deep.equal([
-            [
-              {
-                actions: ['ACTION_ONE'],
-              },
-              new Set(['NON_ZERO_ACTION_COUNT_ACTION']),
-            ],
-          ]);
-        });
-
-        describe('if leastOccurringActionInPath is truthy', function() {
-          it('should return leastOccurringActionInPath', function() {
-            offlineReplanning._getLeastOccurringActionInPath.returns('LEAST_OCCURRING_ACTION');
-            let plan = {
-              actions: ['ACTION_ONE'],
-            };
-            setOperations.difference.returns(new Set());
-
-            let result = offlineReplanning._chooseAction(plan);
-
-            expect(result).to.equal('LEAST_OCCURRING_ACTION');
-          });
-        });
-
-        describe('if leastOccurringActionInPath is falsy', function() {
-          it('should return null', function() {
-            let plan = {
-              actions: ['ACTION_ONE'],
-            };
-            setOperations.difference.returns(new Set());
-
-            let result = offlineReplanning._chooseAction(plan);
-
-            expect(result).to.equal(null);
-          });
-        });
       });
     });
   });
@@ -1899,6 +1877,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2074,6 +2053,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2152,6 +2132,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2248,6 +2229,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2349,6 +2331,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', lodash);
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2523,6 +2506,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../../util/set-operations.js', {});
       mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
       mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', plannerEventDispatch);
       mockery.registerMock('../../util/config/config-handler.js', {});
 
@@ -2537,7 +2521,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       mockery.disable();
     });
 
-    describe('while index is greater than 0 and backtrackPlanFound is falsy', function() {
+    describe('while index is greater than 0', function() {
       it('should call offlineReplanning.emitAsync with the event "searchNode.clone", the saved plan at the ' +
         'current index and next', function() {
         offlineReplanning._savedPlans = ['planZero', 'planOne'];
@@ -2612,6 +2596,9 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
                 newSavedPlans: [{}, {
                   actions: new Set(['MY_ACTION_2']),
                 }],
+                removed: [
+                  'MY_ACTION',
+                ]
               },
             ],
           ]);
