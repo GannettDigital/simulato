@@ -105,18 +105,22 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
             },
           ];
           algorithm = 'actionTree';
+          digest.onCall(0).returns('first');
+          digest.onCall(1).returns('second');
 
           reduceToMinimumSetOfPlans(plans, algorithm, callback);
 
           expect(callback.args).to.eql([
             [
               null,
-              {
-                path: new Set(['action1', 'action2']),
-              },
-              {
-                path: new Set(['action2', 'action3']),
-              },
+              [
+                {
+                  path: new Set(['action1', 'action2']),
+                },
+                {
+                  path: new Set(['action2', 'action3']),
+                },
+              ],
             ],
           ]);
         });
@@ -139,9 +143,11 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
           expect(callback.args).to.eql([
             [
               null,
-              {
-                path: new Set(['action1', 'action2']),
-              },
+              [
+                {
+                  path: new Set(['action1', 'action2']),
+                },
+              ],
             ],
           ]);
         });
@@ -164,12 +170,14 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
         expect(callback.args).to.eql([
           [
             null,
-            {
-              path: new Set(['action1', 'action2']),
-            },
-            {
-              path: new Set(['action1', 'action2']),
-            },
+            [
+              {
+                path: new Set(['action1', 'action2']),
+              },
+              {
+                path: new Set(['action1', 'action2']),
+              },
+            ],
           ],
         ]);
       });

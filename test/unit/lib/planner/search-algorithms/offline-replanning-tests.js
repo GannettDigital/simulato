@@ -1472,7 +1472,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
 
     describe('for each plan in offlineReplanning._existingPlans', function() {
       describe('if offlineReplanning._algorithm is actiontree', function() {
-        it('should call setOperations.isSuperset once with offlineReplanning._satisfiedActions ' +
+        it.only('should call setOperations.isSuperset once with offlineReplanning._satisfiedActions ' +
         'and plan as a set', function() {
           offlineReplanning._algorithm = 'actionTree';
           offlineReplanning._existingPlans = [['ACTION_ONE']];
@@ -2598,7 +2598,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
                 }],
                 removed: [
                   'MY_ACTION',
-                ]
+                ],
               },
             ],
           ]);
