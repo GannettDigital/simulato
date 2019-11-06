@@ -850,7 +850,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
           expect(console.log.args).to.eql([
             [
               '\nBeginning offline replanning\n',
-            ]
+            ],
           ]);
         });
       });
@@ -2124,6 +2124,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
       offlineReplanning._getActionWithSameComponent = sinon.stub();
       offlineReplanning._getMostOccurringAction = sinon.stub();
       offlineReplanning._getLeastOccurringActionInPath = sinon.stub();
+      offlineReplanning._random = sinon.stub();
     });
 
     afterEach(function() {
@@ -2215,16 +2216,31 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
     });
 
     describe('if actionWithSameComponent is falsy and unsatisfiedActions.size is greater than 0', function() {
-      it('should return the first item in the unsatisfiedACtions set', function() {
+      it('should call offlineReplanning._random with a min and max value', function() {
         let plan = {
           actions: ['ACTION_ONE'],
         };
         offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
         setOperations.difference.returns(new Set(['ACTION_TWO', 'ACTION_THREE']));
 
-        let result = offlineReplanning._chooseAction(plan);
+        offlineReplanning._chooseAction(plan);
 
-        expect(result).to.equal('ACTION_TWO');
+        expect(offlineReplanning._random.args).to.eql([
+          [0, 1],
+        ]);
+      });
+
+      it('should return the unusedAction at the index returned by offlineReplanning._random', function() {
+        let plan = {
+          actions: ['ACTION_ONE'],
+        };
+        offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+        setOperations.difference.returns(new Set(['ACTION_TWO', 'ACTION_THREE']));
+        offlineReplanning._random.returns(1);
+
+        const chosen = offlineReplanning._chooseAction(plan);
+
+        expect(chosen).to.eql('ACTION_THREE');
       });
     });
 
@@ -2256,6 +2272,91 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         offlineReplanning._chooseAction(plan);
 
         expect(setOperations.difference.callCount).to.equal(2);
+      });
+
+      describe('if unusedActions.size is greater than zero', function() {
+        it('should call offlineReplanning._random with a min and max value', function() {
+          let plan = {
+            actions: ['ACTION_ONE'],
+          };
+          offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+          setOperations.difference.onCall(0).returns(new Set());
+          setOperations.difference.onCall(1).returns(new Set(['UNUSED', 'UNUSED2']));
+
+          offlineReplanning._chooseAction(plan);
+
+          expect(offlineReplanning._random.args).to.eql([
+            [0, 1],
+          ]);
+        });
+
+        it('should return the unusedAction at the index returned by offlineReplanning._random', function() {
+          let plan = {
+            actions: ['ACTION_ONE'],
+          };
+          offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+          setOperations.difference.onCall(0).returns(new Set());
+          setOperations.difference.onCall(1).returns(new Set(['UNUSED', 'UNUSED2']));
+          offlineReplanning._random.returns(1);
+
+          const chosen = offlineReplanning._chooseAction(plan);
+
+          expect(chosen).to.eql('UNUSED2');
+        });
+      });
+
+      describe('if unusedActions.size is not greater than zero', function() {
+        it('should call offlineReplanning._getLeastOccurringActionInPath' +
+        'with the plan and nonZeroCountActions', function() {
+          let plan = {
+            actions: ['ACTION_ONE'],
+          };
+          offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+          setOperations.difference.returns(new Set([]));
+
+          offlineReplanning._chooseAction(plan);
+
+          expect(offlineReplanning._getLeastOccurringActionInPath.args).to.eql([
+            [
+              {
+                actions: ['ACTION_ONE'],
+              },
+              new Set(['ACTION_ONE', 'ACTION_TWO']),
+            ],
+          ]);
+        });
+
+        describe('when leastOccurringActionInPath is a truthy value', function() {
+          it('should return the leastOccurringActionInPath', function() {
+            let plan = {
+              actions: ['ACTION_ONE'],
+            };
+            offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+            setOperations.difference.returns(new Set([]));
+            offlineReplanning._getLeastOccurringActionInPath.returns('LEAST_OCCURRING');
+
+            const chosen = offlineReplanning._chooseAction(plan);
+
+            expect(chosen).to.eql('LEAST_OCCURRING');
+          });
+        });
+
+        describe('when leastOccurringActionInPath is a falsey value', function() {
+          it('should return null', function() {
+            it('should return the leastOccurringActionInPath', function() {
+              let plan = {
+                actions: ['ACTION_ONE'],
+              };
+              offlineReplanning._filterZeroActionCountActions.returns(new Set(['ACTION_ONE', 'ACTION_TWO']));
+              setOperations.difference.returns(new Set([]));
+              offlineReplanning._getLeastOccurringActionInPath.returns(false);
+
+              const chosen = offlineReplanning._chooseAction(plan);
+
+              expect(chosen).to.eql(null);
+            });
+          });
+        });
       });
     });
   });
@@ -3270,6 +3371,110 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
         const compared = offlineReplanning._comparePlan(plan);
 
         expect(compared).to.eql(undefined);
+      });
+    });
+  });
+
+  describe('_random', function() {
+    let Emitter;
+    let offlineReplanning;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable(
+          '../../../../../lib/planner/search-algorithms/offline-replanning.js'
+      );
+
+      Emitter = {
+        mixIn: function(myObject) {
+          myObject.on = sinon.stub();
+          myObject.emitAsync = sinon.stub();
+          myObject.runOn = sinon.stub();
+        },
+      };
+
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../../util/set-operations.js', {});
+      mockery.registerMock('lodash', {});
+      mockery.registerMock('crypto', {});
+      mockery.registerMock('../planner-event-dispatch/planner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
+
+      offlineReplanning = require(
+          '../../../../../lib/planner/search-algorithms/offline-replanning.js'
+      );
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+    });
+
+    it('should set offlineReplanning._randomSeed', function() {
+      offlineReplanning._randomSeed = 8675309;
+
+      offlineReplanning._random(0, 100);
+
+      expect(offlineReplanning._randomSeed).to.eql(112386);
+    });
+
+    // This function only does math. These test verifies
+    // that, for a given seed, it will always return the
+    // same result.
+    it('should return a value', function() {
+      offlineReplanning._randomSeed = 8675309;
+
+      const result = offlineReplanning._random(0, 100);
+
+      expect(result).to.eql(48.17644032921811);
+    });
+
+    describe('when max is a truthy value', function() {
+      it('should keep the given max value', function() {
+        offlineReplanning._randomSeed = 8675309;
+
+        let min = 0;
+        let max = 2;
+        const result = offlineReplanning._random(min, max);
+
+        expect(result).to.eql(0.9635288065843621);
+      });
+    });
+
+    describe('when max is a falsey value', function() {
+      it('should set max to 1', function() {
+        offlineReplanning._randomSeed = 8675309;
+
+        let min = 0;
+        let max = false;
+        const result = offlineReplanning._random(min, max);
+
+        expect(result).to.eql(0.48176440329218106);
+      });
+    });
+
+    describe('when min is a truthy value', function() {
+      it('should keep given min value', function() {
+        offlineReplanning._randomSeed = 8675309;
+
+        let min = 3;
+        let max = 22;
+        const result = offlineReplanning._random(min, max);
+
+        expect(result).to.eql(12.15352366255144);
+      });
+    });
+
+    describe('when min is a falsey value', function() {
+      it('should set min to 0', function() {
+        offlineReplanning._randomSeed = 8675309;
+
+        let min = false;
+        let max = 22;
+        const result = offlineReplanning._random(min, max);
+
+        expect(result).to.eql(10.598816872427983);
       });
     });
   });
