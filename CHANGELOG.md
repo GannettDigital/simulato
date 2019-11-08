@@ -2,6 +2,14 @@
 
 ## Pending Version
 
+## 0.9.0
+
+* Zach Knox
+  * Update offlineReplanning to support actionTree algorithm
+    * This uses some randomness to help stop the algorithm from going down the same path all the time. This randomness can be seeded from the config with `replanningSeed`.
+    * If you plan to use replanning with your existing actionTree models, you will likely need to update your models to better reflect how your website works.
+  * Updated reduce-to-minimum-set-of-plans to compare hashes of plans. In the past, it was comparing sets in a way which would never detect duplicates.
+
 ## 0.8.7
 
 * Mike Millgate
