@@ -190,7 +190,7 @@ This section documents utilization of the configuration file in place of CLI opt
 
 ### plannerAlgorithm
   * The algorithm to use when the planner generates tests
-  * Supported algorithms: `forwardStateSpaceSearchHeuristic`
+  * Supported algorithms: `actionTree`, `forwardStateSpaceSearchHeuristic`
   * Example: `algorithm: forwardStateSpaceSearchHeuristic`
 
 ### plannerTestLength
@@ -198,6 +198,12 @@ This section documents utilization of the configuration file in place of CLI opt
   * Using this option will initiate a replanning step to ensure tests conform to this
   * The replanning step will most likely greatly reduce the number of generated tests
   * Example: `plannerTestLength: 75`
+
+### replanningSeed
+  * Seed provided to the replanning algorithm's random number generator
+  * Using seeded random numbers allows for consisten plans between generation runs
+  * If replanning is not enabled with `plannerTestLength`, this value has no effect
+  * Example: `replanningSeed: 867.5309`
 
 ### debug
   * Adds node debugging flag to spawned child processes
