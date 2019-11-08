@@ -70,7 +70,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
       writePlansToDisk(plans);
 
       expect(path.resolve.args).to.deep.equal([
-        [`outputPath/`, 'simulato--hashedPlan.json'],
+        [`outputPath/`, 'simulato--0--hashedPlan.json'],
       ]);
     });
 
@@ -79,15 +79,15 @@ describe('lib/planner/write-plans-to-disk.js', function() {
       path.resolve.onCall(0).returns('path1');
       path.resolve.onCall(1).returns('path2');
       let plans = [
-        {foo: 'bar'},
-        {bar: 'foo'},
+        [{foo: 'bar'}],
+        [{bar: 'foo'}],
       ];
 
       writePlansToDisk(plans);
 
       expect(fs.writeFileSync.args).to.deep.equal([
-        ['path1', '{\"foo\":\"bar\"}'],
-        ['path2', '{\"bar\":\"foo\"}'],
+        ['path1', '[{\"foo\":\"bar\"}]'],
+        ['path2', '[{\"bar\":\"foo\"}]'],
       ]);
     });
   });
