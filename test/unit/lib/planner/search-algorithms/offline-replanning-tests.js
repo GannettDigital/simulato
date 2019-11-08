@@ -914,7 +914,7 @@ describe('lib/planner/search-algorithms/offline-replanning.js', function() {
               generator.next(startNodes);
             } finally {
               expect(console.log.args[2]).to.deep.equal([
-                'retrying',
+                'Retrying replanning for plan 1',
               ]);
             }
           });
