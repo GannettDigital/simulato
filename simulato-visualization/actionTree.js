@@ -1,8 +1,11 @@
 let fs = require('fs');
 
-let path = '/Users/bfitzpatri/github/simulato-visualization/tests/'
+let path = '/Users/bfitzpatri/github/simulato/simulato-visualization/tests/'
 
 let testCases = [];
+
+let specifiedAction = process.argv[2];
+let specifiedActionParent = process.argv[3];
 
 
 
@@ -104,51 +107,62 @@ function insertTestCase(testCase) {
     }
 }
 
-function createLinks() {
-    if (treeRoot.children.length == 0) {
-        return false;
+// function createLinks() {
+//     if (treeRoot.children.length == 0) {
+//         return false;
+//     }
+//     else {
+//         linkChildren(treeRoot.children);
+//     }
+// }
+
+// function linkChildren(children) {
+//     children.forEach(function (child) {
+//         links.push({ source: child.parent, target: child.actionName })
+//         linkChildren(child.children)
+//     })
+// }
+
+function printObject() {
+    testCases.forEach(function (testCase) {
+        insertTestCase(testCase);
+    })
+
+    if (specifiedAction && specifiedActionParent) {
+        treeRoot = searchTree(new treeNode(specifiedActionParent, specifiedAction))
     }
-    else {
-        linkChildren(treeRoot.children);
-    }
+
+    let i = 1;
+    actionNames1.push({ node: 0, name: "entryComponent" })
+
+    actionNames.forEach(function (action) {
+        let actionNode = searchTree(new treeNode(action.parent, action.actionName))
+        actionNames1.push({ node: i, name: actionNode.actionName })
+        i++;
+    })
+
+    actionNames.forEach(function (action) {
+        let actionNode = searchTree(new treeNode(action.parent, action.actionName))
+        let source1;
+        let target1;
+        actionNames1.forEach(function (a1) {
+            if (a1.name == actionNode.parent) {
+                source1 = a1.node;
+            }
+            if (a1.name == actionNode.actionName) {
+                target1 = a1.node;
+            }
+        })
+        if (source1 == undefined) {
+            source1 = 0;
+        }
+        actionNodes.push({ source: source1, target: target1, value: actionNode.count })
+    })
+
+    let printableObject = { nodes: actionNames1, links: actionNodes }
+    // fs.writeFileSync('./actionNodes1.json', JSON.stringify(actionNodes))
+    // fs.writeFileSync('./actionNames1.json', JSON.stringify(actionNames1))
+    fs.writeFileSync('./actionLinksAndNodes.json', JSON.stringify(printableObject))
 }
 
-function linkChildren(children) {
-    children.forEach(function (child) {
-        links.push({ source: child.parent, target: child.actionName })
-        linkChildren(child.children)
-    })
-}
-
-testCases.forEach(function (testCase) {
-    insertTestCase(testCase);
-})
-
-// createLinks();
-
-let i = 1;
-actionNames.forEach(function (action) {
-    let actionNode = searchTree(new treeNode(action.parent, action.actionName))
-    actionNames1.push({ node: i, name: actionNode.actionName })
-    i++;
-})
-
-actionNames.forEach(function (action) {
-    let actionNode = searchTree(new treeNode(action.parent, action.actionName))
-    let source1;
-    let target1;
-    actionNames1.forEach(function (a1) {
-        if (a1.name == actionNode.parent) {
-            source1 = a1.node;
-        }
-        if (a1.name == actionNode.actionName) {
-            target1 = a1.node;
-        }
-    })
-    actionNodes.push({ source: source1, target: target1, value: actionNode.count })
-})
-
-
-
-fs.writeFileSync('./actionNodes.json', JSON.stringify(actionNodes))
-fs.writeFileSync('./actionNames.json', JSON.stringify(actionNames1))
+printObject();
