@@ -10,6 +10,8 @@
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
+
+
 <!-- Add style to links or they won't appear properly-->
 <style>
     .link {
@@ -25,35 +27,62 @@
 
 <script>
 
-    // set the dimensions and margins of the graph
-    var margin = { top: 10, right: 10, bottom: 10, left: 10 },
-        width = 2000,
-        height = 1000;
-
-    // append the svg object to the body of the page
-    var svg = d3.select("#my_dataviz").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    // Color scale used
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    // Set the sankey diagram properties
-    var sankey = d3.sankey()
-        .nodeWidth(0)
-        .nodePadding(250)
-        .size([width, height]);
-
+    function readTextFile(file) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4) {
+                if (rawFile.status === 200 || rawFile.status == 0) {
+                    var allText = rawFile.responseText;
+                    return allText;
+                }
+            }
+        }
+        rawFile.send(null);
+    }
     // load the data
-    const graph = { "nodes": [{ "node": 0, "name": "entryComponent" }, { "node": 1, "name": "navigateToPresto.NAVIGATE_TO_PRESTO" }, { "node": 2, "name": "navSidebarTaxonomyAnchor.CLICK" }, { "node": 3, "name": "taxonomyActionbarCreateButton.CLICK" }, { "node": 4, "name": "taxonomyCreateNewTagModalCategoryDropdown.OPEN_DROPDOWN" }, { "node": 5, "name": "taxonomyCreateNewTagModalCategoryDropdownChoices.SELECT_TOP_CHOICE" }, { "node": 6, "name": "taxonomyCreateNewTagModalDisplayName.ENTER_TEXT" }, { "node": 7, "name": "taxonomyCreateNewTagModalDescription.ENTER_TEXT" }, { "node": 8, "name": "taxonomyCreateNewTagModalCancelButton.CLICK" }], "links": [{ "source": 0, "target": 1, "value": 4 }, { "source": 1, "target": 2, "value": 4 }, { "source": 2, "target": 3, "value": 4 }, { "source": 3, "target": 4, "value": 1 }, { "source": 4, "target": 5, "value": 1 }, { "source": 3, "target": 6, "value": 1 }, { "source": 3, "target": 7, "value": 1 }, { "source": 3, "target": 8, "value": 1 }] }
+    const graph = readTextFile('/Users/bfitzpatri/github/simulato/simulato-visualization/actionLinksAndNodes.json');
+    //{ "nodes": [{ "node": 0, "name": "entryComponent" }, { "node": 1, "name": "navigateToPresto.NAVIGATE_TO_PRESTO" }, { "node": 2, "name": "navSidebarTaxonomyAnchor.CLICK" }, { "node": 3, "name": "taxonomyActionbarCreateButton.CLICK" }, { "node": 4, "name": "taxonomyCreateNewTagModalCategoryDropdown.OPEN_DROPDOWN" }, { "node": 5, "name": "taxonomyCreateNewTagModalCategoryDropdownChoices.SELECT_TOP_CHOICE" }, { "node": 6, "name": "taxonomyCreateNewTagModalDisplayName.ENTER_TEXT" }, { "node": 7, "name": "taxonomyCreateNewTagModalDescription.ENTER_TEXT" }, { "node": 8, "name": "taxonomyCreateNewTagModalCancelButton.CLICK" }], "links": [{ "source": 0, "target": 1, "value": 4 }, { "source": 1, "target": 2, "value": 4 }, { "source": 2, "target": 3, "value": 4 }, { "source": 3, "target": 4, "value": 1 }, { "source": 4, "target": 5, "value": 1 }, { "source": 3, "target": 6, "value": 1 }, { "source": 3, "target": 7, "value": 1 }, { "source": 3, "target": 8, "value": 1 }] }
 
-
+    var margin;
+    var svg;
+    var color
+    var sankey;
     var link;
     var node;
 
+    let i = 0;
+
+    function initSVG() {
+
+        i++;
+        // set the dimensions and margins of the graph
+        margin = { top: 10, right: 10, bottom: 10, left: 10 },
+            width = 2000,
+            height = 1000;
+
+        // append the svg object to the body of the page
+        svg = d3.select("#my_dataviz").append("svg")
+            .attr("id", 'currentGraph')
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Color scale used
+        color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        // Set the sankey diagram properties
+        sankey = d3.sankey()
+            .nodeWidth(0)
+            .nodePadding(250)
+            .size([width, height]);
+
+        console.log(i);
+    }
+
+    initSVG();
     constructSankey();
     buildSankey();
 
@@ -91,7 +120,10 @@
             .attr("class", "node")
             .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", function (d) {
-                graph.nodes[d.node] = {};
+                // graph.   nodes[d.node] = {};
+                // graph.nodes[d.links] = {};
+                d3.select("#currentGraph").remove();
+                initSVG();
                 constructSankey();
                 buildSankey();
                 console.log(graph.links);
