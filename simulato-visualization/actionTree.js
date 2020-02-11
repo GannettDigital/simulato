@@ -144,10 +144,6 @@ function sankeyData(testDir) {
             actionNodes.push({ source: source1, target: target1, value: actionNode.count })
         })
 
-        //let printableObject = { nodes: actionNames1, links: actionNodes }
-        // fs.writeFileSync('./actionNodes1.json', JSON.stringify(actionNodes))
-        // fs.writeFileSync('./actionNames1.json', JSON.stringify(actionNames1))
-        //fs.writeFileSync('./actionLinksAndNodes.json', JSON.stringify(printableObject))
         return { nodes: actionNames1, links: actionNodes };
     }
 
