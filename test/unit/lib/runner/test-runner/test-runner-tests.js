@@ -556,8 +556,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
             expect(testRunner.emit.callCount).to.deep.equal(3);
           });
         });
-
-
       });
     });
 
