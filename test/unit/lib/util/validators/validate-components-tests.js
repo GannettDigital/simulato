@@ -136,10 +136,7 @@ describe('lib/util/validators/validate-components.js', function() {
         path.extname.onCall(3).returns('.js');
         mockery.registerAllowable('path/to/file4.js');
 
-        expect(validateComponents.bind(null, files, callback)).to.throw(
-            `The file at path 'path/to/file4.js' was unable to be `+
-          `loaded for reason 'Cannot find module 'path/to/file4.js''`
-        );
+        expect(validateComponents.bind(null, files, callback)).to.throw();
       });
 
       it('should throw an error if the component is not an object', function() {

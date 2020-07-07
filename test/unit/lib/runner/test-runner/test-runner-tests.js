@@ -494,7 +494,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         expect(testRunner.emit.args[1]).to.deep.equal([
           'testRunner.testFinished',
           0,
-          0,
+          undefined,
         ]);
       });
 
