@@ -223,7 +223,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
       configHandler = {
         getAll: sinon.stub().returns({configProp: 'configVal'}),
-        // get: sinon.stub().withArgs('rerunFailedTests').returns(1)
       };
 
       test = {
