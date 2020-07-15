@@ -84,20 +84,10 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       ]);
     });
 
-    it('should call testRunner.on with testRunner.rerunTestsReadyToConfigure ' +
-      'and testRunner._configureRerun', function() {
-      testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
-
-      expect(testRunner.on.args[4]).to.deep.equal([
-        'testRunner.rerunTestsReadyToConfigure',
-        testRunner._configureRerun,
-      ]);
-    });
-
     it('should call testRunner.on 5 times', function() {
       testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
 
-      expect(testRunner.on.callCount).to.equal(5);
+      expect(testRunner.on.callCount).to.equal(4);
     });
   });
 
@@ -119,7 +109,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       sinon.spy(Emitter, 'mixIn');
 
       configHandler = {
-        get: sinon.stub(),
+        get: sinon.stub().withArgs('rerunFailedTests').returns(0),
       };
 
       sinon.stub(process, 'hrtime').returns([0, 0]);
@@ -161,7 +151,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
     it('should set _testsRemaining to the passed in testFiles.length', function() {
       testRunner.configure(['../path/to/file1', '/pathto/file2']);
-
       expect(testRunner._testsRemaining).equal(2);
     });
 
@@ -445,35 +434,11 @@ describe('lib/runner/test-runner/test-runner.js', function() {
 
     describe('when the test.on close callback is called', function() {
       describe('if the returned exitCode is truthy', function() {
-        describe('if testRunner._rerunCount is 0', function() {
-          it('should set the process.exitCode to 1', function() {
-            test.on.callsArgWith(1, 1);
-            testRunner._rerunCount = 0;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(process.exitCode).to.equal(1);
-          });
-        });
-
-        describe('if testRunner._rerunCount is NOT 0', function() {
-          it('should keep the process.exitCode as 0', function() {
-            test.on.callsArgWith(1, 1);
-            testRunner._rerunCount = 1;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(process.exitCode).to.equal(0);
-          });
-        });
-
-
         it('should add the failed tests.testPath on to testRunner._testsToRerun', function() {
           test.on.callsArgWith(1, 1);
 
           testRunner._startTest(sampleSpawnArgs, testPath);
-
-          expect(testRunner._testsToRerun).to.deep.equal(['dir/subDir/1527008636080-simulato-1_4.json']);
+          expect(testRunner._testRerunMemo).to.deep.equal({'dir/subDir/1527008636080-simulato-1_4.json': NaN});
         });
       });
 
@@ -488,6 +453,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       it('should decrement testRunner._testsRemaining once', function() {
         test.on.callsArgWith(1, 0);
         testRunner._testsRemaining = 4;
+        testRunner._testRerunMemo = {'dir/subDir/1527008636080-simulato-1_4.json': 0};
 
         testRunner._startTest(sampleSpawnArgs, testPath);
 
@@ -504,7 +470,7 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         expect(testRunner.emit.args[1]).to.deep.equal([
           'testRunner.testFinished',
           0,
-          0,
+          undefined,
         ]);
       });
 
@@ -518,13 +484,36 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       });
 
       describe('when testRunner._testsRemaining is decremented down to 0', function() {
-        describe('when testRunner._testToRerun.length is 0 and testRunner._rerunCount is > 0', function() {
+        describe('when testRunner._testRerunMemo value for the test is zero', function() {
           it('should call testRunner.emit with the correct event testRunner.done', function() {
+            test.on.callsArgWith(1, 0);
+            testRunner._testsRemaining = 1;
+            testRunner._rerunCount = 3;
+            testRunner._testRerunMemo = {'dir/subDir/1527008636080-simulato-1_4.json': 0};
+
+            testRunner._startTest(sampleSpawnArgs, testPath);
+            expect(testRunner.emit.args[2]).to.deep.equal([
+              'testRunner.done',
+            ]);
+          });
+
+          it('should call testRunner.emit three times', function() {
             test.on.callsArgWith(1, 0);
             testRunner._testsRemaining = 1;
             testRunner._testsToRerun = [];
             testRunner._rerunCount = 3;
 
+            testRunner._startTest(sampleSpawnArgs, testPath);
+
+            expect(testRunner.emit.callCount).to.deep.equal(3);
+          });
+        });
+
+        describe('when testRunner has one test remaining and ._startTest is called', function() {
+          it('should call testRunner.emit with the correct event testRunner.done', function() {
+            test.on.callsArgWith(1, 0);
+            testRunner._testsRemaining = 1;
+            testRunner._testRerunMemo = {'dir/subDir/1527008636080-simulato-1_4.json': 0};
             testRunner._startTest(sampleSpawnArgs, testPath);
 
             expect(testRunner.emit.args[2]).to.deep.equal([
@@ -535,64 +524,12 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           it('should call testRunner.emit 4 times', function() {
             test.on.callsArgWith(1, 0);
             testRunner._testsRemaining = 1;
-            testRunner._testsToRerun = [];
-            testRunner._rerunCount = 3;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(testRunner.emit.callCount).to.deep.equal(4);
-          });
-        });
-
-        describe('when testRunner._testToRerun.length is > 0 and testRunner._rerunCount is 0', function() {
-          it('should call testRunner.emit with the correct event testRunner.done', function() {
-            test.on.callsArgWith(1, 0);
-            testRunner._testsRemaining = 1;
             testRunner._testsToRerun = ['test', 'test'];
             testRunner._rerunCount = 0;
 
             testRunner._startTest(sampleSpawnArgs, testPath);
 
-            expect(testRunner.emit.args[2]).to.deep.equal([
-              'testRunner.done',
-            ]);
-          });
-
-          it('should call testRunner.emit 4 times', function() {
-            test.on.callsArgWith(1, 0);
-            testRunner._testsRemaining = 1;
-            testRunner._testsToRerun = ['test', 'test'];
-            testRunner._rerunCount = 0;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(testRunner.emit.callCount).to.deep.equal(4);
-          });
-        });
-
-        describe('when testsToRerun.length is > 0 and rerunCount is > 0', function() {
-          it('should call testRunner.emit with the correct event testRunner.done', function() {
-            test.on.callsArgWith(1, 0);
-            testRunner._testsRemaining = 1;
-            testRunner._testsToRerun = ['test', 'test'];
-            testRunner._rerunCount = 2;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(testRunner.emit.args[2]).to.deep.equal([
-              'testRunner.rerunTestsReadyToConfigure',
-            ]);
-          });
-
-          it('should call testRunner.emit 4 times', function() {
-            test.on.callsArgWith(1, 0);
-            testRunner._testsRemaining = 1;
-            testRunner._testsToRerun = ['test', 'test'];
-            testRunner._rerunCount = 2;
-
-            testRunner._startTest(sampleSpawnArgs, testPath);
-
-            expect(testRunner.emit.callCount).to.deep.equal(4);
+            expect(testRunner.emit.callCount).to.deep.equal(3);
           });
         });
       });
@@ -614,79 +551,6 @@ describe('lib/runner/test-runner/test-runner.js', function() {
           '1527008636080-simulato-1_4.json',
         ],
       ]);
-    });
-  });
-
-  describe('_configureRerun', function() {
-    let testRunner;
-    let Emitter;
-
-    beforeEach(function() {
-      mockery.enable({useCleanCache: true});
-      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-runner.js');
-
-      Emitter = {
-        mixIn: function(myObject) {
-          myObject.on = sinon.stub();
-          myObject.emit = sinon.stub();
-        },
-      };
-      sinon.spy(Emitter, 'mixIn');
-
-      mockery.registerMock('../../util/emitter.js', Emitter);
-      mockery.registerMock('path', {});
-      mockery.registerMock('child_process', {});
-      mockery.registerMock('lodash', {});
-      mockery.registerMock('../../util/config/config-handler.js', {});
-      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-
-      testRunner = require('../../../../../lib/runner/test-runner/test-runner.js');
-    });
-
-    afterEach(function() {
-      mockery.resetCache();
-      mockery.deregisterAll();
-      mockery.disable();
-    });
-
-    it('should decrement testRunner._rerunCount once', function() {
-      testRunner._rerunCount = 3;
-
-      testRunner._configureRerun();
-
-      expect(testRunner._rerunCount).to.equal(2);
-    });
-
-    it('should set testRunner._testFiles to the current testRunner._testsToRerun', function() {
-      testRunner._testsToRerun = ['tests', 'to', 'rerun'];
-
-      testRunner._configureRerun();
-
-      expect(testRunner._testFiles).to.deep.equal(['tests', 'to', 'rerun']);
-    });
-
-    it('should set testRunner._testFiles to an empty array', function() {
-      testRunner._testFiles = ['test', 'files'];
-
-      testRunner._configureRerun();
-
-      expect(testRunner._testFiles).to.deep.equal([]);
-    });
-
-    it('should set testRunner._testsRemaining to testRunner._testFiles.length', function() {
-      testRunner._testsToRerun = ['tests', 'to', 'rerun'];
-
-      testRunner._configureRerun();
-
-      expect(testRunner._testsRemaining).to.equal(3);
-    });
-
-    it('should set call testRunner.emit with the event  \'testRunner.configured\'', function() {
-      testRunner._configureRerun();
-
-      expect(testRunner.emit.args).to.deep.equal([[
-        'testRunner.configured',
-      ]]);
     });
   });
 

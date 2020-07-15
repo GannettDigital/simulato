@@ -345,7 +345,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
           }],
         };
 
-        testReportHandler.finalizeTestReport(0, 0);
+        testReportHandler.finalizeTestReport(0, -1);
 
         expect(testReportHandler._report.testReports[0].testRuns[0].report).to.deep.equal({
           testName: 'myTestName',
