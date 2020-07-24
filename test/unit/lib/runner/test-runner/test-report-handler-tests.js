@@ -263,11 +263,16 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('finalizeTestReport', function() {
     let testReportHandler;
+    let configHandler;
     let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      configHandler = {
+        get: sinon.stub(),
+      };
 
       Emitter = {
         mixIn: function(myObject) {
@@ -279,7 +284,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
       testReportHandler._handleTestReport = sinon.stub();
@@ -415,11 +420,16 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
   describe('finalizeReport', function() {
     let testReportHandler;
+    let configHandler;
     let Emitter;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      configHandler = {
+        get: sinon.stub(),
+      };
 
       Emitter = {
         mixIn: function(myObject) {
@@ -433,7 +443,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       mockery.registerMock('../../util/emitter.js', Emitter);
       mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
-      mockery.registerMock('../../util/config/config-handler.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
       testReportHandler._handleTestReportSummary = sinon.stub();
