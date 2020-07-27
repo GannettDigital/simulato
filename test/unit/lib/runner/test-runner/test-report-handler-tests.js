@@ -620,7 +620,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
       expect(testReportHandler._handleTestReport.args).to.eql([
         ['report1'],
-        ['report2']
+        ['report2'],
       ]);
     });
   });
