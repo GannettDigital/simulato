@@ -400,6 +400,68 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
+    describe('if the most recent testRun report status is \'fail\' '
+      + 'and the passed in rerunCount is falsey', function() {
+      describe('when config for deferFailureReports is true', function() {
+        it('should add the report to _failedReports', function() {
+          configHandler.get.returns(true);
+
+          testReportHandler._failedReports = [{
+            status: 'fail',
+            label: 'report1',
+          }];
+
+          testReportHandler._report = {
+            failedTestCount: 3,
+            testReports: [{
+              status: 'fail',
+              rerunCount: 0,
+              testRuns: [{
+                report: {
+                  status: 'fail',
+                  label: 'report2',
+                },
+              }],
+            }],
+          };
+
+          testReportHandler.finalizeTestReport(0, -1);
+
+          expect(testReportHandler._failedReports).to.eql([
+            {
+              status: 'fail',
+              label: 'report1',
+            },
+            {
+              status: 'fail',
+              label: 'report2',
+            },
+          ]);
+        });
+
+        it('should not call _handleTestReport', function() {
+          configHandler.get.returns(true);
+
+          testReportHandler._report = {
+            failedTestCount: 3,
+            testReports: [{
+              status: 'fail',
+              rerunCount: 0,
+              testRuns: [{
+                report: {
+                  status: 'fail',
+                },
+              }],
+            }],
+          };
+
+          testReportHandler.finalizeTestReport(0, -1);
+
+          expect(testReportHandler._handleTestReport.args).to.eql([]);
+        });
+      });
+    });
+
     it('should call _handleTestReport with the report of the passed in testNumber most recent testRun', function() {
       testReportHandler._report.testReports[0] = {
         rerunCount: 0,
@@ -446,6 +508,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       mockery.registerMock('../../util/config/config-handler.js', configHandler);
 
       testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+      testReportHandler._printFailedReports = sinon.stub();
       testReportHandler._handleTestReportSummary = sinon.stub();
     });
 
@@ -454,6 +517,18 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       mockery.deregisterAll();
       mockery.disable();
       process.hrtime.restore();
+    });
+
+    describe('when the config for deferFailureReports is true', function() {
+      it('should call printFailedReports', function() {
+        configHandler.get.returns(true);
+
+        testReportHandler.finalizeReport();
+
+        expect(testReportHandler._printFailedReports.args).to.eql([
+          [],
+        ]);
+      });
     });
 
     it('should call process.hrtime once', function() {
@@ -499,6 +574,53 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
         [
           'testReportHandler.reportFinalized',
         ],
+      ]);
+    });
+  });
+
+  describe('_printFailedReports', function() {
+    let testReportHandler;
+    let Emitter;
+
+    beforeEach(function() {
+      mockery.enable({useCleanCache: true});
+      mockery.registerAllowable('../../../../../lib/runner/test-runner/test-report-handler.js');
+
+      Emitter = {
+        mixIn: function(myObject) {
+          myObject.on = sinon.stub();
+          myObject.emit = sinon.stub();
+        },
+      };
+      sinon.spy(Emitter, 'mixIn');
+
+      sinon.stub(process, 'hrtime').returns([4, 54321]);
+
+      mockery.registerMock('../../util/emitter.js', Emitter);
+      mockery.registerMock('../runner-event-dispatch/runner-event-dispatch.js', {});
+      mockery.registerMock('../../util/config/config-handler.js', {});
+
+      testReportHandler = require('../../../../../lib/runner/test-runner/test-report-handler.js');
+      testReportHandler._handleTestReport = sinon.stub();
+    });
+
+    afterEach(function() {
+      mockery.resetCache();
+      mockery.deregisterAll();
+      mockery.disable();
+      process.hrtime.restore();
+    });
+
+    it('should call _handleTestReport for every failed report', function() {
+      testReportHandler._failedReports = [
+        'report1', 'report2',
+      ];
+
+      testReportHandler._printFailedReports();
+
+      expect(testReportHandler._handleTestReport.args).to.eql([
+        ['report1'],
+        ['report2']
       ]);
     });
   });
