@@ -6,7 +6,7 @@
 
 * Raghu Dantuluri and Zach Knox
   * Updated rerun logic to allow for parallelism in retries
-    * Previously, Simulato would wait until all tests of a particular run were complete before triggering a retry for needed tests. Now, teses will rerun independent of eachother.
+    * Previously, Simulato would wait until all tests of a particular run were complete before triggering a retry for needed tests. Now, tests will rerun independent of each other.
     * The `parallelism` configuration option controls these in addition to initial parallelism
 
 * Zach Knox
