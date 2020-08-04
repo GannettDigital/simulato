@@ -28,6 +28,7 @@ This section documents utilization of the configuration file in place of CLI opt
   * Use to customize the selenium driver
   * See [driver configuration](#driver-configuration)
   * Example: `driver: {<CUSTOM DRIVER CAPABILITIES>}`
+
 ### sauce connect arguments
   * Use to pass options to the embedded suace connect tunnel
   * documentation for options can be found [here](https://www.npmjs.com/package/sauce-connect-launcher)
@@ -50,6 +51,12 @@ This section documents utilization of the configuration file in place of CLI opt
   * Default is `JSON`
   * Values Allowed: `JSON`, `actionJSON`, `JUnit`
   * Example: `reportFormat: 'JSON'`
+
+### deferFailureReports
+  * Whether or not to wait until all tests are finished to show test failure reports
+  * When paralellism is set to zero, this has no effect
+  * Default is `false`
+  * Example: `deferFailureReports: true`
 
 ### jUnitReportSpecificity
   * The levels of detail
