@@ -405,12 +405,10 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       describe('when config for deferFailureReports is true', function() {
         it('should add the report to _failedReports', function() {
           configHandler.get.returns(true);
-
           testReportHandler._failedReports = [{
             status: 'fail',
             label: 'report1',
           }];
-
           testReportHandler._report = {
             failedTestCount: 3,
             testReports: [{
@@ -441,7 +439,6 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
         it('should not call _handleTestReport', function() {
           configHandler.get.returns(true);
-
           testReportHandler._report = {
             failedTestCount: 3,
             testReports: [{
