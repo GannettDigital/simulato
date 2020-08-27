@@ -2,6 +2,10 @@
 
 ## Pending Version
 
+## 0.10.1
+* Scott Gunther
+  * Add `Key` from selenium webdriver to globals
+
 ## 0.10.0
 
 * Raghu Dantuluri and Zach Knox

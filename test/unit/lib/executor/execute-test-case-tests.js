@@ -70,6 +70,7 @@ describe('lib/executor/execute-test-case.js', function() {
       webdriver = {
         By: sinon.stub(),
         until: sinon.stub(),
+        Key: sinon.stub(),
       };
       sinon.stub(process, 'on');
       configHandler = {
@@ -162,6 +163,12 @@ describe('lib/executor/execute-test-case.js', function() {
       executeTestCase.configure(testPath);
 
       expect(global.until).to.deep.equal(webdriver.until);
+    });
+
+    it('should set global.Key to webdriver.Key', function() {
+      executeTestCase.configure(testPath);
+
+      expect(global.Key).to.deep.equal(webdriver.Key);
     });
 
     it('should call executeTestCase.emit 3 times', function() {

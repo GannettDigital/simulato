@@ -1,6 +1,6 @@
 {
   "name": "simulato",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
@@ -44,7 +44,7 @@
   "devDependencies": {
     "eslint": "^5.10.0",
     "istanbul": "^0.4.5",
-    "mocha": "^5.2.0",
+    "mocha": "^8.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mockery": "^2.1.0",
     "simulato-test-site": "^1.2.1",
