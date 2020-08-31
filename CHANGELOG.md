@@ -2,9 +2,10 @@
 
 ## Pending Version
 
-## 0.10.1
+## 0.11.0
 * Scott Gunther
   * Add `Key` from selenium webdriver to globals
+  * Add optmization for action tree to find an action, given the preconditions have been discovered, by trivially combining antecedent actions 
 
 ## 0.10.0
 
