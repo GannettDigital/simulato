@@ -1,6 +1,6 @@
 {
   "name": "simulato",
-  "version": "0.11.0",
+  "version": "0.10.0",
   "description": "A model based testing tool",
   "main": "index.js",
   "bin": {
