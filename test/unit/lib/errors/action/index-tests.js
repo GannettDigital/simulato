@@ -35,42 +35,42 @@ describe('lib/errors/action/index.js', function() {
   });
 
   it('should export 5 items on an object', function() {
-    let result = require('../../../../../lib/errors/action');
+    const result = require('../../../../../lib/errors/action');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(5);
   });
 
-  it('should have the property \'EXPECTED_STATE_ERROR\' with the value from requiring'
-        + ' \'./expected-state-error.js\'', function() {
-    let result = require('../../../../../lib/errors/action');
+  it('should have the property \'EXPECTED_STATE_ERROR\' with the value from requiring' +
+        ' \'./expected-state-error.js\'', function() {
+    const result = require('../../../../../lib/errors/action');
 
     expect(result.EXPECTED_STATE_ERROR).to.deep.equal(EXPECTED_STATE_ERROR);
   });
 
-  it('should have the property \'PRECONDITION_ASSERTION_FAILURE\' with the value from requiring'
-        + ' \'./precondition-assertion-failure.js\'', function() {
-    let result = require('../../../../../lib/errors/action');
+  it('should have the property \'PRECONDITION_ASSERTION_FAILURE\' with the value from requiring' +
+        ' \'./precondition-assertion-failure.js\'', function() {
+    const result = require('../../../../../lib/errors/action');
 
     expect(result.PRECONDITION_ASSERTION_FAILURE).to.deep.equal(PRECONDITION_ASSERTION_FAILURE);
   });
 
-  it('should have the property \'PRECONDITION_CHECK_FAILED\' with the value from requiring'
-        + ' \'./precondition-check-failed.js\'', function() {
-    let result = require('../../../../../lib/errors/action');
+  it('should have the property \'PRECONDITION_CHECK_FAILED\' with the value from requiring' +
+        ' \'./precondition-check-failed.js\'', function() {
+    const result = require('../../../../../lib/errors/action');
 
     expect(result.PRECONDITION_CHECK_FAILED).to.deep.equal(PRECONDITION_CHECK_FAILED);
   });
 
-  it('should have the property \'ACTION_TYPE_ERROR\' with the value from requiring'
-        + ' \'./action-type-error.js\'', function() {
-    let result = require('../../../../../lib/errors/action');
+  it('should have the property \'ACTION_TYPE_ERROR\' with the value from requiring' +
+        ' \'./action-type-error.js\'', function() {
+    const result = require('../../../../../lib/errors/action');
 
     expect(result.ACTION_TYPE_ERROR).to.deep.equal(ACTION_TYPE_ERROR);
   });
 
-  it('should have the property \'ACTIONS_NOT_OBJECT\' with the value from requiring'
-        + ' \'./actions-not-object.js\'', function() {
-    let result = require('../../../../../lib/errors/action');
+  it('should have the property \'ACTIONS_NOT_OBJECT\' with the value from requiring' +
+        ' \'./actions-not-object.js\'', function() {
+    const result = require('../../../../../lib/errors/action');
 
     expect(result.ACTIONS_NOT_OBJECT).to.deep.equal(ACTIONS_NOT_OBJECT);
   });

@@ -35,9 +35,7 @@ describe('lib/errors/element/element-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = elementError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = elementError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

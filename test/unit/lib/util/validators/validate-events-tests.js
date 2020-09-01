@@ -31,7 +31,7 @@ describe('lib/util/validators/validate-events.js', function() {
 
   describe('if the passed in events is valid', function() {
     it('should should not throw', function() {
-      let events = [
+      const events = [
         {
           name: 'aName',
           listener: sinon.stub(),
@@ -48,7 +48,7 @@ describe('lib/util/validators/validate-events.js', function() {
 
   describe('if the passed in events is not an array', function() {
     it('should throw an error', function() {
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.EVENT.EVENTS_NOT_ARRAY.throws(error);
 
       expect(validateEvents.bind(null, '', '', '')).to.throw('An error occurred!');
@@ -67,21 +67,21 @@ describe('lib/util/validators/validate-events.js', function() {
 
   describe('if the passed in events has an entry that is not an object', function() {
     it('should throw an error', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),
         },
         'Not an object',
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.EVENT.EVENT_NOT_OBJECT.throws(error);
 
       expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.EVENT.EVENT_NOT_OBJECT once with an error message', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),
@@ -101,7 +101,7 @@ describe('lib/util/validators/validate-events.js', function() {
 
   describe('if an event \'name\' property is not a string or an array', function() {
     it('should throw an error', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),
@@ -110,14 +110,14 @@ describe('lib/util/validators/validate-events.js', function() {
           listener: sinon.stub(),
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),
@@ -142,7 +142,7 @@ describe('lib/util/validators/validate-events.js', function() {
   describe('if the event \'name\' property is an Array', function() {
     describe('for each name in the array', function() {
       it('should throw an error if the name is not a string', function() {
-        let events = [
+        const events = [
           {
             name: 'hey',
             listener: sinon.stub(),
@@ -152,7 +152,7 @@ describe('lib/util/validators/validate-events.js', function() {
             listener: sinon.stub(),
           },
         ];
-        let error = new Error('An error occurred!');
+        const error = new Error('An error occurred!');
         SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
         expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
@@ -162,7 +162,7 @@ describe('lib/util/validators/validate-events.js', function() {
 
   describe('if an event \'listener\' property is not a function', function() {
     it('should throw an error', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),
@@ -171,14 +171,14 @@ describe('lib/util/validators/validate-events.js', function() {
           name: ['hey2', 'hey3'],
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateEvents.bind(null, events, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.EVENT.EVENT_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let events = [
+      const events = [
         {
           name: 'hey',
           listener: sinon.stub(),

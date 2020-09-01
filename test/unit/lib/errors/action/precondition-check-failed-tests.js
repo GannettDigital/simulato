@@ -35,9 +35,7 @@ describe('lib/errors/action/precondition-check-failed.js', function() {
     });
 
     it('should return new ActionError', function() {
-      let result;
-
-      result = preconditionCheckFailed('ERROR_MESSAGE');
+      const result = preconditionCheckFailed('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ActionError);
     });

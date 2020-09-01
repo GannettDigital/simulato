@@ -35,9 +35,7 @@ describe('lib/errors/model/model-object-value.js', function() {
     });
 
     it('should return new ModelError', function() {
-      let result;
-
-      result = modelObjectValue('ERROR_MESSAGE');
+      const result = modelObjectValue('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ModelError);
     });

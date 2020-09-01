@@ -7,7 +7,6 @@ const expect = require('chai').expect;
 describe('lib/planner/planner-event-dispatch/planner-event-dispatch.js', function() {
   let Emitter;
   let globalEventDispatch;
-  let result;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -46,7 +45,7 @@ describe('lib/planner/planner-event-dispatch/planner-event-dispatch.js', functio
     });
 
     it('should export the mixed in object', function() {
-      result = require('../../../../../lib/planner/planner-event-dispatch/planner-event-dispatch.js');
+      const result = require('../../../../../lib/planner/planner-event-dispatch/planner-event-dispatch.js');
 
       expect(result).to.deep.equal({mixedIn: true});
     });

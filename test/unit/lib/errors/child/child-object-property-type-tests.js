@@ -35,9 +35,7 @@ describe('lib/errors/child/child-object-property-type.js', function() {
     });
 
     it('should return new ChildError', function() {
-      let result;
-
-      result = childObjectPropertyType('ERROR_MESSAGE');
+      const result = childObjectPropertyType('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ChildError);
     });

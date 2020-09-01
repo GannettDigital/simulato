@@ -26,21 +26,21 @@ describe('lib/errors/cli/index.js', function() {
   });
 
   it('should export 2 items on an object', function() {
-    let result = require('../../../../../lib/errors/cli');
+    const result = require('../../../../../lib/errors/cli');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(2);
   });
 
-  it('should have the property \'INVALID_COMPONENT_PATH\' with the value from requiring'
-    + ' \'./invalid-component-path.js\'', function() {
-    let result = require('../../../../../lib/errors/cli');
+  it('should have the property \'INVALID_COMPONENT_PATH\' with the value from requiring' +
+    ' \'./invalid-component-path.js\'', function() {
+    const result = require('../../../../../lib/errors/cli');
 
     expect(result.INVALID_COMPONENT_PATH).to.deep.equal(INVALID_COMPONENT_PATH);
   });
 
-  it('should have the property \'INVALID_PLANNER_ALGORITHM\' with the value from requiring'
-    + ' \'./invalid-planner-algorithm.js\'', function() {
-    let result = require('../../../../../lib/errors/cli');
+  it('should have the property \'INVALID_PLANNER_ALGORITHM\' with the value from requiring' +
+    ' \'./invalid-planner-algorithm.js\'', function() {
+    const result = require('../../../../../lib/errors/cli');
 
     expect(result.INVALID_PLANNER_ALGORITHM).to.deep.equal(INVALID_PLANNER_ALGORITHM);
   });

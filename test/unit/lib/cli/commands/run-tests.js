@@ -175,7 +175,7 @@ describe('lib/cli/run.js', function() {
           it('should throw an error no test cases found', function() {
             run.emit.onCall(0).callsArgWith(2, ['file1', 'file2']);
             run.emit.onCall(1).callsArgWith(2, []);
-            let message = 'No test cases were found at path';
+            const message = 'No test cases were found at path';
             SimulatoError.TEST_CASE.NO_TEST_CASES_FOUND.throws({message});
 
             expect(run.configure.bind(null)).to.throw(message);

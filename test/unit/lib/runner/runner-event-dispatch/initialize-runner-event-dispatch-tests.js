@@ -27,8 +27,8 @@ describe('lib/runner/runner-event-dispatch/initialize-runner-event-dispatch.js',
 
   describe('when the exported function is called', function() {
     it('should call registerRunnerEvents with runner event dispatch passed in', function() {
-      let initializeRunnerEventDispatch = require('../../../../../'
-        + 'lib/runner/runner-event-dispatch/initialize-runner-event-dispatch.js');
+      const initializeRunnerEventDispatch = require('../../../../../' +
+        'lib/runner/runner-event-dispatch/initialize-runner-event-dispatch.js');
 
       initializeRunnerEventDispatch();
 

@@ -35,9 +35,7 @@ describe('lib/errors/event/event-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = eventError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = eventError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

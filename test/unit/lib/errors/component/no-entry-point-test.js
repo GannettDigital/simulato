@@ -35,9 +35,7 @@ describe('lib/errors/component/no-entry-point.js', function() {
     });
 
     it('should return new ComponentError', function() {
-      let result;
-
-      result = noEntryPoint('ERROR_MESSAGE');
+      const result = noEntryPoint('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ComponentError);
     });

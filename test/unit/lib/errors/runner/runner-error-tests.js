@@ -35,7 +35,7 @@ describe('lib/errors/model/runner-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result = runnerError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = runnerError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

@@ -6,16 +6,18 @@ const expect = require('chai').expect;
 
 describe('lib/executor/driver-handler.js', function() {
   describe('on file being require', function() {
-    let Saucelabs;
+    let SauceLabs;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
       mockery.registerAllowable('../../../../lib/executor/driver-handler.js');
 
-      Saucelabs = sinon.stub();
+      SauceLabs = {
+        default: sinon.stub(),
+      };
 
       mockery.registerMock('selenium-webdriver', {});
-      mockery.registerMock('saucelabs', Saucelabs);
+      mockery.registerMock('saucelabs', SauceLabs);
       mockery.registerMock('lodash', {});
       mockery.registerMock('../util/config/config-handler.js', {});
     });
@@ -278,9 +280,10 @@ describe('lib/executor/driver-handler.js', function() {
   });
 
   describe('quit', function() {
-    let Saucelabs;
-    let saucelabsApi;
+    let SauceLabs;
+    let sauceLabsApi;
     let driverHandler;
+    let configHandler;
 
     beforeEach(function() {
       mockery.enable({useCleanCache: true});
@@ -288,20 +291,22 @@ describe('lib/executor/driver-handler.js', function() {
 
       global.driver = {
         getSession: sinon.stub(),
-        then: sinon.stub(),
         quit: sinon.stub(),
       };
-      saucelabsApi = {
+      sauceLabsApi = {
         updateJob: sinon.stub(),
       };
-      Saucelabs = sinon.stub().returns(saucelabsApi);
-      driver.getSession.returns(driver);
+      SauceLabs = sinon.stub().returns(sauceLabsApi);
+      driver.getSession.resolves({id_: 'mySessionId'});
       sinon.stub(process, 'exit');
+      configHandler = {
+        get: sinon.stub().returns(true),
+      };
 
       mockery.registerMock('selenium-webdriver', {});
-      mockery.registerMock('saucelabs', Saucelabs);
+      mockery.registerMock('saucelabs', {default: SauceLabs});
       mockery.registerMock('lodash', {});
-      mockery.registerMock('../util/config/config-handler.js', {});
+      mockery.registerMock('../util/config/config-handler.js', configHandler);
 
       driverHandler = require('../../../../lib/executor/driver-handler.js');
     });
@@ -314,79 +319,64 @@ describe('lib/executor/driver-handler.js', function() {
       mockery.disable();
     });
 
-    it('should call Saucelabs once with an object containing ' +
-        'the username and accessKey from ._capabilities', function() {
-      driverHandler._capabilities = {
-        username: 'sauceUsername',
-        accessKey: 'sauceAccessKey',
-      };
-
-      driverHandler.quit();
-
-      expect(Saucelabs.args).to.deep.equal([
-        [{
+    describe('when configHandler.get returns true', function() {
+      it('should call SauceLabs once with an object containing ' +
+        'the username and accessKey from ._capabilities', async function() {
+        driverHandler._capabilities = {
           username: 'sauceUsername',
-          password: 'sauceAccessKey',
-        }],
-      ]);
-    });
+          accessKey: 'sauceAccessKey',
+        };
 
-    it('should call driver.getSession once with no parameters', function() {
-      driverHandler.quit();
+        await driverHandler.quit();
 
-      expect(driver.getSession.args).to.deep.equal([[]]);
-    });
+        expect(SauceLabs.args).to.deep.equal([
+          [{
+            username: 'sauceUsername',
+            password: 'sauceAccessKey',
+          }],
+        ]);
+      });
 
-    describe('when the driver.getSession().then resolve callback is called', function() {
-      it('should set driver.sessionID the passed in session.id_', function() {
-        driver.then.callsArgWith(0, {id_: 'mySessionId'});
+      it('should call driver.getSession once with no parameters', async function() {
+        await driverHandler.quit();
 
-        driverHandler.quit();
+        expect(driver.getSession.args).to.deep.equal([[]]);
+      });
+
+      describe('when the driver.getSession throws', function() {
+        it('should call proces.exit with the exit code of 1', async function() {
+          driver.getSession.rejects(new Error('error!!'));
+
+          await driverHandler.quit();
+
+          expect(process.exit.args).to.deep.equal([[1]]);
+        });
+      });
+
+      it('should set driver.sessionID as session.id_ where session is the ' +
+        'response from driver.getSession', async function() {
+        await driverHandler.quit();
 
         expect(driver.sessionID).to.equal('mySessionId');
       });
 
-      it('should call saucelabsApi.updateJob once', function() {
-        driver.then.callsArgWith(0, {id_: 'mySessionId'});
-
-        driverHandler.quit();
-
-        expect(saucelabsApi.updateJob.callCount).to.equal(1);
-      });
-
-      it('should call saucelabsApi.updateJob the driver.sessionID and an object with passed' +
-                'set to to negation driverHandler._failed', function() {
+      it('should call sauceLabsApi.updateJob once with the driver.sessionID and an object with passed' +
+        'set to to negation driverHandler._failed', async function() {
         driverHandler._failed = false;
-        driver.then.callsArgWith(0, {id_: 'mySessionId'});
 
-        driverHandler.quit();
+        await driverHandler.quit();
 
-        expect(saucelabsApi.updateJob.args[0].slice(0, 2)).to.deep.equal([
+        expect(sauceLabsApi.updateJob.args).to.deep.equal([[
           'mySessionId',
           {passed: true},
-        ]);
-      });
-
-      describe('when the the saucelabsApi.updateJob callback is called', function() {
-        it('should call driver.quit once with no parameters', function() {
-          driver.then.callsArgWith(0, {id_: 'mySessionId'});
-          saucelabsApi.updateJob.callsArg(2);
-
-          driverHandler.quit();
-
-          expect(driver.quit.args).to.deep.equal([[]]);
-        });
+        ]]);
       });
     });
 
-    describe('when the driver.getSession().then reject callback is called', function() {
-      it('should call proces.exit with the exit code of 1', function() {
-        driver.then.callsArgWith(1, new Error('error!!'));
+    it('should call driver.quit once with no parameters', async function() {
+      await driverHandler.quit();
 
-        driverHandler.quit();
-
-        expect(process.exit.args).to.deep.equal([[1]]);
-      });
+      expect(driver.quit.args).to.deep.equal([[]]);
     });
   });
 });

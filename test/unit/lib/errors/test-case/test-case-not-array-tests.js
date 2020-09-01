@@ -35,9 +35,7 @@ describe('lib/errors/test-case/test-case-not-array.js', function() {
     });
 
     it('should return new TestcaseError', function() {
-      let result;
-
-      result = testCaseNotObject('ERROR_MESSAGE');
+      const result = testCaseNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(TestcaseError);
     });

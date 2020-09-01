@@ -122,7 +122,7 @@ describe('lib/executor/execute-test-case.js', function() {
 
     describe('when the process.on callback is called', function() {
       it('should call executeTestCase.emit 4 times', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);
@@ -132,7 +132,7 @@ describe('lib/executor/execute-test-case.js', function() {
 
       it('should call process.on with the event \'executeTestCase.exceptionCaught\' and ' +
           'the passed in error', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);
@@ -144,7 +144,7 @@ describe('lib/executor/execute-test-case.js', function() {
       });
 
       it('should set the process.exitCode to the number 1', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);

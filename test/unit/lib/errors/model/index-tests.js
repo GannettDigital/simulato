@@ -26,21 +26,21 @@ describe('lib/errors/model/index.js', function() {
   });
 
   it('should export 2 items on an object', function() {
-    let result = require('../../../../../lib/errors/model');
+    const result = require('../../../../../lib/errors/model');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(2);
   });
 
-  it('should have the property \'MODEL_NOT_OBJECT\' with the value from requiring'
-    + ' \'./model-not-object.js\'', function() {
-    let result = require('../../../../../lib/errors/model');
+  it('should have the property \'MODEL_NOT_OBJECT\' with the value from requiring' +
+    ' \'./model-not-object.js\'', function() {
+    const result = require('../../../../../lib/errors/model');
 
     expect(result.MODEL_NOT_OBJECT).to.deep.equal(MODEL_NOT_OBJECT);
   });
 
-  it('should have the property \'MODEL_OBJECT_VALUE\' with the value from requiring'
-    + ' \'./model-object-value.js\'', function() {
-    let result = require('../../../../../lib/errors/model');
+  it('should have the property \'MODEL_OBJECT_VALUE\' with the value from requiring' +
+    ' \'./model-object-value.js\'', function() {
+    const result = require('../../../../../lib/errors/model');
 
     expect(result.MODEL_OBJECT_VALUE).to.deep.equal(MODEL_OBJECT_VALUE);
   });

@@ -29,28 +29,28 @@ describe('lib/errors/event/index.js', function() {
   });
 
   it('should export 3 items on an object', function() {
-    let result = require('../../../../../lib/errors/event');
+    const result = require('../../../../../lib/errors/event');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(3);
   });
 
-  it('should have the property \'EVENTS_NOT_ARRAY\' with the value from requiring'
-    + ' \'./events-not-array.js\'', function() {
-    let result = require('../../../../../lib/errors/event');
+  it('should have the property \'EVENTS_NOT_ARRAY\' with the value from requiring' +
+    ' \'./events-not-array.js\'', function() {
+    const result = require('../../../../../lib/errors/event');
 
     expect(result.EVENTS_NOT_ARRAY).to.deep.equal(EVENTS_NOT_ARRAY);
   });
 
-  it('should have the property \'EVENT_NOT_OBJECT\' with the value from requiring'
-    + ' \'./model-object-value.js\'', function() {
-    let result = require('../../../../../lib/errors/event');
+  it('should have the property \'EVENT_NOT_OBJECT\' with the value from requiring' +
+    ' \'./model-object-value.js\'', function() {
+    const result = require('../../../../../lib/errors/event');
 
     expect(result.EVENT_NOT_OBJECT).to.deep.equal(EVENT_NOT_OBJECT);
   });
 
-  it('should have the property \'EVENT_OBJECT_PROPERTY_TYPE\' with the value from requiring'
-    + ' \'./event-object-property-type.js\'', function() {
-    let result = require('../../../../../lib/errors/event');
+  it('should have the property \'EVENT_OBJECT_PROPERTY_TYPE\' with the value from requiring' +
+    ' \'./event-object-property-type.js\'', function() {
+    const result = require('../../../../../lib/errors/event');
 
     expect(result.EVENT_OBJECT_PROPERTY_TYPE).to.deep.equal(EVENT_OBJECT_PROPERTY_TYPE);
   });

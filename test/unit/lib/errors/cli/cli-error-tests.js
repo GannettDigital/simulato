@@ -35,9 +35,7 @@ describe('lib/errors/cli/cli-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = cliError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = cliError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

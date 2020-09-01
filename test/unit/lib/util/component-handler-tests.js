@@ -50,8 +50,8 @@ describe('lib/util/component-handler.js', function() {
       expect(componentHandler.on.callCount).to.equal(1);
     });
 
-    it('should call componentHandler.on with the event \'componentHandler.configured\' and the '
-      + 'function componentHandler._loadComponents', function() {
+    it('should call componentHandler.on with the event \'componentHandler.configured\' and the ' +
+      'function componentHandler._loadComponents', function() {
       componentHandler = require('../../../../lib/util/component-handler.js');
 
       expect(componentHandler.on.args[0]).to.deep.equal([
@@ -220,7 +220,7 @@ describe('lib/util/component-handler.js', function() {
     describe('for each component in componentHandler._components', function() {
       describe('for each actionName inside that component inside component.actions', function() {
         it('should add a string `type.actionName` to the to set returned by the passed in callback', function() {
-          let expectedActionSet = new Set();
+          const expectedActionSet = new Set();
           expectedActionSet.add('type1.ACTION_1');
           expectedActionSet.add('type1.ACTION_2');
           expectedActionSet.add('type2.ACTION_1');
@@ -300,7 +300,7 @@ describe('lib/util/component-handler.js', function() {
 
       describe('if the required in component alread exists', function() {
         it('should throw an error', function() {
-          let error = new Error('An error occurred!');
+          const error = new Error('An error occurred!');
           SimulatoError.COMPONENT.NON_UNIQUE_COMPONENT.throws(error);
           paths[1] = paths[0];
 
@@ -354,8 +354,8 @@ describe('lib/util/component-handler.js', function() {
       expect(componentHandler.emit.callCount).to.equal(1);
     });
 
-    it(`should call componentHandler.emit with the event 'findFiles.search' `
-      + `and the passed in path inside an array`, function() {
+    it(`should call componentHandler.emit with the event 'findFiles.search' ` +
+      `and the passed in path inside an array`, function() {
       componentHandler.configure(path);
 
       expect(componentHandler.emit.args[0].splice(0, 2)).to.deep.equal([
@@ -379,8 +379,8 @@ describe('lib/util/component-handler.js', function() {
           expect(componentHandler.emit.callCount).to.equal(2);
         });
 
-        it(`should call componentHandler.emit with the event 'validators.validateComponents' `
-          + `and the passed in path inside an array`, function() {
+        it(`should call componentHandler.emit with the event 'validators.validateComponents' ` +
+          `and the passed in path inside an array`, function() {
           componentHandler.emit.onCall(0).callsArgWith(2, ['path/to/file']);
 
           componentHandler.configure(path);
@@ -408,8 +408,8 @@ describe('lib/util/component-handler.js', function() {
             expect(componentHandler.emit.callCount).to.equal(3);
           });
 
-          it(`should call componentHandler.emit with the event 'componentHandler.configured' `
-            + `and the returned validated files array`, function() {
+          it(`should call componentHandler.emit with the event 'componentHandler.configured' ` +
+            `and the returned validated files array`, function() {
             componentHandler.emit.onCall(0).callsArgWith(2, ['path/to/file']);
             componentHandler.emit.onCall(1).callsArgWith(2, ['path/to/validated/file']);
 
@@ -424,7 +424,7 @@ describe('lib/util/component-handler.js', function() {
 
       describe('if the returned array does not contain files', function() {
         it('should throw an error', function() {
-          let error = new Error('An error occurred!');
+          const error = new Error('An error occurred!');
           SimulatoError.COMPONENT.NO_COMPONENTS_FOUND.throws(error);
           componentHandler.emit.onCall(0).callsArgWith(2, []);
 

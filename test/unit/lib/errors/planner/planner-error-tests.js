@@ -35,7 +35,7 @@ describe('lib/errors/model/planner-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result = plannerError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = plannerError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

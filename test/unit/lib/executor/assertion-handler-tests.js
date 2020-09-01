@@ -249,7 +249,7 @@ describe('lib/executor/assertion-handler.js', function() {
       assertionHandler.assertPageState();
 
       expect(assertionHandler.emit.args[0].slice(0, 1)).to.deep.equal(
-          ['assertionHandler.cloneAndGetPreconditions']
+          ['assertionHandler.cloneAndGetPreconditions'],
       );
     });
 
@@ -269,7 +269,7 @@ describe('lib/executor/assertion-handler.js', function() {
         assertionHandler.assertPageState();
 
         expect(assertionHandler.emit.args[1]).to.deep.equal(
-            ['assertionHandler.assertPageStateConfigured']
+            ['assertionHandler.assertPageStateConfigured'],
         );
       });
     });
@@ -321,9 +321,9 @@ describe('lib/executor/assertion-handler.js', function() {
         it('should throw an error', function() {
           assertionHandler._timeout = 100;
           global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'AssertionError';
 
           expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
@@ -333,9 +333,9 @@ describe('lib/executor/assertion-handler.js', function() {
                     'in error.message', function() {
           assertionHandler._timeOut = 100;
           global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'AssertionError';
 
           try {
@@ -354,9 +354,9 @@ describe('lib/executor/assertion-handler.js', function() {
         it('should throw an error', function() {
           assertionHandler._timeout = 100;
           global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'NotAssertionError';
 
           expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
@@ -366,9 +366,9 @@ describe('lib/executor/assertion-handler.js', function() {
                     'in error.message', function() {
           assertionHandler._timeout = 100;
           global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'NotAssertionError';
 
           try {
@@ -389,9 +389,9 @@ describe('lib/executor/assertion-handler.js', function() {
         it('should throw an error', function() {
           assertionHandler._timeout = 381;
           global.SimulatoError.ACTION.PRECONDITION_ASSERTION_FAILURE.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'AssertionError';
 
           expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
@@ -402,9 +402,9 @@ describe('lib/executor/assertion-handler.js', function() {
         it('should throw an error', function() {
           assertionHandler._timeout = 381;
           global.SimulatoError.ACTION.PRECONDITION_CHECK_FAILED.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
-          let error = new Error('An error');
+          const error = new Error('An error');
           error.name = 'NotAssertionError';
 
           expect(assertionHandler._getAndCheckPageStateContinually.bind(null, error)).to.throw('My Error');
@@ -466,14 +466,14 @@ describe('lib/executor/assertion-handler.js', function() {
     });
 
     it('should call assertionHandler.emitAsyc thrice', function() {
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
       generator.next(next);
     });
 
     it('should call assertionHandler.emitAsync with the event \'pageStateHandler.getPageState\', ' +
             'the components, and next', function() {
       assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
 
       generator.next();
       generator.next(next);
@@ -488,7 +488,7 @@ describe('lib/executor/assertion-handler.js', function() {
     it('should call assertionHandler.emitAsync with the event \'assertionHandler.cloneAndGetPreconditions\', ' +
             'and next', function() {
       assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
 
       generator.next();
       generator.next(next);
@@ -502,7 +502,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
     it('should set assertionHandler._pageState to the result of the yield with the ' +
             'event \'assertionHandler.getPageState\'', function() {
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
 
       generator.next();
       generator.next(next);
@@ -514,7 +514,7 @@ describe('lib/executor/assertion-handler.js', function() {
     it('should call assertionHandler.emitAsync with the event \'oracle.runAssertions\', ' +
             'assertionHandler._pageState, the preconditions, and next', function() {
       assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
 
       generator.next();
       generator.next(next);
@@ -534,8 +534,8 @@ describe('lib/executor/assertion-handler.js', function() {
       it('should call assertionHandler.emit once with the event \'assertionHandler.preconditionsFailed\' ' +
                 'and the thrown error', function() {
         assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-        let error = new Error('An error occurred');
-        let generator = assertionHandler._getAndCheckPageState();
+        const error = new Error('An error occurred');
+        const generator = assertionHandler._getAndCheckPageState();
 
         generator.next();
         generator.next(next);
@@ -555,7 +555,7 @@ describe('lib/executor/assertion-handler.js', function() {
     it('should call assertionHandler.emit once with the event ' +
             '\'assertionHandler.preconditionsVerified\'', function() {
       assertionHandler._expectedState.getComponentsAsMap.returns('myComponents');
-      let generator = assertionHandler._getAndCheckPageState();
+      const generator = assertionHandler._getAndCheckPageState();
 
       generator.next();
       generator.next(next);
@@ -736,7 +736,7 @@ describe('lib/executor/assertion-handler.js', function() {
       it('should throw an error', function() {
         assertionHandler._timeout = 100;
         global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
-            {message: 'My Error'}
+            {message: 'My Error'},
         );
 
         expect(assertionHandler._getAndCheckExpectedPageStateContinually).to.throw('My Error');
@@ -745,7 +745,7 @@ describe('lib/executor/assertion-handler.js', function() {
       it('should call SimulatoError.ACTION.EXPECTED_STATE_ERROR once with a message', function() {
         assertionHandler._timeout = 100;
         global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
-            {message: 'My Error'}
+            {message: 'My Error'},
         );
 
         try {
@@ -764,7 +764,7 @@ describe('lib/executor/assertion-handler.js', function() {
       it('should throw an error', function() {
         assertionHandler._timeout = 381;
         global.SimulatoError.ACTION.EXPECTED_STATE_ERROR.returns(
-            {message: 'My Error'}
+            {message: 'My Error'},
         );
 
         expect(assertionHandler._getAndCheckExpectedPageStateContinually).to.throw('My Error');
@@ -824,7 +824,7 @@ describe('lib/executor/assertion-handler.js', function() {
     it('should call assertionHandler.emitAsync with with the event \'pageStateHandler.getPageState\', ' +
             'assertionHandler._components, and next', function() {
       assertionHandler._components = new Map([['name', 'myComponent']]);
-      let generator = assertionHandler._getAndCheckExpectedPageState();
+      const generator = assertionHandler._getAndCheckExpectedPageState();
 
       generator.next();
       generator.next(next);
@@ -837,7 +837,7 @@ describe('lib/executor/assertion-handler.js', function() {
     });
 
     it('should call assertionHandler.emit with the event \'assertionHandler.cloneAndApplyEffects\'', function() {
-      let generator = assertionHandler._getAndCheckExpectedPageState();
+      const generator = assertionHandler._getAndCheckExpectedPageState();
 
       generator.next();
       generator.next(next);
@@ -847,7 +847,7 @@ describe('lib/executor/assertion-handler.js', function() {
     });
 
     it('should call assertionHandler._clonedExpectedState.getState once with no parameters', function() {
-      let generator = assertionHandler._getAndCheckExpectedPageState();
+      const generator = assertionHandler._getAndCheckExpectedPageState();
 
       generator.next();
       generator.next(next);
@@ -859,7 +859,7 @@ describe('lib/executor/assertion-handler.js', function() {
     it('should call assertionHandler.emit with the event \'oracle.runDeepEqual\', ' +
             'assertionHandler._pageState, the state, and next', function() {
       assertionHandler._clonedExpectedState.getState.returns('myState');
-      let generator = assertionHandler._getAndCheckExpectedPageState();
+      const generator = assertionHandler._getAndCheckExpectedPageState();
 
       generator.next();
       generator.next(next);
@@ -874,7 +874,7 @@ describe('lib/executor/assertion-handler.js', function() {
     });
 
     it('should call assertionHandler.emitAsync twice', function() {
-      let generator = assertionHandler._getAndCheckExpectedPageState();
+      const generator = assertionHandler._getAndCheckExpectedPageState();
 
       generator.next();
       generator.next(next);
@@ -885,7 +885,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
     describe('when the yield with the event \'oracle.runDeepEqual\' throws', function() {
       it('should call assertionHandler.emit with the event \'assertionHandler.effectsFailed\'', function() {
-        let generator = assertionHandler._getAndCheckExpectedPageState();
+        const generator = assertionHandler._getAndCheckExpectedPageState();
 
         generator.next();
         generator.next(next);
@@ -898,7 +898,7 @@ describe('lib/executor/assertion-handler.js', function() {
       });
 
       it('should call assertionHandler.emit twice', function() {
-        let generator = assertionHandler._getAndCheckExpectedPageState();
+        const generator = assertionHandler._getAndCheckExpectedPageState();
 
         generator.next();
         generator.next(next);
@@ -912,7 +912,7 @@ describe('lib/executor/assertion-handler.js', function() {
     describe('when the yield with the event \'oracle.runDeepEqual\' does not throw', function() {
       it('should set assertionHandler._expectedState._pageState to equal ' +
                 'assertionHandler._pageState', function() {
-        let generator = assertionHandler._getAndCheckExpectedPageState();
+        const generator = assertionHandler._getAndCheckExpectedPageState();
 
         generator.next();
         generator.next(next);
@@ -923,7 +923,7 @@ describe('lib/executor/assertion-handler.js', function() {
       });
 
       it('should call assertionHandler.emit with the event \'assertionHandler.effectsVerified\'', function() {
-        let generator = assertionHandler._getAndCheckExpectedPageState();
+        const generator = assertionHandler._getAndCheckExpectedPageState();
 
         generator.next();
         generator.next(next);
@@ -936,7 +936,7 @@ describe('lib/executor/assertion-handler.js', function() {
       });
 
       it('should call assertionHandler.emit twice', function() {
-        let generator = assertionHandler._getAndCheckExpectedPageState();
+        const generator = assertionHandler._getAndCheckExpectedPageState();
 
         generator.next();
         generator.next(next);
@@ -1074,7 +1074,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
         expect(assertionHandler._cloneAndApplyEffects).to.throw(
             `The error 'An Error Occurred!' was thrown while executing the effects ` +
-                    `function for 'myName' - 'MY_ACTION'`
+                    `function for 'myName' - 'MY_ACTION'`,
         );
       });
     });
@@ -1082,7 +1082,7 @@ describe('lib/executor/assertion-handler.js', function() {
     describe('when component.actions.MY_ACTION.effects does not throw', function() {
       it('should set assertionHandler._components to the result of the function call to ' +
                 'assertionHandler._clonedExpectedState.getComponentsAsMap', function() {
-        let components = new Map([['name', 'myComponent']]);
+        const components = new Map([['name', 'myComponent']]);
         assertionHandler._clonedExpectedState.getComponentsAsMap.returns(components);
 
         assertionHandler._cloneAndApplyEffects();
@@ -1230,7 +1230,7 @@ describe('lib/executor/assertion-handler.js', function() {
 
         expect(assertionHandler._cloneAndGetPreconditions.bind(null, callback)).to.throw(
             `The error 'An Error Occurred!' was thrown while executing the preconditions ` +
-                    `function for 'myName' - 'MY_ACTION'`
+                    `function for 'myName' - 'MY_ACTION'`,
         );
       });
     });
@@ -1328,7 +1328,7 @@ describe('lib/executor/assertion-handler.js', function() {
       assertionHandler._clone();
 
       expect(assertionHandler._clonedExpectedState._pageState).to.deep.equal(
-          {name: 'state'}
+          {name: 'state'},
       );
     });
 

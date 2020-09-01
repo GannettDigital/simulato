@@ -370,7 +370,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         executionEngine._expectedState.getComponentsAsMap.returns(new Map());
 
         expect(executionEngine._executeNextAction).to.throw(
-            'Component, myInstance, does not exist in expected state during execution'
+            'Component, myInstance, does not exist in expected state during execution',
         );
       });
 
@@ -385,7 +385,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         executionEngine._actionList[0].name = 'myInstance.NONEXISTENT_ACTION';
 
         expect(executionEngine._executeNextAction).to.throw(
-            'Action, NONEXISTENT_ACTION, does not exist in component myInstance'
+            'Action, NONEXISTENT_ACTION, does not exist in component myInstance',
         );
       });
 
@@ -573,9 +573,9 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
           describe('if there is an error', function() {
             it('should throw the error', function() {
               executionEngine._steps = ['perform', 'effects'];
-              let error = new Error('An error occurred!');
+              const error = new Error('An error occurred!');
               executionEngine._executeStep();
-              let callback = executionEngine._action.perform.args[0][0];
+              const callback = executionEngine._action.perform.args[0][0];
 
               expect(callback.bind(null, error)).to.throw('An error occurred!');
             });
@@ -584,7 +584,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
             it('should call executionEngine.emitAsync two times', function() {
               executionEngine._steps = ['perform', 'effects'];
               executionEngine._executeStep();
-              let callback = executionEngine._action.perform.args[0][0];
+              const callback = executionEngine._action.perform.args[0][0];
 
               callback(null);
 
@@ -595,7 +595,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
                             ' \'executionEngine.stepCompleted\'', function() {
               executionEngine._steps = ['perform', 'effects'];
               executionEngine._executeStep();
-              let callback = executionEngine._action.perform.args[0][0];
+              const callback = executionEngine._action.perform.args[0][0];
 
               callback(null);
 
@@ -658,14 +658,14 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         describe('when the executionEngine._action.perform callback is called', function() {
           describe('if there is an error returned', function() {
             it('should throw the error', function() {
-              let error = new Error('An error occurred!');
+              const error = new Error('An error occurred!');
               executionEngine._steps = ['perform', 'effects'];
               executionEngine._actionConfig.options = {
                 parameters: ['param1', 'param2'],
               };
 
               executionEngine._executeStep();
-              let callback = executionEngine._action.perform.args[0][2];
+              const callback = executionEngine._action.perform.args[0][2];
 
               expect(callback.bind(null, error)).to.throw('An error occurred!');
             });
@@ -706,8 +706,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
           };
           executionEngine._action.perform.throws(new Error('TEST_ERROR'));
 
-          expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown '
-                        + 'while executing the perform function for \'testName\' - \'testAction\'');
+          expect(executionEngine._executeStep).to.throw('The error \'TEST_ERROR\' was thrown ' +
+                        'while executing the perform function for \'testName\' - \'testAction\'');
         });
       });
 
@@ -743,11 +743,11 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
         describe('when the executionEngine._action.perform callback is called', function() {
           describe('if there was an error returned', function() {
             it('should throw the error', function() {
-              let error = new Error('An error occurred!');
+              const error = new Error('An error occurred!');
               executionEngine._steps = ['perform', 'effects'];
 
               executionEngine._executeStep();
-              let callback = executionEngine._action.perform.args[0][0];
+              const callback = executionEngine._action.perform.args[0][0];
 
               expect(callback.bind(null, error)).to.throw('An error occurred!');
             });
@@ -923,19 +923,19 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
     describe('if executionEngine._action.preconditions throws', function() {
       it('should throw an error with a modified error message', function() {
-        let error = new Error('An Error Occurred!');
+        const error = new Error('An Error Occurred!');
         executionEngine._action.preconditions.throws(error);
 
         expect(executionEngine.applyPreconditions).to.throw(
             `The error 'An Error Occurred!' was thrown while executing the preconditions ` +
-                    `function for 'myName' - 'MY_ACTION'`
+                    `function for 'myName' - 'MY_ACTION'`,
         );
       });
     });
 
     describe('if executionEngine._action.preconditions does not throw', function() {
-      it('should call executionEngine.emitAsync once with '
-                + 'the event \'executionEngine.stepCompleted\'', function() {
+      it('should call executionEngine.emitAsync once with ' +
+                'the event \'executionEngine.stepCompleted\'', function() {
         executionEngine.applyPreconditions();
 
         expect(executionEngine.emitAsync.args).to.deep.equal([
@@ -1061,7 +1061,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
 
     describe('if executionEngine._action.effects throws', function() {
       it('should catch an error if one is thrown by executionEngine._action.effects ', function() {
-        let error = new Error('An Error Occurred!');
+        const error = new Error('An Error Occurred!');
         executionEngine._action.effects.throws(error);
 
         expect(executionEngine.applyEffects).to.throw(
@@ -1071,8 +1071,8 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     describe('if executionEngine._action.effects does not throw', function() {
-      it('should call executionEngine.emitAsync once with '
-                + 'the event \'executionEngine.stepCompleted\'', function() {
+      it('should call executionEngine.emitAsync once with ' +
+                'the event \'executionEngine.stepCompleted\'', function() {
         executionEngine.applyEffects();
 
         expect(executionEngine.emitAsync.args).to.deep.equal([
@@ -1239,7 +1239,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     it('should call executionEngine.emitAsync with the event \'executionEngine.stepEnded\', ' +
             'the passed in error, executionEngine._action,executionEngine._actionConfig, ' +
             'executionEngine._step, and the string \'fail\'', function() {
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       executionEngine._expectedState = {foo: 'bar'};
 
       executionEngine.errorOccurred(error, true);
@@ -1253,7 +1253,7 @@ describe('lib/executor/execution-engine/execution-engine.js', function() {
     });
 
     it('should call executionEngine.emitAsync with the event \'executionEngine.errorHandled\'', function() {
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
 
       executionEngine.errorOccurred(error, true);
 

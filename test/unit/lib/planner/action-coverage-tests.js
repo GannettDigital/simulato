@@ -79,7 +79,7 @@ describe('lib/planner/action-coverage.js', function() {
 
     it('should call actionCoverage.emit once with the event "countActions.calculate", ' +
       'plans, discoveredActions, and next', function() {
-      let generator = actionCoverage.reportCoverage('plans', 'discoveredActions', 'algorithm');
+      const generator = actionCoverage.reportCoverage('plans', 'discoveredActions', 'algorithm');
 
       generator.next();
       generator.next(next);
@@ -96,14 +96,14 @@ describe('lib/planner/action-coverage.js', function() {
     });
 
     it('should report the coverage percentage to a precision of 5', function() {
-      let actionsNotCovered = new Set([
+      const actionsNotCovered = new Set([
         'action2',
       ]);
-      let actionOccurrences = new Map([
+      const actionOccurrences = new Map([
         ['action1', 1],
         ['action2', 0],
       ]);
-      let generator = actionCoverage.reportCoverage();
+      const generator = actionCoverage.reportCoverage();
 
       generator.next();
       generator.next(next);
@@ -116,7 +116,7 @@ describe('lib/planner/action-coverage.js', function() {
 
     describe('when there are not actionOccurrences or actionsNotCovered', function() {
       it('should call console.log  4 times', function() {
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -126,7 +126,7 @@ describe('lib/planner/action-coverage.js', function() {
       });
 
       it('should call console.log  with a starting report string', function() {
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -138,7 +138,7 @@ describe('lib/planner/action-coverage.js', function() {
       });
 
       it('should call console.log  with a action occurrences section header', function() {
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -150,7 +150,7 @@ describe('lib/planner/action-coverage.js', function() {
       });
 
       it('should call console.log  with the action coverage fraction', function() {
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -162,7 +162,7 @@ describe('lib/planner/action-coverage.js', function() {
       });
 
       it('should call console.log  with the action coverage percentage', function() {
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -176,11 +176,11 @@ describe('lib/planner/action-coverage.js', function() {
 
     describe('for each action occurence', function() {
       it('should call console.log with the action and the occurrences', function() {
-        let actionOccurrences = new Map([
+        const actionOccurrences = new Map([
           ['action1', 2],
           ['action2', 1],
         ]);
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -199,11 +199,11 @@ describe('lib/planner/action-coverage.js', function() {
 
     describe('if actionsNotCovered.size is greater than 0', function() {
       it('should call console.log with the number of actions not covered', function() {
-        let actionsNotCovered = new Set([
+        const actionsNotCovered = new Set([
           'action1',
           'action2',
         ]);
-        let generator = actionCoverage.reportCoverage();
+        const generator = actionCoverage.reportCoverage();
 
         generator.next();
         generator.next(next);
@@ -216,15 +216,15 @@ describe('lib/planner/action-coverage.js', function() {
 
       describe('for each action not covered', function() {
         it('should call console.log with the action', function() {
-          let actionsNotCovered = new Set([
+          const actionsNotCovered = new Set([
             'action1',
             'action2',
           ]);
-          let actionOccurrences = new Map([
+          const actionOccurrences = new Map([
             ['action1', 0],
             ['action2', 0],
           ]);
-          let generator = actionCoverage.reportCoverage();
+          const generator = actionCoverage.reportCoverage();
 
           generator.next();
           generator.next(next);

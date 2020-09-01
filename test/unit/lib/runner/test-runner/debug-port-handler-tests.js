@@ -36,7 +36,7 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
     });
 
     it('should push the passed in callback to debugPortHandler._portsToGet', function() {
-      let callback2 = sinon.stub();
+      const callback2 = sinon.stub();
       debugPortHandler._portsToGet = [callback2];
 
       debugPortHandler.getPort(callback);
@@ -182,11 +182,11 @@ describe('lib/runner/test-runner/debug-port-handler.js', function() {
     describe('when the callback for portscanner.findAPortNotInUse is called', function() {
       describe('if there was an error returned', function() {
         it('should throw simulato CHILD_SPAWN_ERROR', function() {
-          let message = `Error was thrown`;
+          const message = `Error was thrown`;
           SimulatoError.RUNNER.CHILD_SPAWN_ERROR.throws(
-              {message}
+              {message},
           );
-          let err = new Error('im an error being thrown');
+          const err = new Error('im an error being thrown');
           portscanner.findAPortNotInUse.callsArgWith(3, err);
 
           expect(_findPort.bind(null)).to.throw('Error was thrown');

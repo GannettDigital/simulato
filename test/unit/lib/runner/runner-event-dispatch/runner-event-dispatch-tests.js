@@ -7,7 +7,6 @@ const expect = require('chai').expect;
 describe('lib/runner/runner-event-dispatch/runner-event-dispatch.js', function() {
   let Emitter;
   let globalEventDispatch;
-  let result;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -46,7 +45,7 @@ describe('lib/runner/runner-event-dispatch/runner-event-dispatch.js', function()
     });
 
     it('should export the mixed in object', function() {
-      result = require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
+      const result = require('../../../../../lib/runner/runner-event-dispatch/runner-event-dispatch.js');
 
       expect(result).to.deep.equal({mixedIn: true});
     });

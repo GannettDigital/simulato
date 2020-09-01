@@ -23,14 +23,14 @@ describe('lib/errors/runner/index.js', function() {
   });
 
   it('should export 1 item on an object', function() {
-    let result = require('../../../../../lib/errors/runner');
+    const result = require('../../../../../lib/errors/runner');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(1);
   });
 
-  it('should have the property \'SPAWN_CHILD_ERROR\' with the value from requiring'
-    + ' \'./child-spawn-error.js\'', function() {
-    let result = require('../../../../../lib/errors/runner');
+  it('should have the property \'SPAWN_CHILD_ERROR\' with the value from requiring' +
+    ' \'./child-spawn-error.js\'', function() {
+    const result = require('../../../../../lib/errors/runner');
 
     expect(result.SPAWN_CHILD_ERROR).to.deep.equal(SPAWN_CHILD_ERROR);
   });

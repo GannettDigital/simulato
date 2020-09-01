@@ -35,9 +35,7 @@ describe('lib/errors/action/expected-state-error.js', function() {
     });
 
     it('should return new ActionError', function() {
-      let result;
-
-      result = expectedStateError('ERROR_MESSAGE');
+      const result = expectedStateError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ActionError);
     });

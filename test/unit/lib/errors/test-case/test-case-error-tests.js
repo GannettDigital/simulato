@@ -35,9 +35,7 @@ describe('lib/errors/test-case/test-case-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = testCaseError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = testCaseError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

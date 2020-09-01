@@ -239,8 +239,8 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       expect(process.hrtime.args).to.deep.equal([[[123, 456]]]);
     });
 
-    it('should set the action being ended \'time\' property to the result of '
-            + ' the call of process.hrtime', function() {
+    it('should set the action being ended \'time\' property to the result of ' +
+            ' the call of process.hrtime', function() {
       eeReportHandler.endAction();
 
       expect(eeReportHandler._report.actions[0].time).to.deep.equal([123, 456]);
@@ -448,7 +448,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
     describe('if an error was passed in', function() {
       describe('if the passed in stepName is \'effects\'', function() {
         it('should set the steps.pageState to the passed in expectedState._pageState', function() {
-          let error = new Error('Error that was thrown');
+          const error = new Error('Error that was thrown');
           error.code = 'error code';
 
           eeReportHandler.endStep(error, 'effects', expectedState);
@@ -461,7 +461,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
 
       describe('if the passed in stepName is \'preconditions\'', function() {
         it('should call configHandler.get once with \'reportPreconditions\'', function() {
-          let error = new Error('Error that was thrown');
+          const error = new Error('Error that was thrown');
           error.code = 'error code';
 
           eeReportHandler.endStep(error, 'preconditions', expectedState);
@@ -471,7 +471,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
 
         describe('if the call to configHandler.get returns truthy', function() {
           it('should set the step.pageState to the passed in expectedState._pageState', function() {
-            let error = new Error('Error that was thrown');
+            const error = new Error('Error that was thrown');
             error.code = 'error code';
             configHandler.get.returns(true);
 
@@ -486,7 +486,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
 
 
       it('should set the step.error to the error passed in', function() {
-        let error = new Error('Error that was thrown');
+        const error = new Error('Error that was thrown');
         error.code = 'error code';
 
         eeReportHandler.endStep(error, 'preconditions');
@@ -504,7 +504,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       });
 
       it('should set the eeReportHandler._report.errorLocation', function() {
-        let error = new Error('Error that was thrown');
+        const error = new Error('Error that was thrown');
         error.code = 'error code';
 
         eeReportHandler.endStep(error, 'preconditions');
@@ -516,7 +516,7 @@ describe('lib/executor/execution-engine/execution-engine-report-handler.js', fun
       });
 
       it('should call eeReportHandler.emit with the event \'eeReportHandler.errorOccured\'', function() {
-        let error = new Error('Error that was thrown');
+        const error = new Error('Error that was thrown');
         error.code = 'error code';
 
         eeReportHandler.endStep(error, 'preconditions');

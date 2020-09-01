@@ -37,7 +37,7 @@ describe('lib/util/emitter.js', function() {
     });
 
     it('should set the prototype of the passed in myObject to a new EventEmitter', function() {
-      let myObject = {};
+      const myObject = {};
 
       Emitter.mixIn(myObject);
 
@@ -45,7 +45,7 @@ describe('lib/util/emitter.js', function() {
     });
 
     it('should set the passed in myObject.runOn to Emitter.runOn', function() {
-      let myObject = {};
+      const myObject = {};
 
       Emitter.mixIn(myObject);
 
@@ -53,7 +53,7 @@ describe('lib/util/emitter.js', function() {
     });
 
     it('should set the passed in myObject.emitAsync to Emitter.emitAsync', function() {
-      let myObject = {};
+      const myObject = {};
 
       Emitter.mixIn(myObject);
 
@@ -61,7 +61,7 @@ describe('lib/util/emitter.js', function() {
     });
 
     it('should set the passed in myObject._run to Emitter._run', function() {
-      let myObject = {};
+      const myObject = {};
 
       Emitter.mixIn(myObject);
 
@@ -238,9 +238,9 @@ describe('lib/util/emitter.js', function() {
 
     describe('when the this.on callback is called', function() {
       it('should call this._run with the passed in function and the arguments to the callback', function() {
-        let myFunction = sinon.stub();
+        const myFunction = sinon.stub();
         Emitter.runOn.call(myThis, 'myEvent', myFunction);
-        let onCallback = myThis.on.args[0][1];
+        const onCallback = myThis.on.args[0][1];
 
         onCallback('param1', 'param2');
 
@@ -303,9 +303,9 @@ describe('lib/util/emitter.js', function() {
     describe('when the nextFunction passed in to generatorObject.next is called', function() {
       describe('if an error is passed in', function() {
         it('should call generatorObject.throw once with the passed in error', function() {
-          let error = new Error('An Error Occurred!');
+          const error = new Error('An Error Occurred!');
           Emitter._run(myFunction, ['param1', 'param2']);
-          let nextFunction = generatorObject.next.args[1][0];
+          const nextFunction = generatorObject.next.args[1][0];
 
           nextFunction(error);
 
@@ -320,7 +320,7 @@ describe('lib/util/emitter.js', function() {
       describe('if an error is not passed in', function() {
         it('should call generatorObject.next with the passed in result', function() {
           Emitter._run(myFunction, ['param1', 'param2']);
-          let nextFunction = generatorObject.next.args[1][0];
+          const nextFunction = generatorObject.next.args[1][0];
 
           nextFunction(null, 'myResult');
 

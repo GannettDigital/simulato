@@ -35,9 +35,7 @@ describe('lib/errors/test-case/test-case-type-error.js', function() {
     });
 
     it('should return new TestcaseError', function() {
-      let result;
-
-      result = testCaseTypeError('ERROR_MESSAGE');
+      const result = testCaseTypeError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(TestcaseError);
     });

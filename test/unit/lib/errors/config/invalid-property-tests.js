@@ -35,9 +35,7 @@ describe('lib/errors/config/required-property.js', function() {
     });
 
     it('should return new ConfigError', function() {
-      let result;
-
-      result = requiredProperty('ERROR_MESSAGE');
+      const result = requiredProperty('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ConfigError);
     });

@@ -35,9 +35,7 @@ describe('lib/errors/element/element-not-object.js', function() {
     });
 
     it('should return new ElementError', function() {
-      let result;
-
-      result = elementNotObject('ERROR_MESSAGE');
+      const result = elementNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ElementError);
     });

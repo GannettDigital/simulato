@@ -27,7 +27,7 @@ describe('lib/util/saucelabs', function() {
 
       _ = {
         pickBy: sinon.stub().callsFake(function pickByFake(obj) {
-          let copy = obj;
+          const copy = obj;
           const keys = Object.keys(copy);
           for (const key of keys) {
             if (obj[key] === (undefined)) {
@@ -97,8 +97,8 @@ describe('lib/util/saucelabs', function() {
 
 
       describe('if the config sauceCapabilities.username is falsey', function() {
-        it('should call sauceConnectLauncher with an object as the second argument containing '
-          + 'username from process.env', function() {
+        it('should call sauceConnectLauncher with an object as the second argument containing ' +
+          'username from process.env', function() {
           configHandler.get.onCall(1).returns(undefined);
           configHandler.get.onCall(2).returns('configAccessKey');
           configHandler.get.onCall(3).returns('tunnelIdentifier');
@@ -114,8 +114,8 @@ describe('lib/util/saucelabs', function() {
       });
 
       describe('if the config sauceCapabilities.accessKey is falsey', function() {
-        it('should call sauceConnectLauncher with an object as the third argument containing '
-          + 'accessKey from process.env', function() {
+        it('should call sauceConnectLauncher with an object as the third argument containing ' +
+          'accessKey from process.env', function() {
           configHandler.get.onCall(1).returns('configUsername');
           configHandler.get.onCall(2).returns(undefined);
           configHandler.get.onCall(3).returns('tunnelIdentifier');
@@ -149,7 +149,7 @@ describe('lib/util/saucelabs', function() {
         });
         it('should include a default logger if the verbose flag is set, and one is not provided', function() {
           configHandler.get.onCall(0).returns({verbose: true});
-          let defaultLogger = console.log;
+          const defaultLogger = console.log;
 
           saucelabs.connect(callback);
 
@@ -170,8 +170,8 @@ describe('lib/util/saucelabs', function() {
     });
 
     describe('connect handling sauce connect configuration', function() {
-      it('should call sauceConnectLauncher with an object returned by buildOpts, in the first argument containing '
-        + 'sauceConnectArgs{} ,username, accessKey, and tunnelIdentifier ' +
+      it('should call sauceConnectLauncher with an object returned by buildOpts, in the first argument containing ' +
+        'sauceConnectArgs{} ,username, accessKey, and tunnelIdentifier ' +
         'equal to their respective config values', function() {
         configHandler.get.onCall(0).returns({sauceConnectArgs: 'sauceConnectArgs'});
         configHandler.get.onCall(1).returns('configUsername');
@@ -217,7 +217,7 @@ describe('lib/util/saucelabs', function() {
       describe('when the sauceConnectLauncher callback is being called', function() {
         describe('if an error was passed back', function() {
           it('should call the passed in callback function with the error as the argument', function() {
-            let error = new Error('connect error');
+            const error = new Error('connect error');
             sauceConnectLauncher.callsArgWith(1, error, {});
 
             saucelabs.connect(callback);
@@ -273,7 +273,7 @@ describe('lib/util/saucelabs', function() {
       mockery.registerAllowable('../../../../lib/util/saucelabs.js');
 
       sinon.spy(console, 'log');
-      let _ = {
+      const _ = {
       };
       mockery.registerMock('lodash', _);
       mockery.registerMock('sauce-connect-launcher', {});

@@ -29,28 +29,28 @@ describe('lib/errors/config/index.js', function() {
   });
 
   it('should export 3 items on an object', function() {
-    let result = require('../../../../../lib/errors/config');
+    const result = require('../../../../../lib/errors/config');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(3);
   });
 
-  it('should have the property \'TYPE_ERROR\' with the value from requiring'
-        + ' \'./type-error.js\'', function() {
-    let result = require('../../../../../lib/errors/config');
+  it('should have the property \'TYPE_ERROR\' with the value from requiring' +
+        ' \'./type-error.js\'', function() {
+    const result = require('../../../../../lib/errors/config');
 
     expect(result.TYPE_ERROR).to.deep.equal(TYPE_ERROR);
   });
 
-  it('should have the property \'REQUIRED_PROPERTY\' with the value from requiring'
-      + ' \'./required-property.js\'', function() {
-    let result = require('../../../../../lib/errors/config');
+  it('should have the property \'REQUIRED_PROPERTY\' with the value from requiring' +
+      ' \'./required-property.js\'', function() {
+    const result = require('../../../../../lib/errors/config');
 
     expect(result.REQUIRED_PROPERTY).to.deep.equal(REQUIRED_PROPERTY);
   });
 
-  it('should have the property \'INVALID_VALUE\' with the value from requiring'
-    + ' \'./required-property.js\'', function() {
-    let result = require('../../../../../lib/errors/config');
+  it('should have the property \'INVALID_VALUE\' with the value from requiring' +
+    ' \'./required-property.js\'', function() {
+    const result = require('../../../../../lib/errors/config');
 
     expect(result.INVALID_VALUE).to.deep.equal(INVALID_VALUE);
   });

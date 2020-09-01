@@ -35,9 +35,7 @@ describe('lib/errors/action/precondition-assertion-failure.js', function() {
     });
 
     it('should return new ActionError', function() {
-      let result;
-
-      result = preconditionAssertionFailure('ERROR_MESSAGE');
+      const result = preconditionAssertionFailure('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ActionError);
     });

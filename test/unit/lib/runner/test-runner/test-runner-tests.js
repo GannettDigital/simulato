@@ -335,15 +335,15 @@ describe('lib/runner/test-runner/test-runner.js', function() {
     });
 
     describe('when the testRunner._testNumber property has NOT already been created for test.name', function() {
-      it('should set testRunner._testNumbers[test.name] to '
-        + 'Object.keys length value of testRunner._testNumbers', function() {
+      it('should set testRunner._testNumbers[test.name] to ' +
+        'Object.keys length value of testRunner._testNumbers', function() {
         testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(testRunner._testNumbers).to.deep.equal({'1527008636080-simulato-1_4.json': 0});
       });
 
-      it('should set test.number to Object.keys length value of testRunner._testNumbers '
-        + 'before the new testNumber was added', function() {
+      it('should set test.number to Object.keys length value of testRunner._testNumbers ' +
+        'before the new testNumber was added', function() {
         testRunner._startTest(sampleSpawnArgs, testPath);
 
         expect(test.number).to.equal(0);
@@ -460,8 +460,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
         expect(testRunner._testsRemaining).to.equal(3);
       });
 
-      it('should call testRunner.emit with the correct event testRunner.testFinished, test.number, '
-        + 'and testRunner._rerunCount', function() {
+      it('should call testRunner.emit with the correct event testRunner.testFinished, test.number, ' +
+        'and testRunner._rerunCount', function() {
         test.on.callsArgWith(1, 0);
         testRunner._rerunCount = 0;
 
@@ -852,8 +852,8 @@ describe('lib/runner/test-runner/test-runner.js', function() {
       });
 
       describe('when the callback sent in the event is called', function() {
-        it('should call testRunner.emit with the correct event with spawnArgs including testDelay args'
-          + 'and testPath', function() {
+        it('should call testRunner.emit with the correct event with spawnArgs including testDelay args' +
+          'and testPath', function() {
           testRunner.emit.onCall(0).callsArgWith(1, 3000);
           configHandler.get.returns(true);
 

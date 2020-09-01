@@ -6,7 +6,6 @@ const expect = require('chai').expect;
 
 describe('lib/global-event-dispatch/global-event-dispatch.js', function() {
   let Emitter;
-  let result;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
@@ -42,7 +41,7 @@ describe('lib/global-event-dispatch/global-event-dispatch.js', function() {
     });
 
     it('should export the mixed in object', function() {
-      result = require('../../../../lib/global-event-dispatch/global-event-dispatch.js');
+      const result = require('../../../../lib/global-event-dispatch/global-event-dispatch.js');
 
       expect(result).to.deep.equal({mixedIn: true});
     });

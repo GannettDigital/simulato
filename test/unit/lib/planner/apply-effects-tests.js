@@ -16,7 +16,7 @@ describe('lib/planner/apply-effects.js', function() {
 
     applyEffects = require('../../../../lib/planner/apply-effects.js');
 
-    let sampleMap = new Map();
+    const sampleMap = new Map();
     sampleMap.set('test', {
       actions: {
         ACTION: {
@@ -56,7 +56,7 @@ describe('lib/planner/apply-effects.js', function() {
     expect(callback.callCount).to.equal(1);
   });
   it('should call node.testCase.push once', function() {
-    let testObject =
+    const testObject =
         {'name': 'test.ACTION',
           'options':
                     {'parameters':
@@ -93,8 +93,8 @@ describe('lib/planner/apply-effects.js', function() {
 
       expect(action.effects.args[0][0]).to.deep.equal('parameter');
     });
-    it('should call action effects with the testCaseAction.option.parameters, '
-            + 'the node.state, and the node.dataStore', function() {
+    it('should call action effects with the testCaseAction.option.parameters, ' +
+            'the node.state, and the node.dataStore', function() {
       applyEffects(node, callback);
 
       expect(action.effects.args[0]).to.deep.equal(['parameter', node.state, node.dataStore]);
@@ -107,7 +107,7 @@ describe('lib/planner/apply-effects.js', function() {
       ]);
     });
     it('should throw an error if the parameters and action effects throws an error', function() {
-      let thrown = new Error('ERROR_THROWN');
+      const thrown = new Error('ERROR_THROWN');
       let err;
       action.effects.throws(thrown);
 
@@ -139,7 +139,7 @@ describe('lib/planner/apply-effects.js', function() {
       ]);
     });
     it('should throw an error if the action effects throws an error', function() {
-      let thrown = new Error('ERROR_THROWN');
+      const thrown = new Error('ERROR_THROWN');
       let err;
       action.parameters = {};
       action.effects.throws(thrown);

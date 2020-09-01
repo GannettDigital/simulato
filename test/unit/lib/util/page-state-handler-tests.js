@@ -40,7 +40,7 @@ describe('lib/util/page-state-handler.js', function() {
     });
 
     it('should call pageStateHanlder._getComponentsStates with the component, and the passed in callback', function() {
-      let components = new Map();
+      const components = new Map();
       components.set('key1', 'component1');
       components.set('key2', 'component2');
 
@@ -110,7 +110,7 @@ describe('lib/util/page-state-handler.js', function() {
     });
 
     it('should call driver.executeAsyncScript with getElementData and the passed in components', function() {
-      let componenetElements = {
+      const componenetElements = {
         component1: ['someElement1', 'someElement2'],
         component2: ['someElement3', 'someElement4'],
       };
@@ -123,8 +123,8 @@ describe('lib/util/page-state-handler.js', function() {
     });
 
     describe(`when driver.executeAsyncScript's promise is resolved`, function() {
-      it(`should call pageStateHandler.emit with the event 'pageStateHandler.componentDataReceived' `
-      + `the component.model, the component, the returned data, and the passed in pageStateData`, function() {
+      it(`should call pageStateHandler.emit with the event 'pageStateHandler.componentDataReceived' ` +
+      `the component.model, the component, the returned data, and the passed in pageStateData`, function() {
         driver.then.callsArgWith(0, {component1: 'someData', component2: 'someMoreData'});
 
         pageStateHandler._getComponentsStates(components, callback);
@@ -281,7 +281,7 @@ describe('lib/util/page-state-handler.js', function() {
         });
 
         it('should set the returned functions value to the model under the property\'s name', function() {
-          let result = createComponentModel(modelTemplate, data);
+          const result = createComponentModel(modelTemplate, data);
 
           expect(result).to.deep.equal(expectedReturnData);
         });
@@ -291,7 +291,7 @@ describe('lib/util/page-state-handler.js', function() {
             modelTemplate.prop1.throws(new Error('error'));
             expectedReturnData.prop1 = undefined;
 
-            let result = createComponentModel(modelTemplate, data);
+            const result = createComponentModel(modelTemplate, data);
 
             expect(result).to.deep.equal(expectedReturnData);
           });

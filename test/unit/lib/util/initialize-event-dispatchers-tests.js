@@ -24,23 +24,23 @@ describe('lib/util/initialize-event-dispatchers', function() {
 
     mockery.registerMock(
         '../global-event-dispatch/initialize-global-event-dispatch',
-        initializeGlobalEventDispatch
+        initializeGlobalEventDispatch,
     );
     mockery.registerMock(
         '../runner/runner-event-dispatch/initialize-runner-event-dispatch',
-        initializeRunnerEventDispatch
+        initializeRunnerEventDispatch,
     );
     mockery.registerMock(
         '../planner/planner-event-dispatch/initialize-planner-event-dispatch.js',
-        initializePlannerEventDispatch
+        initializePlannerEventDispatch,
     );
     mockery.registerMock(
         '../executor/executor-event-dispatch/initialize-executor-event-dispatch.js',
-        initializeExecuteEventDispatch
+        initializeExecuteEventDispatch,
     );
     mockery.registerMock(
         '../cli/cli-event-dispatch/initialize-cli-event-dispatch.js',
-        initializeCliEventDispatch
+        initializeCliEventDispatch,
     );
 
     initializeEventDispatchers = require('../../../../lib/util/initialize-event-dispatchers');

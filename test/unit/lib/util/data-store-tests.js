@@ -100,7 +100,7 @@ describe('lib/util/data-store', function() {
         _.cloneDeep.returns('someClonedData');
         myThis.create.callsArgWith(0, {});
 
-        let result = DataStore.clone.call(myThis);
+        const result = DataStore.clone.call(myThis);
 
         expect(result._data).to.equal('someClonedData');
       });
@@ -179,7 +179,7 @@ describe('lib/util/data-store', function() {
     });
 
     it('should return the value that corresponds the passed in key on the object this._data', function() {
-      let result = DataStore.retrieve.call({_data: {myKey: 'myValue'}}, 'myKey');
+      const result = DataStore.retrieve.call({_data: {myKey: 'myValue'}}, 'myKey');
 
       expect(result).to.equal('myValue');
     });
@@ -204,7 +204,7 @@ describe('lib/util/data-store', function() {
     });
 
     it('should delete the value that corresponds the passed in key on the object this._data', function() {
-      let myThis = {
+      const myThis = {
         _data: {
           myKey: 'myValue',
           myKey2: 'myValue2',
@@ -236,7 +236,7 @@ describe('lib/util/data-store', function() {
     });
 
     it('should delete the value that corresponds the passed in key on the object this._data', function() {
-      let myThis = {
+      const myThis = {
         _data: {
           myKey: 'myValue',
           myKey2: 'myValue2',
@@ -249,14 +249,14 @@ describe('lib/util/data-store', function() {
     });
 
     it('should return the value that corresponds the passed in key on the object this._data', function() {
-      let myThis = {
+      const myThis = {
         _data: {
           myKey: 'myValue',
           myKey2: 'myValue2',
         },
       };
 
-      let result = DataStore.retrieveAndDelete.call(myThis, 'myKey');
+      const result = DataStore.retrieveAndDelete.call(myThis, 'myKey');
 
       expect(result).to.equal('myValue');
     });
@@ -281,7 +281,7 @@ describe('lib/util/data-store', function() {
     });
 
     it('should return this._data', function() {
-      let result = DataStore.retrieveAll.call({_data: {myKey: 'myValue'}}, 'myKey');
+      const result = DataStore.retrieveAll.call({_data: {myKey: 'myValue'}}, 'myKey');
 
       expect(result).to.deep.equal({myKey: 'myValue'});
     });
@@ -325,13 +325,13 @@ describe('lib/util/data-store', function() {
     it('should return true if this._data has the passed in key as a property', function() {
       myThis._data.myKey = undefined;
 
-      let result = DataStore.has.call(myThis, 'myKey');
+      const result = DataStore.has.call(myThis, 'myKey');
 
       expect(result).to.deep.equal(true);
     });
 
     it('should return false if this._data has the passed in key as a property', function() {
-      let result = DataStore.has.call(myThis, 'myKey');
+      const result = DataStore.has.call(myThis, 'myKey');
 
       expect(result).to.deep.equal(false);
     });

@@ -47,7 +47,7 @@ describe('lib/runner/writers/write-json-to-disk.js', function() {
     });
 
     it('should call path.resolve with the configs reportPath and date string test name', function() {
-      let report = 'test report';
+      const report = 'test report';
       configHandler.get.returns('./reportPath');
 
       writeReportToDisk(report);
@@ -61,7 +61,7 @@ describe('lib/runner/writers/write-json-to-disk.js', function() {
     });
 
     it('should call fs.writeFileSync with filepath and passed in report', function() {
-      let report = 'test report';
+      const report = 'test report';
       path.resolve.returns(`./${now}-test-report.json`);
       configHandler.get.returns('./reportPath');
 

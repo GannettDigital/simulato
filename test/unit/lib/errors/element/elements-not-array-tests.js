@@ -35,9 +35,7 @@ describe('lib/errors/element/elements-not-array.js', function() {
     });
 
     it('should return new ElementError', function() {
-      let result;
-
-      result = elementsNotArray('ERROR_MESSAGE');
+      const result = elementsNotArray('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ElementError);
     });

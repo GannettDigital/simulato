@@ -48,7 +48,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
   describe('when the algorithm is actionTree', function() {
     describe('for each plan from the passed in plans', function() {
       it('should create a hash for each plan', function() {
-        let plans = [
+        const plans = [
           {
             path: new Set(['action1', 'action2']),
           },
@@ -63,7 +63,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       });
 
       it('should update the hash with the plan string', function() {
-        let plans = [
+        const plans = [
           {
             path: new Set(['action1', 'action2']),
           },
@@ -80,7 +80,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
       });
 
       it('should create a base64 digest of the hash', function() {
-        let plans = [
+        const plans = [
           {
             path: new Set(['action1', 'action2']),
           },
@@ -96,7 +96,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
 
       describe('when there is not an existing plan', function() {
         it('should add the plan to the array of final plans', function() {
-          let plans = [
+          const plans = [
             {
               path: new Set(['action1', 'action2']),
             },
@@ -128,7 +128,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
 
       describe('when there is an existing plan', function() {
         it('should not add the plan to the array of final plans', function() {
-          let plans = [
+          const plans = [
             {
               path: new Set(['action1', 'action2']),
             },
@@ -156,7 +156,7 @@ describe('lib/planner/reduce-to-minimum-set-of-plans.js', function() {
 
     describe('when the algorithm is not actionTree', function() {
       it('should call the callback with the passed in plans', function() {
-        let plans = [
+        const plans = [
           {
             path: new Set(['action1', 'action2']),
           },

@@ -1,5 +1,5 @@
 environment:
-  nodejs_version: "8.12.0"
+  nodejs_version: "12.18"
   SAUCE_USERNAME:
     secure: r6ysENaYaFvWoayTLHMkVQ==
   SAUCE_ACCESS_KEY:
