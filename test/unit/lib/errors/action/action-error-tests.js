@@ -35,9 +35,7 @@ describe('lib/errors/action/action-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = actionError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = actionError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

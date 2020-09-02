@@ -35,9 +35,7 @@ describe('lib/errors/component/component-type-error.js', function() {
     });
 
     it('should return new ComponentError', function() {
-      let result;
-
-      result = componentTypeError('ERROR_MESSAGE');
+      const result = componentTypeError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ComponentError);
     });

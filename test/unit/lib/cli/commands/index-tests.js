@@ -26,15 +26,15 @@ describe('lib/cli/commands/index.js', function() {
     mockery.deregisterAll();
     mockery.disable();
   });
-  it('should have the property \'run\' with the value from requiring'
-    + ' \'./run.js\'.configure', function() {
-    let result = require('../../../../../lib/cli/commands');
+  it('should have the property \'run\' with the value from requiring' +
+    ' \'./run.js\'.configure', function() {
+    const result = require('../../../../../lib/cli/commands');
 
     expect(result.run).to.deep.equal(true);
   });
-  it('should have the property \'generate\' with the value from requiring'
-    + ' \'./generate.js\'.configure', function() {
-    let result = require('../../../../../lib/cli/commands');
+  it('should have the property \'generate\' with the value from requiring' +
+    ' \'./generate.js\'.configure', function() {
+    const result = require('../../../../../lib/cli/commands');
 
     expect(result.generate).to.deep.equal(true);
   });

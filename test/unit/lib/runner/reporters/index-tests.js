@@ -23,14 +23,14 @@ describe('lib/runner/reports/index.js', function() {
   });
 
   it('should export 1 item on an object', function() {
-    let result = require('../../../../../lib/runner/reporters');
+    const result = require('../../../../../lib/runner/reporters');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(1);
   });
 
-  it('should have the property \'basic\' with the value from requiring'
-    + ' \'./basic-reporter\'', function() {
-    let result = require('../../../../../lib/runner/reporters');
+  it('should have the property \'basic\' with the value from requiring' +
+    ' \'./basic-reporter\'', function() {
+    const result = require('../../../../../lib/runner/reporters');
 
     expect(result.basic).to.deep.equal(basic);
   });

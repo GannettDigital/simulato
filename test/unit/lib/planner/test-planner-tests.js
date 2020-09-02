@@ -294,7 +294,7 @@ describe('_generateStateSpace', function() {
     describe('if a plan is passed in to the callback', function() {
       it('should add it to the plans array', function() {
         testPlanner._generateStateSpace();
-        let callback = testPlanner.emit.args[0][1];
+        const callback = testPlanner.emit.args[0][1];
 
         callback(null, 'myPlan');
         callback(null, null, true);

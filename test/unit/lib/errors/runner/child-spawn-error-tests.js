@@ -35,9 +35,7 @@ describe('lib/errors/runner/spawn-child-error.js', function() {
     });
 
     it('should return new Runner\Error', function() {
-      let result;
-
-      result = goalNotFound('ERROR_MESSAGE');
+      const result = goalNotFound('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(RunnerError);
     });

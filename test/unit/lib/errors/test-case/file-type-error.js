@@ -35,9 +35,7 @@ describe('lib/errors/test-case/file-type-error.js', function() {
     });
 
     it('should return new testCaseError', function() {
-      let result;
-
-      result = fileTypeError('ERROR_MESSAGE');
+      const result = fileTypeError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(testCaseError);
     });

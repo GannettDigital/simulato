@@ -35,9 +35,7 @@ describe('lib/errors/config/type-error.js', function() {
     });
 
     it('should return new ConfigError', function() {
-      let result;
-
-      result = typeError('ERROR_MESSAGE');
+      const result = typeError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ConfigError);
     });

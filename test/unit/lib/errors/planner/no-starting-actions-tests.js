@@ -35,9 +35,7 @@ describe('lib/errors/planner/no-starting-actions.js', function() {
     });
 
     it('should return new PlannerError', function() {
-      let result;
-
-      result = goalNotFound('ERROR_MESSAGE');
+      const result = goalNotFound('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(PlannerError);
     });

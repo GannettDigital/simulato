@@ -35,9 +35,7 @@ describe('lib/errors/config/invalid-value.js', function() {
     });
 
     it('should return new ConfigError', function() {
-      let result;
-
-      result = invalidValue('ERROR_MESSAGE');
+      const result = invalidValue('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ConfigError);
     });

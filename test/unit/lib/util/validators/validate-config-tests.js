@@ -123,7 +123,7 @@ describe('lib/util/validators/validate-config.js', function() {
             },
           }];
           global.SimulatoError.CONFIG.REQUIRED_PROPERTY.returns(
-              {message: 'My Error'}
+              {message: 'My Error'},
           );
 
           expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
@@ -186,7 +186,7 @@ describe('lib/util/validators/validate-config.js', function() {
             },
           }];
           global.SimulatoError.CONFIG.TYPE_ERROR.returns(
-              {message: 'My type Error'}
+              {message: 'My type Error'},
           );
 
           expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
@@ -252,7 +252,7 @@ describe('lib/util/validators/validate-config.js', function() {
             },
           }];
           global.SimulatoError.CONFIG.INVALID_VALUE.returns(
-              {message: 'My type Error'}
+              {message: 'My type Error'},
           );
 
           expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
@@ -285,7 +285,7 @@ describe('lib/util/validators/validate-config.js', function() {
             message: 'some error message',
           }];
           global.SimulatoError.CONFIG.TYPE_ERROR.returns(
-              {message: 'My other type Error'}
+              {message: 'My other type Error'},
           );
 
           expect(validateConfig.validate.bind(null, config, configOptions, cliOptions, callback))
@@ -305,7 +305,6 @@ describe('lib/util/validators/validate-config.js', function() {
 
   describe('_getOrigin', function() {
     let validateConfig;
-    let result;
     let Ajv;
     let ajv;
 
@@ -331,7 +330,7 @@ describe('lib/util/validators/validate-config.js', function() {
 
     describe('if the passed in cliOptions has the property of the passed in key', function() {
       it('should return the string \'cli\'', function() {
-        result = validateConfig._getOrigin('key', {}, {key: 'value'});
+        const result = validateConfig._getOrigin('key', {}, {key: 'value'});
 
         expect(result).to.equal('cli');
       });
@@ -340,7 +339,7 @@ describe('lib/util/validators/validate-config.js', function() {
     describe('if the passed in cliOptions DOES NOT have the property of the passed in key', function() {
       describe('if the passed in configOptions has the property of the passed in key', function() {
         it('should return the string \'config\'', function() {
-          result = validateConfig._getOrigin('key', {key: 'value'}, {});
+          const result = validateConfig._getOrigin('key', {key: 'value'}, {});
 
           expect(result).to.equal('config');
         });
@@ -348,7 +347,7 @@ describe('lib/util/validators/validate-config.js', function() {
 
       describe('if the passed in configOptions DOES NOT have the property of the passed in key', function() {
         it('should return the string \'default\'', function() {
-          result = validateConfig._getOrigin('key', {}, {});
+          const result = validateConfig._getOrigin('key', {}, {});
 
           expect(result).to.equal('default');
         });

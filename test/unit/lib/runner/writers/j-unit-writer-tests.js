@@ -671,7 +671,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe('if testRun.report.errorLocation is truthy', function() {
       it(`should return error message at the action's index that corresponds to the errorLocation index`, function() {
-        let result = jUnitWriter._getFailureMessage(testRun);
+        const result = jUnitWriter._getFailureMessage(testRun);
 
         expect(result).to.equal('A bad error');
       });
@@ -683,7 +683,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
         testRun.report.errorLocation = undefined;
         testRun.stdErr = 'Info in standard error';
 
-        let result = jUnitWriter._getFailureMessage(testRun);
+        const result = jUnitWriter._getFailureMessage(testRun);
 
         expect(result).to.equal('Info in standard error');
       });
@@ -766,7 +766,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
     });
 
     it('should return the created testsuiteTag', function() {
-      let result = jUnitWriter._createRootTag(report);
+      const result = jUnitWriter._createRootTag(report);
 
       expect(result).to.deep.equal(testsuiteTag);
     });
@@ -800,7 +800,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status is equal to the string 'fail'`, function() {
       it(`should catll testcase.att once with the strings 'status' and 'fail'`, function() {
-        let datum = {status: 'fail'};
+        const datum = {status: 'fail'};
 
         jUnitWriter._setStatus(datum, testcase);
 
@@ -810,7 +810,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status is equal to the string 'rerun'`, function() {
       it(`should catll testcase.att once with the strings 'status' and 'fail'`, function() {
-        let datum = {status: 'rerun'};
+        const datum = {status: 'rerun'};
 
         jUnitWriter._setStatus(datum, testcase);
 
@@ -820,7 +820,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status not equal to the strings 'fail' or 'rerun'`, function() {
       it(`should catll testcase.att once with the strings 'status' and datum.status`, function() {
-        let datum = {status: 'pass'};
+        const datum = {status: 'pass'};
 
         jUnitWriter._setStatus(datum, testcase);
 
@@ -869,7 +869,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status equals the string 'fail'`, function() {
       it(`should call testcase.ele once with the string 'failure'`, function() {
-        let datum = {status: 'fail'};
+        const datum = {status: 'fail'};
 
         jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
 
@@ -878,7 +878,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
       it(`should call failure.att once with the string 'message' and result ` +
         `of the call to jUnitWriter._getFailureMessage`, function() {
-        let datum = {status: 'fail'};
+        const datum = {status: 'fail'};
         jUnitWriter._getFailureMessage.returns('myFailureMessage');
 
         jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
@@ -887,9 +887,9 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
       });
 
       it('should return the passed in failureCount incremented by 1', function() {
-        let datum = {status: 'fail'};
+        const datum = {status: 'fail'};
 
-        let result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
+        const result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
 
         expect(result).to.equal(4);
       });
@@ -897,7 +897,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status equals the string 'rerun'`, function() {
       it(`should call testcase.ele once with the string 'failure'`, function() {
-        let datum = {status: 'rerun'};
+        const datum = {status: 'rerun'};
 
         jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
 
@@ -906,7 +906,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
       it(`should call failure.att once with the string 'message' and result ` +
         `of the call to jUnitWriter._getFailureMessage`, function() {
-        let datum = {status: 'rerun'};
+        const datum = {status: 'rerun'};
         jUnitWriter._getFailureMessage.returns('myFailureMessage');
 
         jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
@@ -915,9 +915,9 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
       });
 
       it('should return the passed in failureCount incremented by 1', function() {
-        let datum = {status: 'rerun'};
+        const datum = {status: 'rerun'};
 
-        let result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
+        const result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
 
         expect(result).to.equal(4);
       });
@@ -925,9 +925,9 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if datum.status is not equal to the strings 'fail' or 'rerun'`, function() {
       it('should return the passed in failureCount unchanged', function() {
-        let datum = {status: 'pass'};
+        const datum = {status: 'pass'};
 
-        let result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
+        const result = jUnitWriter._setFailureMessageIfExists(datum, testRun, 3, testcase);
 
         expect(result).to.equal(3);
       });
@@ -962,7 +962,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`when the datum's seconds is 0 and nanoseconds is 341324123134`, function() {
       it(`should call xmlTag.att once with the string 'time' and the converted hrtime`, function() {
-        let datum = {time: [0, 341324123134]};
+        const datum = {time: [0, 341324123134]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -972,7 +972,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`when the datum's seconds is 0 and nanoseconds is 324123134`, function() {
       it(`should call xmlTag.att once with the strings 'time' and the converted hrtime`, function() {
-        let datum = {time: [0, 324123134]};
+        const datum = {time: [0, 324123134]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -983,7 +983,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
     describe(`when the datum's seconds is ${Number.MAX_SAFE_INTEGER} and nanoseconds ` +
       `is ${Number.MAX_SAFE_INTEGER}`, function() {
       it(`should call xmlTag.att once with the strings 'time' and the converted hrtime`, function() {
-        let datum = {time: [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]};
+        const datum = {time: [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -993,7 +993,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`when the datum's seconds is 3 and nanoseconds is 44234`, function() {
       it(`should call xmlTag.att once with the strings 'time' and the converted hrtime`, function() {
-        let datum = {time: [3, 44234]};
+        const datum = {time: [3, 44234]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -1003,7 +1003,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`when the datum's seconds is 3234 and nanoseconds is 576568899`, function() {
       it(`should call xmlTag.att once with the strings 'time' and the converted hrtime`, function() {
-        let datum = {time: [3234, 576568899]};
+        const datum = {time: [3234, 576568899]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -1013,7 +1013,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`when the datum's seconds is 0 and nanoseconds is 0`, function() {
       it(`should call xmlTag.att once with the strings 'time' and the converted hrtime`, function() {
-        let datum = {time: [0, 0]};
+        const datum = {time: [0, 0]};
 
         jUnitWriter._setTime(datum, xmlTag);
 
@@ -1050,7 +1050,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe('if there are no testRuns with time', function() {
       it(`should call xmlTag.att with the string 'time' and the converted hrtime`, function() {
-        let testRuns = [
+        const testRuns = [
           {report: {}},
           {report: {}},
         ];
@@ -1063,7 +1063,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if two testRuns have seconds and nanoseconds as ${Number.MAX_SAFE_INTEGER}`, function() {
       it(`should call xmlTag.att with the string 'time' and the converted hrtime`, function() {
-        let testRuns = [
+        const testRuns = [
           {report: {time: [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]}},
           {report: {time: [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]}},
         ];
@@ -1076,7 +1076,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if testRuns has seconds and seconds as all valid values`, function() {
       it(`should call xmlTag.att with the string 'time' and the converted hrtime`, function() {
-        let testRuns = [
+        const testRuns = [
           {report: {time: [0, 341324123134]}},
         ];
 
@@ -1088,7 +1088,7 @@ describe('lib/runner/writers/j-unit-writer.js', function() {
 
     describe(`if testRuns have seconds and nanoseconds as all valid values`, function() {
       it(`should call xmlTag.att with the string 'time' and the converted hrtime`, function() {
-        let testRuns = [
+        const testRuns = [
           {report: {time: [3, 44234]}},
           {report: {time: [3234, 576568899]}},
           {report: {time: [0, 0]}},

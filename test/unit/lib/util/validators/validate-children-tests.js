@@ -31,7 +31,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if the passed in children is valid', function() {
     it('should should not throw', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -57,7 +57,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if the passed in children is not an array', function() {
     it('should throw an error', function() {
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILDREN_NOT_ARRAY.throws(error);
 
       expect(validateChildren.bind(null, '', '', '')).to.throw('An error occurred!');
@@ -76,7 +76,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if the passed in children has an entry that is not an object', function() {
     it('should throw an error', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -89,14 +89,14 @@ describe('lib/util/validators/validate-children.js', function() {
         },
         'Not an object',
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILD_NOT_OBJECT.throws(error);
 
       expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.CHILD.CHILD_NOT_OBJECT once with an error message', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -122,7 +122,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if a child \'componentName\' property is not a string', function() {
     it('should throw an error', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -144,14 +144,14 @@ describe('lib/util/validators/validate-children.js', function() {
           },
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -188,7 +188,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if a child \'instanceName\' property is not a string', function() {
     it('should throw an error', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -210,14 +210,14 @@ describe('lib/util/validators/validate-children.js', function() {
           },
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -254,7 +254,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if a child \'state\' property is not an object', function() {
     it('should throw an error', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -274,14 +274,14 @@ describe('lib/util/validators/validate-children.js', function() {
           },
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -316,7 +316,7 @@ describe('lib/util/validators/validate-children.js', function() {
 
   describe('if a child \'options\' property is defined and not an object', function() {
     it('should throw an error', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',
@@ -336,14 +336,14 @@ describe('lib/util/validators/validate-children.js', function() {
           options: '',
         },
       ];
-      let error = new Error('An error occurred!');
+      const error = new Error('An error occurred!');
       SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE.throws(error);
 
       expect(validateChildren.bind(null, children, '', '')).to.throw('An error occurred!');
     });
 
     it('should call SimulatoError.CHILD.CHILD_OBJECT_PROPERTY_TYPE once with an error message', function() {
-      let children = [
+      const children = [
         {
           type: 'myComponent',
           name: 'myInstance',

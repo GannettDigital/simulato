@@ -12,7 +12,7 @@ describe('lib/planner/planner-event-dispatch/initialize-planner-event-dispatch.j
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable(
-        '../../../../../lib/planner/planner-event-dispatch/initialize-planner-event-dispatch.js'
+        '../../../../../lib/planner/planner-event-dispatch/initialize-planner-event-dispatch.js',
     );
 
     plannerEventDispatch = sinon.stub();

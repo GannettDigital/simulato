@@ -35,9 +35,7 @@ describe('lib/errors/component/no-components-found.js', function() {
     });
 
     it('should return new ComponentError', function() {
-      let result;
-
-      result = noComponentsFound('ERROR_MESSAGE');
+      const result = noComponentsFound('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ComponentError);
     });

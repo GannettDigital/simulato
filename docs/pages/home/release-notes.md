@@ -5,6 +5,27 @@ toc_label: 'Version Number'
 sidebar: about_sidebar
 ---
 
+## 0.10.0
+
+* Raghu Dantuluri and Zach Knox
+  * Updated rerun logic to allow for parallelism in retries
+    * Previously, Simulato would wait until all tests of a particular run were complete before triggering a retry for needed tests. Now, tests will rerun independent of each other.
+    * The `parallelism` configuration option controls these in addition to initial parallelism
+
+* Zach Knox
+  * Allow deferral of failed test reports to be displayed at the end of a run
+    * Previously, this would happen naturally, but with the parallelism updates, an option was required
+    * Use new boolean configuration option `deferFailureReports` to control this
+    * Defaults to `false`
+
+## 0.9.0
+
+* Zach Knox
+  * Update offlineReplanning to support actionTree algorithm
+    * This uses some randomness to help stop the algorithm from going down the same path all the time. This randomness can be seeded from the config with `replanningSeed`.
+    * If you plan to use replanning with your existing actionTree models, you will likely need to update your models to better reflect how your website works.
+  * Updated reduce-to-minimum-set-of-plans to compare hashes of plans. In the past, it was comparing sets in a way which would never detect duplicates.
+
 ## 0.8.7
 
 * Mike Millgate

@@ -35,9 +35,7 @@ describe('lib/errors/child/child-not-object.js', function() {
     });
 
     it('should return new ChildError', function() {
-      let result;
-
-      result = childNotObject('ERROR_MESSAGE');
+      const result = childNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ChildError);
     });

@@ -70,6 +70,7 @@ describe('lib/executor/execute-test-case.js', function() {
       webdriver = {
         By: sinon.stub(),
         until: sinon.stub(),
+        Key: sinon.stub(),
       };
       sinon.stub(process, 'on');
       configHandler = {
@@ -121,7 +122,7 @@ describe('lib/executor/execute-test-case.js', function() {
 
     describe('when the process.on callback is called', function() {
       it('should call executeTestCase.emit 4 times', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);
@@ -131,7 +132,7 @@ describe('lib/executor/execute-test-case.js', function() {
 
       it('should call process.on with the event \'executeTestCase.exceptionCaught\' and ' +
           'the passed in error', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);
@@ -143,7 +144,7 @@ describe('lib/executor/execute-test-case.js', function() {
       });
 
       it('should set the process.exitCode to the number 1', function() {
-        let error = new Error('An error occurred');
+        const error = new Error('An error occurred');
         process.on.callsArgWith(1, error);
 
         executeTestCase.configure(testPath);
@@ -162,6 +163,12 @@ describe('lib/executor/execute-test-case.js', function() {
       executeTestCase.configure(testPath);
 
       expect(global.until).to.deep.equal(webdriver.until);
+    });
+
+    it('should set global.Key to webdriver.Key', function() {
+      executeTestCase.configure(testPath);
+
+      expect(global.Key).to.deep.equal(webdriver.Key);
     });
 
     it('should call executeTestCase.emit 3 times', function() {

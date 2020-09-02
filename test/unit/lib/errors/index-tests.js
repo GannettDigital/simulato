@@ -53,84 +53,84 @@ describe('lib/errors/index.js', function() {
   });
 
   it('should export 11 items on an object', function() {
-    let result = require('../../../../lib/errors');
+    const result = require('../../../../lib/errors');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(11);
   });
 
-  it('should have the property \'ELEMENT\' with the value from requiring'
-        + ' \'./element\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'ELEMENT\' with the value from requiring' +
+        ' \'./element\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.ELEMENT).to.deep.equal(ELEMENT);
   });
 
-  it('should have the property \'ACTION\' with the value from requiring'
-      + ' \'./action\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'ACTION\' with the value from requiring' +
+      ' \'./action\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.ACTION).to.deep.equal(ACTION);
   });
 
-  it('should have the property \'COMPONENT\' with the value from requiring'
-      + ' \'./component\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'COMPONENT\' with the value from requiring' +
+      ' \'./component\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.COMPONENT).to.deep.equal(COMPONENT);
   });
 
-  it('should have the property \'MODEL\' with the value from requiring'
-      + ' \'./model\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'MODEL\' with the value from requiring' +
+      ' \'./model\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.MODEL).to.deep.equal(MODEL);
   });
 
-  it('should have the property \'PLANNER\' with the value from requiring'
-      + ' \'./planner\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'PLANNER\' with the value from requiring' +
+      ' \'./planner\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.PLANNER).to.deep.equal(PLANNER);
   });
 
-  it('should have the property \'TEST_CASE\' with the value from requiring'
-    + ' \'./test-case\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'TEST_CASE\' with the value from requiring' +
+    ' \'./test-case\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.TEST_CASE).to.deep.equal(TEST_CASE);
   });
 
-  it('should have the property \'EVENT\' with the value from requiring'
-    + ' \'./event\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'EVENT\' with the value from requiring' +
+    ' \'./event\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.EVENT).to.deep.equal(EVENT);
   });
 
-  it('should have the property \'CHILD\' with the value from requiring'
-    + ' \'./child\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'CHILD\' with the value from requiring' +
+    ' \'./child\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.CHILD).to.deep.equal(CHILD);
   });
 
-  it('should have the property \'CLI\' with the value from requiring'
-    + ' \'./cli\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'CLI\' with the value from requiring' +
+    ' \'./cli\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.CLI).to.deep.equal(CLI);
   });
 
-  it('should have the property \'RUNNER\' with the value from requiring'
-    + ' \'./runner\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'RUNNER\' with the value from requiring' +
+    ' \'./runner\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.RUNNER).to.deep.equal(RUNNER);
   });
 
-  it('should have the property \'CONFIG\' with the value from requiring'
-    + ' \'./config\'', function() {
-    let result = require('../../../../lib/errors');
+  it('should have the property \'CONFIG\' with the value from requiring' +
+    ' \'./config\'', function() {
+    const result = require('../../../../lib/errors');
 
     expect(result.CONFIG).to.deep.equal(CONFIG);
   });

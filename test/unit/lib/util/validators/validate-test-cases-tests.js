@@ -20,7 +20,7 @@ describe('lib/util/validators/validate-test-cases.js', function() {
     });
 
     it('should export a function', function() {
-      let result = require('../../../../../lib/util/validators/validate-test-cases.js');
+      const result = require('../../../../../lib/util/validators/validate-test-cases.js');
 
       expect(result).to.be.a('function');
     });
@@ -177,11 +177,11 @@ describe('lib/util/validators/validate-test-cases.js', function() {
         mockery.registerMock('path/to/file3.json', testCase3);
         validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
         SimulatoError.TEST_CASE.TEST_CASE_NOT_ARRAY.throws(
-            {message: `The test case at path ${files[2]} must be an Array`}
+            {message: `The test case at path ${files[2]} must be an Array`},
         );
 
         expect(validateTestCases.bind(null, files, callback)).to.throw(
-            `The test case at path path/to/file3.json must be an Array`
+            `The test case at path path/to/file3.json must be an Array`,
         );
       });
 
@@ -191,11 +191,11 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           mockery.registerMock('path/to/file3.json', testCase3);
           validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
           SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
-              {message: `The test case at file path ${files[2]} array index 0 must be an object`}
+              {message: `The test case at file path ${files[2]} array index 0 must be an object`},
           );
 
           expect(validateTestCases.bind(null, files, callback)).to.throw(
-              `The test case at file path path/to/file3.json array index 0 must be an object`
+              `The test case at file path path/to/file3.json array index 0 must be an object`,
           );
         });
 
@@ -204,11 +204,11 @@ describe('lib/util/validators/validate-test-cases.js', function() {
           mockery.registerMock('path/to/file3.json', testCase3);
           validateTestCases = require('../../../../../lib/util/validators/validate-test-cases.js');
           SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
-              {message: `The test case at file path ${files[2]} array index 0 name value must be a string`}
+              {message: `The test case at file path ${files[2]} array index 0 name value must be a string`},
           );
 
           expect(validateTestCases.bind(null, files, callback)).to.throw(
-              `The test case at file path path/to/file3.json array index 0 name value must be a string`
+              `The test case at file path path/to/file3.json array index 0 name value must be a string`,
           );
         });
 
@@ -220,14 +220,14 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
                 {
                   message:
-                  `The test case at file path ${files[2]} action initialization must`
-                  + ` have a name thats a string`,
-                }
+                  `The test case at file path ${files[2]} action initialization must` +
+                  ` have a name thats a string`,
+                },
             );
 
             expect(validateTestCases.bind(null, files, callback)).to.throw(
-                `The test case at file path path/to/file3.json action initialization must`
-              + ` have a name thats a string`
+                `The test case at file path path/to/file3.json action initialization must` +
+              ` have a name thats a string`,
             );
           });
 
@@ -238,14 +238,14 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
                 {
                   message:
-                  `The test case at file path ${files[2]} action initialization must`
-                  + ` have a name thats a string`,
-                }
+                  `The test case at file path ${files[2]} action initialization must` +
+                  ` have a name thats a string`,
+                },
             );
 
             expect(validateTestCases.bind(null, files, callback)).to.throw(
-                `The test case at file path path/to/file3.json action initialization must`
-              + ` have a name thats a string`
+                `The test case at file path path/to/file3.json action initialization must` +
+              ` have a name thats a string`,
             );
           });
 
@@ -256,14 +256,14 @@ describe('lib/util/validators/validate-test-cases.js', function() {
             SimulatoError.TEST_CASE.TEST_CASE_TYPE_ERROR.throws(
                 {
                   message:
-                  `The test case at file path ${files[2]} action initialization must`
-                  + ` have a state thats an object`,
-                }
+                  `The test case at file path ${files[2]} action initialization must` +
+                  ` have a state thats an object`,
+                },
             );
 
             expect(validateTestCases.bind(null, files, callback)).to.throw(
-                `The test case at file path path/to/file3.json action initialization must`
-              + ` have a state thats an object`
+                `The test case at file path path/to/file3.json action initialization must` +
+              ` have a state thats an object`,
             );
           });
         });

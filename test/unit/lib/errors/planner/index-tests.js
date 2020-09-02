@@ -32,35 +32,35 @@ describe('lib/errors/planner/index.js', function() {
   });
 
   it('should export 4 items on an object', function() {
-    let result = require('../../../../../lib/errors/planner');
+    const result = require('../../../../../lib/errors/planner');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(4);
   });
 
-  it('should have the property \'GOAL_NOT_FOUND\' with the value from requiring'
-    + ' \'./goal-not-found.js\'', function() {
-    let result = require('../../../../../lib/errors/planner');
+  it('should have the property \'GOAL_NOT_FOUND\' with the value from requiring' +
+    ' \'./goal-not-found.js\'', function() {
+    const result = require('../../../../../lib/errors/planner');
 
     expect(result.GOAL_NOT_FOUND).to.deep.equal(GOAL_NOT_FOUND);
   });
 
-  it('should have the property \'FAILED_TO_BACKTRACK\' with the value from requiring'
-    + ' \'./failed-to-backtrack.js\'', function() {
-    let result = require('../../../../../lib/errors/planner');
+  it('should have the property \'FAILED_TO_BACKTRACK\' with the value from requiring' +
+    ' \'./failed-to-backtrack.js\'', function() {
+    const result = require('../../../../../lib/errors/planner');
 
     expect(result.FAILED_TO_BACKTRACK).to.deep.equal(FAILED_TO_BACKTRACK);
   });
 
-  it('should have the property \'DUPLICATE_PLAN_GENERATED\' with the value from requiring'
-    + ' \'./duplicate-plan-generated.js\'', function() {
-    let result = require('../../../../../lib/errors/planner');
+  it('should have the property \'DUPLICATE_PLAN_GENERATED\' with the value from requiring' +
+    ' \'./duplicate-plan-generated.js\'', function() {
+    const result = require('../../../../../lib/errors/planner');
 
     expect(result.DUPLICATE_PLAN_GENERATED).to.deep.equal(DUPLICATE_PLAN_GENERATED);
   });
 
-  it('should have the property \'NO_STARTING_ACTIONS\' with the value from requiring'
-    + ' \'./no-starting-actions.js\'', function() {
-    let result = require('../../../../../lib/errors/planner');
+  it('should have the property \'NO_STARTING_ACTIONS\' with the value from requiring' +
+    ' \'./no-starting-actions.js\'', function() {
+    const result = require('../../../../../lib/errors/planner');
 
     expect(result.NO_STARTING_ACTIONS).to.deep.equal(NO_STARTING_ACTIONS);
   });

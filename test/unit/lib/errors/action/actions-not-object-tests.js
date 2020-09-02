@@ -35,9 +35,7 @@ describe('lib/errors/action/actions-not-object.js', function() {
     });
 
     it('should return new ActionError', function() {
-      let result;
-
-      result = actionsNotObject('ERROR_MESSAGE');
+      const result = actionsNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ActionError);
     });

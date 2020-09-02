@@ -35,9 +35,7 @@ describe('lib/errors/element/element-not-found.js', function() {
     });
 
     it('should return new ElementError', function() {
-      let result;
-
-      result = elementNotFound('ERROR_MESSAGE');
+      const result = elementNotFound('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ElementError);
     });

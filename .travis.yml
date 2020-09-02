@@ -1,7 +1,7 @@
 dist: trusty
 language: node_js
 node_js:
-  - "8.12"
+  - "12.18"
 env:
   global:
     - secure: "MyS7Ilc0PnoRmbW+ZzIFvLtPWNXf+qgAYgI4KDk/D5uiiUYDc6PoeWRdF/YZSjxWo7avIUaMR0xSawiPdHsgu+yAYNLyO3N/VqXl70YJwu3AwK9ahvMO+dsxVhfZhx820bUEZ9aLHH7v2nyH/8Vc9/48JEkqWUBB5VQPTWVHQydtxYgGGe6gOAMhhORfc6YQ17f66jlIWGvyekFjKC2B0I43mQfFlCkojaC3HJPRLX52xGFDortPbpJstgI8Q+X7ev33YtXojy+YyHXODnDUZgp0CV9uLiHGjlesZL3fTvhg2rx1IvMSdPH+k7NpL8gGZyPNNK+j1V9bKx6xlSRo38ssdlenzote+/m5R1zZXjw96zlsYQdYmdn1sYwLrY3XYs2ISxgoQwhUOvZe+eXlroZM84McHTIvCI/mOFRec8q2yEQHAENRFndFL1t8etabUqPbY61rAX4+gmfhnNlBvUgZUXgFiNnC6Jfo+m5etVE3fWrG2UlHjUmZbFom5BnT3SPTKQLM1fFuHXHiqem1ig+a7A8P8IvAqGPLfy0SVwQEAp0ucm7IVjuV0n9F2hkHpzFgFfMVCJTsG+xNXzXB2p5MLSjVD/ug7IZlz0w4YY/w+8J2wIwrOeEohqUMWcHIN8YrducVmp1kwxwcd2Fwdql5rRf7klxAP8lYrFWQchs="

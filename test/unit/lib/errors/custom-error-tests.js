@@ -57,33 +57,25 @@ describe('lib/errors/custom-error.js', function() {
     });
 
     it('should set the prototype of the returned value to CustomErrors prototype', function() {
-      let result;
-
-      result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
+      const result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(Object.getPrototypeOf(result)).to.deep.equal(CustomError.prototype);
     });
 
     it('should set the returned value name value to the passed in name and code', function() {
-      let result;
-
-      result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
+      const result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result.name).to.equal('ERROR_NAME ERROR_CODE');
     });
 
     it('should set the returned value code value to the passed in name and code', function() {
-      let result;
-
-      result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
+      const result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result.code).to.equal('ERROR_CODE');
     });
 
     it('should set the returned value message value to the passed in name and code', function() {
-      let result;
-
-      result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
+      const result = new CustomError('ERROR_NAME', 'ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result.message).to.equal('ERROR_MESSAGE');
     });

@@ -35,9 +35,7 @@ describe('lib/errors/event/event-object-property-type.js', function() {
     });
 
     it('should return new EventError', function() {
-      let result;
-
-      result = eventObjectPropertyType('ERROR_MESSAGE');
+      const result = eventObjectPropertyType('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(EventError);
     });

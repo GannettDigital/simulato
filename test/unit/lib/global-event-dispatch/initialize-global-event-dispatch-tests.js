@@ -27,8 +27,8 @@ describe('lib/global-event-dispatch/initialize-global-event-dispatch.js', functi
 
   describe('when the exported function is called', function() {
     it('should call registerGlobalEvents with global event dispatch passed in', function() {
-      let initializeglobalEventDispatch = require('../../../../lib/'
-        + 'global-event-dispatch/initialize-global-event-dispatch.js');
+      const initializeglobalEventDispatch = require('../../../../lib/' +
+        'global-event-dispatch/initialize-global-event-dispatch.js');
 
       initializeglobalEventDispatch();
 

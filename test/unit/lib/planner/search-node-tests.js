@@ -123,7 +123,7 @@ describe('lib/planner/search-node.js', function() {
 
       describe('when the callback is called for the event \'expectedState.create\'', function() {
         it('should call the callback once with null and a node the specified properties', function() {
-          let node = Object.create(searchNode);
+          const node = Object.create(searchNode);
           node.dataStore = 'myDataStore';
           node.state = 'myExpectedState';
           node.path = [];
@@ -206,7 +206,7 @@ describe('lib/planner/search-node.js', function() {
       searchNode.clone(node, callback);
 
       expect(node.create.args[0][0]).to.deep.equal(
-          new Set(['SOME_ACTION', 'SOME_OTHER_ACTION'])
+          new Set(['SOME_ACTION', 'SOME_OTHER_ACTION']),
       );
     });
 

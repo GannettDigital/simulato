@@ -35,9 +35,7 @@ describe('lib/errors/child/children-not-array.js', function() {
     });
 
     it('should return new ChildError', function() {
-      let result;
-
-      result = childrenNotArray('ERROR_MESSAGE');
+      const result = childrenNotArray('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ChildError);
     });

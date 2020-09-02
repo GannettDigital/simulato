@@ -12,7 +12,7 @@ describe('lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js', function
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable(
-        '../../../../../lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js'
+        '../../../../../lib/cli/cli-event-dispatch/initialize-cli-event-dispatch.js',
     );
 
     cliEventDispatch = sinon.stub();

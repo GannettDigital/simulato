@@ -35,42 +35,42 @@ describe('lib/errors/component/index.js', function() {
   });
 
   it('should export 5 items on an object', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(Object.getOwnPropertyNames(result).length).to.equal(5);
   });
 
-  it('should have the property \'NO_ENTRY_POINT\' with the value from requiring'
-    + ' \'./model-not-object.js\'', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+  it('should have the property \'NO_ENTRY_POINT\' with the value from requiring' +
+    ' \'./model-not-object.js\'', function() {
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(result.NO_ENTRY_POINT).to.deep.equal(NO_ENTRY_POINT);
   });
 
-  it('should have the property \'NON_UNIQUE_COMPONENT\' with the value from requiring'
-    + ' \'./non-unique-component.js\'', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+  it('should have the property \'NON_UNIQUE_COMPONENT\' with the value from requiring' +
+    ' \'./non-unique-component.js\'', function() {
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(result.NON_UNIQUE_COMPONENT).to.deep.equal(NON_UNIQUE_COMPONENT);
   });
 
-  it('should have the property \'FILE_TYPE_ERROR\' with the value from requiring'
-    + ' \'./file-type-error.js\'', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+  it('should have the property \'FILE_TYPE_ERROR\' with the value from requiring' +
+    ' \'./file-type-error.js\'', function() {
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(result.FILE_TYPE_ERROR).to.deep.equal(FILE_TYPE_ERROR);
   });
 
-  it('should have the property \'COMPONENT_TYPE_ERROR\' with the value from requiring'
-    + ' \'./component-type-error.js\'', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+  it('should have the property \'COMPONENT_TYPE_ERROR\' with the value from requiring' +
+    ' \'./component-type-error.js\'', function() {
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(result.COMPONENT_TYPE_ERROR).to.deep.equal(COMPONENT_TYPE_ERROR);
   });
 
-  it('should have the property \'NO_COMPONENTS_FOUND\' with the value from requiring'
-    + ' \'./no-components-found.js\'', function() {
-    let result = require('../../../../../lib/errors/component/index.js');
+  it('should have the property \'NO_COMPONENTS_FOUND\' with the value from requiring' +
+    ' \'./no-components-found.js\'', function() {
+    const result = require('../../../../../lib/errors/component/index.js');
 
     expect(result.NO_COMPONENTS_FOUND).to.deep.equal(NO_COMPONENTS_FOUND);
   });

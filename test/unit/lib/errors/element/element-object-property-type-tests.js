@@ -35,9 +35,7 @@ describe('lib/errors/element/element-object-property-type.js', function() {
     });
 
     it('should return new ElementError', function() {
-      let result;
-
-      result = elementObjectPropertyType('ERROR_MESSAGE');
+      const result = elementObjectPropertyType('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ElementError);
     });

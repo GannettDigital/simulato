@@ -36,7 +36,7 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
 
     it('should call Emitter.mixIn with testReportHandler and runnerEventDispatch', function() {
       testReportHandler = require(
-          '../../../../../lib/runner/test-runner/test-report-handler.js'
+          '../../../../../lib/runner/test-runner/test-report-handler.js',
       );
 
       expect(Emitter.mixIn.args).to.deep.equal([
@@ -241,9 +241,9 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       mockery.disable();
     });
 
-    it('should set the passed in report to '
-      + 'testReportHandler._report.testReports[<passedInTestNumber>]'
-      + '.testRuns[testReportHandler._report.testReports[<passedInTestNumber>].rerunCount].report', function() {
+    it('should set the passed in report to ' +
+      'testReportHandler._report.testReports[<passedInTestNumber>]' +
+      '.testRuns[testReportHandler._report.testReports[<passedInTestNumber>].rerunCount].report', function() {
       testReportHandler._report.testReports[0] = {
         rerunCount: 0,
         testRuns: [{stdErr: ''}],
@@ -359,8 +359,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
-    describe('if the most recent testRun report status is \'fail\' '
-      + 'and the passed in rerunCount is truthy', function() {
+    describe('if the most recent testRun report status is \'fail\' ' +
+      'and the passed in rerunCount is truthy', function() {
       it('should increment the testsReports rerunCount once', function() {
         testReportHandler._report = {
           failedTestCount: 3,
@@ -400,8 +400,8 @@ describe('lib/runner/test-runner/test-report-handler.js', function() {
       });
     });
 
-    describe('if the most recent testRun report status is \'fail\' '
-      + 'and the passed in rerunCount is falsey', function() {
+    describe('if the most recent testRun report status is \'fail\' ' +
+      'and the passed in rerunCount is falsey', function() {
       describe('when config for deferFailureReports is true', function() {
         it('should add the report to _failedReports', function() {
           configHandler.get.returns(true);

@@ -35,9 +35,7 @@ describe('lib/errors/test-case/no-test-cases-found.js', function() {
     });
 
     it('should return new TestcaseError', function() {
-      let result;
-
-      result = noTestcasesFound('ERROR_MESSAGE');
+      const result = noTestcasesFound('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(TestcaseError);
     });

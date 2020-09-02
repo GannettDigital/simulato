@@ -139,8 +139,8 @@ describe('lib/cli/orchestration/before.js', function() {
         expect(configHandler.get.args[1]).to.deep.equal(['before']);
       });
 
-      it(`should call before.emit once with the event 'before.readyToRunFunctions' `
-            + `an array containing the required sciprt, and the passed on configureInfo`, function() {
+      it(`should call before.emit once with the event 'before.readyToRunFunctions' ` +
+            `an array containing the required sciprt, and the passed on configureInfo`, function() {
         configHandler.get.onCall(0).returns(true);
         configHandler.get.onCall(1).returns('path/to/script');
 
@@ -157,8 +157,8 @@ describe('lib/cli/orchestration/before.js', function() {
     });
 
     describe('when configHandler.get(\'before\') is falsey', function() {
-      it(`should call before.emit once with the event 'before.readyToRunFunctions' `
-                + `an empty array, and the passed on configureInfo`, function() {
+      it(`should call before.emit once with the event 'before.readyToRunFunctions' ` +
+                `an empty array, and the passed on configureInfo`, function() {
         before.runScripts({someConfig: 'aConfigValue'});
 
         expect(before.emit.args).to.deep.equal([
@@ -211,8 +211,8 @@ describe('lib/cli/orchestration/before.js', function() {
           });
         });
         describe('if no error was returned', function() {
-          it(`should call before.emit once with the event 'before.readyToRunFunctions' `
-                        + `an empty array, and the passed on configureInfo`, function() {
+          it(`should call before.emit once with the event 'before.readyToRunFunctions' ` +
+                        `an empty array, and the passed on configureInfo`, function() {
             configHandler.get.onCall(1).returns(true);
             Saucelabs.connect.callsArgWith(0, null);
 
@@ -270,8 +270,8 @@ describe('lib/cli/orchestration/before.js', function() {
           });
         });
         describe('if no error was returned', function() {
-          it(`should call before.emit once with the event 'before.readyToRunFunctions' `
-                        + `an array containing the required sciprt, and the passed on configureInfo`, function() {
+          it(`should call before.emit once with the event 'before.readyToRunFunctions' ` +
+                        `an array containing the required sciprt, and the passed on configureInfo`, function() {
             Saucelabs.connect.callsArgWith(0, null);
             configHandler.get.onCall(0).returns(true);
             configHandler.get.onCall(1).returns('path/to/script');
@@ -374,8 +374,8 @@ describe('lib/cli/orchestration/before.js', function() {
       });
 
       describe('if an error is NOT returned', function() {
-        it(`should call before.emit once with the event 'before.finished' `
-                    + `and the passed on configureInfo`, function() {
+        it(`should call before.emit once with the event 'before.finished' ` +
+                    `and the passed on configureInfo`, function() {
           concurrent.callsArgWith(1, null);
 
           before._runFunctions([], {someConfig: 'aConfigValue'});

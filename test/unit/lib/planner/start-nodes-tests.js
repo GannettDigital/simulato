@@ -119,7 +119,7 @@ describe('lib/planner/start-nodes.js', function() {
     });
 
     it('should call startNodes.emitAsync with the event \'entryComponents.get\' and next', function() {
-      let generator = startNodes.get(callback);
+      const generator = startNodes.get(callback);
 
       generator.next();
       generator.next(next);
@@ -133,7 +133,7 @@ describe('lib/planner/start-nodes.js', function() {
     describe('for each entry component', function() {
       it('should call startNodes.emitAsync with the event \'searchNode.create\', and empty set, ' +
         ' and next', function() {
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
 
         generator.next();
         generator.next(next);
@@ -148,7 +148,7 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should call node.state.createAndAddComponent with the type, name, state, and options in an ' +
         'object', function() {
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
         components.componentOne.type = 'componentOne';
 
         generator.next();
@@ -173,7 +173,7 @@ describe('lib/planner/start-nodes.js', function() {
       });
 
       it('should call node.testCase.push with the type, name, state, and options in an object', function() {
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
         components.componentOne.type = 'componentOne';
 
         generator.next();
@@ -199,7 +199,7 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should calll startNodes.emitAsync with the event \'possibleActions.get\', ' +
         ' node, and next', function() {
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
         components.componentOne.type = 'componentOne';
 
         generator.next();
@@ -216,8 +216,8 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should set node.actions to the returned applicableActions from yielding to startNodes.emitAsync ' +
         'with the event \'possibleActions.get\'', function() {
-        let generator = startNodes.get(callback);
-        let applicableActions = new Set(['ACTION_1', 'ACTION_2']);
+        const generator = startNodes.get(callback);
+        const applicableActions = new Set(['ACTION_1', 'ACTION_2']);
 
         generator.next();
         generator.next(next);
@@ -230,8 +230,8 @@ describe('lib/planner/start-nodes.js', function() {
 
       it('should set node.allActions to the returned allActions from yielding to startNodes.emitAsync with the ' +
         'event \'possibleActions.get\'', function() {
-        let generator = startNodes.get(callback);
-        let allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
+        const generator = startNodes.get(callback);
+        const allActions = new Set(['ACTION_1', 'ACTION_2', 'ACTION_3']);
 
         generator.next();
         generator.next(next);
@@ -245,7 +245,7 @@ describe('lib/planner/start-nodes.js', function() {
 
     describe('if there are two entryComponents', function() {
       it('should call startNodes.emitAsync 5 times', function() {
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
 
         generator.next();
         generator.next(next);
@@ -262,7 +262,7 @@ describe('lib/planner/start-nodes.js', function() {
     describe('if there is one entryComponent', function() {
       it('should call startNodes.emitAsync 3 times', function() {
         delete components.componentTwo;
-        let generator = startNodes.get(callback);
+        const generator = startNodes.get(callback);
 
         generator.next();
         generator.next(next);
@@ -275,7 +275,7 @@ describe('lib/planner/start-nodes.js', function() {
     });
 
     it('should call the passed in callback once with null, and the nodes', function() {
-      let generator = startNodes.get(callback);
+      const generator = startNodes.get(callback);
 
       generator.next();
       generator.next(next);

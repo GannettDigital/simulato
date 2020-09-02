@@ -16,7 +16,7 @@ describe('lib/util/config/schema.js', function() {
   });
 
   it('should export the schema object', function() {
-    let schema = require('../../../../../lib/util/config/schema.js');
+    const schema = require('../../../../../lib/util/config/schema.js');
 
     expect(schema).to.deep.equal({
       type: 'object',

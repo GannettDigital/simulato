@@ -139,7 +139,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
     describe('if configureInfo.command equals the string \'execute\'', function() {
       it('should call executeEventDispatch.emit once with the event \'executor.scheduled\''+
                 'and the passed in configureInfo.testFile', function() {
-        let configureInfo = {
+        const configureInfo = {
           command: 'execute',
           testFile: 'myTestFile',
         };
@@ -159,7 +159,7 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
     describe('if configureInfo.command does not equal the string \'execute\'', function() {
       it('should call runnerEventDispatch.emit once with the event \'runner.scheduled\''+
                 ',the passed in configureInfo.testFilePaths, and configureInfo.parallelism', function() {
-        let configureInfo = {
+        const configureInfo = {
           command: 'notExecute',
           testFilePaths: ['myTestFile', 'myTestFile2'],
           parallelism: 5,
@@ -376,8 +376,8 @@ describe('lib/global-event-dispatch/register-global-events.js', function() {
     });
   });
 
-  it('should call globalEventDispatch.on with the event \'configHandler.readyToValidate\''
-        + ' and validators.validateConfig', function() {
+  it('should call globalEventDispatch.on with the event \'configHandler.readyToValidate\'' +
+        ' and validators.validateConfig', function() {
     registerGlobalEvents(globalEventDispatch);
 
     expect(globalEventDispatch.on.args[21]).to.deep.equal([

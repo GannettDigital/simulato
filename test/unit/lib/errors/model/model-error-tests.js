@@ -35,9 +35,7 @@ describe('lib/errors/model/model-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = modelError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = modelError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

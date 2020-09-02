@@ -35,9 +35,7 @@ describe('lib/errors/component/non-unique-component.js', function() {
     });
 
     it('should return new ComponentError', function() {
-      let result;
-
-      result = nonUniqueComponent('ERROR_MESSAGE');
+      const result = nonUniqueComponent('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ComponentError);
     });

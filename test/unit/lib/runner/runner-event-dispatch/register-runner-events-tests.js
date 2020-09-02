@@ -59,7 +59,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
   describe('when the required file is ran with runnerEventDispatch passed in', function() {
     it('should call runnerEventDispatch.on 12 times', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -70,7 +70,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'runner.scheduled\' ' +
       'and testRunner.configure as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -84,7 +84,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'runner.scheduled\' ' +
       'and testReportHandler.startReportHandler as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -98,7 +98,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.testStarted\' ' +
       'and testReportHandler.createTestReport as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -112,7 +112,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.testFinished\' ' +
       'and testReportHandler.finalizeTestReport as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -126,7 +126,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.testDataReceived\' ' +
       'and testReportHandler.appendTestReport as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -140,7 +140,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.childStderrReceived\' ' +
       'and testReportHandler.appendTestStdErr as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -154,7 +154,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.done\' ' +
       'and testReportHandler.finalizeReport as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -168,7 +168,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testRunner.getDebugPort\' ' +
       'and testReportHandler.getPort as parameters', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -182,19 +182,19 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportReadyToPrint\' ' +
       'as the first parameter', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
       expect(runnerEventDispatch.on.args[8][0]).to.equal(
-          'testReportHandler.testReportReadyToPrint'
+          'testReportHandler.testReportReadyToPrint',
       );
     });
 
     it('should call runnerEventDispatch.on with a callback function as second param', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -205,7 +205,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     describe('when the callback function is called', function() {
       it('should call the passed in reporter printTestResult method with the passed in report', function() {
         registerRunnerEvents = require(
-            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
         );
         runnerEventDispatch.on.onCall(8).callsArgWith(1, 'basic', {report: 'value'});
 
@@ -218,19 +218,19 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportSummaryReadyToPrint\' ' +
       'as the first parameter', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
       expect(runnerEventDispatch.on.args[9][0]).to.equal(
-          'testReportHandler.testReportSummaryReadyToPrint'
+          'testReportHandler.testReportSummaryReadyToPrint',
       );
     });
 
     it('should call runnerEventDispatch.on with a callback function as second param', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -241,7 +241,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     describe('when the callback function is called', function() {
       it('should call the passed in reporter printReportSummary method with the passed in report', function() {
         registerRunnerEvents = require(
-            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
         );
         runnerEventDispatch.on.onCall(9).callsArgWith(1, 'basic', {report: 'value'});
 
@@ -254,19 +254,19 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     it('should call runnerEventDispatch.on with the event \'testReportHandler.testReportSummaryReadyToWrite\' ' +
       'as the first parameter', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
 
       expect(runnerEventDispatch.on.args[10][0]).to.equal(
-          'testReportHandler.testReportSummaryReadyToWrite'
+          'testReportHandler.testReportSummaryReadyToWrite',
       );
     });
 
     it('should call runnerEventDispatch.on with a callback function as second param', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -277,7 +277,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
     describe('when the callback function is called', function() {
       it('should call the passed in writers with the passed in report', function() {
         registerRunnerEvents = require(
-            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
         );
         runnerEventDispatch.on.onCall(10).callsArgWith(1, 'JSON', {report: 'value'});
 
@@ -289,7 +289,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
 
     it('should call runnerEventDispatch.on with the event \'testReportHandler.reportFinalized\'', function() {
       registerRunnerEvents = require(
-          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+          '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
       );
 
       registerRunnerEvents(runnerEventDispatch);
@@ -301,7 +301,7 @@ describe('lib/runner/runner-event-dispatch/register-runner-events.js', function(
       '\'testReportHandler.reportFinalized\' is called', function() {
       it('should call runnerEventDispatch.emit once with the event \'runner.ended\' as the parameter', function() {
         registerRunnerEvents = require(
-            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js'
+            '../../../../../lib/runner/runner-event-dispatch/register-runner-events.js',
         );
         runnerEventDispatch.on.onCall(11).callsArg(1);
 

@@ -10,11 +10,11 @@ describe('lib/planner/write-plans-to-disk.js', function() {
   let configHandler;
   let clock;
   let writePlansToDisk;
+  let crypto;
 
   beforeEach(function() {
     mockery.enable({useCleanCache: true});
     mockery.registerAllowable('../../../../lib/planner/write-plans-to-disk.js');
-    let crypto;
     fs = {
       writeFileSync: sinon.stub(),
     };
@@ -28,7 +28,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
       createHash: sinon.stub().returns({
         update: sinon.stub().returns({
           digest: sinon.stub().returns(
-              'hashedPlan'
+              'hashedPlan',
           ),
         }),
       }),
@@ -54,7 +54,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
   });
 
   it('should call configHandler.get once with \'outputPath\'', function() {
-    let plans = [];
+    const plans = [];
 
     writePlansToDisk(plans);
 
@@ -63,7 +63,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
 
   describe('for each plan of the passed in plans', function() {
     it('should call path.resolve with the outputPath and the constructed file name', function() {
-      let plans = ['plan1'];
+      const plans = ['plan1'];
 
       configHandler.get.returns('outputPath/');
 
@@ -78,7 +78,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
       'and the stringified version of the plan.testCase', function() {
       path.resolve.onCall(0).returns('path1');
       path.resolve.onCall(1).returns('path2');
-      let plans = [
+      const plans = [
         [{foo: 'bar'}],
         [{bar: 'foo'}],
       ];
@@ -93,7 +93,7 @@ describe('lib/planner/write-plans-to-disk.js', function() {
   });
 
   it('should call console.log to say it wrote the amount of plans to disk as passed in', function() {
-    let plans = ['plan1', 'plan2'];
+    const plans = ['plan1', 'plan2'];
 
     writePlansToDisk(plans);
 

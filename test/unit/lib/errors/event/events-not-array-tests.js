@@ -35,9 +35,7 @@ describe('lib/errors/event/events-not-array.js', function() {
     });
 
     it('should return new EventError', function() {
-      let result;
-
-      result = eventsNotArray('ERROR_MESSAGE');
+      const result = eventsNotArray('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(EventError);
     });

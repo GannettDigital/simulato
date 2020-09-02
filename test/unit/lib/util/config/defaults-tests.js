@@ -20,7 +20,7 @@ describe('lib/util/config/defaults.js', function() {
   });
 
   it('should export the defaults object', function() {
-    let defaults = require('../../../../../lib/util/config/defaults.js');
+    const defaults = require('../../../../../lib/util/config/defaults.js');
 
     expect(defaults).to.deep.equal({
       componentPath: `${process.cwd()}/components`,

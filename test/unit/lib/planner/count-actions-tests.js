@@ -25,9 +25,9 @@ describe('lib/planner/count-actions.js', function() {
       mockery.disable();
     });
     it('should call initialize all actions occurrences to 0', function() {
-      let plans = [];
+      const plans = [];
       algorithm = 'default';
-      let discoveredActions = new Set([
+      const discoveredActions = new Set([
         'action1',
         'action2',
         'action3',
@@ -43,7 +43,7 @@ describe('lib/planner/count-actions.js', function() {
     });
 
     it('should increment an actions occurrence if plan.path has an action has an occurence', function() {
-      let plans = [
+      const plans = [
         {
           path: ['action1', 'action2'],
         },
@@ -52,7 +52,7 @@ describe('lib/planner/count-actions.js', function() {
         },
       ];
       algorithm = 'default';
-      let discoveredActions = new Set([
+      const discoveredActions = new Set([
         'action1',
         'action2',
         'action3',
@@ -68,7 +68,7 @@ describe('lib/planner/count-actions.js', function() {
     });
 
     it('should add actions with occurrence 0 to the actionsNotCovered set', function() {
-      let plans = [
+      const plans = [
         {
           path: ['action1', 'action2'],
         },
@@ -77,7 +77,7 @@ describe('lib/planner/count-actions.js', function() {
         },
       ];
       algorithm = 'default';
-      let discoveredActions = new Set([
+      const discoveredActions = new Set([
         'action1',
         'action2',
         'action3',
@@ -92,7 +92,7 @@ describe('lib/planner/count-actions.js', function() {
     });
 
     it('should call the callback once with the actionOccurrences and actionsNotCovered', function() {
-      let plans = [
+      const plans = [
         {
           path: ['action1', 'action2'],
         },
@@ -101,7 +101,7 @@ describe('lib/planner/count-actions.js', function() {
         },
       ];
       algorithm = 'default';
-      let discoveredActions = new Set([
+      const discoveredActions = new Set([
         'action1',
         'action2',
         'action3',

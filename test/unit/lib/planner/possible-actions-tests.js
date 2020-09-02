@@ -89,7 +89,7 @@ describe('lib/planner/possible-actions.js', function() {
 
     it('should call node.state.getComponents once with no arguments', function() {
       node.state.getComponents.returns([]);
-      let generator = possibleActions.get(node.state, callback);
+      const generator = possibleActions.get(node.state, callback);
 
       generator.next();
       generator.next(next);

@@ -26,7 +26,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', globalEventDispatch);
     });
@@ -89,7 +89,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', defaults);
-      mockery.registerMock('uuid/v4', uuidv4);
+      mockery.registerMock('uuid', {v4: uuidv4});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
@@ -154,8 +154,8 @@ describe('lib/util/config/config-handler.js', function() {
         expect(options.name.args).to.deep.equal([[]]);
       });
 
-      it('should call configHandler.emit with \'configHandler.configCreated\' and '
-        + 'the passed in options.name', function() {
+      it('should call configHandler.emit with \'configHandler.configCreated\' and ' +
+        'the passed in options.name', function() {
         process.env.USING_PARENT_TEST_RUNNER = 'true';
         process.env.TEST_PATH = 'a/test/path';
         process.env.PARENT_CONFIG = JSON.stringify({
@@ -305,8 +305,8 @@ describe('lib/util/config/config-handler.js', function() {
         expect(configHandler._config).to.be.frozen;
       });
 
-      it('should call configHandler.emit with \'configHandler.readyToValidate\' the config, '
-        + 'the requried in configFile, and the passed in clioptions', function() {
+      it('should call configHandler.emit with \'configHandler.readyToValidate\' the config, ' +
+        'the requried in configFile, and the passed in clioptions', function() {
         configHandler._getBaseConfig.callsArgWith(1, {});
 
         configHandler.createConfig(options);
@@ -345,8 +345,8 @@ describe('lib/util/config/config-handler.js', function() {
           expect(options.name.args).to.deep.equal([[]]);
         });
 
-        it('should call configHandler.emit with \'configHandler.configCreated\' and '
-          + 'the passed in options.name', function() {
+        it('should call configHandler.emit with \'configHandler.configCreated\' and ' +
+          'the passed in options.name', function() {
           configHandler._getBaseConfig.callsArgWith(1, {});
           configHandler.emit.onCall(0).callsArg(4);
 
@@ -394,7 +394,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
@@ -418,15 +418,13 @@ describe('lib/util/config/config-handler.js', function() {
     });
 
     it('should return the value from the call to lodash get', function() {
-      let result;
-
-      result = configHandler.get('property.path');
+      const result = configHandler.get('property.path');
 
       expect(result).to.equal('value');
     });
 
     it('should return an empty string if fetching a non-existant property from the config', function() {
-      let invalidPath = '';
+      const invalidPath = '';
       _.get.withArgs(invalidPath).returns(undefined);
       configHandler.get(invalidPath);
 
@@ -456,7 +454,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
@@ -470,10 +468,9 @@ describe('lib/util/config/config-handler.js', function() {
     });
 
     it('should return the configHandlers current config', function() {
-      let result;
       configHandler._config = {key: 'value'};
 
-      result = configHandler.getAll();
+      const result = configHandler.getAll();
 
       expect(result).to.deep.equal({key: 'value'});
     });
@@ -502,7 +499,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', _);
       mockery.registerMock('path', {});
       mockery.registerMock('./defaults.js', {});
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
@@ -517,14 +514,13 @@ describe('lib/util/config/config-handler.js', function() {
 
     describe('if the passed in cliOptions.saucelabs is truthy', function() {
       it('should delete the saucelabs property from the passed in cliOptions', function() {
-        let result;
-        let cliOptions = {
+        const cliOptions = {
           saucelabs: true,
           1: 'option1',
           2: 'option2',
         };
 
-        result = configHandler._structureCliOptions(cliOptions);
+        const result = configHandler._structureCliOptions(cliOptions);
 
         expect(result).to.deep.equal({
           1: 'option1',
@@ -533,7 +529,7 @@ describe('lib/util/config/config-handler.js', function() {
       });
 
       it('should call _.set once with the passed in options,\'driver.saucelabs\', and the bool true', function() {
-        let cliOptions = {
+        const cliOptions = {
           saucelabs: true,
           cliOption: 'a cli option',
         };
@@ -549,13 +545,12 @@ describe('lib/util/config/config-handler.js', function() {
     });
 
     it('should return the passed in cliOptions', function() {
-      let result;
-      let cliOptions = {
+      const cliOptions = {
         1: 'option1',
         2: 'option2',
       };
 
-      result = configHandler._structureCliOptions(cliOptions);
+      const result = configHandler._structureCliOptions(cliOptions);
 
       expect(result).to.deep.equal({
         1: 'option1',
@@ -602,7 +597,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', defaults);
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 
@@ -618,7 +613,7 @@ describe('lib/util/config/config-handler.js', function() {
 
     describe('if the passed in cliOptions.configFile is truthy', function() {
       it('should call path.normalize once with process.cwd() and cliOptions.configFile', function() {
-        let requirePath = `${process.cwd()}/path/to/config`;
+        const requirePath = `${process.cwd()}/path/to/config`;
         path.normalize.onCall(0).returns(requirePath);
         mockery.registerMock(requirePath, {key: 'required from cliOptions.configFile'});
 
@@ -630,7 +625,7 @@ describe('lib/util/config/config-handler.js', function() {
       });
 
       it('should call the passed in callback with the config returned from cliOptions.configFile', function() {
-        let requirePath = `${process.cwd()}/path/to/config`;
+        const requirePath = `${process.cwd()}/path/to/config`;
         path.normalize.onCall(0).returns(requirePath);
         mockery.registerMock(requirePath, {key: 'required from cliOptions.configFile'});
 
@@ -693,10 +688,10 @@ describe('lib/util/config/config-handler.js', function() {
     describe('if configFile that was required in is not an Object', function() {
       describe('if the config was specified from the cli', function() {
         it('should throw simulato CONFIG TYPE_ERROR stating config specified from cli was not an object', function() {
-          let requirePath = `${process.cwd()}/path/to/config`;
+          const requirePath = `${process.cwd()}/path/to/config`;
           path.normalize.onCall(0).returns(requirePath);
           mockery.registerMock(requirePath, []);
-          let message = 'Simulato Error';
+          const message = 'Simulato Error';
           SimulatoError.CONFIG.TYPE_ERROR.throws({message});
 
           expect(configHandler._getBaseConfig.bind(null, {configFile: 'path/to/config'}, callback)).to.throw(message);
@@ -704,12 +699,12 @@ describe('lib/util/config/config-handler.js', function() {
       });
 
       describe('if the config was from the default path', function() {
-        it('should throw simulato CONFIG TYPE_ERROR stating config'
-          + ' from the default path was not an object', function() {
-          let requirePath = `${process.cwd()}/simulato-config.js`;
+        it('should throw simulato CONFIG TYPE_ERROR stating config' +
+          ' from the default path was not an object', function() {
+          const requirePath = `${process.cwd()}/simulato-config.js`;
           path.normalize.onCall(0).returns(requirePath);
           mockery.registerMock(requirePath, []);
-          let message = 'Simulato Error';
+          const message = 'Simulato Error';
           SimulatoError.CONFIG.TYPE_ERROR.throws({message});
 
           expect(configHandler._getBaseConfig.bind(null, {}, callback)).to.throw(message);
@@ -749,7 +744,7 @@ describe('lib/util/config/config-handler.js', function() {
       mockery.registerMock('lodash', {});
       mockery.registerMock('path', path);
       mockery.registerMock('./defaults.js', {});
-      mockery.registerMock('uuid/v4', {});
+      mockery.registerMock('uuid', {});
       mockery.registerMock('../emitter.js', Emitter);
       mockery.registerMock('../../global-event-dispatch/global-event-dispatch.js', {});
 

@@ -35,9 +35,7 @@ describe('lib/errors/cli/invalid-planner-algorithm.js', function() {
     });
 
     it('should return new CLIError', function() {
-      let result;
-
-      result = invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = invalidComponentPath('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CLIError);
     });

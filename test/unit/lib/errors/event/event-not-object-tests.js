@@ -35,9 +35,7 @@ describe('lib/errors/event/event-not-object.js', function() {
     });
 
     it('should return new EventError', function() {
-      let result;
-
-      result = eventNotObject('ERROR_MESSAGE');
+      const result = eventNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(EventError);
     });

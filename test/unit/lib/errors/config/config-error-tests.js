@@ -35,9 +35,7 @@ describe('lib/errors/config/config-error.js', function() {
     });
 
     it('should return new CustomError', function() {
-      let result;
-
-      result = configError('ERROR_CODE', 'ERROR_MESSAGE');
+      const result = configError('ERROR_CODE', 'ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(CustomError);
     });

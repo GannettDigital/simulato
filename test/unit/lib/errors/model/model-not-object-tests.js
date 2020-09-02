@@ -35,9 +35,7 @@ describe('lib/errors/model/model-not-object.js', function() {
     });
 
     it('should return new ModelError', function() {
-      let result;
-
-      result = modelNotObject('ERROR_MESSAGE');
+      const result = modelNotObject('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ModelError);
     });

@@ -37,7 +37,7 @@ describe('lib/util/oracle.js', function() {
     });
 
     it('should call _.get once if there is one assertions', function() {
-      let assertions = [['isTrue', 'pageState.value', true]];
+      const assertions = [['isTrue', 'pageState.value', true]];
       _.get.returns(true);
 
       oracle.runAssertions({}, {}, assertions, callback);
@@ -46,7 +46,7 @@ describe('lib/util/oracle.js', function() {
     });
 
     it('should call _.get thrice if there are three assertions', function() {
-      let assertions = [
+      const assertions = [
         ['isTrue', 'pageState.value', true],
         ['isTrue', 'dataStore.value', true],
         ['isTrue', 'dataStore.value', true],
@@ -59,7 +59,7 @@ describe('lib/util/oracle.js', function() {
     });
 
     it('should call _.get with the passed in state and the second element of an assertion array', function() {
-      let assertions = [['isTrue', 'pageState.value', true]];
+      const assertions = [['isTrue', 'pageState.value', true]];
       _.get.returns(true);
 
       oracle.runAssertions({property: 'myProperty'}, {}, assertions, callback);
@@ -76,7 +76,7 @@ describe('lib/util/oracle.js', function() {
     });
 
     it('should call the assert method which is the first element in the assertion array', function() {
-      let assertions = [['isTrue', 'dataStore.value', true]];
+      const assertions = [['isTrue', 'dataStore.value', true]];
       _.get.returns(true);
 
       oracle.runAssertions({}, {}, assertions, callback);
@@ -86,7 +86,7 @@ describe('lib/util/oracle.js', function() {
 
     it('should call the assert method with result of the call to _.get and all elements after the second element ' +
             'in the assertion array as paremeters ', function() {
-      let assertions = [['equal', 'pageState.value', true, 'element', 'anotherElement']];
+      const assertions = [['equal', 'pageState.value', true, 'element', 'anotherElement']];
       _.get.returns(true);
 
       oracle.runAssertions({}, {}, assertions, callback);
@@ -104,8 +104,8 @@ describe('lib/util/oracle.js', function() {
 
     describe('when the assert method throws', function() {
       it('should call the passed in callback once with the error thrown', function() {
-        let error = new Error('The assertion did not pass');
-        let assertions = [['isTrue', 'pageState.value', true]];
+        const error = new Error('The assertion did not pass');
+        const assertions = [['isTrue', 'pageState.value', true]];
         _.get.returns(true);
         assert.isTrue.throws(error);
 
@@ -119,7 +119,7 @@ describe('lib/util/oracle.js', function() {
 
     describe('when the assert method does not throw', function() {
       it('should call the passed in callback once with no parameters', function() {
-        let assertions = [['isTrue', 'dataStore.value', true]];
+        const assertions = [['isTrue', 'dataStore.value', true]];
         _.get.returns(true);
 
         oracle.runAssertions({}, {}, assertions, callback);
@@ -156,8 +156,8 @@ describe('lib/util/oracle.js', function() {
     });
 
     it('should call assert.deepEqual once with the passed in objectOne and objectTwo', function() {
-      let objectOne = {propertyOne: 'myFirstProperty'};
-      let objectTwo = {propertyTwo: 'mySecondProperty'};
+      const objectOne = {propertyOne: 'myFirstProperty'};
+      const objectTwo = {propertyTwo: 'mySecondProperty'};
 
       oracle.deepEqual(objectOne, objectTwo, callback);
 
@@ -169,7 +169,7 @@ describe('lib/util/oracle.js', function() {
 
     describe('when assert.deepEqual throws', function() {
       it('should call passed in callback once with the error thrown', function() {
-        let error = new Error('The assertion did not pass');
+        const error = new Error('The assertion did not pass');
         assert.deepEqual.throws(error);
 
         oracle.deepEqual({}, {}, callback);

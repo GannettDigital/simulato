@@ -35,9 +35,7 @@ describe('lib/errors/action/action-type-error.js', function() {
     });
 
     it('should return new ActionError', function() {
-      let result;
-
-      result = actionTypeError('ERROR_MESSAGE');
+      const result = actionTypeError('ERROR_MESSAGE');
 
       expect(result).to.be.an.instanceof(ActionError);
     });

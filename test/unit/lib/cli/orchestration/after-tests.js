@@ -75,7 +75,7 @@ describe('lib/cli/orchestration/after.js', function() {
     describe('when the callback for concurrent is called', function() {
       describe('if an error was returned', function() {
         it('should call console.log the error returned', function() {
-          let error = new Error('error from concurrent');
+          const error = new Error('error from concurrent');
           concurrent.callsArgWith(1, error);
           configHandler.get.returns(true);
 
@@ -84,7 +84,7 @@ describe('lib/cli/orchestration/after.js', function() {
           expect(console.log.args).to.deep.equal([[error]]);
         });
         it('should call process.exit with error code 1', function() {
-          let error = new Error('error from concurrent');
+          const error = new Error('error from concurrent');
           concurrent.callsArgWith(1, error);
           configHandler.get.returns(true);
 
@@ -134,7 +134,7 @@ describe('lib/cli/orchestration/after.js', function() {
   describe('when the callback for concurrent is called', function() {
     describe('if an error was returned', function() {
       it('should call console.log the error returned', function() {
-        let error = new Error('error from concurrent');
+        const error = new Error('error from concurrent');
         concurrent.callsArgWith(1, error);
 
         after();
@@ -142,7 +142,7 @@ describe('lib/cli/orchestration/after.js', function() {
         expect(console.log.args).to.deep.equal([[error]]);
       });
       it('should call process.exit with error code 1', function() {
-        let error = new Error('error from concurrent');
+        const error = new Error('error from concurrent');
         concurrent.callsArgWith(1, error);
 
         after();

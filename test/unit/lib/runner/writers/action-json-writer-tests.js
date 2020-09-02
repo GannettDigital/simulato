@@ -148,7 +148,7 @@ describe('lib/runner/writers/action-json-writer.js', function() {
         });
 
         it('should increment count by one. and increment averageTime by the action.time', function() {
-          let testData = [
+          const testData = [
             {
               count: 0,
               averageTime: 0,
@@ -246,7 +246,7 @@ describe('lib/runner/writers/action-json-writer.js', function() {
         describe('if there is an error in test data', function() {
           it('should push the error and failing test to testData.failures', function() {
             fs.readFileSync.returns('testOne');
-            let testData = [
+            const testData = [
               {
                 count: 0,
                 averageTime: 0,
@@ -316,7 +316,7 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('if actionJsonWriter._testData[actionName] does NOT exsist', function() {
       it('it should set _testData[actionName] to an object with the default values', function() {
-        let actionName = 'action';
+        const actionName = 'action';
         actionJsonWriter._testData[actionName] = null;
 
         actionJsonWriter._getActionTestData(actionName);
@@ -331,10 +331,10 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     });
 
     it('should return actionJsonWriter._testData[actionName]', function() {
-      let actionName = 'action';
+      const actionName = 'action';
       actionJsonWriter._testData[actionName] = 'testData';
 
-      let testData = actionJsonWriter._getActionTestData(actionName);
+      const testData = actionJsonWriter._getActionTestData(actionName);
 
       expect(testData).to.deep.equal('testData');
     });
@@ -361,7 +361,7 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('for each failure within test.failures', function() {
       it('should return report notes with the failures inside the notes', function() {
-        let test = {
+        const test = {
           count: 4,
           failures: [
             {
@@ -374,9 +374,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
             },
           ],
         };
-        let notes;
 
-        notes = actionJsonWriter._createNotes(test);
+        const notes = actionJsonWriter._createNotes(test);
 
         expect(notes).to.equal('Run Count: 4\nFail Count: 2\nFailures:\nError: "error1"\n\nTest: test1\n' +
         'Error: "error2"\n\nTest: test2');
@@ -385,13 +384,12 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('if there are no failures in test.failures', function() {
       it('should return reportNotes with a blank value for failures', function() {
-        let test = {
+        const test = {
           count: 4,
           failures: [],
         };
-        let notes;
 
-        notes = actionJsonWriter._createNotes(test);
+        const notes = actionJsonWriter._createNotes(test);
 
         expect(notes).to.equal('Run Count: 4\nFail Count: 0\nFailures:');
       });
@@ -465,10 +463,10 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     });
 
     it('should call actionJsonWriter._createNotes once with test passed in', function() {
-      let test = {
+      const test = {
         foo: 'bar',
       };
-      let actionName = 'actionName';
+      const actionName = 'actionName';
 
       actionJsonWriter._writeReport(actionName, test);
 
@@ -478,10 +476,10 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     });
 
     it('should call configHandler.get once with \'reportPath\'', function() {
-      let test = {
+      const test = {
         foo: 'bar',
       };
-      let actionName = 'actionName';
+      const actionName = 'actionName';
 
       actionJsonWriter._writeReport(actionName, test);
 
@@ -489,10 +487,10 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     });
 
     it('should call path.resolve once with \'reportPath\' and \'actionName.json\'', function() {
-      let test = {
+      const test = {
         foo: 'bar',
       };
-      let actionName = 'actionName';
+      const actionName = 'actionName';
       configHandler.get.returns('./reportPath');
 
       actionJsonWriter._writeReport(actionName, test);
@@ -501,10 +499,10 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     });
 
     it('should call fs.writeFileSync with customReportPath and customReport passed in', function() {
-      let test = {
+      const test = {
         foo: 'bar',
       };
-      let actionName = 'actionName';
+      const actionName = 'actionName';
       path.resolve.returns('./reportPath', 'actionName.json' );
 
       actionJsonWriter._writeReport(actionName, test);
@@ -540,11 +538,9 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('if the passed in action.status does not equal \'fail\'', function() {
       it('should return null', function() {
-        let action = {status: 'pass'};
-        let testData = {};
-        let result;
-
-        result = actionJsonWriter._checkActionForError(action, testData);
+        const action = {status: 'pass'};
+        const testData = {};
+        const result = actionJsonWriter._checkActionForError(action, testData);
 
         expect(result).to.equal(null);
       });
@@ -552,8 +548,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('if the passed in action.status equals \'fail\'', function() {
       it('should set the passed in testData.status to \'fail\'', function() {
-        let action = {status: 'fail'};
-        let testData = {status: 'pass'};
+        const action = {status: 'fail'};
+        const testData = {status: 'pass'};
 
         actionJsonWriter._checkActionForError(action, testData);
 
@@ -563,8 +559,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
       describe('for each step in the array \'steps\'', function() {
         describe('if the passed in action has an error in preconditions', function() {
           it('should call _checkStepForError once with the passed in action and \'preconditions\'', function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
+            const action = {status: 'fail'};
+            const testData = {status: 'pass'};
             actionJsonWriter._checkStepForError.returns('error');
 
             actionJsonWriter._checkActionForError(action, testData);
@@ -576,12 +572,11 @@ describe('lib/runner/writers/action-json-writer.js', function() {
           });
 
           it('should return the error from the call to _checkStepForError', function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
-            let result;
+            const action = {status: 'fail'};
+            const testData = {status: 'pass'};
             actionJsonWriter._checkStepForError.returns('error');
 
-            result = actionJsonWriter._checkActionForError(action, testData);
+            const result = actionJsonWriter._checkActionForError(action, testData);
 
             expect(result).to.equal('error');
           });
@@ -590,8 +585,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
         describe('if the passed in action has an error in perform', function() {
           it('should call _checkStepForError twice with the passed in action and steps \'preconditions\', \'perform\'',
               function() {
-                let action = {status: 'fail'};
-                let testData = {status: 'pass'};
+                const action = {status: 'fail'};
+                const testData = {status: 'pass'};
                 actionJsonWriter._checkStepForError.onCall(0).returns(null);
                 actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
 
@@ -604,13 +599,12 @@ describe('lib/runner/writers/action-json-writer.js', function() {
               });
 
           it('should return the error from the call to _checkStepForError for perform', function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
-            let result;
+            const action = {status: 'fail'};
+            const testData = {status: 'pass'};
             actionJsonWriter._checkStepForError.onCall(0).returns(null);
             actionJsonWriter._checkStepForError.onCall(1).returns('perform error');
 
-            result = actionJsonWriter._checkActionForError(action, testData);
+            const result = actionJsonWriter._checkActionForError(action, testData);
 
             expect(result).to.equal('perform error');
           });
@@ -619,8 +613,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
         describe('if the passed in action has an error in effects', function() {
           it('should call _checkStepForError thrice with the passed in action and steps'+
           ' \'preconditions\', \'perform\', \'effects\'', function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
+            const action = {status: 'fail'};
+            const testData = {status: 'pass'};
             actionJsonWriter._checkStepForError.onCall(0).returns(null);
             actionJsonWriter._checkStepForError.onCall(1).returns(null);
             actionJsonWriter._checkStepForError.onCall(2).returns('effects error');
@@ -635,14 +629,13 @@ describe('lib/runner/writers/action-json-writer.js', function() {
           });
 
           it('should return the error from the call to _checkStepForError for effects', function() {
-            let action = {status: 'fail'};
-            let testData = {status: 'pass'};
-            let result;
+            const action = {status: 'fail'};
+            const testData = {status: 'pass'};
             actionJsonWriter._checkStepForError.onCall(0).returns(null);
             actionJsonWriter._checkStepForError.onCall(1).returns(null);
             actionJsonWriter._checkStepForError.onCall(2).returns('effects error');
 
-            result = actionJsonWriter._checkActionForError(action, testData);
+            const result = actionJsonWriter._checkActionForError(action, testData);
 
             expect(result).to.equal('effects error');
           });
@@ -671,14 +664,13 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
     describe('if the passed in action.steps does NOT have the passed in step property', function() {
       it('should return null', function() {
-        let action = {
+        const action = {
           steps: {
             precondition: {},
           },
         };
-        let result;
 
-        result = actionJsonWriter._checkStepForError(action, 'step');
+        const result = actionJsonWriter._checkStepForError(action, 'step');
 
         expect(result).to.equal(null);
       });
@@ -687,16 +679,15 @@ describe('lib/runner/writers/action-json-writer.js', function() {
     describe('if the passed in action.steps does have the passed in step property', function() {
       describe('if the passed in actions.steps[step] does NOT have the status \'fail\'', function() {
         it('should return null', function() {
-          let action = {
+          const action = {
             steps: {
               precondition: {
                 status: 'pass',
               },
             },
           };
-          let result;
 
-          result = actionJsonWriter._checkStepForError(action, 'precondition');
+          const result = actionJsonWriter._checkStepForError(action, 'precondition');
 
           expect(result).to.equal(null);
         });
@@ -704,7 +695,7 @@ describe('lib/runner/writers/action-json-writer.js', function() {
 
       describe('if the passed in actions.steps[step] does have the status \'fail\'', function() {
         it('should return the error property', function() {
-          let action = {
+          const action = {
             steps: {
               precondition: {
                 status: 'fail',
@@ -712,9 +703,8 @@ describe('lib/runner/writers/action-json-writer.js', function() {
               },
             },
           };
-          let result;
 
-          result = actionJsonWriter._checkStepForError(action, 'precondition');
+          const result = actionJsonWriter._checkStepForError(action, 'precondition');
 
           expect(result).to.equal('error');
         });
