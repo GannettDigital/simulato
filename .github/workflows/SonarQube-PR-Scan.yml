@@ -40,7 +40,7 @@ jobs:
         path: _temp
     - name: SonarQube Scan
       env:
-        SONAR_TOKEN: ${{secrets.GANNETTDIGITAL_SIMULATO}}
+        SONAR_TOKEN: ${{secrets.SQ_GANNETTDIGITAL_SIMULATO}}
         SONAR_HOST_URL: http://sonarqube-service
       run: /opt/sonar-scanner/bin/sonar-scanner
         -Dsonar.projectKey=GannettDigital:Simulato
