@@ -1,0 +1,53 @@
+# This is a workflow to complete a Sonarqube scan for a PR
+# Author: Beth Whyle
+
+name: Sonarqube-PR-Scan
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+#  push:
+#    branches: [ master ]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches:
+      - master
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains two jobs, a build and a scan
+  SonarQubePR:
+    # The type of runner that the job will run on
+    runs-on: [sec-eng,production-low]
+    timeout-minutes: 10
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Change git config to read
+      run: |
+        sudo chmod 755 ~/.config/
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    # Create the sonar-project.properties file with values
+    - name: Add property values
+      run: |
+        env
+
+    - name: Checkout to path
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        path: _temp
+    - name: SonarQube Scan
+      env:
+        SONAR_TOKEN: ${{secrets.SQ_GANNETTDIGITAL_SIMULATO}}
+        SONAR_HOST_URL: http://sonarqube-service
+      run: /opt/sonar-scanner/bin/sonar-scanner
+        -Dsonar.projectKey=GannettDigital:Simulato
+        -Dsonar.pullrequest.key=${{ github.event.number }}
+        -Dsonar.pullrequest.branch=${{ github.HEAD_REF }}
+        -Dsonar.pullrequest.base=${{ github.BASE_REF }}
+        -Dsonar.pullrequest.github.repository=${{ github.repository }}
+        -Dsonar.projectBaseDir=_temp
+        -Dsonar.scm.provider=git
+        -Dsonar.java.binaries=/tmp
