@@ -16,7 +16,7 @@ jobs:
   # This workflow contains a single job called "Gitleaks"
   Gitleaks:
     # The type of runner that the job will run on
-    runs-on: [ sec-eng, production-low ]
+    runs-on: [ sec-eng ]
     timeout-minutes: 30
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -27,7 +27,7 @@ jobs:
         fetch-depth: 2
   # Run the Gitleaks scan
     - name: GitleaksScan
-      uses: zricethezav/gitleaks-action@master
+      uses: zricethezav/gitleaks-action@1.6.0
       id: GitleaksScan
 
 # Strip out ANSI characters that don't display well in Github comments
